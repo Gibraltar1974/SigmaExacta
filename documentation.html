@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://sigmaexacta.com/documentation" />
+    <title>Complete Quality Tool Documentation & Guides | Sigma Exacta</title>
+    <meta name="description" content="Detailed guides and documentation for all of Sigma Exacta's quality and automotive engineering tools, including Cpk, FMEA, DOE, Weibull, Kano, APQP/PPAP, Ishikawa, 8D, QFD, and more.">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="sigma-exacta-icon.jpg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* --- Estilos base para la barra de navegación --- */
+        .top-bar {
+            /* === MODIFICACIÓN: Header fijo para coincidir con index.html === */
+            position: sticky; /* Cambiado de 'relative' para que la barra se fije */
+            top: 0;           /* Se posiciona en el borde superior de la ventana */
+            z-index: 1001;    /* Se asegura que esté por encima del contenido */
+            /* === FIN DE LA MODIFICACIÓN === */
+            
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222; /* Un negro suave, puedes cambiarlo por #000 */
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle {
+            color: #fff; /* Color blanco para el texto y el icono */
+        }
+
+        .nav-toggle {
+            display: none; 
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .navigation .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navigation .nav-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+        
+        .navigation .nav-link i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        /* --- Estilos para el menú desplegable (escritorio) --- */
+        .nav-item-dropdown {
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff; /* Fondo blanco para el desplegable */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 5px;
+            z-index: 1000;
+            min-width: 600px;
+            padding: 20px;
+        }
+        
+        /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
+        .dropdown-menu a, .dropdown-menu h4 {
+            color: #333;
+        }
+        .dropdown-link:hover {
+            background-color: #f1f1f1;
+        }
+
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-item-dropdown:hover > .dropdown-menu {
+            display: block;
+        }
+
+        /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
+        @media (max-width: 992px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .navigation .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff; /* Fondo blanco para el menú desplegado */
+                border-top: 1px solid #eee;
+            }
+            
+            /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
+            .navigation .nav-menu .nav-link {
+                color: #333; 
+            }
+
+            .navigation .nav-menu.show-menu {
+                display: flex;
+            }
+            
+            .navigation .nav-item {
+                width: 100%;
+                text-align: left;
+            }
+
+            .nav-item-dropdown > .nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown-menu {
+                display: none; 
+                position: static; 
+                width: 100%;
+                box-shadow: none;
+                border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px;
+                min-width: unset;
+                background-color: #f9f9f9;
+            }
+
+            .dropdown-menu.show-submenu {
+                display: block;
+            }
+            
+            .dropdown-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-item-dropdown:hover > .dropdown-menu {
+                display: none;
+            }
+            .nav-item-dropdown.active:hover > .dropdown-menu {
+                display: block;
+            }
+            
+            .nav-item-dropdown.active > .nav-link i {
+                transform: rotate(180deg);
+            }
+        }
+    </style>
+    <style>
+        /* ESTILOS COPIADOS EXACTAMENTE DE TRIZ.HTML */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            font-size: 16px;
+        }
+        
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f7fa;
+            line-height: 1.6; /* Unificado desde 1.7 a 1.6 para coincidir */
+            /* Se elimina display:flex y min-height:100vh para coincidir con body de triz.html */
+        }
+        
+        /* --- Estilos del encabezado ahora se manejan por styles.css (referencia mantenida) --- */
+        
+        /* Main content wrapper (similar a triz.html, pero adaptado a la clase de documentation.html) */
+        .main-content { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.25rem; flex: 1; }
+
+        .page-title { color: var(--dark-color); font-size: clamp(1.8rem, 4vw, 2.2rem); font-weight: 800; text-align: center; margin-top: 0; margin-bottom: 2rem; }
+
+        /* Estilos específicos de la página de documentación */
+        .doc-section { margin-bottom: 2.5rem; background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
+        .doc-section h2 { color: var(--primary-color); margin: 0 0 1.25rem 0; padding-bottom: 0.75rem; border-bottom: 2px solid var(--secondary-color); font-size: 1.6rem; font-weight: 800; }
+        .doc-section h3 { color: var(--secondary-color); margin: 1.5rem 0 1rem; font-size: 1.3rem; font-weight: 600; }
+        .doc-section h4 { color: var(--primary-color); margin-top: 1.25rem; margin-bottom: 0.6rem; font-size: 1.1rem; font-weight: 800; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+        .doc-section p { margin-bottom: 1rem; color: #555; text-align: justify; }
+        .doc-section ul, .doc-section ol { margin-bottom: 1.25rem; color: #555; padding-left: 20px; }
+        #toc ul { list-style-type: none; padding-left: 0; columns: 1; column-gap: 2.5rem; }
+        #toc li { margin-bottom: 0.6rem; break-inside: avoid; }
+        #toc li a { text-decoration: none; color: var(--secondary-color); font-weight: 600; display: inline-block; transition: color 0.2s; }
+        #toc li a:hover { color: #2980b9; text-decoration: underline; }
+        .note { background-color: #eaf2f8; border-left: 4px solid var(--secondary-color); padding: 1rem; margin: 1.25rem 0; border-radius: 0 4px 4px 0; }
+        .note strong { color: var(--secondary-color); }
+        .btn { display: inline-block; background-color: var(--secondary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; margin-top: 0.6rem; font-weight: 600; transition: background-color 0.3s; font-size: 1rem; }
+        .btn:hover, .btn:focus-visible { background-color: #2980b9; outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
+        .btn i { margin-right: 8px; }
+        
+        /* === MODIFICACIÓN: Prevención de desbordamiento horizontal en móviles === */
+        code { 
+            background-color: #eee; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-family: monospace;
+            overflow-wrap: break-word; /* Asegura que el texto largo se rompa y no desborde */
+        }
+        
+        @media (min-width: 768px) { #toc ul { columns: 2; } }
+        @media (min-width: 1024px) { #toc ul { columns: 3; } }
+    </style>
+</head>
+<body>
+    <header role="banner" class="top-bar">
+        <a href="index.html" class="logo-container-link">
+            <div class="logo-container">
+                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+                <span class="logo-text">SigmaExacta</span>
+            </div>
+        </a>
+
+        <nav class="navigation">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                
+                <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                    <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu" id="tools-dropdown-menu">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Process & Quality</h4>
+                                <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                                <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                                <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                                <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Design & Innovation</h4>
+                                <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                                <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                                <a href="fmea.html" class="dropdown-link">FMEA</a>
+                                <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                                <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                                <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                                <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                                <a href="kano.html" class="dropdown-link">Kano Model</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Problem Solving</h4>
+                                <a href="8d.html" class="dropdown-link">8D Report</a>
+                                <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                                <a href="triz.html" class="dropdown-link">TRIZ</a>
+                                <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                            </div>
+                             <div class="dropdown-column">
+                                <h4 class="dropdown-category">Strategy & Management</h4>
+                                <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                                <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                                <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                                <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+                <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="main-content" role="main">
+        <h1 class="page-title">Tool Documentation & Guides</h1>
+        <div class="documentation">
+            
+            <section id="introduction" class="doc-section" aria-labelledby="introduction-heading">
+                <h2 id="introduction-heading">Introduction to Sigma Exacta</h2>
+                <p>Sigma Exacta is a powerful web-based tool designed specifically for automotive and quality engineers. It provides essential calculators and analysis tools to help you streamline your workflow and improve product quality.</p>
+                <div class="note">
+                    <strong>Note:</strong> Sigma Exacta requires JavaScript to be enabled in your browser. All calculations are performed locally in your browser—your data never leaves your computer.
+                </div>
+            </section>
+
+            <section id="toc" class="doc-section" aria-labelledby="toc-heading">
+                <h2 id="toc-heading">Tool Index</h2>
+                <ul>
+                    <li><a href="#cpk-calculator">Process Capability (Cpk) Calculator</a></li>
+                    <li><a href="#control-plan">Interactive Control Plan Creator</a></li>
+                    <li><a href="#weibull-analysis">Weibull Analysis</a></li>
+                    <li><a href="#pdca-cycle">PDCA Cycle (Deming Wheel)</a></li>
+                    
+                    <li><a href="#stackup-analysis">Tolerance Stack-up Analysis</a></li>
+                    <li><a href="#taguchi-method">Taguchi Design of Experiments (DOE)</a></li>
+                    <li><a href="#fmea-tool">FMEA: Failure Mode & Effects Analysis</a></li>
+                    <li><a href="#qfd-tool">QFD (House of Quality) Builder</a></li>
+                    <li><a href="#pugh-matrix">Pugh Matrix Concept Selection</a></li>
+                    <li><a href="#vave-tool">VAVE (Value Analysis / Engineering)</a></li>
+                    <li><a href="#design-thinking">Design Thinking Facilitator</a></li>
+                    <li><a href="#kano-model">Kano Model Analysis</a></li>
+                    
+                    <li><a href="#8d-tool">8D Problem-Solving Report</a></li>
+                    <li><a href="#ishikawa-tool">Ishikawa (Fishbone) Diagram Generator</a></li>
+                    <li><a href="#triz-solver">TRIZ Inventive Problem Solving</a></li>
+                    <li><a href="#eisenhower-matrix">Eisenhower Matrix Task Prioritizer</a></li>
+                    
+                    <li><a href="#apqp-ppap-planner">APQP & PPAP Project Planner</a></li>
+                    <li><a href="#balanced-scorecard">Strategy Scorecard</a></li>
+                    <li><a href="#swot-analysis">SWOT Analysis Matrix</a></li>
+                    <li><a href="#efqm-assessment">Business Excellence Assessment</a></li>
+                </ul>
+            </section>
+            
+            <section id="cpk-calculator" class="doc-section" aria-labelledby="cpk-heading">
+                <h2 id="cpk-heading">Process Capability (Cpk) Calculator</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Use the Cpk Calculator to assess the capability of a manufacturing or business process. It calculates both short-term (Cp, Cpk) and long-term (Pp, Ppk) indices, performs normality tests, and generates distribution plots and control charts. This is essential for:</p>
+                <ul>
+                    <li>Validating process improvements (e.g., after a Kaizen event).</li>
+                    <li>Monitoring ongoing process performance for stability and normality.</li>
+                    <li>Fulfilling customer requirements for quality assurance, such as in PPAP submissions.</li>
+                    <li>Distinguishing between short-term (within-subgroup) and long-term (overall) variation.</li>
+                    <li>Making data-driven decisions about whether a process needs adjustment or overhaul.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The journey of process capability begins with the father of statistical quality control, <strong>Dr. Walter A. Shewhart</strong>. In the 1920s, he laid the groundwork for statistical process control. However, it was the intense global competition of the 1980s that propelled capability indices to the forefront, championed by the U.S. automotive industry through the <strong>Automotive Industry Action Group (AIAG)</strong>. They needed a standard way to measure supplier quality. Initially, the focus was on Cp (Process Capability), but it assumes the process is perfectly centered. This led to the widespread adoption of <strong>Cpk (Process Capability Index)</strong>, a much stricter and more practical measure. Cpk accounts for both the spread and the centering of the process mean relative to specification limits. It became a universal language, with suppliers for companies like <strong>Toyota</strong> or <strong>Bosch</strong> required to demonstrate Cpk values of 1.33 or 1.67 for critical features.</p>
+                <h3>How to Use the Cpk Calculator</h3>
+                <p>The calculator is a comprehensive tool that handles multiple datasets for both short-term and long-term analysis. Follow these steps to get a complete process capability report:</p>
+                <ol>
+                    <li><h4>Step 1: Enter Process Data and Specifications</h4>
+                        <p>Use the "Add Dataset" button to create one or more data groups. In the text area for each dataset, input the numerical values from your process samples, separated by commas o r spaces. Then, enter the common engineering limits: <strong>Lower Specification Limit (LSL)</strong>, <strong>Upper Specification Limit (USL)</strong>, and the <strong>Target</strong> value.</p>
+                    </li>
+                    <li><h4>Step 2: Calculate and Analyze</h4>
+                        <p>Click the "Calculate" button. The tool instantly processes your data and displays a multi-faceted analysis.</p>
+                    </li>
+                    <li><h4>Step 3: Review the Results</h4>
+                        <p>The output is split into two main sections:
+                            <ul>
+                                <li><strong>Short-Term Results:</strong> For each individual dataset, the tool shows key metrics like <strong>Cp, Cpk, Cpm</strong>, mean, and standard deviation. It also performs normality tests (Shapiro-Wilk, Anderson-Darling) and displays a process distribution plot and an Individuals Control Chart (I-Chart). You can switch between datasets using the tabs.</li>
+                                <li><strong>Overall Performance (Long-Term):</strong> By combining all datasets, the tool calculates the overall indices <strong>Pp and Ppk</strong>, providing insight into long-term process performance. This section also includes its own normality tests and charts.</li>
+                            </ul>
+                        </p>
+                    </li>
+                    <li><h4>Step 4: Export Your Analysis (Optional)</h4>
+                        <p>Once the calculations are complete, you can click the <strong>Export to Excel</strong> button to download a spreadsheet containing a summary of all results and the raw data for your records.</p>
+                    </li>
+                </ol>
+                <a href="cpk_calculator.html" class="btn" aria-label="Open Cpk Calculator"><i class="fas fa-calculator" aria-hidden="true"></i> Open Cpk Calculator</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="control-plan" class="doc-section" aria-labelledby="cp-heading">
+                <h2 id="cp-heading">Interactive Control Plan Creator</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The Control Plan is a living document that describes how to control the critical processes and product characteristics to ensure quality and meet customer requirements. Use the interactive tool to:</p>
+                <ul>
+                    <li>Systematically detail the controls for product and process characteristics identified in FMEA.</li>
+                    <li>Define the measurement systems, sample sizes, and frequencies for all key features.</li>
+                    <li>Ensure continuity of quality during product launch, production, and long-term running.</li>
+                    <li>Document the **Reaction Plan**—what operators must do if an out-of-control condition occurs.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The Control Plan is a key output required during Phase 4 (Product and Process Validation) of the **AIAG's Advanced Product Quality Planning (APQP)** framework. It is mandatory for **PPAP (Production Part Approval Process)** submission in the automotive industry. It effectively links the outputs of the **Design FMEA** (identifying critical product features) and the **Process FMEA** (identifying critical process parameters) to the shop floor. It is intended to be used by the manufacturing team as a guideline for production control and quality verification.</p>
+                <h3>How to Use the Control Plan Creator</h3>
+                <p>The tool provides a structured, tabbed interface to build the Control Plan in logical steps (Prototype, Pre-Launch, Production).</p>
+                <ol>
+                    <li><h4>Step 1: Define Process Details</h4>
+                        <p>Fill in the header information, including the part number, process name, and team lead.</p>
+                    </li>
+                    <li><h4>Step 2: Detail Process Steps and Characteristics</h4>
+                        <p>For each **Process Step** (e.g., "Drill Hole," "Apply Torque"), define the **Process Characteristics** (e.g., "Drill Speed") and the **Product Characteristics** (e.g., "Hole Diameter"). Mark which ones are **Special Characteristics** (e.g., Critical or Key).</p>
+                    </li>
+                    <li><h4>Step 3: Define Control Methods</h4>
+                        <p>For each characteristic, specify the **Specification/Tolerance**, the **Evaluation Method** (e.g., Caliper, Gauge, SPC Chart), the **Sample Size**, and the **Frequency**.</p>
+                    </li>
+                    <li><h4>Step 4: Establish the Reaction Plan</h4>
+                        <p>Crucially, define the **Reaction Plan**—the actions to be taken immediately by the operator when a non-conformance is detected (e.g., "Stop line," "Isolate material," "Notify Quality Engineer").</p>
+                    </li>
+                </ol>
+                <a href="control-plan.html" class="btn" aria-label="Open Control Plan Creator"><i class="fas fa-clipboard-check" aria-hidden="true"></i> Open Control Plan Creator</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+
+            <section id="weibull-analysis" class="doc-section" aria-labelledby="weibull-heading">
+                <h2 id="weibull-heading">Weibull Analysis</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Use this tool to analyze failure data and make predictions about the reliability of a product. It is critical for:</p>
+                <ul>
+                    <li>Predicting the percentage of units that will fail by a certain time (warranty analysis).</li>
+                    <li>Determining the Mean Time To Failure (MTTF) to understand expected lifespan.</li>
+                    <li>Identifying the nature of failures (infant mortality, random, or wear-out) via the Beta (β) parameter.</li>
+                    <li>Informing maintenance strategies and spare parts planning.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The Weibull distribution is named after Swedish engineer <strong>Waloddi Weibull</strong>. In the 1930s-40s, he sought a flexible statistical function to model real-world material fatigue and failure data, which existing distributions couldn't handle. The genius of his distribution lies in the <strong>shape parameter, Beta (β)</strong>, which acts as a powerful diagnostic tool. A Beta &lt; 1 indicates infant mortality, Beta ≈ 1 suggests random failures, and Beta &gt; 1 signifies wear-out failures. The U.S. Air Force was a crucial early adopter, using it to predict component lifespans. Today, companies from <strong>General Motors</strong> (warranty analysis) to <strong>Stryker</strong> (medical implant reliability) rely on it.</p>
+                <h3>How to Use the Weibull Analysis Tool</h3>
+                <p>The tool simplifies the complex calculations involved in Weibull analysis, providing key reliability metrics and a visual plot.</p>
+                <ol>
+                    <li><h4>Step 1: Input Failure and Suspension Data</h4>
+                        <p>Enter your data into the appropriate text areas: <strong>Failure Times</strong> (times at which failures occurred, separated by commas) and optional <strong>Suspension Times</strong> (run times for units that did *not* fail). Including suspension data provides a more accurate analysis.</p>
+                    </li>
+                    <li><h4>Step 2: Analyze the Data</h4>
+                        <p>Click "Analyze Failures." The tool performs a regression analysis to fit the data to the Weibull distribution.</p>
+                    </li>
+                    <li><h4>Step 3: Interpret the Results</h4>
+                        <p>The output provides: <strong>Beta (β)</strong> (failure mode), <strong>Eta (η)</strong> (characteristic life at 63.2% failure), <strong>Mean Time To Failure (MTTF)</strong>, and a <strong>Weibull Probability Plot</strong> to visualize how well the data fits the model.</p>
+                    </li>
+                </ol>
+                <a href="weibull.html" class="btn" aria-label="Open Weibull Analysis Tool"><i class="fas fa-chart-line" aria-hidden="true"></i> Open Weibull Analysis</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="pdca-cycle" class="doc-section" aria-labelledby="pdca-heading">
+                <h2 id="pdca-heading">PDCA Cycle (Deming Wheel)</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>PDCA (Plan-Do-Check-Act) is a continuous improvement model used to manage change and solve problems iteratively. Its purpose is to:</p>
+                <ul>
+                    <li>Provide a simple, repeatable, and scientific method for testing and implementing improvements.</li>
+                    <li>Ensure changes are based on data and validated before full deployment.</li>
+                    <li>Create a culture of experimentation and continuous learning within the organization.</li>
+                    <li>Systematically drive a process from problem definition to standardization.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The cycle was popularized by **Dr. W. Edwards Deming** in Japan after WWII, which is why it is often called the **Deming Wheel** or Deming Cycle. However, Deming credited his mentor, **Walter Shewhart**, with the original concept, known as the Shewhart Cycle. Deming emphasized that the cycle must be repeated continuously (spiraling upwards) for true improvement. It is the foundation of many quality and management systems, including Lean Manufacturing and Six Sigma, and forms the philosophical basis for standardization in ISO 9001.</p>
+                <h3>How to Use the PDCA Cycle Tool</h3>
+                <p>The tool provides a structured template to document the activities performed in each of the four phases.</p>
+                <ol>
+                    <li><h4>Phase 1: Plan</h4>
+                        <p>Identify the problem, analyze the root cause (using tools like Ishikawa or 5 Whys), define the goal, and plan the specific action and measurement criteria (what, why, how, where, when).</p>
+                    </li>
+                    <li><h4>Phase 2: Do</h4>
+                        <p>Execute the plan, usually on a small scale or in a controlled environment (pilot test). Document observations and data collected during the test implementation.</p>
+                    </li>
+                    <li><h4>Phase 3: Check (Study)</h4>
+                        <p>Compare the actual results against the planned goals. Did the test solve the problem? Was there any unintended consequence? Use statistical tools (like Cpk or charts) to verify the results.</p>
+                    </li>
+                    <li><h4>Phase 4: Act</h4>
+                        <p>Based on the findings: **Act** by standardizing the successful change (updating procedures, training) or **Act** by starting a new PDCA cycle (revising the plan if the change was unsuccessful).</p>
+                    </li>
+                </ol>
+                <a href="pdca.html" class="btn" aria-label="Open PDCA Tool"><i class="fas fa-redo-alt" aria-hidden="true"></i> Open PDCA Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            <section id="stackup-analysis" class="doc-section" aria-labelledby="stackup-heading">
+    <h2 id="stackup-heading">Tolerance Stack-up Analysis</h2>
+    <h3>Purpose of the Tool</h3>
+    <p>This tool is essential for design and manufacturing engineers to predict the final assembly variation of multiple components. Use it to:</p>
+    <ul>
+        <li>Ensure parts will fit together correctly under all tolerance conditions.</li>
+        <li>Avoid costly redesigns by identifying potential interference or gap issues early.</li>
+        <li>Optimize component tolerances to reduce manufacturing costs without sacrificing quality.</li>
+        <li>Compare worst-case (Arithmetic), statistical (RSS), and simulated (Monte Carlo) outcomes.</li>
+        <li>Model realistic process behavior by selecting the appropriate statistical distribution for each manufacturing process (Normal for stable CNC operations, Uniform for Go/No-Go inspected parts, Triangular for manually centered processes, Weibull for skewed wear patterns, Lognormal for coating thickness, Beta for bounded percentage measurements, and Exponential for failure rate modeling).</li>
+    </ul>
+    <h4>Origin and Background</h4>
+    <p>Tolerance analysis is linked to the industrial revolution and <strong>Eli Whitney's</strong> concept of interchangeable parts. The most basic method is <strong>Arithmetic (Worst-Case) analysis</strong>, which assumes all tolerances conspire to produce the worst outcome. While safe, it's often too costly. A more sophisticated approach is the <strong>Probabilistic (RSS) method</strong>, which recognizes that a worst-case scenario is statistically rare and provides a more realistic prediction of variation. The ultimate evolution came with modern computing and <strong>Monte Carlo simulation</strong>. An engineer can define specific statistical distributions for each dimension, and the software runs thousands of "virtual builds" to generate a rich histogram of all possible outcomes. This is indispensable for aerospace giants like <strong>Boeing</strong> and consumer electronics companies like <strong>Apple</strong>.</p>
+    <h3>How to Use the Stack-up Analysis Tool</h3>
+    <p>This interactive tool allows you to build a dimensional chain and analyze it using different statistical methods, automatically selecting between RSS and Monte Carlo based on your distribution choices.</p>
+    <ol>
+        <li><h4>Step 1: Build Your Dimensional Chain</h4>
+            <p>Click "Add Dimension" for each component in your stack-up loop. A new row will appear for each dimension. You can also click "Load Example" to see a pre-configured analysis with mixed distributions.</p>
+        </li>
+        <li><h4>Step 2: Enter Details for Each Dimension</h4>
+            <p>For each dimension, provide the following information:</p>
+            <ul>
+                <li><strong>Dimension Name:</strong> A descriptive identifier (e.g., "Housing Width", "Shaft Length")</li>
+                <li><strong>Nominal Value:</strong> The target dimension</li>
+                <li><strong>Distribution Type:</strong> Select from Normal, Homogeneous (Uniform), Triangular, Weibull, Lognormal, Beta, or Exponential based on your manufacturing process characteristics</li>
+                <li><strong>Distribution Parameters:</strong> Depending on the distribution selected, you'll define parameters such as:
+                    <ul>
+                        <li>For <strong>Normal</strong>: Choose to define by Tolerance (±Tol with separate USL/LSL), Standard Deviation (σ), or Cpk value. The tool stores your last values for each method.</li>
+                        <li>For <strong>Homogeneous</strong>: Minimum (A) and Maximum (B) values</li>
+                        <li>For <strong>Triangular</strong>: Minimum (A), Mode (C), and Maximum (B) values</li>
+                        <li>For <strong>Weibull</strong>: Shape (β) and Scale (η) parameters</li>
+                        <li>For <strong>Lognormal</strong>: μ (log mean) and σ (log standard deviation)</li>
+                        <li>For <strong>Beta</strong>: α and β shape parameters, plus Min (a) and Max (b) bounds</li>
+                        <li>For <strong>Exponential</strong>: λ (rate) parameter</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><h4>Step 3: Configure Monte Carlo Simulation</h4>
+            <p>Set the "Monte Carlo sample size" (default: 10,000). A higher number provides more accurate results but takes longer to compute. The simulation runs automatically when you calculate, regardless of distribution types.</p>
+        </li>
+        <li><h4>Step 4: Visualize the Stack-up</h4>
+            <p>Use the "Stack-up Visualization" section to see a graphical representation of your dimensional chain. Toggle between Horizontal and Vertical orientations. The visualization updates in real-time as you modify dimensions.</p>
+        </li>
+        <li><h4>Step 5: Calculate and Review Analysis</h4>
+            <p>Click "Calculate" to perform the analysis. The tool displays three sets of results:</p>
+            <ul>
+                <li><strong>Arithmetic Method (Worst-Case):</strong> Shows the absolute minimum and maximum possible assembly dimensions by summing all tolerances. This guarantees 100% assemblies meet specifications but leads to the tightest (most expensive) component tolerances.</li>
+                <li><strong>Probabilistic Method:</strong> Automatically uses <strong>RSS (Root Sum of Squares)</strong> if all components are Normal distribution, or <strong>Monte Carlo simulation</strong> if any component uses a non-Normal distribution (Weibull, Triangular, Homogeneous, Lognormal, Beta, or Exponential). The method label clearly indicates which calculation was used.</li>
+                <li><strong>Monte Carlo Results:</strong> Always displayed, showing the simulated distribution histogram, statistical metrics (mean, standard deviation, min, max), and a visual chart of the assembly outcome distribution. This provides the most comprehensive view of expected variation.</li>
+            </ul>
+        </li>
+        <li><h4>Step 6: Export and Document Results</h4>
+            <p>After calculation, you can:</p>
+            <ul>
+                <li>Click "List Results" to view a detailed history of all calculations performed in the current session, including input parameters and all three analysis methods.</li>
+                <li>Click "Export to Excel" to download a comprehensive spreadsheet containing all calculation history, input dimensions, distribution parameters, and results for documentation and record-keeping.</li>
+            </ul>
+        </li>
+    </ol>
+    <div class="note">
+        <strong>Distribution Selection Guide:</strong> Choose <strong>Normal</strong> for well-controlled processes (CNC machining), <strong>Uniform</strong> for Go/No-Go inspected components, <strong>Triangular</strong> for manually centered operations, <strong>Weibull</strong> for wear-related or skewed processes, <strong>Lognormal</strong> for coating/deposition processes, <strong>Beta</strong> for bounded measurements (percentages, indices), and <strong>Exponential</strong> for reliability/failure rate modeling.
+    </div>
+    <a href="stack_up_analysis.html" class="btn" aria-label="Open Stack-up Analysis Tool"><i class="fas fa-ruler-combined" aria-hidden="true"></i> Open Stack-up Analysis</a>
+    <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+</section>
+
+            <section id="taguchi-method" class="doc-section" aria-labelledby="taguchi-heading">
+                <h2 id="taguchi-heading">Taguchi Design of Experiments (DOE)</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>This tool helps you design robust products and processes that are insensitive to variation. Its purpose is to:</p>
+                <ul>
+                    <li>Efficiently identify the optimal settings for control factors in a process or design.</li>
+                    <li>Minimize the effects of "noise" factors (like environmental variation or manufacturing inconsistencies) without eliminating them.</li>
+                    <li>Reduce the number of experiments required compared to a full factorial design, saving time and resources.</li>
+                    <li>Improve quality by designing it in, rather than inspecting it in.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p><strong>Dr. Genichi Taguchi</strong>, a Japanese engineer, developed a revolutionary philosophy known as <strong>Robust Design</strong>. He argued that quality is the "total loss to society" after a product ships. His key insight was that it's cheaper to make a product insensitive to "noise" (variation) than to control the noise itself. He introduced two powerful tools to achieve this: <strong>Orthogonal Arrays</strong>, which are highly efficient experimental designs, and the <strong>Signal-to-Noise (S/N) ratio</strong>, a metric to find parameter settings that maximize performance (signal) while minimizing variability (noise). His methods were famously adopted by <strong>Toyota</strong> and its suppliers and were later brought to the West by companies like <strong>Ford</strong> and <strong>Xerox</strong>.</p>
+                <h3>How to Use the Taguchi Method Tool</h3>
+                <p>The tool guides you through setting up, executing, and analyzing a Taguchi experiment.</p>
+                <ol>
+                    <li><h4>Step 1: Define Factors and Levels</h4>
+                        <p>First, identify your <strong>Control Factors</strong> (the parameters you can control, e.g., temperature, pressure). For each factor, define the <strong>Levels</strong> (the settings you want to test, e.g., 100°C, 150°C, 200°C). Use the tool's interface to add each factor and its levels.</p>
+                    </li>
+                    <li><h4>Step 2: Select an Orthogonal Array</h4>
+                        <p>Based on the number of factors and levels you defined, the tool will suggest an appropriate <strong>Orthogonal Array</strong> (e.g., L4, L8, L9). This array is the experimental plan, defining the specific combination of factor levels for each experimental run.</p>
+                    </li>
+                    <li><h4>Step 3: Run Experiments and Enter Response Data</h4>
+                        <p>Perform the experiments as specified by the generated array. For each run, record the outcome or result in the "Response Data" column of the tool's table.</p>
+                    </li>
+                    <li><h4>Step 4: Analyze the Results</h4>
+                        <p>Select your optimization goal (<strong>Smaller-is-better</strong>, <strong>Larger-is-better</strong>, or <strong>Nominal-is-best</strong>). The tool will calculate the <strong>Signal-to-Noise (S/N) Ratio</strong> for each factor level. The analysis table and chart will clearly show which level of each factor is best for achieving a robust, high-performance result.</p>
+                    </li>
+                </ol>
+                <a href="taguchi_doe.html" class="btn" aria-label="Open Taguchi Method Tool"><i class="fas fa-flask" aria-hidden="true"></i> Open Taguchi Method</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+
+            <section id="fmea-tool" class="doc-section" aria-labelledby="fmea-heading">
+                <h2 id="fmea-heading">FMEA: Failure Mode & Effects Analysis</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Use this advanced FMEA tool to proactively identify and mitigate risks in a product design (DFMEA) or manufacturing process (PFMEA). The primary goals are to:</p>
+                <ul>
+                    <li>Systematically identify how a product or process could fail to meet its intended function.</li>
+                    <li>Understand the consequences (effects) of those failures.</li>
+                    <li>Pinpoint the root causes of the failures.</li>
+                    <li>Prioritize risks using the Risk Priority Number (RPN) to focus resources effectively.</li>
+                    <li>Track actions taken to reduce risk, creating a living document for continuous improvement.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The FMEA methodology was forged in high-stakes environments, originating with the U.S. military standard <strong>MIL-P-1629</strong> in the late 1940s. It gained immense credibility at <strong>NASA</strong> during the Apollo program, where it was essential for ensuring mission safety. In the 1970s, facing costly recalls, <strong>Ford Motor Company</strong> championed FMEA for automotive applications, leading to the creation of Design and Process FMEAs. The method's power lies in its structured team approach: identify failure modes, effects, and causes, then rank each on a 1-10 scale for <strong>Severity (S)</strong>, <strong>Occurrence (O)</strong>, and <strong>Detection (D)</strong>. The product of these, the <strong>Risk Priority Number (RPN)</strong>, helps prioritize actions. The <strong>AIAG</strong> later standardized the process, making it a global requirement for automotive suppliers.</p>
+                <h3>How to Use the FMEA Tool</h3>
+                <p>This tool uses a modern, system-based approach, guiding you through a structured analysis that links functions to failures.</p>
+                <ol>
+                    <li><h4>Step 1: Define Components, Contacts, and Functions</h4>
+                        <p>First, break down your system. Use the tabs to define the <strong>Components</strong> (the parts), the <strong>Contacts</strong> (how they interact), and the <strong>Functions</strong> (what they are supposed to do). Linking functions to components and contacts creates a clear structural foundation.</p>
+                    </li>
+                    <li><h4>Step 2: Perform Failure Analysis</h4>
+                        <p>In the "Failure Analysis" tab, for each function, identify potential <strong>Failure Modes</strong> (how it can fail), <strong>Effects</strong> (the consequences), and <strong>Causes</strong> (the root reasons). This forms the core "failure chain."</p>
+                    </li>
+                    <li><h4>Step 3: Assign Risk Ratings</h4>
+                        <p>For each failure chain, assign numerical ratings from 1 (low) to 10 (high) for: <strong>Severity</strong> (how bad is the effect?), <strong>Occurrence</strong> (how likely is the cause?), and <strong>Detection</strong> (how likely are you to detect the cause/failure before it reaches the customer?).</p>
+                    </li>
+                    <li><h4>Step 4: Prioritize and Mitigate Risk</h4>
+                        <p>The tool automatically calculates the <strong>RPN (S × O × D)</strong>. Sort by RPN to identify the highest risks. For these items, define "Recommended Actions," assign responsibility, and set due dates. After actions are completed, re-evaluate S, O, and D to confirm risk has been reduced.</p>
+                    </li>
+                </ol>
+                <a href="fmea.html" class="btn" aria-label="Open FMEA Tool"><i class="fas fa-project-diagram" aria-hidden="true"></i> Open Advanced FMEA</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="qfd-tool" class="doc-section" aria-labelledby="qfd-heading">
+                <h2 id="qfd-heading">QFD (House of Quality) Builder</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>QFD (Quality Function Deployment) is a planning tool used in the design and development of products to ensure that customer desires are translated directly into design requirements and, eventually, manufacturing specifications. Its primary goals are to:</p>
+                <ul>
+                    <li>Translate the **Voice of the Customer (VOC)** into concrete, measurable engineering characteristics.</li>
+                    <li>Identify and prioritize the most important technical requirements (the "Hows").</li>
+                    <li>Understand the correlation (trade-offs) between technical characteristics (the "Roof" of the house).</li>
+                    <li>Pro vide a clear, traceable link from customer satisfaction to final production steps.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>QFD was developed in Japan by **Yoji Akao** and **Shigeru Mizuno** in 1966 and was first used at the Mitsubishi Kobe Shipyard. It was famously adopted by **Toyota** for the design of the **Aisin Seiki** oil pump, which reduced warranty costs to zero. The core of QFD is the **House of Quality** matrix, so named because its structure resembles a house. This tool is a fundamental practice in the early phases of **Advanced Product Quality Planning (APQP)** and ensures that "design for quality" is prioritized before the product is launched. It moves quality planning from the end of the process to the beginning.</p>
+                <h3>How to Use the QFD Tool</h3>
+                <p>The interactive tool guides you through building the House of Quality step-by-step.</p>
+                <ol>
+                    <li><h4>Step 1: Define Customer Wants ("Whats")</h4>
+                        <p>List the customer requirements (e.g., "easy to clean," "long battery life") on the left side of the matrix.</p>
+                    </li>
+                    <li><h4>Step 2: Define Technical Requirements ("Hows")</h4>
+                        <p>List the measurable engineering characteristics (e.g., "surface roughness," "battery capacity") across the top of the matrix.</p>
+                    </li>
+                    <li><h4>Step 3: Establish Relationship Matrix (Body)</h4>
+                        <p>Score the relationship between each "What" and "How" (e.g., Strong, Medium, Weak). The tool uses this to calculate the final importance scores.</p>
+                    </li>
+                    <li><h4>Step 4: Analyze Competitive Data and Prioritize</h4>
+                        <p>Fill in competitive benchmarks and establish correlations between the "Hows" in the "Roof" matrix. The final section provides a calculated importance ranking, showing which technical requirements must be prioritized for design resources.</p>
+                    </li>
+                </ol>
+                <a href="qfd.html" class="btn" aria-label="Open QFD Tool"><i class="fas fa-home" aria-hidden="true"></i> Open QFD Builder</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="pugh-matrix" class="doc-section" aria-labelledby="pugh-heading">
+                <h2 id="pugh-heading">Pugh Matrix Concept Selection</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The Pugh Matrix, or Decision Matrix, is used to systematically evaluate multiple design or process alternatives against a standard baseline. It is crucial for:</p>
+                <ul>
+                    <li>Removing emotional bias from concept selection during the design phase.</li>
+                    <li>Combining quantitative criteria (weighting) with qualitative scoring (better/worse/same).</li>
+                    <li>Identifying the strengths and weaknesses of each concept relative to a known baseline (datum).</li>
+                    <li>Facilitating team consensus and documentation for the best path forward in development.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>Developed by Professor **Stuart Pugh** at the University of Strathclyde in the UK in the 1980s, the matrix became a core part of the structured design process. Unlike simple weighted scoring models, the Pugh matrix focuses on **relative comparison**. One concept is chosen as the **datum** (the baseline). All other alternatives are scored only relative to the datum using a simple scale: **+ (better), - (worse), or S (same)**. This comparative approach is highly effective in engineering design, where the team must quickly determine which concepts are promising, which need modification, and which should be discarded.</p>
+                <h3>How to Use the Pugh Matrix Tool</h3>
+                <p>The tool generates an interactive matrix that calculates the final scores dynamically.</p>
+                <ol>
+                    <li><h4>Step 1: Define Criteria and Concepts</h4>
+                        <p>List the key evaluation **Criteria** (e.g., "Manufacturing Cost," "Reliability," "Aesthetics") and assign a relative **Weight** (Importance) to each criterion. Then, list all the **Design Concepts** to be evaluated.</p>
+                    </li>
+                    <li><h4>Step 2: Select the Datum (Baseline) Concept</h4>
+                        <p>Choose one of the concepts to be the baseline (the datum) against which all others will be compared. The datum always receives a score of 'S' (Same) for all criteria.</p>
+                    </li>
+                    <li><h4>Step 3: Score Alternatives</h4>
+                        <p>For every criterion, score each alternative concept with **+, -, or S** relative to the datum. The tool uses the weights and scores to calculate a weighted positive score, weighted negative score, and a **Net Score** for each concept.</p>
+                    </li>
+                    <li><h4>Step 4: Analyze Results and Select</h4>
+                        <p>The concept with the highest Net Score is the leading contender. The matrix highlights where the leading concept is strong and where the non-leading concepts need improvement (using the '+' scores as a guide for modification).</p>
+                    </li>
+                </ol>
+                <a href="pugh.html" class="btn" aria-label="Open Pugh Matrix Tool"><i class="fas fa-stream" aria-hidden="true"></i> Open Pugh Matrix</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="vave-tool" class="doc-section" aria-labelledby="vave-heading">
+                <h2 id="vave-heading">VAVE (Value Analysis / Engineering)</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>VAVE (Value Analysis/Value Engineering) is a structured, cross-functional approach to systematically analyze a product's function to achieve the necessary performance at the lowest life-cycle cost. Its core objective is to improve the **Value** ratio (**Function / Cost**). Use it to:</p>
+                <ul>
+                    <li>Identify components whose cost is high relative to their contribution to the product's function.</li>
+                    <li>Focus the team on the true **function** of the product, rather than its existing form.</li>
+                    <li>Generate creative and systematic cost-reduction ideas.</li>
+                    <li>Improve profitability without sacrificing quality or performance.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>VAVE was invented by **Lawrence D. Miles** at **General Electric** during World War II when material shortages forced him to seek functional alternatives for components. Miles' key realization was that **cost is only meaningful relative to the function it buys**. The methodology differentiates between Value Engineering (applied to a new product/design phase) and Value Analysis (applied to an existing product). The method is driven by a simple functional equation: **Value = Function / Cost**. The tool typically utilizes a **FAST Diagram (Function Analysis System Technique)** to logically decompose the product's function.</p>
+                <h3>How to Use the VAVE Tool</h3>
+                <p>The VAVE process is typically executed in phases, which the tool supports through structured inputs.</p>
+                <ol>
+                    <li><h4>Step 1: Information Phase</h4>
+                        <p>Document the product, its components, their individual costs, and their current performance metrics.</p>
+                    </li>
+                    <li><h4>Step 2: Function Analysis</h4>
+                        <p>For each major component, define its function using a simple noun-verb format (e.g., "Transmits Torque," "Protects Circuitry"). Calculate the **Cost-to-Function** ratio to identify components that are "poor value" (high cost, low function).</p>
+                    </li>
+                    <li><h4>Step 3: Creative Phase</h4>
+                        <p>Brainstorm alternative ways to achieve the required functions, specifically targeting the high Cost-to-Function items. This is often done by asking: "What else can perform this function?"</p>
+                    </li>
+                    <li><h4>Step 4: Evaluation and Recommendation</h4>
+                        <p>Evaluate the generated ideas based on feasibility, cost savings, and risk. Use the tool to generate a final report documenting the implemented changes and projected savings.</p>
+                    </li>
+                </ol>
+                <a href="vave.html" class="btn" aria-label="Open VAVE Tool"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Open VAVE Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="design-thinking" class="doc-section" aria-labelledby="dt-heading">
+                <h2 id="dt-heading">Design Thinking Facilitator</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Design Thinking is a human-centered, iterative process used for practical, creative problem-solving and innovation. Its goal is to create products, services, and processes that are desirable, feasible, and viable. Use it to:</p>
+                <ul>
+                    <li>Gain a deep, empathetic understanding of the end-user's needs, behaviors, and motivations.</li>
+                    <li>Challenge assumptions and identify innovative solutions not visible through traditional analysis.</li>
+                    <li>Rapidly test and refine ideas using low-cost prototypes.</li>
+                    <li>Foster a collaborative and multidisciplinary approach to solving complex, ill-defined problems.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>Design Thinking evolved from practices used in industrial design and engineering. It was popularized and structured into a formal methodology by **IDEO** (a global design firm) and the **Stanford d.school (Hasso Plattner Institute of Design)** in the early 2000s. The process is defined by five key phases: **Empathize, Define, Ideate, Prototype, and Test**. Unlike purely analytical methods, Design Thinking starts with desirability (what people want) before moving to feasibility (what is possible) and viability (what is profitable). Companies like **Google, IBM, and Airbnb** have institutionalized Design Thinking as their primary innovation engine.</p>
+                <h3>How to Use the Design Thinking Tool</h3>
+                <p>The tool serves as a guide and organizer for the different activities within the five phases of the methodology.</p>
+                <ol>
+                    <li><h4>Phase 1: Empathize</h4>
+                        <p>Use the tool to document user interviews, observations, and user journey maps to gain a deep understanding of the user's perspective.</p>
+                    </li>
+                    <li><h4>Phase 2: Define</h4>
+                        <p>Synthesize the empathy findings into a clear, human-centered **Problem Statement** or **Point-of-View (POV)**, focusing on user needs and insights (e.g., "A new driver needs a safer way to navigate at night because...").</p>
+                    </li>
+                    <li><h4>Phase 3: Ideate</h4>
+                        <p>Facilitate brainstorming sessions (e.g., "How Might We...") to generate a large volume of creative solutions, moving away from conventional thinking.</p>
+                    </li>
+                    <li><h4>Phase 4: Prototype</h4>
+                        <p>Create low-resolution, low-cost representations of selected solutions (e.g., sketches, storyboards, cardboard models) that can be quickly shared with users.</p>
+                    </li>
+                    <li><h4>Phase 5: Test</h4>
+                        <p>Present the prototypes to users to gather feedback and refine the solution. The process is iterative, meaning testing often leads back to the Empathize or Define phase for a better understanding.</p>
+                    </li>
+                </ol>
+                <a href="design_thinking.html" class="btn" aria-label="Open Design Thinking Tool"><i class="fas fa-user-friends" aria-hidden="true"></i> Open Design Thinking Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="kano-model" class="doc-section" aria-labelledby="kano-heading">
+                <h2 id="kano-heading">Kano Model Analysis</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The Kano Model is a theory of product development and customer satisfaction that classifies customer preferences into five categories. Its goal is to prioritize which features to develop based on their impact on customer delight, moving beyond simply meeting functional requirements. It helps to:</p>
+                <ul>
+                    <li>Identify **Attractive** (Delight) needs that create a competitive advantage.</li>
+                    <li>Distinguish between basic **Must-Be** needs (unspoken, expected) and **One-Dimensional** needs (linear relationship to satisfaction).</li>
+                    <li>Optimize resource allocation by focusing on features that maximize satisfaction.</li>
+                    <li>Predict when a feature will shift from a "delighter" to a "basic expectation" over time.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>Developed by Professor **Noriaki Kano** in the 1980s, the model's core insight is that customer satisfaction is not linear. For example, perfectly functioning brakes (a **Must-Be** quality) will not make a customer happy, but faulty brakes will cause extreme dissatisfaction. Conversely, an innovative feature like a self-parking system (**Attractive** quality) causes delight, but its absence causes no dissatisfaction. Kano's genius was in creating a simple two-question survey structure (functional and dysfunctional form) that allows product developers to quickly classify any feature.</p>
+                <h3>How to Use the Kano Model Tool</h3>
+                <p>The tool simplifies the process of collecting and classifying survey results.</p>
+                <ol>
+                    <li><h4>Step 1: Design the Paired Survey Questions</h4>
+                        <p>For each feature, create a **Functional** question ("How do you feel if this feature is present?") and a **Dysfunctional** question ("How do you feel if this feature is absent?"). Responses use a five-point scale (e.g., I like it, I expect it, I am neutral, I tolerate it, I dislike it).</p>
+                    </li>
+                    <li><h4>Step 2: Input and Tally Responses</h4>
+                        <p>Enter the compiled results (counts for each paired response) into the tool's matrix. This is the **Evaluation Table** phase.</p>
+                    </li>
+                    <li><h4>Step 3: Classify Features</h4>
+                        <p>The tool automatically uses the Kano Evaluation Rules to classify each feature into one of the categories: **A** (Attractive/Delighter), **O** (One-Dimensional/Performance), **M** (Must-Be/Basic), **I** (Indifferent), or **R** (Reverse/Undesired). The final result is the category with the highest count.</p>
+                    </li>
+                </ol>
+                <a href="kano.html" class="btn" aria-label="Open Kano Model Tool"><i class="fas fa-smile" aria-hidden="true"></i> Open Kano Model</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+
+            <section id="8d-tool" class="doc-section" aria-labelledby="8d-heading">
+                <h2 id="8d-heading">8D Problem-Solving Report</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Use this tool to create a comprehensive and standardized report for solving complex problems, especially those raised by customers. The 8D process is designed to:</p>
+                <ul>
+                    <li>Provide a disciplined, step-by-step methodology ensuring no critical step is skipped.</li>
+                    <li>Emphasize a team-based approach to leverage collective knowledge.</li>
+                    <li>Force a clear distinction between short-term containment and long-term permanent corrective actions.</li>
+                    <li>Drive deep into root cause analysis to prevent problem recurrence.</li>
+                    <li>Create a formal record of the problem-solving process for customers and internal learning.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The 8D (Eight Disciplines) process was developed by <strong>Ford Motor Company</strong> in the mid-1980s as "Team Oriented Problem Solving" (TOPS). Ford needed a standardized, data-driven process to ensure that significant problems were permanently eliminated, not just patched over. A key aspect is <strong>D3: Implement Containment Actions</strong>, which forces the team to immediately protect the customer. Its true power lies in <strong>D4: Identify and Verify Root Cause</strong> and <strong>D7: Prevent Recurrence</strong>, which institutionalizes the lessons learned. Because of its effectiveness, the 8D report became the required response format for suppliers to Ford, <strong>General Motors</strong>, and major Tier 1s like <strong>Bosch</strong> and <strong>ZF</strong>.</p>
+                <h3>How to Use the 8D Tool</h3>
+                <p>This tool provides a digital template that guides you through each of the Eight Disciplines.</p>
+                <ol>
+                    <li><strong>D0: Plan & Form the Team</strong> - Fill in the team leader and members to establish ownership.</li>
+                    <li><strong>D1: Describe the Problem</strong> - Use the 5W2H framework (What, Where, When, Who, Why, How, How Many) to provide a factual description.</li>
+                    <li><strong>D2: Implement Interim Containment</strong> - Document immediate actions to protect the customer (e.g., sorting stock).</li>
+                    <li><strong>D3: Identify & Verify Root Cause(s)</strong> - Use 5 Whys or Ishikawa to find both the technical root cause (why it happened) and the systemic root cause (why the system allowed it).</li>
+                    <li><strong>D4: Determine Permanent Corrective Actions (PCAs)</strong> - Define the specific actions that will permanently fix the verified root cause(s).</li>
+                    <li><strong>D5: Implement & Validate PCAs</strong> - Document the implementation and provide data (e.g., a new Cpk study) that proves the actions were effective.</li>
+                    <li><strong>D6: Prevent Recurrence</strong> - Document updates to systems, procedures, or training to institutionalize the fix.</li>
+                    <li><strong>D7: Congratulate the Team</strong> - Formally recognize team efforts and document lessons learned.</li>
+                </ol>
+                <a href="8d.html" class="btn" aria-label="Open 8D Tool"><i class="fas fa-clipboard-list" aria-hidden="true"></i> Open 8D Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="ishikawa-tool" class="doc-section" aria-labelledby="ishikawa-heading">
+                <h2 id="ishikawa-heading">Ishikawa (Fishbone) Diagram Generator</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>Use this tool during team brainstorming sessions to systematically explore all potential root causes of a complex problem. Its primary purpose is to:</p>
+                <ul>
+                    <li>Provide a structured framework for root cause analysis.</li>
+                    <li>Prevent teams from jumping to conclusions by forcing consideration of multiple categories.</li>
+                    <li>Visually organize complex cause-and-effect relationships.</li>
+                    <li>Serve as a powerful communication and documentation tool for problem-solving (e.g., for an 8D report).</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>Created by <strong>Dr. Kaoru Ishikawa</strong> in the 1960s, this diagram was designed to support "Quality Circles" in Japan. Ishikawa believed quality was a task for the entire organization, and he needed a simple tool for structured brainstorming. The diagram's layout resembles a fish's skeleton, earning it the nickname "Fishbone Diagram." The problem or "effect" is the "head," and the main "bones" represent categories of causes. In manufacturing, these are famously the <strong>6Ms</strong>: <strong>Manpower, Methods, Machines, Materials, Measurement, and Mother Nature</strong>. This structure encourages systematic thinking and has become one of the seven basic tools of quality, used worldwide by companies like <strong>Toyota</strong>.</p>
+                <h3>How to Use the Ishikawa Tool</h3>
+                <p>The tool provides a simple interface to build and visualize a complete Fishbone Diagram.</p>
+                <ol>
+                    <li><h4>Step 1: Define the Problem (The "Effect")</h4>
+                        <p>In the "Problem/Effect" input field, enter a clear, concise statement of the problem you are analyzing. This will form the "head" of the fishbone.</p>
+                    </li>
+                    <li><h4>Step 2: Brainstorm Potential Causes</h4>
+                        <p>For each of the six main categories (Manpower, Methods, etc.), use the corresponding text area to list all potential causes your team brainstorms. Enter one cause per line. For example, under "Manpower," you might list "Insufficient training" and "Operator fatigue" on separate lines.</p>
+                    </li>
+                    <li><h4>Step 3: Generate and Refine the Diagram</h4>
+                        <p>Click "Generate Diagram." The tool will create a visual fishbone chart. You can go back, edit your lists of causes, and regenerate the diagram as your team discusses and refines the ideas.</p>
+                    </li>
+                </ol>
+                <a href="ishikawa.html" class="btn" aria-label="Open Ishikawa Diagram Tool"><i class="fas fa-sitemap" aria-hidden="true"></i> Open Ishikawa Diagram</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+
+            <section id="triz-solver" class="doc-section" aria-labelledby="triz-heading">
+                <h2 id="triz-heading">TRIZ Inventive Problem Solving</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>TRIZ is a structured innovation tool designed to solve difficult technical problems. Its purpose is to:</p>
+                <ul>
+                    <li>Move beyond psychological brainstorming to a logical, data-driven method for invention.</li>
+                    <li>Systematically resolve "technical contradictions" (where improving one feature worsens another).</li>
+                    <li>Provide a toolkit of universal inventive principles that have solved similar problems across all fields of engineering.</li>
+                    <li>Accelerate breakthrough innovation by providing a clear path to a solution.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>TRIZ is a Russian acronym for the "Theory of Inventive Problem Solving," conceived by Soviet inventor <strong>Genrich Altshuller</strong>. Starting in 1946, he analyzed thousands of patents and discovered that only about 3% of them were truly inventive. He realized that technical systems evolve according to predictable patterns and that breakthrough solutions often reuse a limited set of **40 Inventive Principles**. TRIZ involves framing a problem as a **Contradiction** (e.g., "I want feature X to increase, but if I increase it, feature Y gets worse"), mapping that contradiction to Altshuller's **Contradiction Matrix**, and using the suggested Inventive Principles to generate innovative solutions. Companies like <strong>Samsung, LG, and Intel</strong> utilize TRIZ to accelerate their R&D processes.</p>
+                <h3>How to Use the TRIZ Tool</h3>
+                <p>The tool guides you through the structured process of applying TRIZ methodology.</p>
+                <ol>
+                    <li><h4>Step 1: Define the Problem in TRIZ Terms</h4>
+                        <p>The key step is identifying the two conflicting parameters. The tool uses a **39x39 Contradiction Matrix** of engineering parameters (e.g., improving 'Weight of Stationary Object' worsens 'Energy Waste'). Select the **feature you want to improve** and the **feature that worsens** as a result.</p>
+                    </li>
+                    <li><h4>Step 2: Consult the Contradiction Matrix</h4>
+                        <p>The tool will output the most relevant **Inventive Principles** (numbers from 1 to 40) that have been used to solve this type of conflict in the past.</p>
+                    </li>
+                    <li><h4>Step 3: Apply Inventive Principles</h4>
+                        <p>Review the suggested principles (e.g., 'Principle 1: Segmentation,' 'Principle 10: Prior Action') and brainstorm how to apply them to your specific technical problem to resolve the contradiction.</p>
+                    </li>
+                    <li><h4>Step 4: Develop and Test Solution</h4>
+                        <p>Use the principles to generate a detailed solution concept and test its efficacy against the original problem statement.</p>
+                    </li>
+                </ol>
+                <a href="triz.html" class="btn" aria-label="Open TRIZ Tool"><i class="fas fa-lightbulb" aria-hidden="true"></i> Open TRIZ Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="eisenhower-matrix" class="doc-section" aria-labelledby="eisenhower-heading">
+                <h2 id="eisenhower-heading">Eisenhower Matrix Task Prioritizer</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The Eisenhower Matrix, also known as the Urgent-Important Matrix, is a simple, yet highly effective time management and prioritization tool. Its purpose is to:</p>
+                <ul>
+                    <li>Help teams and individuals focus on the tasks that contribute to long-term strategic goals.</li>
+                    <li>Clearly separate **Urgency** (requires immediate attention) from **Importance** (contributes to your mission).</li>
+                    <li>Reduce reactive work by encouraging planning and delegation.</li>
+                    <li>Force a clear decision on every task: Do, Schedule, Delegate, or Eliminate.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The method is based on a quote attributed to the 34th U.S. President, **Dwight D. Eisenhower**: "I have two kinds of problems, the urgent and the important. The urgent are not important, and the important are never urgent." Eisenhower, a 5-star general and President, needed a system to prioritize the monumental number of tasks he faced. The matrix formalizes this thinking into four quadrants: **Do, Schedule, Delegate, and Eliminate**. It is a cornerstone of modern productivity training and is often associated with the principles taught by Stephen Covey.</p>
+                <h3>How to Use the Eisenhower Matrix Tool</h3>
+                <p>The tool provides a visual interface to sort and manage your tasks based on the two dimensions.</p>
+                <ol>
+                    <li><h4>Step 1: List All Tasks</h4>
+                        <p>Input all open tasks, projects, or problems that require a decision into the tool.</p>
+                    </li>
+                    <li><h4>Step 2: Assign Urgency and Importance</h4>
+                        <p>For each task, decide whether it is **Urgent** and/or **Important**. Drag and drop or use the controls to place the task into the appropriate quadrant:</p>
+                        <ul>
+                            <li>**Quadrant 1 (Do):** Urgent + Important. Crisis, immediate problems. (Perform immediately).</li>
+                            <li>**Quadrant 2 (Schedule):** Not Urgent + Important. Planning, prevention, relationship building. (Block time on your calendar).</li>
+                            <li>**Quadrant 3 (Delegate):** Urgent + Not Important. Interruptions, some meetings. (Pass to someone else).</li>
+                            <li>**Quadrant 4 (Eliminate):** Not Urgent + Not Important. Time wasters. (Delete from the list).</li>
+                        </ul>
+                    </li>
+                    <li><h4>Step 3: Act on the Quadrant Rule</h4>
+                        <p>The tool provides a clear action plan based on the task's location, helping you manage your to-do list efficiently.</p>
+                    </li>
+                </ol>
+                <a href="eisenhower.html" class="btn" aria-label="Open Eisenhower Matrix Tool"><i class="fas fa-list-ol" aria-hidden="true"></i> Open Eisenhower Matrix</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="apqp-ppap-planner" class="doc-section" aria-labelledby="apqp-heading">
+                <h2 id="apqp-heading">APQP & PPAP Project Planner</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>APQP (Advanced Product Quality Planning) is a structured method defining the steps necessary to ensure a product satisfies the customer. PPAP (Production Part Approval Process) is the final submission step. The Planner is essential for:</p>
+                <ul>
+                    <li>Managing the product development cycle from concept initiation to full production launch.</li>
+                    <li>Ensuring all key quality and engineering outputs (FMEA, Control Plan, Flow Chart) are completed on time.</li>
+                    <li>Provid ing a roadmap for cross-functional communication and approval.</li>
+                    <li>Generando el paquete **PPAP** final—la evidencia de que el proveedor puede cumplir sistemáticamente los requisitos.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>APQP was developed by the **Automotive Industry Action Group (AIAG)**, a collaboration of U.S. automakers (GM, Ford, Chrysler), in the 1980s. Its primary aim was to shift quality assurance from "inspecting it in" to **"designing it in,"** emphasizing early planning and defect prevention. The process is divided into 5 phases. **PPAP** is the culmination—a required set of 18 documents that provides definitive evidence that the manufacturing process is capable of producing product that meets specifications at the required rate. It is a mandatory requirement for suppliers across the global automotive supply chain.</p>
+                <h3>How to Use the APQP & PPAP Planner</h3>
+                <p>The tool provides a checklist and tracking system for the 5 phases of APQP and the required PPAP elements.</p>
+                <ol>
+                    <li><h4>Step 1: Define Project Scope (Phase 1)</h4>
+                        <p>Document the inputs, including customer requirements, goals, and initial design records.</p>
+                    </li>
+                    <li><h4>Step 2: Track Design and Process Outputs (Phases 2 & 3)</h4>
+                        <p>Use the checklist to ensure documents like the Design FMEA, Process Flow Chart, Process FMEA, and Measurement System Analysis (MSA) are completed and reviewed by the cross-functional team.</p>
+                    </li>
+                    <li><h4>Step 3: Manage Validation Activities (Phase 4)</h4>
+                        <p>Track crucial validation steps, including the Run-at-Rate, Cpk study, final Control Plan, and submission of the PPAP package.</p>
+                    </li>
+                    <li><h4>Step 4: Generate the PPAP Submission Summary</h4>
+                        <p>The tool allows you to generate a summary page confirming the status of all 18 PPAP elements, which forms the basis for the customer approval (PSW - Part Submission Warrant).</p>
+                    </li>
+                </ol>
+                <a href="apqp-ppap.html" class="btn" aria-label="Open APQP Planner Tool"><i class="fas fa-calendar-check" aria-hidden="true"></i> Open APQP Planner</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+
+            <section id="balanced-scorecard" class="doc-section" aria-labelledby="bsc-heading">
+                <h2 id="bsc-heading">Strategy Scorecard</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The Balanced Scorecard (BSC) is a strategic performance management tool that helps organizations translate their vision and strategy into a set of measurable actions. Its purpose is to:</p>
+                <ul>
+                    <li>Pro vide a "balanced" view of performance beyond just financial metrics.</li>
+                    <li>Align departmental and individual goals with the overarching corporate strategy.</li>
+                    <li>Monitor performance across four critical organizational perspectives.</li>
+                    <li>Communicate the strategy simply and effectively throughout the organization.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The Balanced Scorecard was developed by **Dr. Robert Kaplan** and **Dr. David Norton** in the early 1990s in response to the recognized shortcomings of purely financial-focused performance management systems. They proposed that a modern organization must be measured across four main perspectives, which collectively link operational activities to strategic outcomes: **Financial, Customer, Internal Process, and Learning & Growth**. The BSC is a core tool in modern strategic management, used by governments, non-profits, and Fortune 500 companies alike to execute strategy.</p>
+                <h3>How to Use the Balanced Scorecard Tool</h3>
+                <p>The tool helps you define the strategic objectives, measures, targets, and initiatives for each of the four perspectives.</p>
+                <ol>
+                    <li><h4>Step 1: Define Vision and Strategy Map</h4>
+                        <p>Clearly state the organization's vision and create a visual **Strategy Map** showing the cause-and-effect relationships between objectives (e.g., improving 'Employee Skills' leads to better 'Internal Processes,' which leads to higher 'Customer Satisfaction,' which results in better 'Financial Returns').</p>
+                    </li>
+                    <li><h4>Step 2: Define Objectives and Measures (KPIs)</h4>
+                        <p>For each of the four perspectives (Financial, Customer, Internal Process, Learning & Growth), define 2-3 strategic **Objectives** (e.g., 'Improve Cash Flow'). For each objective, define a measurable **Key Performance Indicator (KPI)** (e.g., 'Days Sales Outstanding').</p>
+                    </li>
+                    <li><h4>Step 3: Set Targets and Initiatives</h4>
+                        <p>Set a specific **Target** for each KPI and define the **Strategic Initiatives** (projects) that will be executed to reach those targets.</p>
+                    </li>
+                    <li><h4>Step 4: Monitor and Review</h4>
+                        <p>Use the tool to track the progress of each KPI and initiative over time to ensure the execution of the defined strategy.</p>
+                    </li>
+                </ol>
+                <a href="balancedcard.html" class="btn" aria-label="Open Balanced Scorecard Tool"><i class="fas fa-chart-pie" aria-hidden="true"></i> Open Strategy Scorecard</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="swot-analysis" class="doc-section" aria-labelledby="swot-heading">
+                <h2 id="swot-heading">SWOT Analysis Matrix</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>SWOT (Strengths, Weaknesses, Opportunities, Threats) Analysis is a foundational strategic planning technique used to evaluate the internal and external factors that could affect a project or organization. Its goals are to:</p>
+                <ul>
+                    <li>Identify **Internal Strengths and Weaknesses** that an organization can control.</li>
+                    <li>Identify **External Opportunities and Threats** that the organization cannot control but must respond to.</li>
+                    <li>Develop actionable strategies by combining the four elements (e.g., S-O strategies leverage Strengths to maximize Opportunities).</li>
+                    <li>Facilitate focused team discussion on core competencies and key risks.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The origins of the formal SWOT concept are generally credited to **Albert Humphrey** at the Stanford Research Institute during the 1960s. Its enduring popularity stems from its simplicity and comprehensive nature. The critical distinction in SWOT is between the two internal quadrants (Strengths and Weaknesses) and the two external quadrants (Opportunities and Threats). A common mistake is listing a weakness as an external threat. The matrix forces a structured analysis that is invaluable for launching new products, assessing competitors, or developing a five-year business plan.</p>
+                <h3>How to Use the SWOT Analysis Tool</h3>
+                <p>The tool provides a clear, four-quadrant matrix for structured data input and strategy generation.</p>
+                <ol>
+                    <li><h4>Step 1: Identify Internal Factors (S & W)</h4>
+                        <p>List the **Strengths** (e.g., proprietary technology, strong brand reputation) and **Weaknesses** (e.g., outdated equipment, high employee turnover) that exist *inside* the organization.</p>
+                    </li>
+                    <li><h4>Step 2: Identify External Factors (O & T)</h4>
+                        <p>List the **Opportunities** (e.g., new international market, emerging technology) and **Threats** (e.g., new competitor entry, changing government regulation) that exist in the *external* environment.</p>
+                    </li>
+                    <li><h4>Step 3: Generate Strategies</h4>
+                        <p>Use the tool to combine the factors to develop four types of strategies: **S-O** (Maximize strengths to seize opportunities), **W-O** (Overcome weaknesses to pursue opportunities), **S-T** (Use strengths to mitigate threats), and **W-T** (Minimize weaknesses to avoid threats).</p>
+                    </li>
+                </ol>
+                <a href="swot.html" class="btn" aria-label="Open SWOT Analysis Tool"><i class="fas fa-lightbulb" aria-hidden="true"></i> Open SWOT Analysis</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+            
+            <section id="efqm-assessment" class="doc-section" aria-labelledby="efqm-heading">
+                <h2 id="efqm-heading">Business Excellence Assessment</h2>
+                <h3>Purpose of the Tool</h3>
+                <p>The EFQM (European Foundation for Quality Management) Model is a globally recognized non-prescriptive management framework used to help organizations achieve and sustain outstanding results. Its purpose is to:</p>
+                <ul>
+                    <li>Provide a comprehensive framework for self-assessment of organizational maturity.</li>
+                    <li>Identify the relationships between what an organization **Does** (Enablers) and the **Results** it achieves.</li>
+                    <li>Drive continuous improvement by identifying gaps and best practices across all areas of the business.</li>
+                    <li>Serve as a model for organizational learning and transformation.</li>
+                </ul>
+                <h4>Origin and Background</h4>
+                <p>The EFQM Model was created in 1988 by the **European Foundation for Quality Management**, founded by 14 leading European companies. It is the framework behind the prestigious **European Quality Award**. Unlike prescriptive standards (like ISO 9001), the EFQM Model is a tool for self-reflection and diagnosis. It is built around three core sections—**Direction, Execution, and Results**—with a total of seven criteria. The model uses the powerful **RADAR logic (Results, Approaches, Deployment, Assessment, Review)** for evaluating performance. It is widely adopted across Europe, particularly by companies like **BMW, Siemens, and Xerox**.</p>
+                <h3>How to Use the EFQM Assessment Tool</h3>
+                <p>The tool guides the user through the self-assessment process based on the EFQM criteria.</p>
+                <ol>
+                    <li><h4>Step 1: Scope Definition</h4>
+                        <p>Select the scope of the assessment (e.g., the entire organization, a specific business unit, or a project).</p>
+                    </li>
+                    <li><h4>Step 2: Score Enablers (Direction & Execution)</h4>
+                        <p>Evaluate the organization's approach and deployment for the criteria under Direction (e.g., Purpose, Vision, Strategy) and Execution (e.g., Stakeholder Value, Operations). Use the **RADAR logic** to assign a maturity score for each area.</p>
+                    </li>
+                    <li><h4>Step 3: Score Results</h4>
+                        <p>Evaluate the results achieved by the organization across key performance indicators and perceptions from stakeholders. The results must demonstrate trends and be linked back to the Enablers.</p>
+                    </li>
+                    <li><h4>Step 4: Generate Improvement Report</h4>
+                        <p>The tool calculates the overall score and identifies areas of strength and areas of improvement, allowing the team to generate a prioritized action plan to close the gaps and advance the organization's level of maturity.</p>
+                    </li>
+                </ol>
+                <a href="efqm.html" class="btn" aria-label="Open EFQM Tool"><i class="fas fa-star" aria-hidden="true"></i> Open EFQM Tool</a>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas" style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+            </section>
+        </div>
+    </main>
+    
+    <script>
+        // --- JAVASCRIPT COPIADO EXACTAMENTE DE TRIZ.HTML (SIN CAMBIOS) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Manejo de la navegación móvil y el menú desplegable
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('show-menu');
+                const icon = navToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+                
+                if (!navMenu.classList.contains('show-menu')) {
+                    toolsDropdownMenu.classList.remove('show-submenu');
+                    toolsDropdownContainer.classList.remove('active');
+                }
+            });
+            
+            toolsDropdownToggle.addEventListener('click', (event) => {
+                if (window.innerWidth <= 992) {
+                    event.preventDefault(); 
+                    toolsDropdownMenu.classList.toggle('show-submenu');
+                    toolsDropdownContainer.classList.toggle('active');
+                }
+            });
+            
+            // Fix para el overflow de listas largas en el TOC
+            const tocUl = document.querySelector('#toc ul');
+            if (tocUl) {
+                // Función para calcular la altura de las columnas y prevenir desbordamiento
+                function balanceColumns() {
+                    if (window.innerWidth >= 768) {
+                        tocUl.style.height = 'auto';
+                        tocUl.style.columns = '2';
+                        // Reajuste manual si es necesario, pero CSS Columns debería manejarlo
+                    } else if (window.innerWidth >= 1024) {
+                        tocUl.style.height = 'auto';
+                        tocUl.style.columns = '3';
+                    } else {
+                        tocUl.style.columns = '1';
+                        tocUl.style.height = 'auto';
+                    }
+                }
+
+                // Llamar al inicio y al redimensionar
+                balanceColumns();
+                window.addEventListener('resize', balanceColumns);
+            }
+        });
+    </script>
+</body>
+</html>

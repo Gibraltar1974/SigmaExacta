@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://sigmaexacta.com/efqm" />
+  <title>Organizational Maturity Assessment | Sigma Exacta</title>
+  <meta name="description" content="Use our free online assessment tool based on business excellence principles to diagnose your organization's performance. Evaluate leadership, strategy, processes, and results with a holistic framework.">
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* CAMBIOS GLOBALES */
+    :root {
+      --primary-color: #2c3e50; --secondary-color: #3498db; --accent-color: #e74c3c;
+      --success-color: #27ae60; --warning-color: #f1c40f; --light-color: #ecf0f1;
+      font-size: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { 
+        font-family: 'Nunito', 'Segoe UI', sans-serif; 
+        margin: 0; padding: 0; color: #333; 
+        background-color: #f5f7fa; line-height: 1.6;
+        -webkit-text-size-adjust: 100%; /* Prevenir auto-zoom en iOS */
+    }
+    img, canvas { max-width: 100%; height: auto; }
+    .main-content-wrapper { padding: 1.25rem; }
+    .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
+    .header h1 { 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        color: var(--primary-color); 
+        font-size: clamp(1.5rem, 4vw, 1.8rem); 
+        margin: 0.5rem 0; 
+        font-weight: 800; 
+    }
+    .header p { color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+    .block {
+        border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem;
+        margin-bottom: 1.25rem; background-color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .block-title {
+        font-weight: 800; font-size: 1.2em; margin: 0 0 1rem 0;
+        color: var(--primary-color); border-bottom: 1px solid #eee;
+        padding-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem;
+    }
+    .block p, .block li { line-height: 1.6; }
+    .block ul { padding-left: 1.25rem; margin: 0.6rem 0 0 0; }
+    button {
+        background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem;
+        border: none; border-radius: 4px; cursor: pointer; margin: 5px;
+        font-size: 1rem; transition: background-color 0.3s;
+        font-family: 'Nunito', sans-serif; font-weight: 600;
+    }
+    button:hover:not(:disabled) { background-color: #2980b9; }
+    .btn-success { background-color: var(--success-color); }
+    .btn-success:hover { background-color: #229954; }
+    button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+    .badge {
+        display: inline-block; padding: 4px 10px; border-radius: 12px;
+        font-size: 0.9rem; font-weight: bold; color: white;
+    }
+    .badge-success { background-color: var(--success-color); }
+    .badge-warning { background-color: var(--warning-color); color: #333; }
+    .badge-danger { background-color: var(--accent-color); }
+    
+    /* ESTILOS DE ACORDEÓN MEJORADOS */
+    .accordion-item { border-bottom: 1px solid #ddd; }
+    .accordion-item:last-child { border-bottom: none; }
+    .accordion-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 1rem; cursor: pointer; background-color: #f8f9fa;
+        transition: background-color 0.2s;
+    }
+    .accordion-header:hover { background-color: #e9ecef; }
+    .accordion-title { font-weight: 600; font-size: 1.1em; color: var(--primary-color); }
+    .accordion-score { font-weight: bold; color: var(--secondary-color); white-space: nowrap; }
+    .accordion-icon { transition: transform 0.3s ease; }
+    .accordion-header.active .accordion-icon { transform: rotate(180deg); }
+    .accordion-body { 
+        padding: 1.25rem; background-color: white; 
+        display: none; border-top: 1px solid #e9ecef;
+    }
+    .sub-criterion { margin-bottom: 1.25rem; }
+    .sub-criterion label { display: block; margin-bottom: 0.6rem; font-weight: 600; }
+    
+    /* --- ESTILOS DEL SLIDER MODIFICADOS PARA USAR EL COLOR DE LA CATEGORÍA --- */
+    .score-slider {
+        width: calc(100% - 70px); 
+        margin-right: 15px; 
+        vertical-align: middle; 
+        cursor: pointer;
+        /* Base styles for custom range input */
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent; /* Remove default background */
+    }
+
+    /* Pista (Track) styles (Default grey background) */
+    .score-slider::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 6px;
+        background: #ddd;
+        border-radius: 3px;
+    }
+    .score-slider::-moz-range-track {
+        width: 100%;
+        height: 6px;
+        background: #ddd;
+        border-radius: 3px;
+    }
+
+    /* Pomo (Thumb/Handle) styles - Usa la variable --slider-color de JavaScript */
+    .score-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: -5px; /* Ajuste para centrar verticalmente */
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: var(--slider-color, var(--secondary-color)); /* Color de la categoría */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        transition: background-color 0.3s;
+    }
+    .score-slider::-moz-range-thumb {
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: var(--slider-color, var(--secondary-color)); /* Color de la categoría */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        border: none;
+        transition: background-color 0.3s;
+    }
+    
+    .slider-value { display: inline-block; width: 50px; font-weight: bold; text-align: right; }
+    
+    /* ===== CORRECCIÓN DE OVERFLOW DEFINITIVA CON CSS GRID Y MINMAX ===== */
+    .results-dashboard {
+        display: grid;
+        /* Se redujo el mínimo a 250px para máxima compatibilidad móvil */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        align-items: center; /* Centrar verticalmente para mejor estética del radar */
+    }
+    #chart-wrapper { position: relative; min-height: 300px; } 
+    
+    .analysis-section { margin-bottom: 1rem; }
+    .analysis-section ul { padding-left: 0; list-style: none; }
+    .analysis-section li { 
+        margin-bottom: 0.5rem; display: flex; align-items: flex-start; 
+        word-break: break-word;
+    }
+    .analysis-section li i { margin-right: 8px; margin-top: 4px; }
+    
+    textarea {
+        width: 100%; box-sizing: border-box; min-height: 120px;
+        padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
+        font-size: 1rem; margin-top: 0.6rem; font-family: 'Nunito', sans-serif;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    textarea:focus { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
+
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+
+    .summary-logo {
+        width: 40px; height: 40px;
+        border-radius: 50%; display: block;
+        margin: 0.75rem 0 1rem 0;
+    }
+
+    /* --- ESTILOS MODIFICADOS PARA EL ICONO EFQM EN H1 (30% más grande y cuadrado redondeado) --- */
+    .efqm-h1-icon {
+        /* Estilos del botón verde (replicando data-color='20' de index.html) */
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px; /* Aumentado 30% */
+        height: 50px; /* Aumentado 30% */
+        border-radius: 8px; /* Cuadrado con esquinas redondeadas */
+        background-color: #27ae60; /* Color verde de data-color='20' en index.html */
+        color: white; /* Icono blanco (medalla) */
+        font-size: 2.0rem; /* Aumentado 30% para que el icono se vea mejor */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin-right: 12px; /* Espacio entre el icono y el texto del H1 */
+        vertical-align: middle;
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .efqm-h1-icon:hover {
+        background-color: #1e8449; /* Verde más oscuro al pasar el ratón */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    /* El texto del H1 ya se ajustó arriba para tener display: flex */
+
+  </style>
+
+    <style>
+        /* --- Estilos base para la barra de navegación --- */
+        .top-bar {
+            position: sticky; top: 0; z-index: 1001;    
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background-color: #222; 
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
+        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
+        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
+        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
+        .nav-item-dropdown { position: relative; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 0;
+            background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px;
+            z-index: 1000; min-width: 600px; padding: 20px;
+        }
+        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
+        .dropdown-link:hover { background-color: #f1f1f1; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .nav-item-dropdown:hover > .dropdown-menu { display: block; }
+        @media (max-width: 992px) {
+            .nav-toggle { display: block; }
+            .navigation .nav-menu {
+                display: none; flex-direction: column; position: absolute; top: 100%;
+                left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
+            }
+            .navigation .nav-menu .nav-link { color: #333; }
+            .navigation .nav-menu.show-menu { display: flex; }
+            .navigation .nav-item { width: 100%; text-align: left; }
+            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+            .dropdown-menu {
+                display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
+            }
+            .dropdown-menu.show-submenu { display: block; }
+            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+        }
+    </style>
+    </head>
+<body>
+<header role="banner" class="top-bar">
+        <a href="index.html" class="logo-container-link">
+            <div class="logo-container">
+                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+                <span class="logo-text">SigmaExacta</span>
+            </div>
+        </a>
+        <nav class="navigation">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                    <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu" id="tools-dropdown-menu">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Process & Quality</h4>
+                                <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                                <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                                <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                                <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Design & Innovation</h4>
+                                <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                                <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                                <a href="fmea.html" class="dropdown-link">FMEA</a>
+                                <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                                <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                                <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                                <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                                <a href="kano.html" class="dropdown-link">Kano Model</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Problem Solving</h4>
+                                <a href="8d.html" class="dropdown-link">8D Report</a>
+                                <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                                <a href="triz.html" class="dropdown-link">TRIZ</a>
+                                <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                            </div>
+                             <div class="dropdown-column">
+                                <h4 class="dropdown-category">Strategy & Management</h4>
+                                <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                                <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                                <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                                <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+                <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+  
+<main class="main-content-wrapper">
+  <header class="header">
+    <h1>
+      <a href="https://www.efqm.org/" target="_blank" title="Learn more about the EFQM Model" style="text-decoration: none;">
+        <div class="efqm-h1-icon">
+          <i class="fas fa-award"></i>
+        </div>
+      </a>
+      Free Online Organizational Maturity Assessment Tool
+    </h1>
+    <p>Diagnose your organization's maturity level using a holistic performance framework.</p>
+  </header>
+
+  <div class="block">
+    <div class="block-title"><i class="fas fa-info-circle"></i> What is an Organizational Maturity Framework?</div>
+    <p>An Organizational Maturity or Business Excellence Framework is a strategic management tool used for self-assessment and continuous improvement. These frameworks provide a holistic view of an organization by evaluating its performance across a balanced set of criteria, from leadership and strategy to processes and results.</p>
+  </div>
+
+  <div class="block">
+    <div class="block-title"><i class="fas fa-history"></i> History and Purpose</div>
+    <p>The concept of organizational excellence evolved from the quality movements of the 20th century. After World War II, W. Edwards Deming's work on quality control in Japan led to the creation of the <strong>Deming Prize</strong> in 1951, one of the earliest models for recognizing company-wide quality management.</p>
+    <p>In response to growing international competition, the United States established the <strong>Baldrige Performance Excellence Framework</strong> in 1987. Shortly after, European leaders created the <strong>EFQM Model</strong> (European Foundation for Quality Management) in 1989 to enhance the competitiveness of European organizations.</p>
+    <p>The purpose of these frameworks is to move beyond simple product quality checks and provide a holistic, non-prescriptive guide for achieving sustainable excellence across all facets of an organization.</p>
+  </div>
+
+  <div class="block">
+    <div class="block-title"><i class="fas fa-tools"></i> How to Use This Tool</div>
+    <ul>
+      <li><strong>Step 1: Perform Assessment:</strong> Click on each of the 7 criteria below to expand the section. Use the sliders to score your organization's performance on each sub-criterion. Scores update in real-time.</li>
+      <li><strong>Step 2: Review Dashboard:</strong> Your scores will automatically update the dashboard, showing pillar scores, a total score, and a maturity level. The radar chart provides a visual profile of your organization's strengths.</li>
+      <li><strong>Step 3: Analyze Results:</strong> The "Automated Analysis" section will highlight your key strengths and potential opportunities for improvement based on your scores.</li>
+      <li><strong>Step 4: Create an Action Plan:</strong> Use the "Notes & Action Plan" text area to document key insights and define concrete next steps.</li>
+      <li><strong>Step 5: Export Report:</strong> Click the "Export to Excel" button to download a comprehensive report with your summary, scores, chart, and action plan.</li>
+    </ul>
+  </div>
+
+  <div class="block" style="text-align:center;">
+    <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-bolt"></i> Load Example Data</button>
+    <button type="button" id="resetBtn"><i class="fas fa-undo"></i> Reset All Scores</button>
+  </div>
+
+  <div id="assessmentAccordion" class="block"></div>
+
+  <div class="block results-dashboard" id="results-block">
+    <div id="score-summary">
+       <div class="block-title"><i class="fas fa-sitemap"></i> Foundations: <span id="foundations_score" class="result-value">-</span> / 200 pts</div>
+       <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Logo" class="summary-logo">
+       <p><i class="fas fa-cogs"></i> Processes: <span id="processes_score" class="result-value">-</span> / 400 pts</p>
+       <p><i class="fas fa-trophy"></i> Outcomes: <span id="outcomes_score" class="result-value">-</span> / 400 pts</p>
+       <hr>
+       <p style="font-size: 1.2em; font-weight: bold;">Total Score: <span id="total_score" class="result-value">-</span> / 1000</p>
+       <p>Maturity Level: <span id="maturity_level" class="badge">-</span></p>
+    </div>
+    <div id="chart-wrapper">
+      <canvas id="excellenceChart"></canvas>
+    </div>
+  </div>
+  
+  <div class="block" id="analysis-block">
+      <div class="block-title"><i class="fas fa-lightbulb"></i> Automated Analysis</div>
+      <div class="results-dashboard">
+        <div class="analysis-section">
+            <h4><i class="fas fa-star" style="color:var(--success-color);"></i> Key Strengths</h4>
+            <ul id="strengths-list"><li>Complete the assessment to see analysis.</li></ul>
+        </div>
+        <div class="analysis-section">
+            <h4><i class="fas fa-lightbulb" style="color:var(--warning-color);"></i> Opportunities for Improvement</h4>
+            <ul id="ofis-list"><li>Complete the assessment to see analysis.</li></ul>
+        </div>
+      </div>
+  </div>
+
+  <div class="block" id="notes-block">
+      <div class="block-title"><i class="fas fa-pen-alt"></i> Notes & Action Plan</div>
+      <p>Use the space below to write down your reflections, key findings, or next steps.</p>
+      <textarea id="actionPlan" placeholder="e.g., Action: Review stakeholder engagement strategy (Criterion 3). Owner: John Doe. Deadline: Q3."></textarea>
+  </div>
+
+  <div class="block" style="text-align: center;">
+      <button id="exportExcelBtn"><i class="fas fa-file-excel"></i> Export Excellence Report to Excel</button>
+      <button id="exportJpgBtn"><i class="fas fa-file-image"></i> Export Results to JPG</button>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. Some tools, like this one, are based on established methodologies (e.g., EFQM Model, Baldrige Framework), which may be the intellectual property of their respective owners. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based on the output of these tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+    </div>
+</footer>
+
+<script>
+const exampleDataTemplate = [
+    { id: 'c1', name: '1. Leadership & Strategy', shortName: 'Leadership', weight: 100, color: '#3498db', subCriteria: [ { q: 'Leadership provides clear direction and purpose.', score: 70 }, { q: 'A robust strategy is in place and effectively communicated.', score: 60 }, { q: 'Leaders foster a culture of excellence and continuous improvement.', score: 50 }, ] },
+    { id: 'c2', name: '2. People & Culture', shortName: 'Culture', weight: 100, color: '#2ecc71', subCriteria: [ { q: 'The organization attracts, develops, and retains talent.', score: 80 }, { q: 'The workplace culture is positive, inclusive, and empowering.', score: 60 }, { q: 'Employee well-being and engagement are actively managed.', score: 70 }, ] },
+    { id: 'c3', name: '3. Stakeholder Focus', shortName: 'Stakeholders', weight: 100, color: '#f1c40f', subCriteria: [ { q: 'Key stakeholder needs are understood and anticipated.', score: 90 }, { q: 'Strong, value-driven relationships are built with stakeholders.', score: 70 }, { q: 'Stakeholder feedback is systematically gathered and acted upon.', score: 60 }, ] },
+    { id: 'c4', name: '4. Process Mgmt.', shortName: 'Processes', weight: 200, color: '#9b59b6', subCriteria: [ { q: 'Value-adding processes are designed, managed, and optimized.', score: 50 }, { q: 'Quality and efficiency are systematically improved.', score: 40 }, { q: 'Risk and opportunity are effectively managed within processes.', score: 60 }, ] },
+    { id: 'c5', name: '5. Innovation & Tech', shortName: 'Innovation', weight: 100, color: '#e67e22', subCriteria: [ { q: 'Innovation is encouraged and managed to create new value.', score: 60 }, { q: 'Digital technologies are leveraged to improve performance.', score: 50 }, { q: 'The organization is agile and adapts to change effectively.', score: 70 }, ] },
+    { id: 'c6', name: '6. Stakeholder Results', shortName: 'Stakeholder Results', weight: 200, color: '#c0392b', subCriteria: [ { q: 'There are consistently high levels of customer satisfaction.', score: 70 }, { q: 'There are positive results related to employee engagement.', score: 60 }, { q: 'The organization is viewed positively by partners and society.', score: 80 }, ] },
+    { id: 'c7', name: '7. Business Results', shortName: 'Business Results', weight: 200, color: '#34495e', subCriteria: [ { q: 'The organization is achieving its key strategic goals.', score: 80 }, { q: 'Key operational and performance targets are being met.', score: 90 }, { q: 'Financial health is strong and sustainable.', score: 70 }, ] }
+];
+let criteriaData;
+let excellenceChart;
+document.addEventListener('DOMContentLoaded', () => {
+    resetAll();
+    initializeChart();
+    setupEventListeners();
+});
+function renderAccordion() {
+    const accordionContainer = document.getElementById('assessmentAccordion');
+    accordionContainer.innerHTML = '';
+    criteriaData.forEach((criterion, index) => {
+        const item = document.createElement('div');
+        item.className = 'accordion-item';
+        let subCriteriaHtml = '';
+        criterion.subCriteria.forEach((sub, subIndex) => {
+            subCriteriaHtml += `
+                <div class="sub-criterion">
+                    <label for="sub-slider-${index}-${subIndex}">${sub.q}</label>
+                    <input type="range" 
+                           id="sub-slider-${index}-${subIndex}" 
+                           class="score-slider" 
+                           data-criterion-index="${index}" 
+                           data-sub-index="${subIndex}" 
+                           min="0" max="100" step="10" 
+                           value="${sub.score}"
+                           style="--slider-color: ${criterion.color};"> 
+                    <span class="slider-value" id="sub-value-${index}-${subIndex}">${sub.score}%</span>
+                </div>`;
+        });
+        item.innerHTML = `
+            <div class="accordion-header" data-index="${index}">
+                <span class="accordion-title" style="color:${criterion.color};">${criterion.name}</span>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <span class="accordion-score" id="${criterion.id}-score" style="color:${criterion.color};">0 / ${criterion.weight} pts</span>
+                    <i class="fas fa-chevron-down accordion-icon"></i>
+                </div>
+            </div>
+            <div class="accordion-body" style="display: none;">${subCriteriaHtml}</div>`;
+        accordionContainer.appendChild(item);
+    });
+    attachSliderListeners();
+}
+function attachSliderListeners() {
+    document.querySelectorAll('.score-slider').forEach(slider => {
+        slider.oninput = (e) => {
+            const criterionIndex = e.target.dataset.criterionIndex;
+            const subIndex = e.target.dataset.subIndex;
+            const newValue = parseInt(e.target.value);
+            document.getElementById(`sub-value-${criterionIndex}-${subIndex}`).textContent = `${newValue}%`;
+            criteriaData[criterionIndex].subCriteria[subIndex].score = newValue;
+            updateUI();
+        };
+    });
+}
+function initializeChart() {
+    const ctx = document.getElementById('excellenceChart').getContext('2d');
+    
+    // Create the gradient for the fill
+    const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(52, 152, 219, 0.4)');
+    gradientFill.addColorStop(0.5, 'rgba(46, 204, 113, 0.4)');
+    gradientFill.addColorStop(1, 'rgba(231, 76, 60, 0.4)');
+
+    excellenceChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: criteriaData.map(c => c.shortName),
+            datasets: [{
+                label: 'Criterion Score (%)',
+                data: [],
+                backgroundColor: gradientFill,
+                borderColor: criteriaData.map(c => c.color),
+                borderWidth: 2,
+                fill: true,
+                tension: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { display: true, color: 'rgba(0,0,0,0.1)' },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    pointLabels: {
+                        font: { size: 12 },
+                        color: criteriaData.map(c => c.color)
+                    },
+                    ticks: {
+                        backdropColor: 'rgba(255, 255, 255, 0.75)',
+                        stepSize: 20
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Organizational Excellence Profile',
+                    font: { size: 16 }
+                }
+            }
+        }
+    });
+}
+function setupEventListeners() {
+    document.getElementById('assessmentAccordion').addEventListener('click', e => {
+        const header = e.target.closest('.accordion-header');
+        if (header) {
+            const body = header.nextElementSibling;
+            header.classList.toggle('active');
+            body.style.display = body.style.display === 'block' ? 'none' : 'block';
+        }
+    });
+    document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+    document.getElementById('exportJpgBtn').addEventListener('click', exportToJpg);
+}
+function updateUI() {
+    let foundationsScore = 0, processesScore = 0, outcomesScore = 0, totalScore = 0;
+    criteriaData.forEach((c, i) => {
+        const subScores = c.subCriteria.map(sub => sub.score);
+        c.score = subScores.length > 0 ? subScores.reduce((a, b) => a + b, 0) / subScores.length : 0;
+        const points = (c.score / 100) * c.weight;
+        totalScore += points;
+        if (i < 3) foundationsScore += points;
+        else if (i < 5) processesScore += points;
+        else outcomesScore += points;
+        document.getElementById(`${c.id}-score`).textContent = `${points.toFixed(0)} / ${c.weight} pts`;
+    });
+    document.getElementById('foundations_score').textContent = foundationsScore.toFixed(0);
+    document.getElementById('processes_score').textContent = processesScore.toFixed(0);
+    document.getElementById('outcomes_score').textContent = outcomesScore.toFixed(0);
+    document.getElementById('total_score').textContent = totalScore.toFixed(0);
+    const maturitySpan = document.getElementById('maturity_level');
+    if (totalScore < 300) {
+        maturitySpan.textContent = 'Getting Started'; maturitySpan.className = 'badge badge-danger';
+    } else if (totalScore < 500) {
+        maturitySpan.textContent = 'Developing'; maturitySpan.className = 'badge badge-warning';
+    } else if (totalScore < 700) {
+        maturitySpan.textContent = 'Mature'; maturitySpan.className = 'badge badge-success';
+    } else {
+        maturitySpan.textContent = 'Role Model'; maturitySpan.className = 'badge badge-success';
+    }
+    excellenceChart.data.datasets[0].data = criteriaData.map(c => c.score);
+    excellenceChart.data.datasets[0].borderColor = criteriaData.map(c => c.color);
+    excellenceChart.update();
+    generateAnalysis();
+}
+function generateAnalysis() {
+    const sortedCriteria = [...criteriaData].sort((a, b) => b.score - a.score);
+    const strengths = sortedCriteria.slice(0, 3).filter(c => c.score > 60);
+    const ofis = sortedCriteria.slice(-3).reverse().filter(c => c.score < 50);
+    const strengthList = document.getElementById('strengths-list');
+    strengthList.innerHTML = strengths.length > 0
+        ? strengths.map(c => `<li><i class="fas fa-check-circle" style="color:var(--success-color);"></i>${c.name.split('. ')[1]} (${c.score.toFixed(0)}%)</li>`).join('')
+        : '<li>Complete the assessment to see analysis.</li>';
+    const ofisList = document.getElementById('ofis-list');
+    ofisList.innerHTML = ofis.length > 0
+        ? ofis.map(c => `<li><i class="fas fa-arrow-alt-circle-up" style="color:var(--warning-color);"></i>${c.name.split('. ')[1]} (${c.score.toFixed(0)}%)</li>`).join('')
+        : '<li>No significant opportunities identified yet.</li>';
+}
+function resetAll() {
+    criteriaData = JSON.parse(JSON.stringify(exampleDataTemplate));
+    criteriaData.forEach(c => { c.subCriteria.forEach(sub => sub.score = 0); });
+    document.getElementById('actionPlan').value = '';
+    renderAccordion();
+    if (excellenceChart) { updateUI(); }
+}
+function loadExample() {
+    criteriaData = JSON.parse(JSON.stringify(exampleDataTemplate));
+    document.getElementById('actionPlan').value = "Example Action Plan:\n1. Review stakeholder feedback process (Criterion 3) to better capture insights.\n2. Launch a pilot project to improve process efficiency (Criterion 4).\n3. Communicate strategic goals more clearly to all teams (Criterion 1).";
+    renderAccordion();
+    updateUI();
+}
+
+function exportToExcel() {
+    const wb = XLSX.utils.book_new();
+    const summaryData = [
+        ["Pillar", "Score", "Max Score"],
+        ["Foundations", parseFloat(document.getElementById('foundations_score').textContent), 300],
+        ["Processes", parseFloat(document.getElementById('processes_score').textContent), 300],
+        ["Outcomes", parseFloat(document.getElementById('outcomes_score').textContent), 400],
+        ["TOTAL", parseFloat(document.getElementById('total_score').textContent), 1000]
+    ];
+    const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+    ws1['!cols'] = [{wch:20}, {wch:10}, {wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws1, "Summary");
+    
+    // Captura el gráfico como Base64
+    const chartBase64 = excellenceChart.toBase64Image();
+    
+    // Inserta la imagen en la hoja de cálculo
+    if (!ws1['!images']) ws1['!images'] = [];
+    ws1['!images'].push({
+        name: 'ExcellenceChart.png',
+        data: chartBase64, // Pasa la cadena base64 directamente
+        tl: { col: 4, row: 1 },
+        br: { col: 12, row: 15 }
+    });
+    
+    const detailedData = [];
+    detailedData.push(["Criterion", "Sub-Criterion / Question", "Score (%)"]);
+    criteriaData.forEach(c => {
+        detailedData.push([c.name, "OVERALL SCORE", c.score.toFixed(1)]);
+        c.subCriteria.forEach(sub => { detailedData.push(["", sub.q, sub.score]); });
+        detailedData.push([]);
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(detailedData);
+    ws2['!cols'] = [{wch:40}, {wch:60}, {wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws2, "Detailed Scores");
+    const notesData = [ ["Notes & Action Plan"], [document.getElementById('actionPlan').value || "No notes entered."] ];
+    const ws3 = XLSX.utils.aoa_to_sheet(notesData);
+    ws3['!cols'] = [{wch:100}];
+    XLSX.utils.book_append_sheet(wb, ws3, "Notes");
+    
+    XLSX.writeFile(wb, "Business_Excellence_Report_Sigma_Exacta.xlsx");
+}
+
+function exportToJpg() {
+    const resultsContainer = document.getElementById('results-block');
+    const analysisContainer = document.getElementById('analysis-block');
+    const notesContainer = document.getElementById('notes-block');
+    
+    const tempContainer = document.createElement('div');
+    tempContainer.style.background = 'white';
+    tempContainer.style.padding = '20px';
+    tempContainer.style.width = '700px'; 
+    tempContainer.style.fontFamily = 'Nunito, sans-serif';
+    tempContainer.style.lineHeight = '1.6';
+    tempContainer.style.color = '#333';
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    
+    tempContainer.appendChild(resultsContainer.cloneNode(true));
+    tempContainer.appendChild(analysisContainer.cloneNode(true));
+    tempContainer.appendChild(notesContainer.cloneNode(true));
+    
+    document.body.appendChild(tempContainer);
+    
+    html2canvas(tempContainer, {
+        scale: 2,
+        logging: false,
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.download = 'Organizational_Assessment_Report.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        document.body.removeChild(tempContainer);
+    });
+}
+</script>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/ABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/wAADf8AAA1/AAANfwAADX8AAA1/AAANfwAADf8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
+        hoverSound.preload = 'auto';
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            hoverSound.volume = 0;
+            hoverSound.play().then(() => {
+                hoverSound.pause();
+                hoverSound.currentTime = 0;
+                hoverSound.volume = 1;
+                audioUnlocked = true;
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            }).catch(e => {});
+        }
+        document.addEventListener('click', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            if (!navMenu.classList.contains('show-menu')) {
+                toolsDropdownMenu.classList.remove('show-submenu');
+                toolsDropdownContainer.classList.remove('active');
+            }
+        });
+        toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+                event.preventDefault(); 
+                toolsDropdownMenu.classList.toggle('show-submenu');
+                toolsDropdownContainer.classList.toggle('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    Access-Control-Allow-Origin = "*"
+    X-Robots-Tag = "all"  # Ensure search engines can access the sitemap
+
+[[headers]]
+  for = "/sitemap.xsl"
+  [headers.values]
+    Content-Type = "application/xslt+xml"
+    Cache-Control = "public, max-age=86400"  # Cache for 1 day
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.xml"
+  [headers.values]
+    Content-Type = "application/xml"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+    X-Robots-Tag = "index, follow"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"  # Cache for 1 hour
+    X-Robots-Tag = "index, follow"
+
+# Image optimization headers
+[[headers]]
+  for = "/assets/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"  # Cache for 30 days
+    Content-Type = "image/jpeg"
+
+[[headers]]
+  for = "/assets/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"  # Cache for 30 days
+    Content-Type = "image/png"
+
+# Security headers (applied to all paths)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+

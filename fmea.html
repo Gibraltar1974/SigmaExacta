@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="canonical" href="https://sigmaexacta.com/fmea" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FMEA for Problem Prevention | Sigma Exacta</title>
+  <meta name="description" content="Proactively prevent problems with our free online FMEA tool. Perform Design (DFMEA) & Process (PFMEA) analysis, generate visual structure charts, and auto-calculate your Risk Priority Number (RPN) to prioritize critical risks in quality and design engineering.">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Estilos específicos para la página de FMEA */
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      font-size: 16px;
+    }
+    
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f5f7fa;
+      line-height: 1.6;
+    }
+
+    img, canvas {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .main-content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.25rem;
+        
+        /* --- CORRECCIÓN DEFINITIVA PARA MÓVILES PARA EVITAR DESBORDAMIENTO --- */
+        display: grid;
+        grid-template-columns: minmax(0, 1fr); 
+    }
+
+    .header {
+      margin-bottom: 1.25rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    
+    .header h1 {
+      color: var(--primary-color);
+      font-size: clamp(1.5rem, 4vw, 1.8rem);
+      margin: 0.5rem 0;
+      font-weight: 800;
+    }
+    
+    .header-subtitle {
+      font-size: 1.1rem;
+      color: #7f8c8d;
+      margin: 0;
+      font-weight: 400;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .container { 
+        background-color: white; 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        margin-bottom: 1.5rem; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    }
+    .container h2 { color: var(--primary-color); margin-top: 0; border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.6rem; margin-bottom: 1rem; font-weight: 800; }
+    .container p { line-height: 1.6; color: #333; }
+    .container ol, .container ul { padding-left: 1.25rem; line-height: 1.8; }
+    .container ul li strong { color: var(--primary-color); font-weight: 600; }
+    
+    .calculation-block {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .calculation-title {
+      font-weight: 800;
+      font-size: 1.2em;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.6rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.6rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: border 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+      font-family: 'Nunito', sans-serif;
+    }
+    
+    input:focus, textarea:focus, select:focus, button:focus-visible {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    button {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 0.7rem 1.25rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+    }
+    
+    button:hover { background-color: #2980b9; }
+    button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+    .panels-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 1.25rem;
+    }
+    
+    #network-wrapper {
+        position: relative; 
+        width: 100%;
+        margin: 1.25rem auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1rem;
+    }
+
+    #networkChart { width: 100%; height: 600px; position: relative; }
+    
+    #networkIcon {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      z-index: 1001;
+      filter: invert(1);
+    }
+
+    #fitViewBtn, #exportChartBtn {
+        position: absolute;
+        top: 25px;
+        z-index: 1001;
+        padding: 0.5rem 0.75rem;
+    }
+    #fitViewBtn { right: 25px; }
+    #exportChartBtn { right: 80px; background-color: #16a085; }
+    #exportChartBtn:hover { background-color: #117a65; }
+
+    #generateFMEABtn { position: absolute; bottom: 25px; right: 25px; z-index: 1001; padding: 0.6rem 1rem; font-size: 1em; background-color: #27ae60; }
+    #generateFMEABtn:hover { background-color: #229954; }
+
+    #network-instruction {
+        position: absolute; top: 1rem; left: 50%; transform: translateX(-50%);
+        color: #888; font-size: 0.9rem; font-style: italic;
+        pointer-events: none; z-index: 1001;
+    }
+
+    #componentsPanel, #contactsPanel, #functionsPanel {
+      background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid #ddd;
+      width: 300px; min-width: 250px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      flex-grow: 1;
+    }
+    
+    .item-list { margin-top: 1rem; max-height: none; overflow-y: visible; }
+    .item { padding: 0.6rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background-color: #f8f9fa; display: flex; justify-content: space-between; align-items: center; }
+    .item-name { flex-grow: 1; margin-right: 0.6rem; }
+    .item-actions button { padding: 5px 8px; font-size: 0.8rem; margin: 0 2px; }
+        
+    #fmeaResultsContainer { display: none; margin-top: 1.25rem; }
+    
+    .analysis-instance {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--secondary-color);
+    }
+    .analysis-instance:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+    .analysis-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        color: #555;
+        font-size: 0.9rem;
+    }
+    
+    .fmea-table-wrapper {
+        overflow-x: auto;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 1.25rem;
+    }
+
+    .fmea-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1200px;
+      background: white;
+    }
+
+    .fmea-table th, .fmea-table td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; vertical-align: top; white-space: normal; }
+    .fmea-table textarea { width: 100%; border: none; background-color: transparent; padding: 2px; margin: 0; font-family: inherit; font-size: inherit; color: inherit; box-shadow: none; border-radius: 0; resize: none; overflow-y: hidden; min-height: 20px; }
+    .fmea-table textarea:focus { background-color: #eef5ff; }
+
+    .fmea-table select { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; background-color: white; font-size: 0.9rem; }
+    .fmea-table select:focus { border-color: var(--secondary-color); outline: 1px solid var(--secondary-color); }
+    .fmea-table th { background-color: var(--primary-color); color: white; font-weight: 600; }
+    .fmea-table tr:nth-child(even) { background-color: #f8f9fa; }
+    
+    .rpn-cell.severity-high { background-color: #ffdddd; }
+    .rpn-cell.severity-medium { background-color: #fff3cd; }
+    
+    .add-failure-mode { background-color: #f39c12; margin-top: 5px; }
+    .add-failure-mode:hover { background-color: #e67e22; }
+    
+    .function-item { border-left: 5px solid; padding-left: 0.6rem; }
+
+    .action-item { display: flex; align-items: flex-start; margin-bottom: 5px; }
+    .action-item textarea { margin-right: 5px; flex-grow: 1; }
+    .delete-action-btn { background-color: #e74c3c; padding: 5px 8px; font-size: 0.8rem; min-width: 30px; }
+    .delete-action-btn:hover { background-color: #c0392b; }
+    .add-action-btn { background-color: #27ae60; margin-top: 5px; }
+    .add-action-btn:hover { background-color: #229954; }
+    
+    .export-fmea-btn { margin-top: 10px; }
+
+    #networkLegend {
+        position: absolute; bottom: 10px; left: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 0.6rem; border-radius: 5px; font-size: 0.8rem;
+        z-index: 1000; max-height: 90%; overflow-y: auto; border: 1px solid #ddd;
+    }
+    #networkLegend div { margin: 5px 0; }
+    #networkLegend span { display: inline-block; width: 15px; height: 15px; margin-right: 5px; vertical-align: middle; border: 1px solid #ccc; }
+
+    @media (max-width: 992px) {
+        .panels-container { flex-direction: column; }
+        #componentsPanel, #contactsPanel, #functionsPanel { width: 100%; }
+    }
+    
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+
+    /* Inserted Styles for new H1 Icon from fmea.html */
+    .header-title-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    .tool-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 22px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin: 0 10px 0 0;
+    }
+    .tool-logo[data-color='7'] { background-color: #fc6d26; }
+  </style>
+    <style>
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1002; /* Aumentado para estar sobre otros elementos de la página */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222;
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle {
+            color: #fff;
+        }
+        .nav-toggle {
+            display: none; 
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .navigation .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+        .navigation .nav-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+        .navigation .nav-link i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        .nav-item-dropdown {
+            position: relative;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 5px;
+            z-index: 1000;
+            min-width: 600px;
+            padding: 20px;
+        }
+        .dropdown-menu a, .dropdown-menu h4 {
+            color: #333;
+        }
+        .dropdown-link:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .nav-item-dropdown:hover > .dropdown-menu {
+            display: block;
+        }
+        @media (max-width: 992px) {
+            .nav-toggle {
+                display: block;
+            }
+            .navigation .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border-top: 1px solid #eee;
+            }
+            .navigation .nav-menu .nav-link {
+                color: #333; 
+            }
+            .navigation .nav-menu.show-menu {
+                display: flex;
+            }
+            .navigation .nav-item {
+                width: 100%;
+                text-align: left;
+            }
+            .nav-item-dropdown > .nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .dropdown-menu {
+                display: none; 
+                position: static; 
+                width: 100%;
+                box-shadow: none;
+                border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px;
+                min-width: unset;
+                background-color: #f9f9f9;
+            }
+            .dropdown-menu.show-submenu {
+                display: block;
+            }
+            .dropdown-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-item-dropdown:hover > .dropdown-menu {
+                display: none;
+            }
+            .nav-item-dropdown.active:hover > .dropdown-menu {
+                display: block;
+            }
+            .nav-item-dropdown.active > .nav-link i {
+                transform: rotate(180deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content-wrapper">
+  <header class="header">
+    <div class="header-title-wrapper">
+        <div class="tool-logo" data-color='7'>
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1>Free Online FMEA (Failure Modes and Effects Analysis) for Problem Prevention</h1>
+    </div>
+    <p class="header-subtitle">A powerful online tool for proactively identifying and mitigating potential failures in <strong>Designs (DFMEA)</strong> and <strong>Processes (PFMEA)</strong>.</p>
+  </header>
+
+  <div class="container">
+      <h2><i class="fas fa-question-circle"></i> What is Failure Mode & Effects Analysis (FMEA)?</h2>
+      <p><strong>Failure Mode and Effects Analysis (FMEA)</strong> is a systematic, proactive method for evaluating a process or design to identify where and how it might fail and to assess the relative impact of different failures. The goal is to identify, prioritize, and eliminate or reduce potential failures, starting with the highest-priority ones. This tool supports the modern <strong>AIAG & VDA 7-Step FMEA</strong> process, focusing on the Structure, Function, and Failure Analysis steps.</p>
+      <p>Key components of an FMEA include:</p>
+      <ul>
+          <li><strong>Failure Modes:</strong> The specific ways in which a component, system, or process could fail to meet the design intent.</li>
+          <li><strong>Effects of Failure:</strong> The consequences of a failure mode on the system, customer, or downstream processes.</li>
+          <li><strong>Causes of Failure:</strong> The design or process weaknesses, errors, or conditions that could trigger the failure mode.</li>
+          <li><strong>Risk Priority Number (RPN):</strong> A numerical ranking of the risk associated with each potential failure. It is calculated as:
+              <strong>RPN = Severity (S) × Occurrence (O) × Detection (D)</strong>
+              <ul>
+                  <li><strong>Severity (S):</strong> The seriousness of the effect of the failure.</li>
+                  <li><strong>Occurrence (O):</strong> The likelihood that the cause of the failure will occur.</li>
+                  <li><strong>Detection (D):</strong> The ability of current controls to detect the cause or the failure mode before it reaches the customer.</li>
+              </ul>
+          </li>
+      </ul>
+  </div>
+
+  <div class="container">
+      <h2><i class="fas fa-history"></i> Brief History of FMEA and Modern Standards</h2>
+      <p>The FMEA methodology was first developed by the U.S. military in the late 1940s and documented in military procedure <strong>MIL-P-1629</strong>. It was designed to evaluate the reliability and safety of military equipment by identifying all possible failure modes and their effects on mission success.</p>
+      <p>Its value was quickly recognized by the aerospace industry. NASA extensively used FMEA during the <strong>Apollo program</strong> in the 1960s to mitigate risks and enhance the safety of space missions. In the 1970s, the automotive industry, led by Ford Motor Company, adopted FMEA to improve vehicle safety and quality, popularizing its use in the commercial sector. Today, the standard for FMEA is often governed by the <strong>AIAG & VDA FMEA Handbook</strong>, which promotes a <strong>7-Step approach</strong> for systematic analysis and risk mitigation. This tool helps practitioners structure their analysis according to these modern principles.</p>
+  </div>
+
+  <div class="container">
+      <h2><i class="fas fa-cogs"></i> How to Use This Tool: The 7-Step FMEA Approach</h2>
+      <ol>
+          <li><strong>Define Structure (Step 1):</strong> In the "Components" panel, add all the parts or steps of your system/process. Mark items as "External" if they are outside your system boundary (e.g., user, power source). Use the "Contacts" panel to define the connections and interfaces.</li>
+          <li><strong>Define Functions (Step 2):</strong> In the "Functions" panel, describe what the system is supposed to do (requirements). Assign each function to the specific contacts involved in carrying it out.</li>
+          <li><strong>Visualize:</strong> The tool automatically generates a structure chart (network diagram) to help you visualize the system's components, interfaces, and functions, supporting the Structure and Function Analysis. You can drag nodes to rearrange the layout.</li>
+          <li><strong>Generate FMEA Table (Step 3 - Failure Analysis):</strong> Click the "Generate FMEA" button. This will create a new FMEA analysis block below based on the functions you defined. Each time you click it, a new analysis is added, allowing you to compare versions.</li>
+          <li><strong>Analyze Failures (Steps 4 & 5):</strong> For each function in the table, fill in the potential failure modes, their effects (Step 4: Effect Analysis), potential causes, and any current controls in place to prevent or detect them (Step 5: Risk Analysis).</li>
+          <li><strong>Assess Risk (Step 5: Risk Analysis):</strong> Use the dropdowns to assign <strong>Severity (S)</strong>, <strong>Occurrence (O)</strong>, and <strong>Detection (D)</strong> scores. The tool automatically calculates the <strong>RPN</strong> to help you prioritize.</li>
+          <li><strong>Define Actions & Export (Steps 6 & 7):</strong> For high-risk items, list recommended actions (Step 6: Optimization). When complete, you can export that specific FMEA table to an Excel file for your records (Step 7: Results Documentation).</li>
+      </ol>
+  </div>
+
+
+  <div class="calculation-block">
+    <button id="loadExampleBtn" style="background-color: #27ae60;"><i class="fas fa-lightbulb"></i> Load Example</button>
+    <button id="resetAllBtn" style="background-color: #f39c12;"><i class="fas fa-redo"></i> Reset All</button>
+  </div>
+
+  <div class="panels-container">
+    <div id="componentsPanel" class="calculation-block">
+      <div class="calculation-title">Components</div>
+      <div class="form-group">
+        <label for="componentName"><i class="fas fa-cube"></i> Component Name:</label>
+        <input type="text" id="componentName" placeholder="Enter component name">
+        <label>
+          <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;"> External Component
+        </label>
+        <button id="addComponentBtn"><i class="fas fa-plus"></i> Add Component</button>
+        <button id="clearComponentsBtn"><i class="fas fa-trash"></i> Clear All</button>
+      </div>
+      <div class="item-list" id="componentsList"></div>
+    </div>
+
+    <div id="contactsPanel" class="calculation-block">
+      <div class="calculation-title">Contacts</div>
+      <div class="form-group">
+        <label for="contactFrom"><i class="fas fa-arrow-right"></i> From Component:</label>
+        <select id="contactFrom" disabled>
+          <option value="">Select component</option>
+        </select>
+        <label for="contactTo"><i class="fas fa-arrow-left"></i> To Component:</label>
+        <select id="contactTo" disabled>
+          <option value="">Select component</option>
+        </select>
+        <button id="addContactBtn" disabled><i class="fas fa-plus"></i> Add Contact</button>
+        <button id="clearContactsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+      </div>
+      <div class="item-list" id="contactsList"></div>
+    </div>
+
+    <div id="functionsPanel" class="calculation-block">
+      <div class="calculation-title">Functions</div>
+      <div class="form-group">
+        <label for="functionName"><i class="fas fa-bolt"></i> Function Name:</label>
+        <input type="text" id="functionName" placeholder="Enter function name">
+        <label for="functionType">Function Type:</label>
+        <select id="functionType">
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+        </select>
+        <label for="functionContacts"><i class="fas fa-link"></i> Contacts:</label>
+        <select id="functionContacts" multiple disabled>
+        </select>
+        <button id="addFunctionBtn" disabled><i class="fas fa-plus"></i> Add Function</button>
+        <button id="clearFunctionsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+      </div>
+      <div class="item-list" id="functionsList"></div>
+    </div>
+  </div>
+
+  <div id="network-wrapper">
+      <img id="networkIcon" src="sigma-exacta-icon.jpg" alt="Sigma Exacta Inverted Logo">
+      <button id="exportChartBtn" title="Export Chart as JPG"><i class="fas fa-camera"></i></button>
+      <button id="fitViewBtn" title="Fit to View"><i class="fas fa-compress-arrows-alt"></i></button>
+      <button id="generateFMEABtn"><i class="fas fa-file-alt"></i> Generate FMEA</button>
+      <div id="networkChart">
+        <div id="network-instruction">Drag nodes to rearrange the layout</div>
+        <div id="networkCanvas" style="width: 100%; height: 100%;"></div>
+        <div id="networkLegend"></div>
+      </div>
+  </div>
+
+  <div id="fmeaResultsContainer" class="calculation-block">
+    <div class="calculation-title">FMEA Results</div>
+    </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. Some tools, like this one, are based on established methodologies (e.g., FMEA as defined in MIL-P-1629 or the <strong>AIAG & VDA handbook</strong>), which may be the intellectual property of their respective owners. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based on the output of these tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+    </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // --- Lógica de navegación (IDÉNTICA A INDEX.HTML) ---
+      const navToggle = document.getElementById('nav-toggle');
+      const navMenu = document.getElementById('nav-menu');
+      const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+      const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+      const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+      navToggle.addEventListener('click', () => {
+          navMenu.classList.toggle('show-menu');
+          const icon = navToggle.querySelector('i');
+          icon.classList.toggle('fa-bars');
+          icon.classList.toggle('fa-times');
+          
+          if (!navMenu.classList.contains('show-menu')) {
+              toolsDropdownMenu.classList.remove('show-submenu');
+              toolsDropdownContainer.classList.remove('active');
+          }
+      });
+      
+      toolsDropdownToggle.addEventListener('click', (event) => {
+          if (window.innerWidth <= 992) {
+              event.preventDefault(); 
+              toolsDropdownMenu.classList.toggle('show-submenu');
+              toolsDropdownContainer.classList.toggle('active');
+          }
+      });
+      
+      // --- Lógica de la herramienta FMEA (se inicializa después de la navegación) ---
+      initComponents();
+  });
+  
+  // --- CÓDIGO DE LA LÓGICA DE LA HERRAMIENTA FMEA ---
+  let components = [];
+  let contacts = [];
+  let functions = [];
+  let network = null;
+  let analysisCounter = 0;
+  
+  let contactCounter = 0;
+  let primaryFunctionCounter = 0;
+  let secondaryFunctionCounter = 0;
+
+  let componentsList, contactsList, functionsList, contactFromSelect, contactToSelect, functionContactsSelect, networkLegend, fmeaResultsContainer;
+
+  const functionColors = [ '#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#d35400', '#27ae60' ];
+  
+  function initComponents(){
+    componentsList = document.getElementById('componentsList');
+    contactsList = document.getElementById('contactsList');
+    functionsList = document.getElementById('functionsList');
+    contactFromSelect = document.getElementById('contactFrom');
+    contactToSelect = document.getElementById('contactTo');
+    functionContactsSelect = document.getElementById('functionContacts');
+    networkLegend = document.getElementById('networkLegend');
+    fmeaResultsContainer = document.getElementById('fmeaResultsContainer');
+    
+    document.getElementById('addComponentBtn').addEventListener('click', addComponent);
+    document.getElementById('addContactBtn').addEventListener('click', addContact);
+    document.getElementById('addFunctionBtn').addEventListener('click', addFunction);
+    document.getElementById('generateFMEABtn').addEventListener('click', generateFMEA);
+    document.getElementById('exportChartBtn').addEventListener('click', exportChart);
+    document.getElementById('clearComponentsBtn').addEventListener('click', resetAll);
+    document.getElementById('clearContactsBtn').addEventListener('click', () => { contacts = []; functions = []; contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
+    document.getElementById('clearFunctionsBtn').addEventListener('click', () => { functions = []; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
+    document.getElementById('fitViewBtn').addEventListener('click', () => { if (network) network.fit({ animation: true }); });
+    document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
+    document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+    updateAll();
+  }
+
+
+  function getFunctionColor(id) {
+    return functionColors[(id - 1) % functionColors.length];
+  }
+  
+  function autoGrowTextarea(element) {
+    element.style.height = "auto";
+    element.style.height = (element.scrollHeight) + "px";
+  }
+
+  function loadExample() {
+    resetAll();
+    components = [ { id: 1, name: 'Motor', external: false }, { id: 2, name: 'Gearbox', external: false }, { id: 3, name: 'Controller', external: false }, { id: 4, name: 'Power Supply', external: true }, { id: 5, name: 'Sensor', external: false }, { id: 6, name: 'Actuator', external: false }, { id: 7, name: 'Display Unit', external: false }, { id: 8, name: 'User Interface', external: true } ];
+    contactCounter = 8;
+    contacts = [ { id: 1, from: 1, to: 2, name: 'c1' }, { id: 2, from: 3, to: 1, name: 'c2' }, { id: 3, from: 4, to: 3, name: 'c3' }, { id: 4, from: 5, to: 3, name: 'c4' }, { id: 5, from: 3, to: 6, name: 'c5' }, { id: 6, from: 3, to: 7, name: 'c6' }, { id: 7, from: 8, to: 3, name: 'c7' }, { id: 8, from: 2, to: 6, name: 'c8' } ];
+    primaryFunctionCounter = 3;
+    secondaryFunctionCounter = 1;
+    functions = [ { id: 1, name: 'Transmit Power', type: 'primary', label: 'fp1', contacts: [1, 8], failureModes: [{ mode: 'Gear slippage', effects: 'Reduced power transmission', severity: 8, causes: 'Worn gears', occurrence: 4, controls: 'Regular maintenance', detection: 3, actions: ['Implement preventive maintenance schedule'] }] }, { id: 2, name: 'Control Speed', type: 'primary', label: 'fp2', contacts: [2, 3, 4], failureModes: [{ mode: 'Controller software malfunction', effects: 'Uncontrolled motor speed', severity: 9, causes: 'Software bug', occurrence: 2, controls: 'Software testing', detection: 2, actions: ['Implement robust error handling', 'Add watchdog timer'] }] }, { id: 3, name: 'Provide System Status', type: 'secondary', label: 'fs1', contacts: [6, 7], failureModes: [{ mode: 'Display unit malfunction', effects: 'No system feedback', severity: 5, causes: 'LCD damage', occurrence: 2, controls: 'Protective casing', detection: 6, actions: ['Implement audio alerts as backup'] }] }, { id: 4, name: 'Execute Commands', type: 'primary', label: 'fp3', contacts: [5, 7], failureModes: [{ mode: 'Actuator jamming', effects: 'Command not executed', severity: 8, causes: 'Foreign object', occurrence: 3, controls: 'Regular cleaning', detection: 3, actions: ['Implement force feedback to detect jam', 'Add enclosure to prevent debris entry'] }] } ];
+    updateAll();
+  }
+
+  function resetAll() {
+    components = []; contacts = []; functions = [];
+    contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0;
+    analysisCounter = 0;
+    fmeaResultsContainer.style.display = 'none';
+    const instances = fmeaResultsContainer.querySelectorAll('.analysis-instance');
+    instances.forEach(instance => instance.remove());
+
+    if (network) {
+        network.destroy();
+        network = null;
+    }
+    updateAll();
+    networkLegend.innerHTML = '';
+  }
+
+  function addComponent() {
+    const name = document.getElementById('componentName').value.trim();
+    if (name) {
+      const isExternal = document.getElementById('componentExternal').checked;
+      const newId = components.length > 0 ? Math.max(...components.map(c => c.id)) + 1 : 1;
+      components.push({ id: newId, name, external: isExternal });
+      document.getElementById('componentName').value = '';
+      document.getElementById('componentExternal').checked = false;
+      updateAll();
+    }
+  }
+
+  function addContact() {
+    const fromId = parseInt(contactFromSelect.value);
+    const toId = parseInt(contactToSelect.value);
+    if (fromId && toId && fromId !== toId) {
+      contactCounter++;
+      const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
+      contacts.push({ id: newId, from: fromId, to: toId, name: `c${contactCounter}` });
+      updateAll();
+    }
+  }
+
+  function addFunction() {
+    const name = document.getElementById('functionName').value.trim();
+    const type = document.getElementById('functionType').value;
+    const selectedContacts = Array.from(functionContactsSelect.selectedOptions).map(option => parseInt(option.value));
+    if (name && selectedContacts.length > 0) {
+      const newId = functions.length > 0 ? Math.max(...functions.map(f => f.id)) + 1 : 1;
+      let funcLabel = '';
+      if (type === 'primary') {
+        primaryFunctionCounter++;
+        funcLabel = `fp${primaryFunctionCounter}`;
+      } else {
+        secondaryFunctionCounter++;
+        funcLabel = `fs${secondaryFunctionCounter}`;
+      }
+      functions.push({ id: newId, name, type, contacts: selectedContacts, label: funcLabel, failureModes: [] });
+      document.getElementById('functionName').value = '';
+      updateAll();
+    }
+  }
+
+  function updateComponentsList() {
+    componentsList.innerHTML = '';
+    components.forEach(component => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.innerHTML = `
+        <div class="item-name">${component.name} ${component.external ? '(External)' : ''}</div>
+        <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+      item.querySelector('.delete-btn').addEventListener('click', () => {
+        contacts = contacts.filter(c => c.from !== component.id && c.to !== component.id);
+        const contactIds = contacts.map(c => c.id);
+        functions = functions.filter(f => f.contacts.every(cId => contactIds.includes(cId)));
+        components = components.filter(c => c.id !== component.id);
+        updateAll();
+      });
+      componentsList.appendChild(item);
+    });
+    document.getElementById('addContactBtn').disabled = components.length < 2;
+  }
+
+  function updateContactsList() {
+    contactsList.innerHTML = '';
+    contacts.forEach(contact => {
+      const from = components.find(c => c.id === contact.from);
+      const to = components.find(c => c.id === contact.to);
+      if (from && to) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+          <div class="item-name"><strong>${contact.name}:</strong> ${from.name} → ${to.name}</div>
+          <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+        item.querySelector('.delete-btn').addEventListener('click', () => {
+          functions.forEach(f => { f.contacts = f.contacts.filter(id => id !== contact.id); });
+          functions = functions.filter(f => f.contacts.length > 0);
+          contacts = contacts.filter(c => c.id !== contact.id);
+          updateAll();
+        });
+        contactsList.appendChild(item);
+      }
+    });
+    document.getElementById('clearContactsBtn').disabled = contacts.length === 0;
+  }
+
+  function updateFunctionsList() {
+    functionsList.innerHTML = '';
+    functions.forEach(func => {
+      const item = document.createElement('div');
+      item.className = 'item function-item';
+      item.style.borderColor = getFunctionColor(func.id);
+      const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
+      const contactNames = funcContacts.map(c => c.name).join(', ');
+      item.innerHTML = `
+        <div class="item-name"><strong>${func.label}:</strong> ${func.name} (${func.type})<br><small>Contacts: ${contactNames}</small></div>
+        <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+      item.querySelector('.delete-btn').addEventListener('click', () => {
+        functions = functions.filter(f => f.id !== func.id);
+        updateAll();
+      });
+      functionsList.appendChild(item);
+    });
+    document.getElementById('addFunctionBtn').disabled = contacts.length === 0;
+    document.getElementById('clearFunctionsBtn').disabled = functions.length === 0;
+  }
+
+  function updateAll() {
+    updateComponentsList();
+    updateContactsList();
+    updateFunctionsList();
+    updateSelectOptions();
+    updateNetworkVisualization();
+  }
+
+  function updateSelectOptions() {
+    contactFromSelect.innerHTML = '<option value="">Select component</option>';
+    contactToSelect.innerHTML = '<option value="">Select component</option>';
+    components.forEach(c => {
+      contactFromSelect.appendChild(new Option(c.name, c.id));
+      contactToSelect.appendChild(new Option(c.name, c.id));
+    });
+    contactFromSelect.disabled = components.length < 2;
+    contactToSelect.disabled = components.length < 2;
+    
+    functionContactsSelect.innerHTML = '';
+    contacts.forEach(contact => {
+      const from = components.find(c => c.id === contact.from);
+      const to = components.find(c => c.id === contact.to);
+      if (from && to) {
+        functionContactsSelect.appendChild(new Option(`${contact.name}: ${from.name} → ${to.name}`, contact.id));
+      }
+    });
+    functionContactsSelect.disabled = contacts.length === 0;
+  }
+
+  function updateNetworkVisualization() {
+      const container = document.getElementById('networkCanvas');
+      if (network) {
+          network.destroy();
+      }
+      const INTERNAL_Y_SPACING = 150;
+      const INTERNAL_X_SPACING = 250;
+      const EXTERNAL_Y_OFFSET = 200;
+
+      const nodesData = [];
+      const internalComponents = components.filter(c => !c.external);
+      const externalComponents = components.filter(c => c.external);
+      
+      let internal_y_start = 0;
+      internalComponents.forEach((component, i) => {
+          const x = (i % 2 === 0) ? -INTERNAL_X_SPACING / 2 : INTERNAL_X_SPACING / 2;
+          const y = internal_y_start + Math.floor(i / 2) * INTERNAL_Y_SPACING;
+          nodesData.push({ ...component, x, y, fixed: false });
+      });
+
+      const numInternalRows = Math.ceil(internalComponents.length / 2);
+      const internalZoneHeight = (numInternalRows - 1) * INTERNAL_Y_SPACING;
+      
+      const external_top_y = internal_y_start - EXTERNAL_Y_OFFSET;
+      const external_bottom_y = internal_y_start + internalZoneHeight + EXTERNAL_Y_OFFSET;
+      
+      const topExternals = externalComponents.slice(0, Math.ceil(externalComponents.length / 2));
+      const bottomExternals = externalComponents.slice(Math.ceil(externalComponents.length / 2));
+
+      topExternals.forEach((component, i) => {
+          const x = (topExternals.length - 1) * -100 + i * 200;
+          nodesData.push({ ...component, x, y: external_top_y, fixed: false });
+      });
+
+      bottomExternals.forEach((component, i) => {
+          const x = (bottomExternals.length - 1) * -100 + i * 200;
+          nodesData.push({ ...component, x, y: external_bottom_y, fixed: false });
+      });
+
+      const visNodes = nodesData.map(c => {
+          let nodeColor, nodeFont, nodeShape;
+          const baseFont = { size: 28, face: 'Nunito, sans-serif' };
+
+          if (c.external) {
+              nodeColor = { border: '#2c3e50', background: '#ecf0f1' };
+              nodeFont = { ...baseFont, color: '#2c3e50', weight: '600' };
+              nodeShape = 'box';
+          } else {
+              nodeColor = { border: '#2c3e50', background: '#3498db' };
+              nodeFont = { ...baseFont, color: '#ffffff', weight: '600' };
+              nodeShape = 'box';
+          }
+          return {
+              id: c.id, label: c.name, x: c.x, y: c.y, fixed: c.fixed,
+              color: nodeColor, font: nodeFont, shape: nodeShape, margin: 10
+          };
+      });
+
+      const edgesData = [];
+      
+      contacts.forEach(contact => {
+          edgesData.push({
+              id: `c-${contact.id}`, from: contact.from, to: contact.to,
+              color: '#333333',
+              width: 1.5,
+              smooth: { enabled: false }
+          });
+      });
+      
+      functions.forEach(func => {
+          const funcColor = getFunctionColor(func.id);
+          func.contacts.forEach(contactId => {
+              const underlyingContact = contacts.find(c => c.id === contactId);
+              if (underlyingContact) {
+                  edgesData.push({
+                      id: `f-${func.id}-${contactId}`, from: underlyingContact.from, to: underlyingContact.to,
+                      label: func.label,
+                      color: { color: funcColor, highlight: funcColor },
+                      arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+                      width: 3,
+                      font: { size: 36, face: 'Nunito, sans-serif', color: funcColor, strokeWidth: 5, strokeColor: 'white', weight: '800' },
+                      smooth: { enabled: true, type: 'curvedCW', roundness: 0.2 + (func.id * 0.05) }
+                  });
+              }
+          });
+      });
+
+      const data = { nodes: new vis.DataSet(visNodes), edges: new vis.DataSet(edgesData) };
+
+      const options = {
+          layout: { hierarchical: false },
+          physics: { enabled: false },
+          nodes: { borderWidth: 2, shadow: true },
+          edges: { shadow: true },
+          interaction: { hover: true, tooltipDelay: 200, dragNodes: true },
+      };
+
+      network = new vis.Network(container, data, options);
+
+      const lineTopY = internal_y_start - (INTERNAL_Y_SPACING / 2);
+      const lineBottomY = internal_y_start + internalZoneHeight + (INTERNAL_Y_SPACING / 2);
+
+      network.on('afterDrawing', function (ctx) {
+          ctx.save();
+          ctx.strokeStyle = '#95a5a6';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 10]);
+          const x_start = -10000;
+          const x_end = 10000;
+          ctx.beginPath();
+          ctx.moveTo(x_start, lineTopY);
+          ctx.lineTo(x_end, lineTopY);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x_start, lineBottomY);
+          ctx.lineTo(x_end, lineBottomY);
+          ctx.stroke();
+          ctx.restore();
+      });
+      
+      network.fit({animation: {duration: 500, easingFunction: 'easeInOutQuad'}});
+
+      let legendHtml = '<div><strong>Function Legend:</strong></div>';
+      if (functions.length > 0) {
+          functions.forEach(func => {
+              const color = getFunctionColor(func.id);
+              legendHtml += `<div><span style="background-color: ${color};"></span>${func.label}: ${func.name}</div>`;
+          });
+      } else {
+          legendHtml += '<div>No functions defined.</div>';
+      }
+      networkLegend.innerHTML = legendHtml;
+  }
+  
+  function generateFMEA() {
+    analysisCounter++;
+    const now = new Date();
+    const timestamp = `${now.toLocaleDateString('en-US')}, ${now.toLocaleTimeString('en-US', { hour12: true })}`;
+    
+    const analysisInstance = document.createElement('div');
+    analysisInstance.className = 'analysis-instance';
+    
+    const analysisNote = document.createElement('div');
+    analysisNote.className = 'analysis-note';
+    analysisNote.innerHTML = `
+        <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Icon" style="width: 24px; height: 24px; border-radius: 50%;">
+        <span><strong>Analysis #${analysisCounter}</strong> - ${timestamp}</span>`;
+    analysisInstance.appendChild(analysisNote);
+
+    const fmeaTable = document.createElement('table');
+    fmeaTable.className = 'fmea-table';
+    const fmeaTableHead = document.createElement('thead');
+    const fmeaTableBody = document.createElement('tbody');
+    fmeaTableHead.innerHTML = `
+        <tr>
+          <th>Function</th><th>Type</th><th>Potential Failure Mode</th><th>Potential Effects</th><th>Severity (S)</th><th>Potential Causes</th><th>Occurrence (O)</th><th>Current Controls</th><th>Detection (D)</th><th>RPN (S×O×D)</th><th>Recommended Actions</th><th>Actions</th>
+        </tr>`;
+    fmeaTable.appendChild(fmeaTableHead);
+    fmeaTable.appendChild(fmeaTableBody);
+    
+    const createActionInput = (container, value = '') => {
+        const actionItem = document.createElement('div');
+        actionItem.className = 'action-item';
+        actionItem.innerHTML = `<textarea rows="1" placeholder="Recommended action">${value}</textarea><button class="delete-action-btn" title="Remove action"><i class="fas fa-times"></i></button>`;
+        const textarea = actionItem.querySelector('textarea');
+        textarea.addEventListener('input', () => autoGrowTextarea(textarea));
+        setTimeout(() => autoGrowTextarea(textarea), 0);
+        actionItem.querySelector('.delete-action-btn').addEventListener('click', () => actionItem.remove());
+        container.appendChild(actionItem);
+    };
+
+    const addRow = (func, fm = {}) => {
+      const row = document.createElement('tr');
+      row.className = 'fmea-data-row';
+      const severity = fm.severity || 1;
+      const occurrence = fm.occurrence || 1;
+      const detection = fm.detection || 1;
+      const rpn = severity * occurrence * detection;
+      
+      let rpnClass = '';
+      if (rpn >= 100) rpnClass = 'severity-high';
+      else if (rpn >= 50) rpnClass = 'severity-medium';
+      
+      const optionsMap = {
+          severity: [ {value:1,text:"1-None"},{value:2,text:"2-Very Minor"},{value:3,text:"3-Minor"},{value:4,text:"4-Low"},{value:5,text:"5-Moderate"},{value:6,text:"6-Significant"},{value:7,text:"7-Major"},{value:8,text:"8-Extreme"},{value:9,text:"9-Serious"},{value:10,text:"10-Hazardous"} ],
+          occurrence: [ {value:1,text:"1-Extremely Unlikely (<1 in 1M)"},{value:2,text:"2-Remote (1 in 150k)"},{value:3,text:"3-Very Low (1 in 15k)"},{value:4,text:"4-Low (1 in 2k)"},{value:5,text:"5-Moderate (1 in 400)"},{value:6,text:"6-Mod. High (1 in 80)"},{value:7,text:"7-High (1 in 20)"},{value:8,text:"8-Very High (1 in 8)"},{value:9,text:"9-Extremely High (1 in 3)"},{value:10,text:"10-Inevitable (≥1 in 2)"} ],
+          detection: [ {value:1,text:"1-Certain Detection"},{value:2,text:"2-Very High Chance"},{value:3,text:"3-High Chance"},{value:4,text:"4-Mod. High Chance"},{value:5,text:"5-Moderate Chance"},{value:6,text:"6-Low Chance"},{value:7,text:"7-Very Low Chance"},{value:8,text:"8-Remote Chance"},{value:9,text:"9-Very Remote Chance"},{value:10,text:"10-No Chance"} ]
+      };
+      
+      row.innerHTML = `
+        <td>${func.label}: ${func.name}</td><td>${func.type}</td>
+        <td><textarea rows="1" placeholder="Failure mode">${fm.mode || ''}</textarea></td>
+        <td><textarea rows="1" placeholder="Effects">${fm.effects || ''}</textarea></td>
+        <td><select class="severity-select">${optionsMap.severity.map(opt => `<option value="${opt.value}" ${opt.value === severity ? 'selected' : ''}>${opt.text}</option>`).join('')}</select></td>
+        <td><textarea rows="1" placeholder="Causes">${fm.causes || ''}</textarea></td>
+        <td><select class="occurrence-select">${optionsMap.occurrence.map(opt => `<option value="${opt.value}" ${opt.value === occurrence ? 'selected' : ''}>${opt.text}</option>`).join('')}</select></td>
+        <td><textarea rows="1" placeholder="Current controls">${fm.controls || ''}</textarea></td>
+        <td><select class="detection-select">${optionsMap.detection.map(opt => `<option value="${opt.value}" ${opt.value === detection ? 'selected' : ''}>${opt.text}</option>`).join('')}</select></td>
+        <td class="rpn-cell ${rpnClass}">${rpn}</td>
+        <td class="actions-cell"></td>
+        <td><button class="delete-failure-mode" title="Delete this failure mode"><i class="fas fa-trash"></i></button></td>`;
+      
+      const actionsCell = row.querySelector('.actions-cell');
+      const actionsContainer = document.createElement('div');
+      
+      if (fm.actions && Array.isArray(fm.actions) && fm.actions.length > 0) {
+        fm.actions.forEach(action => createActionInput(actionsContainer, action));
+      } else { createActionInput(actionsContainer); }
+      
+      const addActionButton = document.createElement('button');
+      addActionButton.className = 'add-action-btn';
+      addActionButton.innerHTML = '<i class="fas fa-plus"></i>';
+      addActionButton.title = 'Add Action';
+      addActionButton.addEventListener('click', () => createActionInput(actionsContainer));
+
+      actionsCell.appendChild(actionsContainer);
+      actionsCell.appendChild(addActionButton);
+      
+      row.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', () => autoGrowTextarea(textarea));
+        setTimeout(() => autoGrowTextarea(textarea), 0);
+      });
+
+      const updateRPN = () => {
+        const s = parseInt(row.querySelector('.severity-select').value);
+        const o = parseInt(row.querySelector('.occurrence-select').value);
+        const d = parseInt(row.querySelector('.detection-select').value);
+        const newRpn = s * o * d;
+        const rpnCell = row.querySelector('.rpn-cell');
+        rpnCell.textContent = newRpn;
+        rpnCell.className = 'rpn-cell';
+        if (newRpn >= 100) rpnCell.classList.add('severity-high');
+        else if (newRpn >= 50) rpnCell.classList.add('severity-medium');
+      };
+      row.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateRPN));
+      
+      row.querySelector('.delete-failure-mode').addEventListener('click', () => row.remove());
+      fmeaTableBody.appendChild(row);
+      return row;
+    };
+
+    functions.forEach(func => {
+      if (func.failureModes && func.failureModes.length > 0) {
+        func.failureModes.forEach(fm => addRow(func, fm));
+      } else { addRow(func); }
+      
+      const addRowBtnRow = fmeaTableBody.insertRow();
+      const addRowBtnCell = addRowBtnRow.insertCell();
+      addRowBtnCell.colSpan = 12;
+      const addRowBtn = document.createElement('button');
+      addRowBtn.className = 'add-failure-mode';
+      addRowBtn.innerHTML = `<i class="fas fa-plus"></i> Add Failure Mode for ${func.label}`;
+      addRowBtn.addEventListener('click', () => {
+        const newRow = addRow(func);
+        fmeaTableBody.insertBefore(newRow, addRowBtnRow);
+      });
+      addRowBtnCell.appendChild(addRowBtn);
+    });
+    
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'fmea-table-wrapper';
+    tableWrapper.appendChild(fmeaTable);
+    analysisInstance.appendChild(tableWrapper);
+
+    const exportButton = document.createElement('button');
+    exportButton.className = 'export-fmea-btn';
+    exportButton.innerHTML = `<i class="fas fa-file-excel"></i> Export Analysis #${analysisCounter} to Excel`;
+    exportButton.addEventListener('click', () => exportTableToExcel(fmeaTable, `FMEA_Analysis_${analysisCounter}_Sigma_Exacta.xlsx`));
+    analysisInstance.appendChild(exportButton);
+
+    fmeaResultsContainer.appendChild(analysisInstance);
+    fmeaResultsContainer.style.display = 'block';
+    analysisInstance.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function exportTableToExcel(tableElement, fileName) {
+    const exportData = [];
+    const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => th.textContent);
+    
+    tableElement.querySelectorAll('tbody tr.fmea-data-row').forEach(row => {
+        const rowData = {};
+        const cells = row.querySelectorAll('td');
+        const getSelectText = (selectEl) => selectEl.options[selectEl.selectedIndex].text;
+        
+        rowData[headers[0]] = cells[0].textContent;
+        rowData[headers[1]] = cells[1].textContent;
+        rowData[headers[2]] = cells[2].querySelector('textarea').value;
+        rowData[headers[3]] = cells[3].querySelector('textarea').value;
+        rowData[headers[4]] = getSelectText(cells[4].querySelector('select'));
+        rowData[headers[5]] = cells[5].querySelector('textarea').value;
+        rowData[headers[6]] = getSelectText(cells[6].querySelector('select'));
+        rowData[headers[7]] = cells[7].querySelector('textarea').value;
+        rowData[headers[8]] = getSelectText(cells[8].querySelector('select'));
+        rowData[headers[9]] = cells[9].textContent;
+
+        const actionsText = Array.from(cells[10].querySelectorAll('.action-item textarea'))
+                                 .map(textarea => textarea.value.trim()).filter(val => val).join('\n');
+        rowData[headers[10]] = actionsText;
+        exportData.push(rowData);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    ws['!cols'] = [ {wch: 30}, {wch: 15}, {wch: 30}, {wch: 30}, {wch: 25}, {wch: 30}, {wch: 30}, {wch: 30}, {wch: 25}, {wch: 10}, {wch: 40} ];
+    XLSX.utils.book_append_sheet(wb, ws, "FMEA Results");
+    XLSX.writeFile(wb, fileName);
+  }
+
+  function exportChart() {
+      const canvas = document.querySelector('#networkCanvas canvas');
+      if (canvas && network) {
+          const dataURL = canvas.toDataURL('image/jpeg', 1.0);
+          const link = document.createElement('a');
+          link.href = dataURL;
+          link.download = 'fmea_structure_chart.jpg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      } else {
+          alert('The chart is not available to be exported.');
+      }
+  }
+</script>
+
+</body>
+</html>

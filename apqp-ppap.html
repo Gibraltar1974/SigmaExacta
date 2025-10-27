@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="canonical" href="https://sigmaexacta.com/apqp-ppap" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Free Online Dynamic APQP/PPAP Planning Tool | Sigma Exacta</title>
+    <meta name="description" content="Use our dynamic APQP and PPAP planner to manage new product development projects. Track phases, tasks, and PPAP elements, generate Gantt charts, and export reports. Ideal for quality engineers and project managers.">
+    <meta name="keywords" content="APQP, PPAP, AIAG, Automotive Industry Action Group, Quality Planning, Product Launch, Gantt Chart, Project Management, Quality Engineering">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222;
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
+        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
+        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
+        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
+        .nav-item-dropdown { position: relative; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px; z-index: 1000; min-width: 600px; padding: 20px; }
+        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
+        .dropdown-link:hover { background-color: #f1f1f1; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .nav-item-dropdown:hover > .dropdown-menu { display: block; }
+        @media (max-width: 992px) {
+            .nav-toggle { display: block; }
+            .navigation .nav-menu { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee; }
+            .navigation .nav-menu .nav-link { color: #333; }
+            .navigation .nav-menu.show-menu { display: flex; }
+            .navigation .nav-item { width: 100%; text-align: left; }
+            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+            .dropdown-menu { display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0; padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9; }
+            .dropdown-menu.show-submenu { display: block; }
+            .dropdown-grid { grid-template-columns: 1fr; }
+            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+        }
+    </style>
+    <style>
+        :root {
+            --primary-color: #2c3e50; --secondary-color: #3498db; --success-color: #27ae60;
+            --warning-color: #f39c12; --danger-color: #e74c3c; --light-color: #f5f7fa;
+            --border-color: #ddd; --status-pending: #fef9e7; --status-progress: #eaf2f8;
+            --status-completed: #e8f8f5; --status-na: #f2f3f4;
+            font-size: 16px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Nunito', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; color: #333; background-color: var(--light-color); line-height: 1.6; }
+        img { max-width: 100%; height: auto; }
+        .main-content-wrapper { padding: 1.25rem; }
+        .header { text-align: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: 0.5rem 0; display: inline-flex; align-items: center; gap: 0.8rem; font-weight: 800; }
+        .header .subtitle { font-size: 1.1rem; color: #555; margin-top: 0; margin-bottom: 0.6rem; }
+        .button-group { display: flex; justify-content: center; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .section { border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.25rem; background-color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .section-title { font-weight: 800; font-size: 1.3em; margin: 0 0 1rem 0; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
+        .section p, .section li { line-height: 1.6; color: #333; }
+        .section ul { padding-left: 1.25rem; }
+        .infographic-flow { display: flex; justify-content: space-around; align-items: flex-start; margin-top: 1.5rem; text-align: center; flex-wrap: wrap; }
+        .flow-step { flex: 1; min-width: 120px; max-width: 180px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; margin: 5px; transition: transform 0.2s, box-shadow 0.2s; }
+        .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
+        .flow-step strong { display: block; font-size: 1rem; color: var(--primary-color); min-height: 40px; font-weight: 600; }
+        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: 0 5px; align-self: center; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem; }
+        .form-group { display: flex; flex-direction: column; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--primary-color); font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; box-sizing: border-box; transition: border 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif; }
+        input:focus, select:focus, textarea:focus, button:focus-visible { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+        textarea { resize: vertical; min-height: 80px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; display: block; overflow-x: auto; white-space: nowrap; }
+        th, td { text-align: left; padding: 0.75rem; border: 1px solid var(--border-color); vertical-align: middle; white-space: normal; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even):not(.gantt-row) { background-color: #fdfdfd; }
+        tr.task-row.status-pending { background-color: var(--status-pending); }
+        tr.task-row.status-progress { background-color: var(--status-progress); }
+        tr.task-row.status-completed { background-color: var(--status-completed); }
+        tr.task-row.status-na { background-color: var(--status-na); text-decoration: line-through; color: #999; }
+        details { border-radius: 8px; margin-bottom: 1rem; overflow: hidden; background: white; border: 1px solid #e0e0e0; }
+        summary { font-size: 1.2em; font-weight: 800; color: var(--primary-color); padding: 1rem 1.25rem; cursor: pointer; background-color: #f8f9fa; list-style: none; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid transparent; }
+        summary:hover { background-color: #f1f3f5; }
+        .summary-title i { color: var(--secondary-color); }
+        .toggle-icon::after { content: '+'; font-size: 1.5em; font-weight: bold; transition: transform 0.2s; display: block; }
+        details[open] > summary { border-bottom-color: var(--border-color); }
+        details[open] > summary .toggle-icon::after { transform: rotate(45deg); }
+        .phase-content { padding: 1.25rem; }
+        .phase-description { font-style: italic; color: #555; margin-bottom: 1rem; padding: 0.6rem 1rem; background: #eaf2f8; border-left: 4px solid var(--secondary-color); border-radius: 4px; }
+        .actions { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); }
+        .button { color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; display: inline-flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif; font-weight: 600; }
+        .button.primary { background-color: var(--primary-color); }
+        .button.success { background-color: var(--success-color); }
+        .button.warning { background-color: var(--warning-color); color: #333; }
+        .button.danger { background-color: var(--danger-color); font-size: 0.9em; padding: 5px 10px; }
+        .button.secondary { background-color: #34495e; }
+        .table-actions { margin-top: 1rem; }
+        @media (max-width: 992px) { .infographic-flow { flex-direction: column; align-items: center; } .flow-arrow { transform: rotate(90deg); margin: 1rem 0; } }
+        footer { padding: 2rem 1.25rem; text-align: center; }
+        .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+
+        /* REGLAS AÑADIDAS PARA FORZAR EL COLOR ROJIZO DEL LOGO Y EL ICONO BLANCO */
+        /* Estas reglas anulan el styles.css si este no funciona, aplicando los estilos directamente. */
+        .tool-logo[data-color="17"] {
+            background-color: var(--danger-color); /* Usando la variable --danger-color: #e74c3c */
+        }
+        .tool-logo {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 35px; /* Ajuste para que se vea como un cuadrado */
+            height: 35px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem; /* Separación sobre el H1 */
+        }
+        .tool-logo[data-color="17"] i {
+            color: white; /* Color del icono forzado a blanco */
+        }
+        /* ========================================================================= */
+        
+        /* ============================================== */
+        /* ===== NUEVOS Y MEJORADOS ESTILOS GANTT ===== */
+        /* ============================================== */
+        #gantt-chart-container {
+            overflow-x: auto;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-top: 1rem;
+            background: #fff;
+        }
+        .gantt-inner-container {
+            position: relative;
+            min-width: 900px; /* Ancho mínimo para la línea de tiempo, previene compresión */
+        }
+        .gantt-header {
+            display: grid;
+            grid-template-columns: 280px 1fr; /* Columna para etiqueta, columna para timeline */
+            gap: 20px;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .gantt-header-timeline {
+            position: relative;
+            height: 30px;
+        }
+        .gantt-month-marker {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-left: 1px dashed #ccc;
+            font-size: 0.8rem;
+            color: #777;
+            padding-left: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .gantt-body {
+            position: relative;
+        }
+        .gantt-row {
+            display: grid;
+            grid-template-columns: 280px 1fr; /* Debe coincidir con el grid del header */
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            padding: 2px 0;
+        }
+        .gantt-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .gantt-bar-container {
+            position: relative;
+            height: 25px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            opacity: 0.8;
+            transition: background-color 0.3s;
+        }
+        .gantt-bar.completed { background-color: var(--success-color); }
+        .gantt-bar.progress { background-color: var(--warning-color); }
+        .gantt-bar:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu"><i class="fas fa-bars"></i></button>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+    <main class="main-content-wrapper">
+        <header class="header">
+            <div class="tool-logo" data-color='17'><i class="fas fa-file-invoice"></i></div>
+            <h1>Free Online Dynamic APQP/PPAP Planning Tool</h1>
+            <p class="subtitle">An interactive tool to manage product launch projects according to industry standards.</p>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> What are APQP & PPAP?</h2>
+            <p><strong>Advanced Product Quality Planning (APQP)</strong> is a structured framework of procedures and techniques used to develop products, particularly in the automotive industry. The primary goal of APQP is to ensure that new products meet customer requirements through a standardized, preventative process, rather than relying on defect detection after production.</p>
+            <p><strong>Production Part Approval Process (PPAP)</strong> is a key output of the APQP process, typically concluding Phase 4. It is the formal method for providing evidence that a supplier's production process can consistently produce parts that meet all customer engineering design and specification requirements. The PPAP package is a comprehensive set of documents that serves as official approval to begin mass production.</p>
+        </section>
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-history"></i> History and Purpose</h2>
+            <p>The concept of APQP was developed in the late 1980s by the <strong>Automotive Industry Action Group (AIAG)</strong>, a non-profit association founded by the 'Big Three' U.S. automobile manufacturers: Ford, General Motors, and Chrysler. The goal was to standardize the product development and quality planning process for their vast network of suppliers.</p>
+            <p>Before APQP, suppliers dealt with different requirements from each manufacturer, leading to complexity and inefficiency. APQP created a common language and a single, robust framework to guide product development from concept to full production. Its purpose is to foster clear communication, identify and mitigate risks early, and ensure that the final product is delivered on time, within budget, and to the customer's satisfaction. This proactive approach is visualized through its five distinct phases:</p>
+            <div class="infographic-flow">
+                <div class="flow-step"><i class="fas fa-clipboard-list"></i><strong>Phase 1: Plan & Define</strong><span>Understand the customer's voice.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-drafting-compass"></i><strong>Phase 2: Product Design</strong><span>Develop product features and characteristics.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-cogs"></i><strong>Phase 3: Process Design</strong><span>Design a capable manufacturing system.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-check-double"></i><strong>Phase 4: Validation</strong><span>Validate the manufacturing process.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-chart-line"></i><strong>Phase 5: Feedback</strong><span>Assess and improve continuously.</span></div>
+            </div>
+        </section>
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-question-circle"></i> How to Use This Planner</h2>
+            <ul>
+                <li><strong>Step 1: Project Setup:</strong> Enter the basic project information, including the project name, part number, customer, and project lead. Add team members' names, one per line, to make them available for assignment.</li>
+                <li><strong>Step 2: Plan APQP Phases:</strong> For each of the five APQP phases, add specific tasks, assign a responsible team member, set start/end dates, and update the status and notes as the project progresses.</li>
+                <li><strong>Step 3: Manage PPAP Checklist:</strong> Review the 18 standard PPAP elements. Assign a responsible person, update the status (Pending, In Progress, Completed, or N/A), and add any relevant notes.</li>
+                <li><strong>Step 4: Visualize Progress:</strong> After entering dates for your APQP tasks, click "Generate Gantt" to see a visual timeline of your project.</li>
+                <li><strong>Step 5: Track Actions:</strong> Click "Generate Action Plan" to automatically create a to-do list of all pending and in-progress items from both APQP and PPAP sections.</li>
+                <li><strong>Step 6: Export Report:</strong> Once your plan is complete, use the "Export to Excel" button to download a comprehensive report containing all project details, plans, and checklists.</li>
+            </ul>
+        </section>
+        
+        <div class="button-group">
+            <button id="load-example-btn" class="button success"><i class="fas fa-lightbulb"></i> Load Example</button>
+            <button id="reset-btn" class="button warning"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+        <div id="main-content">
+            <section class="section" id="project-setup-section"></section>
+            <section class="section" id="apqp-section">
+                <h2 class="section-title"><i class="fas fa-tasks"></i>Advanced Product Quality Planning (APQP) Phases</h2>
+                <div id="apqp-phases-container"></div>
+            </section>
+            <section class="section" id="ppap-section">
+                <h2 class="section-title"><i class="fas fa-list-check"></i>Production Part Approval Process (PPAP) Checklist</h2>
+                <div id="ppap-container"></div>
+            </section>
+            <section class="section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i>APQP Gantt Chart</h2>
+                <button class="button primary" onclick="generateGantt()"><i class="fas fa-project-diagram"></i> Generate Gantt</button>
+                <div id="gantt-chart-container">Enter task dates and click "Generate" to see the project timeline.</div>
+            </section>
+            <section class="section">
+                <h2 class="section-title"><i class="fas fa-clipboard-check"></i>Automatic Action Plan</h2>
+                <button class="button primary" onclick="generateActionItems()"><i class="fas fa-bolt"></i> Generate Action Plan</button>
+                <table id="action-items-table">
+                    <thead><tr><th>Action Item</th><th>Responsible</th><th>Due Date</th><th>Source</th></tr></thead>
+                    <tbody><tr><td colspan="4" style="text-align:center;">Click "Generate" to populate with pending and in-progress tasks.</td></tr></tbody>
+                </table>
+            </section>
+        </div>
+        <div class="actions">
+            <button class="button primary" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+        </div>
+    </main>
+    <footer role="contentinfo">
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is based on established methodologies like the APQP and PPAP frameworks developed by the AIAG (Automotive Industry Action Group), which are the intellectual property of their respective owners. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the AIAG. While we strive for accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based on the output of these tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+        </div>
+    </footer>
+    <script>
+    // --- SCRIPT de la herramienta APQP/PPAP (Lógica principal sin cambios) ---
+    let state = {};
+    const getInitialState = () => ({ projectInfo: { name: '', partNumber: '', customer: '', lead: '', team: [], }, apqpPhases: [ { id: 1, title: 'Phase 1: Plan and Define Program', icon: 'fa-clipboard-list', desc: 'Objective: To ensure customer needs and expectations are clearly understood.', tasks: [] }, { id: 2, title: 'Phase 2: Product Design & Development', icon: 'fa-drafting-compass', desc: 'Objective: To develop the product\'s features and design.', tasks: [] }, { id: 3, title: 'Phase 3: Process Design & Development', icon: 'fa-cogs', desc: 'Objective: To design and develop a capable manufacturing system.', tasks: [] }, { id: 4, title: 'Phase 4: Product & Process Validation', icon: 'fa-check-double', desc: 'Objective: To validate that the process can consistently produce a compliant product.', tasks: [] }, { id: 5, title: 'Phase 5: Feedback, Assessment & Corrective Action', icon: 'fa-chart-line', desc: 'Objective: Monitor performance, reduce variation, and document lessons learned.', tasks: [] } ], ppapElements: [ "Design Records", "Engineering Change Docs", "Customer Engineering Approval", "Design FMEA (DFMEA)", "Process Flow Diagram", "Process FMEA (PFMEA)", "Control Plan", "Measurement System Analysis (MSA)", "Dimensional Results", "Material/Performance Test Results", "Initial Process Studies", "Qualified Laboratory Documentation", "Appearance Approval Report (AAR)", "Sample Production Parts", "Master Sample", "Checking Aids", "Customer-Specific Requirements", "Part Submission Warrant (PSW)" ].map((name, index) => ({ id: Date.now() + index, name, responsible: '', status: 'pending', notes: '' })) });
+    function renderResponsibleDropdown(selectedValue = '') { const options = state.projectInfo.team.map(member => `<option value="${member}" ${member === selectedValue ? 'selected' : ''}>${member}</option>`).join(''); return `<select class="responsible-selector"><option value="">--Select--</option>${options}</select>`; }
+    function renderStatusDropdown(selectedValue = 'pending') { const statuses = { pending: 'Pending', progress: 'In Progress', completed: 'Completed', na: 'N/A' }; const options = Object.entries(statuses).map(([key, value]) => `<option value="${key}" ${key === selectedValue ? 'selected' : ''}>${value}</option>`).join(''); return `<select class="status-selector">${options}</select>`; }
+    function renderProjectSetup() { const { name, partNumber, customer, lead, team } = state.projectInfo; const container = document.getElementById('project-setup-section'); container.innerHTML = ` <h2 class="section-title"><i class="fas fa-info-circle"></i> Project Setup</h2> <div class="grid-form"> <div class="form-group"><label for="project-name">Project / Program Name</label><input type="text" id="project-name" value="${name}"></div> <div class="form-group"><label for="part-number">Part Number</label><input type="text" id="part-number" value="${partNumber}"></div> <div class="form-group"><label for="customer">Customer</label><input type="text" id="customer" value="${customer}"></div> <div class="form-group"><label for="project-lead">Project Lead</label><input type="text" id="project-lead" value="${lead}"></div> </div> <div class="form-group" style="margin-top: 20px;"> <label for="team-members">Team Members (one name per line)</label> <textarea id="team-members" rows="4" placeholder="John Doe\nJane Smith">${team.join('\n')}</textarea> </div>`; }
+    function renderApqpPhases() { const container = document.getElementById('apqp-phases-container'); container.innerHTML = state.apqpPhases.map((phase, phaseIndex) => ` <details open> <summary><span class="summary-title"><i class="fas ${phase.icon}"></i> ${phase.title}</span><span class="toggle-icon"></span></summary> <div class="phase-content"> <p class="phase-description"><strong>${phase.desc}</strong></p> <table class="apqp-table"> <thead><tr><th>Task / Element</th><th style="width: 20%;">Responsible</th><th style="width: 10%;">Start</th><th style="width: 10%;">End</th><th style="width: 15%;">Status</th><th style="width: 25%;">Notes</th><th style="width: 5%;">Action</th></tr></thead> <tbody> ${phase.tasks.map(task => ` <tr class="task-row status-${task.status}" data-task-id="${task.id}" data-phase-index="${phaseIndex}"> <td><input type="text" placeholder="New task..." value="${task.name}"></td> <td>${renderResponsibleDropdown(task.responsible)}</td> <td><input type="date" value="${task.start}"></td> <td><input type="date" value="${task.end}"></td> <td>${renderStatusDropdown(task.status)}</td> <td><input type="text" value="${task.notes}"></td> <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td> </tr> `).join('')} </tbody> </table> <div class="table-actions"><button class="button secondary add-task-btn" data-phase-index="${phaseIndex}"><i class="fas fa-plus"></i> Add Task</button></div> </div> </details> `).join(''); }
+    function renderPpapChecklist() { const container = document.getElementById('ppap-container'); container.innerHTML = ` <table id="ppap-table"> <thead><tr><th>#</th><th>PPAP Element</th><th style="width: 20%;">Responsible</th><th style="width: 15%;">Status</th><th style="width: 25%;">Notes</th><th>Action</th></tr></thead> <tbody> ${state.ppapElements.map((elem, index) => ` <tr class="task-row status-${elem.status}" data-task-id="${elem.id}"> <td>${index + 1}</td> <td><input type="text" placeholder="New PPAP element..." value="${elem.name}"></td> <td>${renderResponsibleDropdown(elem.responsible)}</td> <td>${renderStatusDropdown(elem.status)}</td> <td><input type="text" value="${elem.notes}"></td> <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td> </tr> `).join('')} </tbody> </table> <div class="table-actions"><button class="button secondary add-ppap-btn"><i class="fas fa-plus"></i> Add Element</button></div>`; }
+    function renderAll() { renderProjectSetup(); renderApqpPhases(); renderPpapChecklist(); }
+    function setupEventListeners() { const main = document.getElementById('main-content'); main.addEventListener('change', e => { const target = e.target; const taskRow = target.closest('tr[data-task-id]'); if (!taskRow) return; const taskId = Number(taskRow.dataset.taskId); const phaseIndex = taskRow.dataset.phaseIndex; let element; if (phaseIndex !== undefined) { element = state.apqpPhases[phaseIndex].tasks.find(t => t.id === taskId); } else { element = state.ppapElements.find(el => el.id === taskId); } if (!element) return; if (target.matches('input[type="text"]')) { const prop = taskRow.cells[taskRow.cells.length === 7 ? 0 : 1].contains(target) ? 'name' : 'notes'; element[prop] = target.value; } else if (target.matches('input[type="date"]')) { const prop = taskRow.cells[2].contains(target) ? 'start' : 'end'; element[prop] = target.value; } else if (target.matches('.responsible-selector')) { element.responsible = target.value; } else if (target.matches('.status-selector')) { element.status = target.value; taskRow.className = `task-row status-${element.status}`; } }); main.addEventListener('input', e => { const target = e.target; if(target.id === 'project-name') state.projectInfo.name = target.value; if(target.id === 'part-number') state.projectInfo.partNumber = target.value; if(target.id === 'customer') state.projectInfo.customer = target.value; if(target.id === 'project-lead') state.projectInfo.lead = target.value; if(target.id === 'team-members') { state.projectInfo.team = target.value.split('\n').filter(Boolean); } }); main.addEventListener('focusout', e => { if(e.target.id === 'team-members') { renderAll(); } }); main.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; if (target.classList.contains('add-task-btn')) { const phaseIndex = target.dataset.phaseIndex; state.apqpPhases[phaseIndex].tasks.push({ id: Date.now(), name: '', responsible: '', start: '', end: '', status: 'pending', notes: '' }); renderApqpPhases(); } if (target.classList.contains('add-ppap-btn')) { state.ppapElements.push({ id: Date.now(), name: '', responsible: '', status: 'pending', notes: '' }); renderPpapChecklist(); } if (target.classList.contains('remove-task-btn')) { const taskRow = target.closest('tr[data-task-id]'); const taskId = Number(taskRow.dataset.taskId); const phaseIndex = taskRow.dataset.phaseIndex; if (phaseIndex !== undefined) { state.apqpPhases[phaseIndex].tasks = state.apqpPhases[phaseIndex].tasks.filter(t => t.id !== taskId); renderApqpPhases(); } else { state.ppapElements = state.ppapElements.filter(el => el.id !== taskId); renderPpapChecklist(); } } }); document.getElementById('load-example-btn').addEventListener('click', loadExample); document.getElementById('reset-btn').addEventListener('click', resetForm); }
+    function init() { state = getInitialState(); renderAll(); setupEventListeners(); document.querySelector('#action-items-table tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;">Click "Generate" to populate.</td></tr>'; document.getElementById('gantt-chart-container').innerHTML = 'Enter task dates and click "Generate" to see the project timeline.'; }
+    function loadExample() { const today = new Date(); const d = (days) => new Date(today.getTime() + days * 86400000).toISOString().split('T')[0]; const exampleState = getInitialState(); exampleState.projectInfo = { name: 'Next-Gen LED Headlight Assembly', partNumber: 'HL-2025-A1', customer: 'Aura Motors', lead: 'Sarah Miller', team: ['Sarah Miller', 'David Chen', 'Emily Rodriguez', 'Michael Johnson'] }; exampleState.apqpPhases[0].tasks = [ { id: Date.now()+1, name: 'Customer Requirements (SOR) Review', responsible: 'Sarah Miller', start: d(0), end: d(7), status: 'completed', notes: 'SOR v2.1 analyzed.' }, { id: Date.now()+2, name: 'Preliminary Feasibility Study', responsible: 'David Chen', start: d(5), end: d(15), status: 'completed', notes: 'Feasible with tooling investment.' }, { id: Date.now()+3, name: 'Define Quality & Reliability Goals', responsible: 'Emily Rodriguez', start: d(10), end: d(20), status: 'progress', notes: 'Targeting >50k hours lifespan.' } ]; exampleState.apqpPhases[1].tasks = [ { id: Date.now()+4, name: 'DFMEA', responsible: 'David Chen', start: d(21), end: d(40), status: 'progress', notes: 'High RPNs on heat dissipation.' }, { id: Date.now()+5, name: 'Prototype Build A', responsible: 'Michael Johnson', start: d(41), end: d(55), status: 'pending', notes: '' }, { id: Date.now()+6, name: 'Design Verification Plan & Report (DVP&R)', responsible: 'Emily Rodriguez', start: d(45), end: d(70), status: 'pending', notes: 'Vibration and thermal tests planned.' } ]; exampleState.apqpPhases[2].tasks = [ { id: Date.now()+7, name: 'Process Flow Diagram', responsible: 'Michael Johnson', start: d(60), end: d(70), status: 'completed', notes: 'Final version approved.' }, { id: Date.now()+8, name: 'PFMEA', responsible: 'Michael Johnson', start: d(71), end: d(90), status: 'progress', notes: '' }, { id: Date.now()+9, name: 'Control Plan (Pre-launch)', responsible: 'Emily Rodriguez', start: d(85), end: d(95), status: 'pending', notes: '' } ]; exampleState.apqpPhases[3].tasks = [ { id: Date.now()+10, name: 'Significant Production Run', responsible: 'Michael Johnson', start: d(100), end: d(105), status: 'pending', notes: '300 pieces planned.' }, { id: Date.now()+11, name: 'Capability Studies (Pp/Ppk)', responsible: 'Emily Rodriguez', start: d(106), end: d(115), status: 'pending', notes: '' }, { id: Date.now()+12, name: 'Part Submission Warrant (PSW)', responsible: 'Sarah Miller', start: d(120), end: d(125), status: 'pending', notes: '' } ]; exampleState.ppapElements[0].status = 'completed'; exampleState.ppapElements[0].responsible = 'David Chen'; exampleState.ppapElements[3].status = 'progress'; exampleState.ppapElements[3].responsible = 'David Chen'; exampleState.ppapElements[4].status = 'completed'; exampleState.ppapElements[4].responsible = 'Michael Johnson'; exampleState.ppapElements[5].status = 'progress'; exampleState.ppapElements[5].responsible = 'Michael Johnson'; exampleState.ppapElements[6].status = 'pending'; exampleState.ppapElements[6].responsible = 'Emily Rodriguez'; exampleState.ppapElements[12].status = 'na'; state = exampleState; renderAll(); }
+    function resetForm() { if (confirm("Are you sure you want to reset all project data?")) init(); }
+    
+    // ==============================================
+    // ===== FUNCIÓN GANTT MODIFICADA Y MEJORADA =====
+    // ==============================================
+    function generateGantt() {
+        const container = document.getElementById('gantt-chart-container');
+        const tasks = [];
+        state.apqpPhases.forEach(phase => {
+            phase.tasks.forEach(task => {
+                if (task.name && task.start && task.end) {
+                    tasks.push({
+                        name: task.name,
+                        start: new Date(task.start + "T00:00:00"),
+                        end: new Date(task.end + "T00:00:00"),
+                        status: task.status
+                    });
+                }
+            });
+        });
+
+        if (tasks.length === 0) {
+            container.innerHTML = 'No tasks with names and valid start/end dates found in APQP phases.';
+            return;
+        }
+
+        tasks.sort((a, b) => a.start - b.start);
+        const minDate = tasks[0].start;
+        const maxDate = new Date(Math.max(...tasks.map(t => t.end)));
+        const totalDurationDays = Math.max(1, (maxDate - minDate) / (1000 * 60 * 60 * 24));
+
+        container.innerHTML = `
+            <div class="gantt-inner-container">
+                <div class="gantt-header">
+                    <div>Task / Element</div>
+                    <div class="gantt-header-timeline"></div>
+                </div>
+                <div class="gantt-body"></div>
+            </div>
+        `;
+
+        const ganttHeaderTimeline = container.querySelector('.gantt-header-timeline');
+        const ganttBody = container.querySelector('.gantt-body');
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let currentDate = new Date(minDate);
+        currentDate.setDate(1);
+
+        while (currentDate <= maxDate) {
+            const monthOffsetDays = (currentDate - minDate) / (1000 * 60 * 60 * 24);
+            const leftPercent = (monthOffsetDays / totalDurationDays) * 100;
+
+            if (leftPercent >= 0 && leftPercent < 100) {
+                const marker = document.createElement('div');
+                marker.className = 'gantt-month-marker';
+                marker.style.left = `${leftPercent}%`;
+                marker.textContent = `${monthNames[currentDate.getMonth()]} '${String(currentDate.getFullYear()).slice(-2)}`;
+                ganttHeaderTimeline.appendChild(marker);
+            }
+            currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+
+        tasks.forEach(task => {
+            const startOffsetDays = (task.start - minDate) / (1000 * 60 * 60 * 24);
+            const durationDays = Math.max(1, (task.end - task.start) / (1000 * 60 * 60 * 24));
+            const leftPercent = (startOffsetDays / totalDurationDays) * 100;
+            const widthPercent = (durationDays / totalDurationDays) * 100;
+
+            const rowEl = document.createElement('div');
+            rowEl.className = 'gantt-row';
+            rowEl.innerHTML = `
+                <div class="gantt-label" title="${task.name}">${task.name}</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar ${task.status}" style="left: ${leftPercent}%; width: ${widthPercent}%;" title="${task.name}: ${task.start.toLocaleDateString()} - ${task.end.toLocaleDateString()}"></div>
+                </div>`;
+            ganttBody.appendChild(rowEl);
+        });
+    }
+
+    function generateActionItems() { const actionTbody = document.querySelector('#action-items-table tbody'); actionTbody.innerHTML = ''; let hasActions = false; state.apqpPhases.forEach(phase => { phase.tasks.forEach(task => { if ((task.status === 'pending' || task.status === 'progress') && task.name) { const newRow = actionTbody.insertRow(); newRow.innerHTML = `<td>${task.name}</td><td>${task.responsible || 'Unassigned'}</td><td>${task.end || 'N/A'}</td><td>${phase.title}</td>`; hasActions = true; } }); }); state.ppapElements.forEach(elem => { if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) { const newRow = actionTbody.insertRow(); newRow.innerHTML = `<td>${elem.name}</td><td>${elem.responsible || 'Unassigned'}</td><td>N/A</td><td>PPAP Checklist</td>`; hasActions = true; } }); if (!hasActions) { actionTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--success-color);">No pending or in-progress actions found. Great job!</td></tr>'; } }
+    function exportToExcel() { const wb = XLSX.utils.book_new(); const { name, partNumber, customer, lead, team } = state.projectInfo; const project_info = [ ["Project Name", name], ["Part Number", partNumber], ["Customer", customer], ["Project Lead", lead], [], ["Team Members"], ...team.map(m => [m]) ]; XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info"); const apqp_data = [["Phase", "Task", "Responsible", "Start Date", "End Date", "Status", "Notes"]]; state.apqpPhases.forEach(phase => { phase.tasks.forEach(task => { apqp_data.push([phase.title, task.name, task.responsible, task.start, task.end, task.status, task.notes]); }); }); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(apqp_data), "APQP Plan"); const ppap_data = [["#", "Element", "Responsible", "Status", "Notes"]]; state.ppapElements.forEach((elem, index) => { ppap_data.push([index + 1, elem.name, elem.responsible, elem.status, elem.notes]); }); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ppap_data), "PPAP Checklist"); generateActionItems(); const actionTable = document.getElementById("action-items-table"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(actionTable), "Action Plan"); const projectName = state.projectInfo.name || "Dynamic_APQP_Plan"; XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}.xlsx`); }
+    document.addEventListener('DOMContentLoaded', init);
+    </script>
+    
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/8AADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AA');
+            hoverSound.preload = 'auto';
+            let audioUnlocked = false;
+            function unlockAudio() { if (audioUnlocked) return; hoverSound.volume = 0; hoverSound.play().then(() => { hoverSound.pause(); hoverSound.currentTime = 0; hoverSound.volume = 1; audioUnlocked = true; document.removeEventListener('click', unlockAudio); document.removeEventListener('touchstart', unlockAudio); }).catch(e => {}); }
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => { card.addEventListener('mouseenter', () => { if (audioUnlocked) { hoverSound.currentTime = 0; hoverSound.play().catch(e => {}); } }); });
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+            navToggle.addEventListener('click', () => { navMenu.classList.toggle('show-menu'); const icon = navToggle.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); if (!navMenu.classList.contains('show-menu')) { toolsDropdownMenu.classList.remove('show-submenu'); toolsDropdownContainer.classList.remove('active'); } });
+            toolsDropdownToggle.addEventListener('click', (event) => { if (window.innerWidth <= 992) { event.preventDefault(); toolsDropdownMenu.classList.toggle('show-submenu'); toolsDropdownContainer.classList.toggle('active'); } });
+        });
+    </script>
+</body>
+</html>

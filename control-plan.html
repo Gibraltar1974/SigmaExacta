@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Control Plan Creator | Sigma Exacta</title>
+  <link rel="canonical" href="https://sigmaexacta.com/control-plan" />
+  <meta name="description" content="A free, interactive web-based tool for creating and managing manufacturing control plans. Ideal for quality engineers and process managers following APQP principles. Export your plan to Excel.">
+  <meta name="keywords" content="control plan, quality control, manufacturing, APQP, IATF 16949, process control, SPC, quality engineering, Six Sigma, free tool, prevention">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+      /* --- Estilos de la barra de navegación (copiados de index.html) --- */
+      .top-bar {
+          position: sticky; 
+          top: 0;
+          z-index: 1001;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 20px;
+          background-color: #222;
+      }
+      .logo-text, .navigation .nav-link, .nav-toggle {
+          color: #fff;
+      }
+      .nav-toggle {
+          display: none; 
+          font-size: 1.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+      }
+      .navigation .nav-menu {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          align-items: center;
+      }
+      .navigation .nav-link {
+          padding: 10px 15px;
+          text-decoration: none;
+          font-weight: 600;
+          display: block;
+      }
+      .navigation .nav-link i {
+          margin-left: 5px;
+          transition: transform 0.3s ease;
+      }
+      .nav-item-dropdown {
+          position: relative;
+      }
+      .dropdown-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: #fff;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+          border-radius: 5px;
+          z-index: 1000;
+          min-width: 600px;
+          padding: 20px;
+      }
+      .dropdown-menu a, .dropdown-menu h4 {
+          color: #333;
+      }
+      .dropdown-link:hover {
+          background-color: #f1f1f1;
+      }
+      .dropdown-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 20px;
+      }
+      .nav-item-dropdown:hover > .dropdown-menu {
+          display: block;
+      }
+      @media (max-width: 992px) {
+          .nav-toggle { display: block; }
+          .navigation .nav-menu {
+              display: none;
+              flex-direction: column;
+              position: absolute;
+              top: 100%;
+              left: 0;
+              width: 100%;
+              background-color: #fff;
+              border-top: 1px solid #eee;
+          }
+          .navigation .nav-menu .nav-link { color: #333; }
+          .navigation .nav-menu.show-menu { display: flex; }
+          .navigation .nav-item { width: 100%; text-align: left; }
+          .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+          .dropdown-menu {
+              display: none; 
+              position: static; 
+              width: 100%;
+              box-shadow: none;
+              border-top: 1px solid #f0f0f0;
+              padding: 10px 0 10px 30px;
+              min-width: unset;
+              background-color: #f9f9f9;
+          }
+          .dropdown-menu.show-submenu { display: block; }
+          .dropdown-grid { grid-template-columns: 1fr; }
+          .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+          .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+          .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+      }
+  </style>
+
+  <style>
+    /* Estilos específicos de la página y generales unificados */
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      font-size: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; margin: 0; padding: 0; color: #333; background-color: #f5f7fa; line-height: 1.6; }
+    img, canvas { max-width: 100%; height: auto; }
+    
+    .main-content-wrapper { padding: 1.25rem; }
+    .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
+    .header h1 { color: var(--primary-color); font-size: clamp(1.8rem, 4vw, 2.2rem); margin: 0.5rem 0; font-weight: 800; }
+    .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+    .content-block { border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .content-block h2 { font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem; color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.6rem; font-weight: 800; }
+    .content-block h2 .fas { margin-right: 0.75rem; }
+    .infographic-flow { display: flex; justify-content: space-between; align-items: stretch; margin-top: 1.5rem; text-align: center; flex-wrap: wrap; gap: 0.6rem; }
+    .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+    .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
+    .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
+    .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto 0.6rem; flex-grow: 0; }
+    @media (max-width: 992px) { .infographic-flow { flex-direction: column; align-items: center; } .flow-arrow { display: none; } }
+    .key-components-list { list-style: none; padding-left: 0; }
+    .key-components-list li { margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative; }
+    .key-components-list li::before { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--success-color); position: absolute; left: 0; top: 2px; }
+    
+    button { color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px; cursor: pointer; margin: 5px; font-size: 1rem; transition: background-color 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif; font-weight: 600; }
+    button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
+    .btn-primary { background-color: var(--secondary-color); }
+    .btn-primary:hover { background-color: #2980b9; }
+    .btn-success { background-color: var(--success-color); }
+    .btn-success:hover { background-color: #229954; }
+    .btn-warning { background-color: var(--warning-color); }
+    .btn-warning:hover { background-color: #d4ac0d; }
+    .btn-danger { background-color: var(--accent-color); padding: 5px 10px; }
+    .btn-danger:hover { background-color: #c0392b; }
+    
+    /* ===== Contenedor para la tabla que permite el scroll horizontal en móviles ===== */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Para scroll suave en iOS */
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 1.25rem;
+    }
+    
+    #controlPlanTable { 
+        border-collapse: collapse; 
+        width: 100%; 
+        background: white; 
+        font-size: 1rem; 
+    }
+    
+    #controlPlanTable th, #controlPlanTable td { 
+        border: 1px solid #ddd; 
+        text-align: left; 
+        vertical-align: top; 
+        white-space: normal; 
+    }
+    #controlPlanTable td { padding: 0; }
+    #controlPlanTable th { 
+        background-color: var(--primary-color); 
+        color: white; 
+        font-weight: 600; 
+        text-align: center; 
+        padding: 0.75rem 0.5rem; 
+        vertical-align: middle;
+    }
+    #controlPlanTable tr:nth-child(even) { background-color: #f8f9fa; }
+    #controlPlanTable textarea, #controlPlanTable select { 
+        width: 100%; 
+        height: 100%; 
+        padding: 0.5rem; 
+        border: none; 
+        border-radius: 0; 
+        font-size: 1rem; 
+        font-family: 'Nunito', sans-serif; 
+        box-sizing: border-box; 
+        background-color: transparent; 
+        transition: all 0.2s; 
+    }
+    #controlPlanTable textarea { resize: none; overflow: hidden; min-height: 48px; }
+    #controlPlanTable textarea:focus, #controlPlanTable select:focus { 
+        outline: none; 
+        background-color: #fff; 
+        box-shadow: inset 0 0 0 2px var(--secondary-color); 
+    }
+    
+    .button-container { margin-top: 1.25rem; text-align: right; }
+    .action-cell { text-align: center; vertical-align: middle; padding: 4px; }
+    .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
+    .instructions-box li { margin-bottom: 5px; }
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<body>
+
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu"><i class="fas fa-bars"></i></button>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content-wrapper">
+  <header class="header">
+    <h1><span style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #34c759; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i class="fas fa-tasks" style="color: white; font-size: 22px;"></i></span>Free Online Control Plan Creator Tool</h1>
+    <p class="header-subtitle">Ensuring Quality at Every Step of Your Process</p>
+  </header>
+
+  <div class="content-block">
+      <h2><i class="fas fa-file-signature"></i> What is a Control Plan?</h2>
+      <p>A Control Plan is a living document that provides a structured summary of the methods used for controlling processes and products. Its primary goal is to ensure all outputs meet customer requirements by minimizing process and product variation. It acts as a roadmap for quality control, detailing every check and balance from raw materials to the final product.</p>
+      <div class="infographic-flow">
+          <div class="flow-step"> <i class="fas fa-cogs"></i> <strong>1. Process</strong> <span>What step is being done?</span> </div>
+          <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+          <div class="flow-step"> <i class="fas fa-ruler-combined"></i> <strong>2. Characteristic</strong> <span>What is being measured?</span> </div>
+          <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+          <div class="flow-step"> <i class="fas fa-shield-alt"></i> <strong>3. Control</strong> <span>How is it being checked?</span> </div>
+          <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+          <div class="flow-step"> <i class="fas fa-exclamation-triangle"></i> <strong>4. Reaction</strong> <span>What happens if it's wrong?</span> </div>
+      </div>
+  </div>
+
+  <div class="content-block">
+      <h2><i class="fas fa-list-ol"></i> Key Components</h2>
+      <ul class="key-components-list">
+          <li><strong>Process Name:</strong> The specific manufacturing step being controlled.</li>
+          <li><strong>Characteristic:</strong> The specific product or process feature being measured.</li>
+          <li><strong>Specification / Tolerance:</strong> The target value and acceptable range.</li>
+          <li><strong>Evaluation Technique:</strong> The tool or method used to perform the measurement.</li>
+          <li><strong>Sample Size / Frequency:</strong> How many parts to check and how often.</li>
+          <li><strong>Control Method:</strong> How the data is recorded and monitored.</li>
+          <li><strong>Reaction Plan:</strong> Predefined actions to take if a characteristic is out of spec.</li>
+      </ul>
+  </div>
+
+  <div class="content-block">
+    <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+    <div class="instructions-box">
+        <ul>
+            <li>Click <strong><i class="fas fa-plus"></i> Add Row</strong> to add a new process step.</li>
+            <li>Click the <strong><i class="fas fa-trash-alt"></i></strong> button on any row to delete it.</li>
+            <li>Use <strong><i class="fas fa-magic"></i> Load Example</strong> or <strong><i class="fas fa-undo"></i> Reset Plan</strong>.</li>
+            <li>On mobile, scroll the table horizontally to see all columns.</li>
+            <li>Click <strong><i class="fas fa-file-excel"></i> Export to Excel</strong> to download your plan.</li>
+        </ul>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <div class="table-container">
+      <table id="controlPlanTable">
+          <thead>
+          <tr>
+              <th style="min-width: 150px;"><i class="fas fa-cogs"></i> Process Name</th>
+              <th style="min-width: 120px;"><i class="fas fa-robot"></i> Machine / Tool</th>
+              <th style="min-width: 150px;"><i class="fas fa-ruler-combined"></i> Characteristic</th>
+              <th style="min-width: 150px;"><i class="fas fa-arrows-alt-h"></i> Spec / Tolerance</th>
+              <th style="min-width: 200px;"><i class="fas fa-search"></i> Evaluation Technique</th>
+              <th style="min-width: 120px;"><i class="fas fa-box"></i> Sample Size / Freq.</th>
+              <th style="min-width: 200px;"><i class="fas fa-shield-alt"></i> Control Method</th>
+              <th style="min-width: 200px;"><i class="fas fa-exclamation-triangle"></i> Reaction Plan</th>
+              <th style="min-width: 80px;"><i class="fas fa-times-circle"></i> Action</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+      </table>
+    </div>
+    
+    <div class="button-container">
+        <button id="addRowBtn" class="btn-primary"><i class="fas fa-plus"></i> Add Row</button>
+        <button id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
+        <button id="resetPlanBtn" class="btn-warning"><i class="fas fa-undo"></i> Reset Plan</button>
+        <button id="exportBtn" class="btn-success"><i class="fas fa-file-excel"></i> Export to Excel</button>
+    </div>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This Control Plan tool is based on established methodologies, such as those found in the Advanced Product Quality Planning (APQP) and IATF 16949 frameworks. The tool on this site is an independent implementation and is not affiliated with, sponsored by, or endorsed by the Automotive Industry Action Group (AIAG) or any other standards body. While we strive for accuracy, we make no warranty or guarantee regarding the results. All decisions based on the output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+    </div>
+</footer>
+
+<script>
+  const evaluationTechniques = ["", "Visual Inspection", "Digital Caliper", "Micrometer", "Go/No-Go Gauge", "CMM", "Profilometer", "Coating Thickness Gauge", "Torque Wrench"];
+  const controlMethods = ["", "SPC Chart (X-bar & R)", "First-off Inspection Report", "100% Inspection", "Operator Checklist", "Attribute Chart (p/np)", "Destructive Testing", "Process Audit"];
+  const reactionPlans = ["", "Stop Process & Quarantine", "Adjust Machine/Tool", "Notify Supervisor", "Sort Suspect Material", "Re-work/Repair Part", "Check Tooling for Wear", "Initiate 8D Report"];
+  const exampleData = [
+    { processName: "10. Stamping", machine: "Press #5", characteristic: "Hole Diameter", spec: "10.00 ± 0.05 mm", evaluation: "Digital Caliper", sample: "5 pcs / hour", controlMethod: "SPC Chart (X-bar & R)", reactionPlan: "Stop Process & Quarantine" },
+    { processName: "20. CNC Machining. This step involves a long description to demonstrate how the text area auto-expands to fit more content.", machine: "Haas VF-2", characteristic: "Surface Finish", spec: "Ra < 1.6 µm", evaluation: "Profilometer", sample: "1 pc / setup", controlMethod: "First-off Inspection Report", reactionPlan: "Adjust Machine/Tool" },
+    { processName: "30. Welding", machine: "Robotic Welder #2", characteristic: "Weld Penetration", spec: "3.0 ± 0.2 mm", evaluation: "Visual Inspection", sample: "1 pc / 4 hrs", controlMethod: "Destructive Testing", reactionPlan: "Notify Supervisor" },
+    { processName: "40. Painting", machine: "Paint Booth", characteristic: "Paint Thickness", spec: "70 ± 10 µm", evaluation: "Coating Thickness Gauge", sample: "3 spots / part", controlMethod: "100% Inspection", reactionPlan: "Sort Suspect Material" },
+    { processName: "50. Assembly", machine: "Line 1", characteristic: "Torque M6 Bolt", spec: "8 ± 1 Nm", evaluation: "Torque Wrench", sample: "100%", controlMethod: "Operator Checklist", reactionPlan: "Re-work/Repair Part" }
+  ];
+  const tableBody = document.querySelector("#controlPlanTable tbody");
+  function autoGrow(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
+  function createSelect(options, selectedValue = "") { const select = document.createElement("select"); options.forEach(optionText => { const option = document.createElement("option"); option.value = optionText; option.textContent = optionText; if (optionText === selectedValue) option.selected = true; select.appendChild(option); }); return select; }
+  function createRow(data = {}) { const row = document.createElement("tr"); const createTextarea = (value, placeholder = '...') => `<textarea rows="1" oninput="autoGrow(this)" placeholder="${placeholder}">${value || ''}</textarea>`; row.innerHTML = `<td>${createTextarea(data.processName)}</td><td>${createTextarea(data.machine)}</td><td>${createTextarea(data.characteristic)}</td><td>${createTextarea(data.spec)}</td><td></td><td>${createTextarea(data.sample)}</td><td></td><td></td><td class="action-cell"><button class="btn-danger"><i class="fas fa-trash-alt"></i></button></td>`; row.cells[4].appendChild(createSelect(evaluationTechniques, data.evaluation)); row.cells[6].appendChild(createSelect(controlMethods, data.controlMethod)); row.cells[7].appendChild(createSelect(reactionPlans, data.reactionPlan)); row.querySelector('.btn-danger').addEventListener('click', () => row.remove()); tableBody.appendChild(row); row.querySelectorAll('textarea').forEach(autoGrow); }
+  function loadExample() { resetPlan(); exampleData.forEach(rowData => createRow(rowData)); }
+  function resetPlan() { tableBody.innerHTML = ''; }
+  function exportToExcel() {
+    const headers = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
+    headers.pop();
+    const numCols = headers.length;
+    
+    const data = [];
+    
+    data.push(["SigmaExacta Control Plan"]);
+    data.push(["Generated on: " + new Date().toLocaleString()]);
+    data.push([]); // Blank row for spacing
+    data.push(headers);
+
+    tableBody.querySelectorAll('tr').forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach((cell, index) => {
+            if (index < numCols) {
+                const input = cell.querySelector('textarea, select');
+                rowData.push(input ? input.value : cell.innerText);
+            }
+        });
+        data.push(rowData);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    if (!ws['!merges']) ws['!merges'] = [];
+    ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
+    ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
+    
+    ws['!cols'] = headers.map(h => ({ wch: h.length > 20 ? 30 : 20 }));
+    
+    XLSX.utils.book_append_sheet(wb, ws, "Control Plan");
+    XLSX.writeFile(wb, "Control_Plan_Sigma_Exacta.xlsx");
+  }
+  document.getElementById("addRowBtn").addEventListener("click", () => createRow());
+  document.getElementById("loadExampleBtn").addEventListener("click", loadExample);
+  document.getElementById("resetPlanBtn").addEventListener("click", resetPlan);
+  document.getElementById("exportBtn").addEventListener("click", exportToExcel);
+  createRow();
+</script>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            if (!navMenu.classList.contains('show-menu')) {
+                toolsDropdownMenu.classList.remove('show-submenu');
+                toolsDropdownContainer.classList.remove('active');
+            }
+        });
+        
+        toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+                event.preventDefault(); 
+                toolsDropdownMenu.classList.toggle('show-submenu');
+                toolsDropdownContainer.classList.toggle('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

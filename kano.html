@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kano Model Analysis Tool | Sigma Exacta</title>
+  <link rel="canonical" href="https://sigmaexacta.com/kano" />
+  <meta name="description" content="Use our free interactive Kano Model graph and summary table to analyze customer satisfaction. Visually categorize features to prioritize product development.">
+  <meta name="keywords" content="Kano Model, Kano Analysis, Kano graph, customer satisfaction, product development, feature prioritization, user experience, free tool, chart.js">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --attractive-color: #3498db;
+      --performance-color: #2ecc71;
+      --must-be-color: #f1c40f;
+      --reverse-color: #9b59b6;
+      --indifferent-color: #95a5a6;
+      --questionable-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --danger-color: #c0392b;
+      font-size: 16px;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f5f7fa;
+      line-height: 1.6;
+    }
+    
+    .main-content-wrapper { margin: 0; padding: 1.25rem; }
+    
+    .header { max-width: 1000px; margin: 0 auto 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
+    
+    /* ESTILOS AÑADIDOS/MODIFICADOS PARA EL ICONO EN H1 */
+    .tool-logo {
+        width: 50px; 
+        height: 50px; 
+        border-radius: 10px; 
+        display: inline-flex; 
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 1.8rem; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-right: 15px; 
+        vertical-align: middle; 
+    }
+    .tool-logo[data-color='13'] { 
+        background-color: #0076a8; /* Color de Kano Model en index.html */
+    }
+    .header h1 { 
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color); 
+        font-size: clamp(1.5rem, 4vw, 1.8rem); 
+        margin: 0.5rem 0; 
+        font-weight: 800; 
+    }
+    /* FIN DE ESTILOS MODIFICADOS */
+    
+    .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+
+    .content-block {
+      max-width: 1000px;
+      margin: 0 auto 1.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background-color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .content-block h2 {
+      font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
+      color: var(--primary-color); border-bottom: 2px solid var(--attractive-color);
+      padding-bottom: 0.6rem; font-weight: 800;
+    }
+    .content-block h2 .fas { margin-right: 0.75rem; }
+
+    .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; list-style-type: '✔ '; }
+    .instructions-box li { margin-bottom: 0.5rem; padding-left: 0.6rem; line-height: 1.6; }
+    
+    label { display: block; margin-bottom: 0.6rem; color: var(--primary-color); font-weight: 600; }
+    input[type="text"], select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; margin-bottom: 1rem; transition: border 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif; }
+    input:focus, select:focus, button:focus-visible { outline: none; border-color: var(--attractive-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+    
+    button {
+        color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px;
+        cursor: pointer; margin: 5px; font-size: 1rem;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        font-family: 'Nunito', sans-serif; font-weight: 600;
+    }
+    .btn-primary { background-color: var(--attractive-color); }
+    .btn-primary:hover { background-color: #2980b9; }
+    .btn-success { background-color: var(--performance-color); }
+    .btn-success:hover { background-color: #27ad60; }
+    .btn-warning { background-color: #e67e22; }
+    .btn-warning:hover { background-color: #d35400; }
+    
+    .chart-container {
+        position: relative;
+        height: 450px;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    /* --- ESTILOS DE LA TABLA DE RESULTADOS --- */
+    .summary-table-container { margin-top: 2.5rem; overflow-x: auto; } /* Ayuda en pantallas intermedias */
+    .summary-table { width: 100%; border-collapse: collapse; }
+    .summary-table th, .summary-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+        vertical-align: top;
+    }
+    .summary-table th { background-color: #f8f9fa; color: var(--primary-color); font-weight: 800; }
+    .summary-table .category-cell { width: 30%; font-weight: 600; }
+    .summary-table .features-cell p { 
+        margin: 0 0 8px 0; padding: 5px 8px; background-color: var(--light-color); 
+        border-radius: 4px; display: flex; justify-content: space-between; align-items: center; 
+        gap: 10px; /* Añade espacio entre el texto y el botón */
+    }
+    .summary-table .features-cell p:last-child { margin-bottom: 0; }
+    .no-features-message { color: #7f8c8d; font-style: italic; }
+
+    /* === INICIO DE LA MODIFICACIÓN ANTI-DESBORDAMIENTO === */
+    /* Regla clave para evitar que texto largo sin espacios cause desbordamiento */
+    .summary-table .features-cell p span {
+        word-break: break-word; /* O `overflow-wrap: break-word;` */
+        flex-grow: 1; /* Permite que el span crezca */
+        flex-shrink: 1; /* Permite que el span se encoja */
+        min-width: 0; /* Truco de Flexbox: permite que el elemento se encoja por debajo del tamaño de su contenido */
+    }
+    
+    /* Media query para transformar la tabla en tarjetas en pantallas pequeñas */
+    @media (max-width: 600px) {
+        .summary-table thead {
+            display: none; /* Oculta los encabezados de la tabla, ya no son necesarios */
+        }
+        .summary-table tbody tr {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .summary-table td {
+            width: 100%;
+            border: none;
+        }
+        .summary-table .category-cell {
+            border-bottom: 1px solid #e0e0e0; /* Separa la "cabecera" de la tarjeta del contenido */
+            background-color: #f9f9f9;
+            padding: 12px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .summary-table .features-cell {
+            padding: 15px;
+        }
+    }
+    /* === FIN DE LA MODIFICACIÓN ANTI-DESBORDAMIENTO === */
+
+    .remove-btn {
+        background: none; border: none; color: #aaa; cursor: pointer;
+        padding: 2px 5px; font-size: 1em; line-height: 1;
+        transition: color 0.2s;
+        flex-shrink: 0; /* Evita que el botón se encoja */
+    }
+    .remove-btn:hover { color: var(--danger-color); }
+    
+    .remove-category-btn {
+        background-color: #f2f2f2; color: #888; border: 1px solid #ddd;
+        font-size: 0.75rem; padding: 3px 8px; font-weight: normal; margin-left: 10px;
+    }
+    .remove-category-btn:hover { background-color: var(--danger-color); color: white; border-color: var(--danger-color); }
+    .category-header { display: flex; justify-content: space-between; align-items: center; }
+
+    footer { padding: 2rem 1.25rem; }
+    
+    .disclaimer-note { 
+        margin-top: 2rem; 
+        padding: 0 1rem; 
+        font-size: 0.8rem; 
+        color: #777; 
+        max-width: 1000px; 
+        margin-left: auto; 
+        margin-right: auto; 
+        text-align: left;
+        line-height: 1.6;
+    }
+    .disclaimer-note p { margin: 0; }
+  </style>
+
+    <style>
+        /* --- Estilos base para la barra de navegación --- */
+        .top-bar {
+            position: sticky; top: 0; z-index: 1001;    
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background-color: #222; 
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
+        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
+        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
+        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
+        .nav-item-dropdown { position: relative; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 0;
+            background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px;
+            z-index: 1000; min-width: 600px; padding: 20px;
+        }
+        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
+        .dropdown-link:hover { background-color: #f1f1f1; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .nav-item-dropdown:hover > .dropdown-menu { display: block; }
+        @media (max-width: 992px) {
+            .nav-toggle { display: block; }
+            .navigation .nav-menu {
+                display: none; flex-direction: column; position: absolute; top: 100%;
+                left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
+            }
+            .navigation .nav-menu .nav-link { color: #333; }
+            .navigation .nav-menu.show-menu { display: flex; }
+            .navigation .nav-item { width: 100%; text-align: left; }
+            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+            .dropdown-menu {
+                display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
+            }
+            .dropdown-menu.show-submenu { display: block; }
+            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+        }
+    </style>
+    </head>
+<body>
+
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+
+<main class="main-content-wrapper">
+  <header class="header">
+    <h1>
+      <div class="tool-logo" data-color="13" title="Kano Model">
+        <i class="fas fa-heart"></i>
+      </div> 
+      Free Online Customer Satisfaction (Kano Mode) Interactive Tool
+    </h1>
+    <p class="header-subtitle">Prioritize features by visualizing their impact on customer satisfaction.</p>
+  </header>
+
+  <div class="content-block">
+      <h2><i class="fas fa-question-circle"></i> What is the Kano Model?</h2>
+      <p>The <strong>Kano Model</strong> is a framework for product development and customer satisfaction. It classifies product attributes into five categories based on how customers perceive them. This helps teams distinguish between basic necessities and delightful extras, making it easier to prioritize features that will have the most positive impact.</p>
+      <ul>
+          <li><strong>Must-Be (Basic)</strong>: Expected features. Their absence causes dissatisfaction, but their presence is taken for granted (e.g., brakes on a car).</li>
+          <li><strong>Performance</strong>: The more of these, the better. Satisfaction is proportional to their level of execution (e.g., battery life).</li>
+          <li><strong>Attractive (Delighters)</strong>: Unexpected features. Their presence delights customers, but their absence does not cause dissatisfaction (e.g., a surprise upgrade).</li>
+          <li><strong>Indifferent</strong>: Features customers don't care about.</li>
+          <li><strong>Reverse</strong>: Features that cause dissatisfaction when present.</li>
+      </ul>
+  </div>
+  
+  <div class="content-block">
+    <h2><i class="fas fa-history"></i> Origin of the Model</h2>
+    <p>The model was developed in the 1980s by <strong>Dr. Noriaki Kano</strong>, a professor of quality management at the Tokyo University of Science. While researching what drives customer satisfaction and loyalty, he challenged the traditional belief that improving every feature would proportionally increase satisfaction.</p>
+    <p>His findings revealed a non-linear relationship between product functionality and customer emotional response, leading to the creation of the five distinct categories. The Kano Model has since become a vital tool in user experience (UX), marketing, and product strategy.</p>
+  </div>
+
+  <div class="content-block">
+      <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+      <div class="instructions-box">
+        <ul>
+          <li><strong>Enter a Feature:</strong> In the section below, type a feature description.</li>
+          <li><strong>Answer Questions:</strong> Select how a customer would feel if the feature is present (Functional) and if it is absent (Dysfunctional).</li>
+          <li><strong>Add to Graph:</strong> Click "Add to Analysis". The feature will appear on the chart and in the summary table.</li>
+          <li><strong>Manage Features:</strong> Use the <i class="fas fa-trash-alt" style="color: var(--danger-color);"></i> icons in the table to remove individual features or entire categories.</li>
+          <li><strong>Load Example:</strong> Click "Load Example" to populate the tool with sample data.</li>
+        </ul>
+      </div>
+  </div>
+  
+  <div class="content-block">
+    <h2><i class="fas fa-chart-bar"></i> Build Your Kano Analysis</h2>
+    <form id="featureForm">
+      <label for="featureInput">Feature Description:</label>
+      <input type="text" id="featureInput" placeholder="e.g., Free welcome drink" required>
+      
+      <label for="functionalSelect">If the feature IS present, the customer feels:</label>
+      <select id="functionalSelect">
+        <option value="0">1. Like it</option>
+        <option value="1">2. Expect it (Must-be)</option>
+        <option value="2">3. Neutral</option>
+        <option value="3">4. Can live with it</option>
+        <option value="4">5. Dislike it</option>
+      </select>
+
+      <label for="dysfunctionalSelect">If the feature IS NOT present, the customer feels:</label>
+      <select id="dysfunctionalSelect">
+        <option value="0">1. Like it</option>
+        <option value="1">2. Expect it (Must-be)</option>
+        <option value="2">3. Neutral</option>
+        <option value="3">4. Can live with it</option>
+        <option value="4">5. Dislike it</option>
+      </select>
+      
+      <div style="text-align: center;">
+        <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Add to Analysis</button>
+        <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-play-circle"></i> Load Example</button>
+        <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset All</button>
+      </div>
+    </form>
+    
+    <div class="chart-container">
+        <canvas id="kanoChart"></canvas>
+    </div>
+
+    <div class="summary-table-container">
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Features</th>
+                </tr>
+            </thead>
+            <tbody id="summaryTableBody">
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h2><i class="fas fa-file-export"></i> Export Your Analysis</h2>
+    <p>Once you have analyzed your features, you can download a clean report of your categorized list for offline use, sharing, or documentation. Click the button below to generate an Excel file.</p>
+    <div style="text-align: center; margin-top: 15px;">
+        <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export Analysis to Excel</button>
+    </div>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The Kano Model is a theory developed by Noriaki Kano. This tool is an independent implementation provided for educational and informational purposes only. It is not affiliated with, sponsored by, or endorsed by Noriaki Kano or his affiliated institutions. The use of this tool is at your own risk, and all decisions made based on its output are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
+    </div>
+</footer>
+
+<script>
+// Functions to remove features/categories declared globally
+function removeFeature(featureName) {
+    window.kanoApp.removeFeature(featureName);
+}
+
+function removeCategory(categoryName) {
+    window.kanoApp.removeCategory(categoryName);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // App logic is now encapsulated in an object on the window
+    window.kanoApp = {
+        init: function() {
+            this.cacheDOM();
+            this.initChartLogo();
+            this.bindEvents();
+            this.updateUI();
+        },
+        cacheDOM: function() {
+            this.featureForm = document.getElementById('featureForm');
+            this.featureInput = document.getElementById('featureInput');
+            this.functionalSelect = document.getElementById('functionalSelect');
+            this.dysfunctionalSelect = document.getElementById('dysfunctionalSelect');
+            this.loadExampleBtn = document.getElementById('loadExampleBtn');
+            this.resetBtn = document.getElementById('resetBtn');
+            this.exportBtn = document.getElementById('exportBtn');
+            this.ctx = document.getElementById('kanoChart').getContext('2d');
+            this.summaryTableBody = document.getElementById('summaryTableBody');
+        },
+        // State
+        kanoChart: null,
+        analyzedFeatures: [],
+        logoImage: new Image(),
+        logoLoaded: false,
+        
+        // Constants
+        kanoTable: [
+          ['Q', 'A', 'A', 'A', 'P'], ['R', 'I', 'I', 'I', 'M'], ['R', 'I', 'I', 'I', 'M'],
+          ['R', 'I', 'I', 'I', 'M'], ['R', 'R', 'R', 'R', 'Q']
+        ],
+        categoryOrder: ['Attractive', 'Performance', 'Must-Be', 'Indifferent', 'Reverse', 'Questionable'],
+        categoryMap: {
+            'P': 'Performance', 'A': 'Attractive', 'M': 'Must-Be',
+            'I': 'Indifferent', 'R': 'Reverse', 'Q': 'Questionable'
+        },
+        colorMap: {
+            'Attractive': '#3498db', 'Performance': '#2ecc71', 'Must-Be': '#f1c40f',
+            'Indifferent': '#95a5a6', 'Reverse': '#9b59b6', 'Questionable': '#e74c3c'
+        },
+        iconMap: {
+            'Attractive': 'fas fa-gem', 'Performance': 'fas fa-chart-line', 'Must-Be': 'fas fa-check-square',
+            'Indifferent': 'fas fa-meh', 'Reverse': 'fas fa-undo', 'Questionable': 'fas fa-question-circle'
+        },
+        
+        // Methods
+        initChartLogo: function() {
+            this.logoImage.src = 'sigma-exacta-icon.jpg';
+            this.logoImage.onload = () => {
+                this.logoLoaded = true;
+                if (this.kanoChart) this.kanoChart.draw();
+            };
+        },
+        bindEvents: function() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+
+                    if (!navMenu.classList.contains('show-menu') && toolsDropdownContainer) {
+                        toolsDropdownMenu.classList.remove('show-submenu');
+                        toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
+
+            this.featureForm.addEventListener('submit', (e) => {
+              e.preventDefault();
+              const description = this.featureInput.value.trim();
+              if (description) {
+                this.addFeatureToList(description, parseInt(this.functionalSelect.value, 10), parseInt(this.dysfunctionalSelect.value, 10));
+                this.featureInput.value = '';
+                this.featureInput.focus();
+              }
+            });
+            this.loadExampleBtn.addEventListener('click', () => this.loadExample());
+            this.resetBtn.addEventListener('click', () => this.resetAnalysis());
+            this.exportBtn.addEventListener('click', () => this.exportAnalysis());
+        },
+        addFeatureToList: function(description, funcAnswer, dysfuncAnswer) {
+            const categoryCode = this.kanoTable[funcAnswer][dysfuncAnswer];
+            const categoryName = this.categoryMap[categoryCode];
+            this.analyzedFeatures.push({ name: description, category: categoryName });
+            this.updateUI();
+        },
+        removeFeature: function(featureName) {
+            this.analyzedFeatures = this.analyzedFeatures.filter(f => f.name !== featureName);
+            this.updateUI();
+        },
+        removeCategory: function(categoryName) {
+            this.analyzedFeatures = this.analyzedFeatures.filter(f => f.category !== categoryName);
+            this.updateUI();
+        },
+        resetAnalysis: function() {
+            this.analyzedFeatures = [];
+            this.updateUI();
+            this.featureInput.focus();
+        },
+        loadExample: function() {
+            this.analyzedFeatures = [];
+            const exampleData = [
+                { name: 'Fast Check-in', func: 0, dysfunc: 4 }, { name: 'Longer Battery Life', func: 0, dysfunc: 4 },
+                { name: 'Free Welcome Drink', func: 0, dysfunc: 2 }, { name: 'Unexpected Room Upgrade', func: 0, dysfunc: 2 },
+                { name: 'Clean Room', func: 1, dysfunc: 4 }, { name: 'Working Wi-Fi', func: 2, dysfunc: 4 },
+                { name: 'Brand of A/C unit', func: 2, dysfunc: 2 }, { name: 'Too many notifications', func: 4, dysfunc: 0 },
+                { name: 'Confusing Instructions', func: 4, dysfunc: 2 }, { name: 'Useless Feature (Liked/Liked)', func: 0, dysfunc: 0 }
+            ];
+            exampleData.forEach(f => this.addFeatureToList(f.name, f.func, f.dysfunc));
+        },
+        updateUI: function() {
+            const featuresByCategory = this.analyzedFeatures.reduce((acc, feature) => {
+                (acc[feature.category] = acc[feature.category] || []).push(feature);
+                return acc;
+            }, {});
+
+            this.drawChart(featuresByCategory);
+            this.updateSummaryTable(featuresByCategory);
+        },
+        generatePointsForCategory: function(category) {
+            const jitterX = (Math.random() - 0.5) * 0.4;
+            const jitterY = (Math.random() - 0.5) * 0.4;
+            let x, y;
+            switch(category) {
+                case 'Attractive':  x = 0.5 + jitterX; y = 0.7 + jitterY; break;
+                case 'Performance': x = 0.7 + jitterX * 0.5; y = 0.7 + jitterY * 0.5; break;
+                case 'Must-Be':     x = -0.7 + jitterX; y = -0.7 + jitterY; break;
+                case 'Indifferent': x = 0 + jitterX * 1.5; y = 0 + jitterY * 0.3; break;
+                case 'Reverse':     x = -0.7 + jitterX; y = 0.7 + jitterY; break;
+                case 'Questionable':x = 0 + jitterX; y = -0.9 + jitterY * 0.2; break;
+                default:            x = 0; y = 0; break;
+            }
+            return { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) };
+        },
+        drawChart: function(featuresByCategory) {
+            if (this.kanoChart) this.kanoChart.destroy();
+            
+            const datasets = [
+                { type: 'line', data: Array.from({length: 50}, (_, i) => {const x=-1+(2/49)*i; return {x:x, y:x>-0.1?0.9*Math.log(x+1.1):0};}), borderColor: 'rgba(52, 152, 219, 0.5)', borderWidth: 3, pointRadius: 0, tension: 0.4 },
+                { type: 'line', data: Array.from({length: 50}, (_, i) => {const x=-1+(2/49)*i; return {x:x, y:x};}), borderColor: 'rgba(46, 204, 113, 0.5)', borderWidth: 3, pointRadius: 0 },
+                { type: 'line', data: Array.from({length: 50}, (_, i) => {const x=-1+(2/49)*i; return {x:x, y:x<0.1?-0.8/(x+1.1)+0.75:0};}), borderColor: 'rgba(241, 196, 15, 0.5)', borderWidth: 3, pointRadius: 0, tension: 0.4 },
+                { type: 'line', data: Array.from({length: 50}, (_, i) => {const x=-1+(2/49)*i; return {x:x, y:-x};}), borderColor: 'rgba(155, 89, 182, 0.5)', borderWidth: 3, pointRadius: 0 }
+            ];
+
+            for (const category in featuresByCategory) {
+                if (featuresByCategory.hasOwnProperty(category)) {
+                    datasets.push({
+                        type: 'scatter', label: category,
+                        data: featuresByCategory[category].map(feature => ({ ...this.generatePointsForCategory(category), featureName: feature.name })),
+                        backgroundColor: this.colorMap[category] || '#000', pointRadius: 7, pointHoverRadius: 9
+                    });
+                }
+            }
+            
+            const logoPlugin = {
+              id: 'customLogo',
+              afterDraw: (chart) => {
+                if (this.logoLoaded) {
+                  const ctx = chart.ctx;
+                  const logoSize = 60; 
+                  const x = chart.chartArea.left + 15;
+                  const y = chart.chartArea.top + 15;
+                  
+                  ctx.save();
+                  ctx.fillStyle = 'white';
+                  ctx.fillRect(x, y, logoSize, logoSize);
+                  ctx.globalCompositeOperation = 'difference';
+                  ctx.drawImage(this.logoImage, x, y, logoSize, logoSize);
+                  ctx.restore();
+                }
+              }
+            };
+
+            this.kanoChart = new Chart(this.ctx, {
+                data: { datasets },
+                plugins: [logoPlugin], 
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'linear', position: 'bottom', min: -1.1, max: 1.1, title: { display: true, text: '← Not Fulfilled · Fulfilled →', font: { size: 14 } }, grid: { zeroLineColor: 'black', zeroLineWidth: 2 }, ticks: { display: false } },
+                        y: { type: 'linear', min: -1.1, max: 1.1, title: { display: true, text: '← Dissatisfaction · Satisfaction →', font: { size: 14 } }, grid: { zeroLineColor: 'black', zeroLineWidth: 2 }, ticks: { display: false } }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { label: (c) => c.dataset.type==='scatter' ? ` ${c.raw.featureName}` : null, title: (c) => c[0].dataset.type==='scatter' ? c[0].dataset.label : null }},
+                        legend: { display: false }
+                    }
+                }
+            });
+        },
+        updateSummaryTable: function(featuresByCategory) {
+            this.summaryTableBody.innerHTML = '';
+            if (this.analyzedFeatures.length === 0) {
+                const row = this.summaryTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 2;
+                cell.className = 'no-features-message';
+                cell.textContent = 'No features analyzed yet. Add a feature above to get started.';
+                return;
+            }
+
+            this.categoryOrder.forEach(category => {
+                const features = featuresByCategory[category];
+                if (features && features.length > 0) {
+                    const row = this.summaryTableBody.insertRow();
+                    const categoryCell = row.insertCell();
+                    categoryCell.className = 'category-cell';
+                    
+                    const escapedCategory = category.replace(/'/g, "\\'");
+                    categoryCell.innerHTML = `
+                      <div class="category-header">
+                        <div>
+                          <i class="${this.iconMap[category]}" style="color: ${this.colorMap[category]}"></i>
+                          <span style="color: ${this.colorMap[category]}">${category}</span>
+                        </div>
+                        <button class="remove-category-btn" onclick="removeCategory('${escapedCategory}')" title="Remove all in ${category}">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    `;
+                    
+                    const featuresCell = row.insertCell();
+                    featuresCell.className = 'features-cell';
+                    featuresCell.innerHTML = features.map(f => {
+                        const escapedName = f.name.replace(/'/g, "\\'");
+                        return `<p><span>${f.name}</span> <button class="remove-btn" onclick="removeFeature('${escapedName}')" title="Remove feature"><i class="fas fa-trash-alt"></i></button></p>`;
+                    }).join('');
+                }
+            });
+        },
+        exportAnalysis: function() {
+            if (this.analyzedFeatures.length === 0) {
+                alert("⚠️ No features to export. Please analyze some features first.");
+                return;
+            }
+            const dataToExport = this.analyzedFeatures.map(f => ({ 'Feature': f.name, 'Kano Category': f.category }));
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Kano Analysis');
+            ws['!cols'] = [{ wch: 40 }, { wch: 20 }];
+            XLSX.writeFile(wb, 'Kano_Analysis_Sigma_Exacta.xlsx');
+        }
+    };
+    
+    window.kanoApp.init();
+});
+</script>
+
+</body>
+</html>

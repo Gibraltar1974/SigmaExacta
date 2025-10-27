@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://www.sigmaexacta.com/swot" />
+  <title>Free SWOT Analysis Matrix Tool | Sigma Exacta</title>
+  <meta name="description" content="Create, manage, and export your SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis easily with our interactive tool. Ideal for strategic business planning, marketing, and personal projects.">
+  <meta name="keywords" content="SWOT analysis, SWOT matrix, SWOT tool, strategic planning, strengths, weaknesses, opportunities, threats, free online swot generator">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  
+  <style>
+      /* --- Estilos base para la barra de navegación --- */
+      .top-bar {
+          /* === MODIFICACIÓN: Header fijo al hacer scroll (igual que index.html) === */
+          position: sticky; /* Cambiado de 'relative' para que la barra se fije en la parte superior */
+          top: 0;           /* Se posiciona en el borde superior de la ventana */
+          z-index: 1001;    /* Se asegura que esté por encima de otro contenido al hacer scroll */
+          /* === FIN DE LA MODIFICACIÓN === */
+          
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 20px;
+          background-color: #222; 
+      }
+      .logo-text, .navigation .nav-link, .nav-toggle {
+          color: #fff; 
+      }
+
+      .nav-toggle {
+          display: none; 
+          font-size: 1.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+      }
+
+      .navigation .nav-menu {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          align-items: center;
+      }
+
+      .navigation .nav-link {
+          padding: 10px 15px;
+          text-decoration: none;
+          font-weight: 600;
+          display: block;
+      }
+      
+      .navigation .nav-link i {
+          margin-left: 5px;
+          transition: transform 0.3s ease;
+      }
+      
+      /* --- Estilos para el menú desplegable (escritorio) --- */
+      .nav-item-dropdown {
+          position: relative;
+      }
+      
+      .dropdown-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: #fff;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+          border-radius: 5px;
+          z-index: 1000;
+          min-width: 600px;
+          padding: 20px;
+      }
+      
+      .dropdown-menu a, .dropdown-menu h4 {
+          color: #333;
+      }
+      .dropdown-link:hover {
+          background-color: #f1f1f1;
+      }
+
+      .dropdown-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 20px;
+      }
+
+      .nav-item-dropdown:hover > .dropdown-menu {
+          display: block;
+      }
+
+      /* --- ESTILOS PARA MÓVIL (IDÉNTICOS A INDEX.HTML) --- */
+      @media (max-width: 992px) {
+          .nav-toggle {
+              display: block;
+          }
+
+          .navigation .nav-menu {
+              display: none;
+              flex-direction: column;
+              position: absolute;
+              top: 100%;
+              left: 0;
+              width: 100%;
+              background-color: #fff;
+              border-top: 1px solid #eee;
+          }
+          
+          .navigation .nav-menu .nav-link {
+              color: #333; 
+          }
+
+          .navigation .nav-menu.show-menu {
+              display: flex;
+          }
+          
+          .navigation .nav-item {
+              width: 100%;
+              text-align: left;
+          }
+
+          .nav-item-dropdown > .nav-link {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+
+          .dropdown-menu {
+              display: none; 
+              position: static; 
+              width: 100%;
+              box-shadow: none;
+              border-top: 1px solid #f0f0f0;
+              padding: 10px 0 10px 30px;
+              min-width: unset;
+              background-color: #f9f9f9;
+          }
+
+          .dropdown-menu.show-submenu {
+              display: block;
+          }
+          
+          .dropdown-grid {
+              grid-template-columns: 1fr;
+          }
+
+          .nav-item-dropdown:hover > .dropdown-menu {
+              display: none;
+          }
+          .nav-item-dropdown.active:hover > .dropdown-menu {
+              display: block;
+          }
+          
+          .nav-item-dropdown.active > .nav-link i {
+              transform: rotate(180deg);
+          }
+      }
+  </style>
+
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+      --light-color: #ecf0f1;
+      
+      --strengths-bg: var(--success-color);
+      --weaknesses-bg: var(--danger-color);
+      --opportunities-bg: var(--secondary-color);
+      --threats-bg: var(--warning-color);
+      font-size: 16px;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f5f7fa;
+      line-height: 1.6;
+    }
+
+    .main-content-wrapper { max-width: 1000px; margin: 0 auto; padding: 1.25rem; }
+
+    .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
+    .header h1 { 
+        color: var(--primary-color); 
+        font-size: clamp(1.5rem, 4vw, 1.8rem); 
+        margin: 0.5rem 0; 
+        font-weight: 800; 
+        /* === INICIO DE MODIFICACIÓN: Alinear el icono y el texto === */
+        display: flex;
+        justify-content: center; /* Mantiene la alineación central del texto */
+        align-items: center;
+        /* === FIN DE MODIFICACIÓN === */
+    }
+    
+    /* === INICIO DE MODIFICACIÓN: Estilo para el icono dentro del h1 (restaurando el botón) === */
+    .header h1 .fas {
+        font-size: 1.8rem; /* Tamaño del icono incrementado (antes 1.4rem) */
+        
+        /* Estilos para restaurar la apariencia de "botón marrón" */
+        background-color: #7b293e; 
+        color: white; /* Color del icono */
+        width: 39px; /* ¡Aumento del 30%! (antes 30px) */
+        height: 39px; /* ¡Aumento del 30%! (antes 30px) */
+        /* === MODIFICACIÓN: Forma cuadrada con esquinas redondeadas === */
+        border-radius: 6px; 
+        /* === FIN DE MODIFICACIÓN === */
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        
+        margin-right: 0.75rem; /* Espacio a la derecha del icono */
+    }
+    /* === FIN DE MODIFICACIÓN === */
+    
+    .header p { color: #666; max-width: 700px; margin: 0 auto; line-height: 1.6; }
+    
+    .block, .content-block {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .content-block h2 {
+      font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
+      color: var(--primary-color); border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 0.6rem; font-weight: 800;
+    }
+    .content-block h2 .fas { margin-right: 0.75rem; }
+
+    .infographic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; text-align: center; }
+    .flow-step { flex: 1; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; transition: transform 0.2s, box-shadow 0.2s; }
+    .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+    .flow-step .fas { font-size: 1.8rem; margin-bottom: 0.6rem; }
+    .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
+    .flow-step.strengths .fas { color: var(--strengths-bg); }
+    .flow-step.weaknesses .fas { color: var(--weaknesses-bg); }
+    .flow-step.opportunities .fas { color: var(--opportunities-bg); }
+    .flow-step.threats .fas { color: var(--threats-bg); }
+
+    .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; list-style-type: '✔ '; }
+    .instructions-box li { margin-bottom: 0.5rem; padding-left: 0.6rem; line-height: 1.6; }
+    .instructions-box li strong { color: var(--primary-color); font-weight: 600; }
+
+    .controls-container { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+    
+    .block-title {
+      font-weight: 800; font-size: 1.2em; margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+      padding: 1rem 1.5rem; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;
+    }
+    .title-strengths    { background-color: var(--strengths-bg); }
+    .title-weaknesses   { background-color: var(--danger-color); }
+    .title-opportunities{ background-color: var(--secondary-color); }
+    .title-threats      { background-color: var(--warning-color); }
+    
+    input[type="text"] {
+      width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
+      font-size: 1rem; box-sizing: border-box; transition: border-color 0.3s, box-shadow 0.3s;
+      flex-grow: 1; font-family: 'Nunito', sans-serif;
+    }
+    
+    input[type="text"]:focus, button:focus-visible {
+      outline: none; border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    button {
+      color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px;
+      cursor: pointer; font-size: 1rem; transition: background-color 0.3s;
+      font-family: 'Nunito', sans-serif; font-weight: 600;
+    }
+    
+    .btn-primary { background-color: var(--primary-color); }
+    .btn-primary:hover { background-color: #1e2b37; }
+    .btn-success { background-color: var(--success-color); }
+    .btn-success:hover { background-color: #229954; }
+    .btn-warning { background-color: #e67e22; color: white; }
+    .btn-warning:hover { background-color: #d35400; }
+    
+    .btn-add-item {
+        flex-shrink: 0; width: 40px; height: 40px;
+        padding: 0; font-size: 1.2em;
+    }
+    .btn-add-item.strengths { background-color: var(--strengths-bg); }
+    .btn-add-item.weaknesses { background-color: var(--weaknesses-bg); }
+    .btn-add-item.opportunities { background-color: var(--opportunities-bg); }
+    .btn-add-item.threats { background-color: var(--threats-bg); }
+
+    .btn-delete {
+        background-color: #bdc3c7; color: var(--primary-color);
+        width: 28px; height: 28px; border-radius: 50%; padding: 0;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-left: 0.6rem;
+    }
+    .btn-delete:hover { background-color: #a5acaf; }
+    
+    .swot-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+    @media (min-width: 850px) { .swot-grid { grid-template-columns: repeat(2, 1fr); } }
+    
+    .swot-grid > .block { display: flex; flex-direction: column; margin-bottom: 0; }
+    .swot-list { list-style: none; padding: 0; margin: 0; flex-grow: 1; min-height: 150px; }
+    .swot-item {
+        background-color: #f8f9f9; border: 1px solid #e0e0e0; border-left: 4px solid;
+        padding: 0.6rem 1rem; border-radius: 4px; margin-bottom: 0.6rem;
+        display: flex; align-items: center; justify-content: space-between; word-break: break-word;
+    }
+    .swot-item-strengths { border-left-color: var(--strengths-bg); }
+    .swot-item-weaknesses { border-left-color: var(--weaknesses-bg); }
+    .swot-item-opportunities { border-left-color: var(--opportunities-bg); }
+    .swot-item-threats { border-left-color: var(--threats-bg); }
+
+    .add-item-container { display: flex; gap: 0.6rem; margin-top: auto; padding-top: 1rem; }
+
+    #toast-notification {
+      position: fixed; top: 20px; right: 20px; color: white;
+      padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000; opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+      transform: translateY(-20px);
+    }
+    #toast-notification.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    #toast-notification.success { background-color: var(--success-color); }
+    #toast-notification.info { background-color: var(--secondary-color); }
+    
+    .tool-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .tool-logo[data-color='19'] { background-color: #7b293e; }
+
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<body>
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content-wrapper">
+  <div id="toast-notification"></div>
+
+  <header class="header">
+      <h1><i class="fas fa-puzzle-piece"></i> Strengths, Weaknesses, Opportunities and Threats (SWOT) Analysis Matrix</h1>
+      <p>Identify internal and external factors that are favorable and unfavorable to achieving your objectives.</p>
+  </header>
+  
+    <div class="content-block">
+        <h2><i class="fas fa-question-circle"></i> What is a SWOT Analysis?</h2>
+        <p>A <strong>SWOT analysis</strong> is a strategic planning technique used to help a person or organization identify its Strengths, Weaknesses, Opportunities, and Threats related to business competition or project planning. It provides a structured framework for reviewing strategy, position, and direction.</p>
+        <ul>
+            <li><strong>Internal Factors:</strong> Strengths and Weaknesses are internal to the organization (e.g., reputation, patents, location). You can influence these.</li>
+            <li><strong>External Factors:</strong> Opportunities and Threats are external to the organization (e.g., competitors, prices, market trends). You cannot control these.</li>
+        </ul>
+        <div class="infographic-grid">
+            <div class="flow-step strengths"><i class="fas fa-thumbs-up"></i><strong>Strengths</strong><span>Internal, positive factors</span></div>
+            <div class="flow-step weaknesses"><i class="fas fa-thumbs-down"></i><strong>Weaknesses</strong><span>Internal, negative factors</span></div>
+            <div class="flow-step opportunities"><i class="fas fa-search-plus"></i><strong>Opportunities</strong><span>External, positive factors</span></div>
+            <div class="flow-step threats"><i class="fas fa-bolt"></i><strong>Threats</strong><span>External, negative factors</span></div>
+        </div>
+    </div>
+    <div class="content-block">
+        <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
+        <p>The concept is credited to <strong>Albert Humphrey</strong>, who led a research project at the Stanford Research Institute in the 1960s and 1970s. The goal of the research was to identify why corporate planning consistently failed. The resulting framework, initially called SOFT (Satisfactory, Opportunity, Fault, Threat), was later evolved into the SWOT analysis we use today.</p>
+        <p>Its primary purpose is to provide a comprehensive, bird's-eye view of the most important factors influencing a decision, making it a powerful tool for strategic alignment and risk assessment.</p>
+    </div>
+    <div class="content-block">
+        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+        <div class="instructions-box">
+          <ul>
+            <li><strong>Add items:</strong> Type into the text fields for each category and press the <strong>Enter</strong> key or click the <strong>+</strong> button to add it to the list.</li>
+            <li><strong>Load an example:</strong> If you're unsure where to start, click the <strong>"Load Example"</strong> button to see a filled-out matrix.</li>
+            <li><strong>Manage your list:</strong> Delete any point by clicking the cross icon (<i class="fas fa-times" style="font-size: 0.8em;"></i>) next to it.</li>
+            <li><strong>Export your work:</strong> When you're done, click <strong>"Export to Excel"</strong> to download your analysis as an <code>.xlsx</code> file, ready for your reports and presentations.</li>
+          </ul>
+      </div>
+    </div>
+
+  <div class="block">
+      <div class="controls-container">
+          <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
+          <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset Matrix</button>
+          <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to Excel</button>
+      </div>
+  </div>
+
+  <div class="swot-grid" id="swotGrid">
+    <div class="block">
+        <div class="block-title title-strengths"><i class="fas fa-thumbs-up"></i> Strengths</div>
+        <div class="swot-list" id="strengthsList"></div>
+        <div class="add-item-container">
+            <input type="text" id="strengths-input" placeholder="Add a strength..." data-category="strengths">
+            <button class="btn-add-item strengths" data-category="strengths" title="Add Strength"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="block">
+        <div class="block-title title-weaknesses"><i class="fas fa-thumbs-down"></i> Weaknesses</div>
+        <div class="swot-list" id="weaknessesList"></div>
+        <div class="add-item-container">
+            <input type="text" id="weaknesses-input" placeholder="Add a weakness..." data-category="weaknesses">
+            <button class="btn-add-item weaknesses" data-category="weaknesses" title="Add Weakness"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="block">
+        <div class="block-title title-opportunities"><i class="fas fa-search-plus"></i> Opportunities</div>
+        <div class="swot-list" id="opportunitiesList"></div>
+        <div class="add-item-container">
+            <input type="text" id="opportunities-input" placeholder="Add an opportunity..." data-category="opportunities">
+            <button class="btn-add-item opportunities" data-category="opportunities" title="Add Opportunity"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="block">
+        <div class="block-title title-threats"><i class="fas fa-bolt"></i> Threats</div>
+        <div class="swot-list" id="threatsList"></div>
+        <div class="add-item-container">
+            <input type="text" id="threats-input" placeholder="Add a threat..." data-category="threats">
+            <button class="btn-add-item threats" data-category="threats" title="Add Threat"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is based on the SWOT analysis framework, a strategic planning technique. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators or any specific institution. While we strive for accuracy, we make no warranty or guarantee regarding the results. All strategic decisions and actions based on the output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const swotGrid = document.getElementById('swotGrid');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const exampleData = [
+        { category: 'strengths', point: 'Experienced management team' },
+        { category: 'strengths', point: 'Strong brand reputation' },
+        { category: 'weaknesses', point: 'High level of debt' },
+        { category: 'weaknesses', point: 'Outdated IT infrastructure' },
+        { category: 'opportunities', point: 'Growing demand in emerging markets' },
+        { category: 'opportunities', point: 'Potential for strategic partnerships' },
+        { category: 'threats', point: 'New regulations increasing costs' },
+        { category: 'threats', point: 'Intense competition from new entrants' },
+    ];
+    const addEntry = (category, point) => {
+        const listContainer = document.getElementById(`${category}List`);
+        if (!listContainer || !point) return;
+        const newItem = document.createElement('div');
+        newItem.className = `swot-item swot-item-${category}`;
+        newItem.innerHTML = ` <span>${point.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span> <button class="btn-delete" title="Delete Item"><i class="fas fa-times"></i></button> `;
+        listContainer.appendChild(newItem);
+    };
+    const processAddItem = (category) => {
+        const input = document.getElementById(`${category}-input`);
+        const point = input.value.trim();
+        if (point) { addEntry(category, point); input.value = ''; input.focus(); }
+    };
+    const loadExample = () => { resetAll(false); exampleData.forEach(ex => { addEntry(ex.category, ex.point); }); showToast('Example data loaded.', 'success'); };
+    const resetAll = (confirmReset = true) => { const doReset = () => { ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => { document.getElementById(`${cat}List`).innerHTML = ''; document.getElementById(`${cat}-input`).value = ''; }); if (confirmReset) showToast('SWOT Matrix has been reset.', 'info'); }; if (confirmReset) { if (confirm('Are you sure you want to reset the entire SWOT matrix? This action cannot be undone.')) { doReset(); } } else { doReset(); } };
+    const showToast = (message, type = 'success') => { const toast = document.getElementById('toast-notification'); toast.textContent = message; toast.className = 'show'; toast.classList.add(type); setTimeout(() => toast.classList.remove('show'), 3000); };
+    const exportToExcel = () => {
+        const categories = ['strengths', 'weaknesses', 'opportunities', 'threats'];
+        const headers = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats'];
+        const dataByCategory = {};
+        let hasData = false;
+        categories.forEach(cat => { const items = Array.from(document.querySelectorAll(`#${cat}List .swot-item > span`)); dataByCategory[cat] = items.map(item => item.textContent); if (items.length > 0) hasData = true; });
+        if (!hasData) { alert("There is no data to export."); return; }
+        const maxLength = Math.max(...Object.values(dataByCategory).map(arr => arr.length));
+        const excelRows = [headers];
+        for (let i = 0; i < maxLength; i++) { const row = categories.map(cat => dataByCategory[cat][i] || ''); excelRows.push(row); }
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(excelRows);
+        ws['!cols'] = headers.map(() => ({ wch: 40 }));
+        XLSX.utils.book_append_sheet(wb, ws, 'SWOT Analysis');
+        XLSX.writeFile(wb, 'SWOT_Analysis_Sigma_Exacta.xlsx');
+    };
+    swotGrid.addEventListener('click', (e) => { const addBtn = e.target.closest('.btn-add-item'); if (addBtn) { processAddItem(addBtn.dataset.category); return; } const deleteBtn = e.target.closest('.btn-delete'); if (deleteBtn) { deleteBtn.closest('.swot-item').remove(); showToast('Item deleted.', 'info'); return; } });
+    swotGrid.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('input[type="text"]')) { e.preventDefault(); processAddItem(e.target.dataset.category); } });
+    exampleBtn.addEventListener('click', loadExample);
+    resetBtn.addEventListener('click', () => resetAll(true));
+    exportBtn.addEventListener('click', exportToExcel);
+});
+</script>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/8AADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
+        hoverSound.preload = 'auto';
+        let audioUnlocked = false;
+
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            hoverSound.volume = 0;
+            hoverSound.play().then(() => {
+                hoverSound.pause();
+                hoverSound.currentTime = 0;
+                hoverSound.volume = 1;
+                audioUnlocked = true;
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            }).catch(e => {});
+        }
+
+        document.addEventListener('click', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
+
+        // MODIFICACIÓN: Se incluyen los selectores de ambas páginas para que el script sea universal
+        const hoverableElements = document.querySelectorAll('.feature-card, .flow-step');
+        hoverableElements.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if (audioUnlocked) {
+                    hoverSound.currentTime = 0;
+                    hoverSound.play().catch(e => {}); 
+                }
+            });
+        });
+
+        // --- JAVASCRIPT DE NAVEGACIÓN IDÉNTICO A INDEX.HTML ---
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            
+            if (!navMenu.classList.contains('show-menu')) {
+                toolsDropdownMenu.classList.remove('show-submenu');
+                toolsDropdownContainer.classList.remove('active');
+            }
+        });
+        
+        toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+                event.preventDefault(); 
+                toolsDropdownMenu.classList.toggle('show-submenu');
+                toolsDropdownContainer.classList.toggle('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

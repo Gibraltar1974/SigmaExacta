@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cause and Effect (Ishikawa) Diagram Generator | Sigma Exacta</title>
+  <meta name="description" content="Free online Ishikawa (Fishbone) Diagram generator. A powerful tool for root cause analysis, helping teams brainstorm, categorize, and visualize potential causes of a problem. Ideal for quality improvement, problem-solving, and process analysis.">
+  <meta name="keywords" content="ishikawa diagram, fishbone diagram, cause and effect diagram, root cause analysis, 6m, quality improvement tool, problem solving, process analysis, online generator, free ishikawa diagram, free fishbone diagram">
+  
+  <link rel="canonical" href="https://sigmaexacta.com/ishikawa" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* --- ESTILOS DEL HEADER IDÉNTICOS A INDEX.HTML --- */
+    .top-bar {
+        position: sticky; top: 0; z-index: 1001;    
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 10px 20px; background-color: #222; 
+    }
+    .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
+    .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
+    .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
+    .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
+    .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
+    .nav-item-dropdown { position: relative; }
+    .dropdown-menu {
+        display: none; position: absolute; top: 100%; left: 0;
+        background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px;
+        z-index: 1000; min-width: 600px; padding: 20px;
+    }
+    .dropdown-menu a, .dropdown-menu h4 { color: #333; }
+    .dropdown-link:hover { background-color: #f1f1f1; }
+    .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+    .nav-item-dropdown:hover > .dropdown-menu { display: block; }
+    @media (max-width: 992px) {
+        .nav-toggle { display: block; }
+        .navigation .nav-menu {
+            display: none; flex-direction: column; position: absolute; top: 100%;
+            left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
+        }
+        .navigation .nav-menu .nav-link { color: #333; }
+        .navigation .nav-menu.show-menu { display: flex; }
+        .navigation .nav-item { width: 100%; text-align: left; }
+        .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-menu {
+            display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
+            padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
+        }
+        .dropdown-menu.show-submenu { display: block; }
+        .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+        .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+        .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+    }
+
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --cause-text-color: #333;
+      font-size: 16px;
+      
+      /* Category colors */
+      --manpower-color: #3498db;
+      --methods-color: #2ecc71;
+      --machines-color: #e74c3c;
+      --materials-color: #f39c12;
+      --environment-color: #9b59b6;
+      --measurement-color: #1abc9c;
+    }
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+    }
+    .main-content-wrapper { padding: 1.25rem; }
+    .header {
+      max-width: 100%; /* CAMBIO: Era 1000px */
+      margin: 0 auto 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: 0.5rem 0; font-weight: 800; display: flex; justify-content: center; align-items: center; } /* Adjusted for flex */
+    .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+    /* NEW STYLE FOR H1 ICON */
+    .h1-icon-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 1.5rem; /* Smaller than the original 2.5rem for better H1 fit */
+        width: 40px; /* Adjusted size */
+        height: 40px; /* Adjusted size */
+        border-radius: 8px; /* Square border */
+        background-color: #4a90e2; /* Color '8' from index.html */
+        margin-right: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    /* END NEW STYLE */
+    .content-block {
+        max-width: 100%; /* CAMBIO: Era 1000px */
+        margin: 0 auto 1.5rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .content-block h2 {
+        font-size: 1.5em; 
+        margin-top: 0; 
+        margin-bottom: 1.25rem;
+        color: var(--primary-color); 
+        border-bottom: 2px solid var(--secondary-color);
+        padding-bottom: 0.6rem; 
+        font-weight: 800;
+    }
+    .content-block h2 .fas { margin-right: 0.75rem; }
+    .content-block ol, .content-block ul { padding-left: 1.25rem; line-height: 1.8; }
+    .calculation-block {
+      max-width: 100%; /* CAMBIO: Era 1000px */
+      margin: 0 auto 1.25rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .calculation-title {
+      font-weight: 800;
+      font-size: 1.2em;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.6rem;
+    }
+    label, label.category-label {
+      display: block;
+      margin-bottom: 0.6rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    label.category-label { font-size: 1.1em; }
+    input[type="text"] {
+      width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
+      font-size: 1rem; transition: border 0.3s, box-shadow 0.3s;
+      box-sizing: border-box; font-family: 'Nunito', sans-serif;
+    }
+    input[type="text"]:focus, button:focus-visible {
+      outline: none; border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+    }
+    button {
+      background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem;
+      border: none; border-radius: 4px; cursor: pointer; margin: 5px;
+      font-size: 1rem; transition: background-color 0.3s, box-shadow 0.3s;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Nunito', sans-serif; font-weight: 600;
+    }
+    button:hover { background-color: #2980b9; }
+    button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+    .button-group { display: flex; justify-content: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    button.success { background-color: var(--success-color); }
+    button.success:hover { background-color: #219d55; }
+    button.warning { background-color: var(--warning-color); }
+    button.warning:hover { background-color: #da8c10; }
+    .danger { background-color: var(--accent-color); }
+    .danger:hover { background-color: #c0392b; }
+    .diagram-controls { 
+        max-width: 100%; /* CAMBIO: Era 1000px */
+        margin: 0 auto 1rem; 
+        text-align: right; 
+        display: flex; 
+        justify-content: flex-end; 
+        flex-wrap: wrap; 
+    }
+    #ishikawaDiagramContainer {
+      background: white; border: 1px solid #ddd; border-radius: 8px;
+      flex: 1; min-width: 300px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative; overflow: hidden; min-height: 600px;
+    }
+    /* CORRECCIÓN 1: Leyenda en una sola línea */
+    .diagram-key {
+      position: absolute; bottom: 0; left: 0; right: 0; background: #f8f9fa;
+      padding: 0.5rem 1rem; border-top: 1px solid #e0e0e0;
+      border-radius: 0 0 8px 8px; box-sizing: border-box;
+      overflow-x: auto;
+    }
+    .diagram-key ul { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0; 
+      display: flex; 
+      flex-wrap: nowrap; 
+      justify-content: space-between; 
+      gap: 0.6rem 1.25rem; 
+      white-space: nowrap;
+    }
+    .diagram-key ul li { color: #555; font-size: 0.8rem; display: flex; align-items: center; }
+    .diagram-key ul li i { margin-right: 6px; }
+    .diagram-key ul li strong { color: var(--dark-color); }
+    /* FIN CORRECCIÓN 1 */
+    .category-section { margin-bottom: 1.5rem; border-top: 1px solid #eee; padding-top: 1.25rem; }
+    .cause-block { background-color: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+    .cause-input-wrapper { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
+    .sub-causes-container { margin-left: 2rem; margin-top: 0.6rem; }
+    .sub-cause-item { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+    .sub-sub-causes-container { margin-left: 2rem; margin-top: 0.6rem; }
+    .sub-sub-cause-item { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+    .action-button { padding: 0; width: 30px; height: 30px; min-width: 30px; font-size: 1rem; line-height: 30px; text-align: center; border-radius: 50%; display: flex; justify-content: center; align-items: center; gap: 0; }
+    .add-sub-cause-btn { margin-left: 0.6rem; }
+    .add-sub-sub-cause-btn { margin-left: 0.6rem; }
+    .add-cause-btn { margin-top: 0.6rem; }
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { 
+        margin-top: 2rem; 
+        padding: 0 1rem; 
+        font-size: 0.8rem; 
+        color: #777; 
+        max-width: 100%; /* CAMBIO: Era 800px */
+        margin-left: auto; 
+        margin-right: auto; 
+    }
+    
+    /* New styles for SVG diagram */
+    #ishikawaSvgContainer {
+      width: 100%;
+      height: 100%;
+      min-height: 600px;
+    }
+    
+    .draggable {
+      cursor: move;
+      user-select: none;
+    }
+    
+    .draggable:hover {
+      filter: drop-shadow(0 0 3px rgba(0,0,0,0.3));
+    }
+    
+    .category-bone {
+      stroke-width: 2;
+    }
+    
+    .cause-line {
+      stroke-width: 1.5;
+    }
+    
+    .subcause-line {
+      stroke-width: 1;
+    }
+    
+    .cause-text, .subcause-text, .subsubcause-text {
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .main-category-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: bold;
+      text-anchor: middle;
+      font-size: 14px;
+    }
+    
+    .cause-text {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .subcause-text {
+      font-size: 11px;
+    }
+    
+    .problem-box {
+      fill: var(--accent-color);
+    }
+    
+    .problem-text {
+      fill: white;
+      font-family: 'Nunito', sans-serif;
+      font-weight: bold;
+      text-anchor: middle;
+      font-size: 14px; /* Added for consistency */
+    }
+    
+    @media (max-width: 768px) {
+        .main-content-wrapper {
+            padding: 0.75rem; 
+        }
+        .content-block, .calculation-block {
+            padding: 1rem; 
+        }
+        .header h1 {
+            font-size: clamp(1.4rem, 5vw, 1.8rem); 
+        }
+        #ishikawaDiagramContainer {
+            min-height: 500px; 
+        }
+        /* CORRECCIÓN 2: Mejor visualización en móvil */
+        .diagram-key ul {
+          justify-content: flex-start;
+          padding: 0 5px;
+        }
+        .diagram-key ul li {
+          font-size: 0.7rem;
+        }
+        /* FIN CORRECCIÓN 2 */
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER IDÉNTICO AL DE INDEX.HTML -->
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content-wrapper">
+  <header class="header">
+    <h1>
+      <span class="h1-icon-container"><i class="fas fa-fish"></i></span> Free Online Fishbone Cause and Effect (Ishikawa) Diagram
+    </h1>
+    <p class="header-subtitle">A Visual Tool for Root Cause Analysis</p>
+  </header>
+  
+  <div class="content-block">
+    <h2><i class="fas fa-question-circle"></i> What is a Cause and Effect Diagram?</h2>
+    <p>The <strong>Cause and Effect Diagram</strong>, also known as a <strong>Fishbone Diagram</strong> or <strong>Ishikawa Diagram</strong>, is a visual tool used to explore and categorize the potential causes of a specific problem. Its main purpose is to structure a brainstorming session, helping teams to think through all possible reasons for an issue in a systematic way rather than jumping to conclusions.</p>
+    <p>The diagram resembles a fish skeleton, which is where it gets its nickname:</p>
+    <ul>
+        <li>The <strong>"head"</strong> of the fish represents the problem or effect, which is written on the right side.</li>
+        <li>The <strong>"spine"</strong> is a horizontal line pointing to the head.</li>
+        <li>The <strong>"bones"</strong> are diagonal lines branching off the spine, representing major categories of potential causes. This tool traditionally uses the <strong>6Ms</strong> as categories, which are a great starting point for any manufacturing or service process.</li>
+    </ul>
+  </div>
+
+  <div class="content-block">
+      <h2><i class="fas fa-history"></i> Brief History of the Ishikawa Diagram</h2>
+      <p>The diagram was created by <strong>Dr. Kaoru Ishikawa</strong>, a Japanese quality control expert, in the 1960s. As a pioneer in quality management, Dr. Ishikawa wanted to create simple, accessible tools that workers at all levels of an organization could use to improve processes. He believed that quality improvement was a continuous, company-wide effort, not just the responsibility of managers and engineers.</p>
+      <p>The Ishikawa Diagram became one of the <strong>Seven Basic Tools of Quality</strong>. Its simplicity and visual nature made it extremely popular in post-war Japan's manufacturing industries and it quickly spread globally as a fundamental tool for problem-solving, root cause analysis, and quality improvement initiatives.</p>
+  </div>
+
+  <div class="content-block">
+      <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+      <ol>
+          <li><strong>Define the Problem:</strong> Clearly and concisely write the problem you are investigating in the "Problem Statement" field. This becomes the "head" of the fishbone.</li>
+          <li><strong>Add Causes:</strong> For each of the 6M categories, click the "➕ Add Cause" button to create a field for a main cause.</li>
+          <li><strong>Add Sub-Causes:</strong> Within each main cause, click the `+` button to add specific sub-cause fields for more detail.</li>
+          <li><strong>Add Sub-Sub-Causes:</strong> Within each sub-cause, click the `+` button to add even more detailed sub-sub-cause fields.</li>
+          <li><strong>Generate Diagram:</strong> Click "Generate Diagram". The tool will create a visual fishbone diagram based on your input.</li>
+          <li><strong>Use Helper Buttons:</strong> Click "Load Example" to see a pre-filled diagram for guidance, or "Reset Data" to clear all fields and start fresh.</li>
+          <li><strong>Export Your Work:</strong> Once your diagram is complete, you can export it as a JPG image for presentations or as an Excel file for documentation.</li>
+      </ol>
+  </div>
+
+
+  <div class="calculation-block">
+    <div class="calculation-title">Define Your Problem and Categories</div>
+
+    <form id="ishikawaForm">
+      <label for="problem"><i class="fas fa-bug"></i> <strong>Problem Statement:</strong></label>
+      <input type="text" id="problem" placeholder="Example: High customer complaint rate" required />
+
+      <div class="button-group">
+        <button type="button" id="exampleBtn" class="success"><i class="fas fa-lightbulb"></i> Load Example</button>
+        <button type="button" id="resetBtn" class="warning"><i class="fas fa-redo"></i> Reset Data</button>
+      </div>
+
+      <div id="categories-container"></div>
+    </form>
+  </div>
+
+  <div class="diagram-controls">
+    <button type="submit" form="ishikawaForm"><i class="fas fa-project-diagram"></i> Generate Diagram</button>
+    <button id="exportJpgBtn" class="success" title="Export as JPG image"><i class="fas fa-file-image"></i> Export as JPG</button>
+    <button id="exportBtn" class="success" title="Export data to Excel"><i class="fas fa-file-excel"></i> Export to Excel</button>
+  </div>
+
+  <div class="content-block">
+    <div id="ishikawaDiagramContainer">
+      <svg id="ishikawaSvgContainer" width="100%" height="100%"></svg>
+      <div class="diagram-key">
+        <ul>
+            <li><i class="fas fa-users" style="color: var(--manpower-color);"></i> <strong>Manpower:</strong> People</li>
+            <li><i class="fas fa-cogs" style="color: var(--methods-color);"></i> <strong>Methods:</strong> Processes</li>
+            <li><i class="fas fa-robot" style="color: var(--machines-color);"></i> <strong>Machines:</strong> Equipment</li>
+            <li><i class="fas fa-boxes" style="color: var(--materials-color);"></i> <strong>Materials:</strong> Components</li>
+            <li><i class="fas fa-tree" style="color: var(--environment-color);"></i> <strong>Environment:</strong> External Factors</li>
+            <li><i class="fas fa-chart-line" style="color: var(--measurement-color);"></i> <strong>Measurement:</strong> Data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is an independent implementation inspired by the Cause and Effect Diagram developed by Dr. Kaoru Ishikawa and is not affiliated with any official quality organizations. While we strive for accuracy, we make no warranty or guarantee regarding the results obtained from this tool. All decisions based on the output are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
+    </div>
+</footer>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.getElementById('nav-toggle');
+      const navMenu = document.getElementById('nav-menu');
+      const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+      const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+      const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+      if (navToggle) {
+          navToggle.addEventListener('click', () => {
+              navMenu.classList.toggle('show-menu');
+              const icon = navToggle.querySelector('i');
+              icon.classList.toggle('fa-bars');
+              icon.classList.toggle('fa-times');
+              
+              if (!navMenu.classList.contains('show-menu')) {
+                  if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                  if(toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+              }
+          });
+      }
+      
+      if (toolsDropdownToggle) {
+          toolsDropdownToggle.addEventListener('click', (event) => {
+              if (window.innerWidth <= 992) {
+                  event.preventDefault(); 
+                  if (toolsDropdownMenu) toolsDropdownMenu.classList.toggle('show-submenu');
+                  if(toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
+              }
+          });
+      }
+      
+      // Clicks fuera del menu (para móvil)
+      document.addEventListener('click', (event) => {
+          if (!navMenu || !navToggle) return;
+          const isClickInsideNav = navMenu.contains(event.target) || navToggle.contains(event.target);
+          if (!isClickInsideNav && navMenu.classList.contains('show-menu')) {
+              navMenu.classList.remove('show-menu');
+              const icon = navToggle.querySelector('i');
+              if (icon) {
+                  icon.classList.remove('fa-times');
+                  icon.classList.add('fa-bars');
+              }
+              if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+              if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+          }
+      });
+
+      createCategoryUI();
+      resetData(true);
+  });
+
+  const categoryData = [
+      { key: 'manpower', name: 'Manpower', icon: 'fa-users', color: 'var(--manpower-color)' },
+      { key: 'methods', name: 'Methods', icon: 'fa-cogs', color: 'var(--methods-color)' },
+      { key: 'machines', name: 'Machines', icon: 'fa-robot', color: 'var(--machines-color)' },
+      { key: 'materials', name: 'Materials', icon: 'fa-boxes', color: 'var(--materials-color)' },
+      { key: 'environment', name: 'Environment', icon: 'fa-tree', color: 'var(--environment-color)' },
+      { key: 'measurement', name: 'Measurement', icon: 'fa-chart-line', color: 'var(--measurement-color)' },
+  ];
+  
+  let currentData = { problem: '', categories: {} };
+  const placeholderProblemText = 'Enter problem here';
+
+  // ===================================================================================
+  // --- IMPROVED ISHIKAWA DIAGRAM LOGIC ---
+  // ===================================================================================
+
+  const diagramNodes = new Map();
+
+  function createSVGElement(tag, attributes) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      for (const key in attributes) {
+          el.setAttribute(key, attributes[key]);
+      }
+      return el;
+  }
+
+  function wrapText(textElement, text, maxWidth) {
+      textElement.innerHTML = '';
+      const words = text.split(/\s+/);
+      let line = '';
+      const x = textElement.getAttribute('x');
+      const y = textElement.getAttribute('y');
+      
+      let tspan = createSVGElement('tspan', { x: x, dy: '0em' });
+      textElement.appendChild(tspan);
+      
+      words.forEach(word => {
+          const testLine = line ? `${line} ${word}` : word;
+          tspan.textContent = testLine;
+          if (tspan.getComputedTextLength() > maxWidth) {
+              tspan.textContent = line;
+              line = word;
+              tspan = createSVGElement('tspan', { x: x, dy: '1.2em' });
+              tspan.textContent = line;
+              textElement.appendChild(tspan);
+          } else {
+              line = testLine;
+          }
+      });
+
+      const textHeight = textElement.getBBox().height;
+      const initialY = parseFloat(y);
+      const verticalCenterOffset = initialY - (textElement.getBBox().y + textHeight / 2);
+      textElement.setAttribute('transform', `translate(0, ${verticalCenterOffset})`);
+  }
+
+  // ==========================================================
+  // --- INICIO: NUEVO ALGORITMO DE AJUSTE DE COLISIONES ---
+  // ==========================================================
+  /**
+   * Ajusta las colisiones de un grupo de elementos (ej. todas las causas de una rama)
+   * Ordenándolos por su posición 'y' y empujándolos si se solapan.
+   */
+  function adjustBranchCollisions(elements, isTopBranch) {
+      if (elements.length < 2) return;
+      
+      const MARGIN = 5; // 5px de margen entre cajas de texto
+
+      // 1. Obtener elementos y sus BBoxes, luego ordenar por 'y'
+      const sortedElements = elements
+          .map(el => ({ el, bbox: el.getBBox() }))
+          .sort((a, b) => {
+              // Si la rama está abajo, ordenamos de abajo hacia arriba
+              return isTopBranch ? a.bbox.y - b.bbox.y : b.bbox.y - a.bbox.y;
+          });
+
+      // 2. Iterar y empujar
+      for (let i = 0; i < sortedElements.length - 1; i++) {
+          const el1 = sortedElements[i].el;
+          const rect1 = el1.getBBox(); // Obtener BBox fresca
+          
+          const el2 = sortedElements[i+1].el;
+          let rect2 = el2.getBBox(); // Obtener BBox fresca
+
+          let overlap;
+          if (isTopBranch) {
+              // Rama de arriba: Comprobar si la parte inferior de 1 solapa con la superior de 2
+              overlap = (rect1.y + rect1.height + MARGIN) - rect2.y;
+          } else {
+              // Rama de abajo: Comprobar si la parte superior de 1 solapa con la inferior de 2
+              overlap = (rect2.y + rect2.height + MARGIN) - rect1.y;
+          }
+
+          if (overlap > 0) {
+              // Hay solapamiento. Mover el elemento 2.
+              const node2 = diagramNodes.get(el2);
+              if (!node2) continue;
+              
+              // El empuje es en la dirección opuesta a la rama
+              const dy = isTopBranch ? overlap : -overlap;
+              const newY = parseFloat(el2.getAttribute('y')) + dy;
+
+              el2.setAttribute('y', newY);
+              node2.initialPos.y = newY; // Actualizar para drag-and-drop
+
+              // Mover la línea también
+              if (node2.line) {
+                  node2.line.setAttribute('y2', newY);
+              }
+
+              // Actualizar la BBox del elemento movido para la siguiente iteración
+              sortedElements[i+1].bbox = el2.getBBox();
+          }
+      }
+  }
+  // ==========================================================
+  // --- FIN: NUEVO ALGORITMO DE AJUSTE DE COLISIONES ---
+  // ==========================================================
+
+
+  function drawIshikawa(problem, categories) {
+      const svg = document.getElementById('ishikawaSvgContainer');
+      svg.innerHTML = '';
+      diagramNodes.clear();
+
+      const { width, height } = svg.getBoundingClientRect();
+      
+      const isMobile = window.innerWidth <= 768;
+      const margin = isMobile 
+          ? { top: 30, right: 120, bottom: 60, left: 30 } 
+          : { top: 40, right: 200, bottom: 80, left: 50 };
+          
+      const diagramWidth = width - margin.left - margin.right;
+      const diagramHeight = height - margin.top - margin.bottom;
+
+      const spineY = margin.top + diagramHeight / 2;
+      const spineStartX = margin.left;
+      const spineEndX = margin.left + diagramWidth;
+      
+      const diagramGroup = createSVGElement('g', { id: 'diagram-group' });
+      svg.appendChild(diagramGroup);
+
+      // Logo
+      diagramGroup.appendChild(createSVGElement('image', {
+          href: 'sigma-exacta-icon.jpg',
+          x: 10, y: 10, width: 40, height: 40, opacity: 0.7
+      }));
+
+      // Nota de instrucción
+      const noteText = createSVGElement('text', {
+          x: 55, y: 30, fill: '#888',
+          'font-size': isMobile ? '10px' : '12px', 
+          'font-style': 'italic', 
+          'dominant-baseline': 'middle'
+      });
+      noteText.textContent = 'Drag & drop text to adjust the diagram';
+      diagramGroup.appendChild(noteText);
+
+      // Dibujar la espina principal
+      diagramGroup.appendChild(createSVGElement('line', { 
+          x1: spineStartX, y1: spineY, x2: spineEndX, y2: spineY, 
+          stroke: '#333', 'stroke-width': 3 
+      }));
+      
+      // Flecha al final de la espina
+      diagramGroup.appendChild(createSVGElement('polygon', { 
+          points: `${spineEndX},${spineY} ${spineEndX-15},${spineY-7} ${spineEndX-15},${spineY+7}`, 
+          fill: '#333' 
+      }));
+      
+      // Caja del problema
+      const problemBoxWidth = isMobile ? 140 : 180;
+      const problemBoxHeight = isMobile ? 50 : 60;
+
+      diagramGroup.appendChild(createSVGElement('rect', {
+          x: spineEndX + 5, y: spineY - problemBoxHeight / 2,
+          width: problemBoxWidth, height: problemBoxHeight,
+          class: 'problem-box',
+          rx: 8,
+          stroke: '#333',
+          'stroke-width': 1
+      }));
+      
+      const problemText = createSVGElement('text', { 
+          x: spineEndX + 5 + problemBoxWidth / 2, 
+          y: spineY, 
+          class: 'problem-text',
+          'font-size': isMobile ? '12px' : '14px'
+      });
+      diagramGroup.appendChild(problemText);
+      wrapText(problemText, problem, problemBoxWidth - 10);
+
+      const topCategories = categoryData.slice(0, 3);
+      const bottomCategories = categoryData.slice(3, 6);
+
+      const drawCategoryBranch = (cat, index, isTop) => {
+          const boneAngle = isTop ? -45 : 45;
+          const boneAngleRad = boneAngle * Math.PI / 180;
+          
+          const boneLength = isMobile 
+              ? Math.min(diagramWidth / 4, diagramHeight / 2.5)
+              : Math.min(diagramWidth / 3.5, diagramHeight / 2.2);
+
+          const boneStartX = spineStartX + (diagramWidth / (topCategories.length + 1)) * (index + 1);
+          const boneEndX = boneStartX + boneLength * Math.cos(boneAngleRad);
+          const boneEndY = spineY + boneLength * Math.sin(boneAngleRad);
+
+          const bone = createSVGElement('line', { 
+              x1: boneStartX, y1: spineY, x2: boneEndX, y2: boneEndY, 
+              stroke: cat.color, class: 'category-bone' 
+          });
+          diagramGroup.appendChild(bone);
+
+          const textYOffset = isTop ? -20 : 20;
+          const catText = createSVGElement('text', { 
+              x: boneEndX, y: boneEndY + textYOffset, 
+              fill: cat.color, 
+              class: 'main-category-text draggable',
+              'font-size': isMobile ? '12px' : '14px'
+          });
+          catText.textContent = cat.name;
+          diagramGroup.appendChild(catText);
+          
+          diagramNodes.set(catText, { 
+              line: bone, 
+              children: [], 
+              initialPos: { x: boneEndX, y: boneEndY + textYOffset }, 
+              parent: null, 
+              fraction: 0 
+          });
+          makeDraggable(catText);
+
+          const causes = categories[cat.key] || [];
+          
+          // --- INICIO LÓGICA DE AJUSTE ---
+          const causeElementsInBranch = []; 
+          // --- FIN LÓGICA DE AJUSTE ---
+
+          causes.forEach((cause, causeIdx) => {
+              const fraction = (causeIdx + 1) / (causes.length + 1);
+              const causeStartX = boneStartX + (boneEndX - boneStartX) * fraction;
+              const causeStartY = spineY + (boneEndY - spineY) * fraction;
+
+              const causeBranchLength = isMobile ? 50 : 70;
+              const causeBranchEndX = causeStartX + (isTop ? causeBranchLength : -causeBranchLength);
+              const causeBranchEndY = causeStartY;
+
+              const causeLine = createSVGElement('line', { 
+                  x1: causeStartX, y1: causeStartY, x2: causeBranchEndX, y2: causeBranchEndY, 
+                  stroke: cat.color, class: 'cause-line' 
+              });
+              diagramGroup.appendChild(causeLine);
+
+              const causeText = createSVGElement('text', { 
+                  x: causeBranchEndX + (isTop ? 8 : -8), 
+                  y: causeBranchEndY, 
+                  fill: '#333', 
+                  'text-anchor': isTop ? 'start' : 'end', 
+                  'dominant-baseline': 'middle', 
+                  class: 'cause-text draggable',
+                  'font-size': isMobile ? '10px' : '12px'
+              });
+              causeText.textContent = cause.text;
+              diagramGroup.appendChild(causeText);
+              
+              diagramNodes.set(causeText, { 
+                  line: causeLine, 
+                  children: [], 
+                  initialPos: { x: causeBranchEndX + (isTop ? 8 : -8), y: causeBranchEndY }, 
+                  parent: catText, 
+                  fraction: fraction 
+              });
+              diagramNodes.get(catText).children.push(causeText);
+              makeDraggable(causeText);
+
+              // --- INICIO LÓGICA DE AJUSTE ---
+              causeElementsInBranch.push(causeText);
+              const subCauseElementsInBranch = [];
+              // --- FIN LÓGICA DE AJUSTE ---
+
+              const subCauses = cause.subCauses || [];
+              subCauses.forEach((subCause, subCauseIdx) => {
+                  const subFraction = (subCauseIdx + 1) / (subCauses.length + 1); // Distribuir uniformemente
+                  const subCauseStartX = causeStartX + (causeBranchEndX - causeStartX) * subFraction;
+                  const subCauseStartY = causeStartY; // Start on the horizontal cause line
+
+                  // 2. Get alternating angle
+                  const isAlternating = subCauseIdx % 2 !== 0; // true for 1, 3, 5
+                  const currentAngle = isAlternating ? (-boneAngle) : (boneAngle); // e.g., idx 0 = -45, idx 1 = +45
+                  const subCauseBranchAngleRad = currentAngle * Math.PI / 180;
+                  
+                  // 3. Get length
+                  const subCauseBranchLength = isMobile ? 40 : 60;
+
+                  // 4. Calculate End Point (directional)
+                  const directionalLength = isTop ? subCauseBranchLength : -subCauseBranchLength;
+                  const subCauseBranchEndX = subCauseStartX + directionalLength * Math.cos(subCauseBranchAngleRad);
+                  const subCauseBranchEndY = subCauseStartY + directionalLength * Math.sin(subCauseBranchAngleRad);
+                  
+                  // 5. Draw line
+                  const subCauseLine = createSVGElement('line', { 
+                      x1: subCauseStartX, y1: subCauseStartY, x2: subCauseBranchEndX, y2: subCauseBranchEndY, 
+                      stroke: cat.color, class: 'subcause-line' 
+                  });
+                  diagramGroup.appendChild(subCauseLine);
+
+                  // 6. Draw Text (with correct anchor)
+                  const textAnchor = isTop ? 'start' : 'end';
+                  const textXOffset = isTop ? 8 : -8;
+
+                  const subCauseText = createSVGElement('text', { 
+                      x: subCauseBranchEndX + textXOffset, 
+                      y: subCauseBranchEndY, 
+                      fill: '#555', 
+                      'text-anchor': textAnchor, 
+                      'dominant-baseline': 'middle', 
+                      class: 'subcause-text draggable',
+                      'font-size': isMobile ? '9px' : '11px'
+                  });
+                  subCauseText.textContent = subCause.text;
+                  diagramGroup.appendChild(subCauseText);
+                  
+                  // 7. Update node map
+                  diagramNodes.set(subCauseText, { 
+                      line: subCauseLine, 
+                      children: [], 
+                      initialPos: { x: parseFloat(subCauseText.getAttribute('x')), y: parseFloat(subCauseText.getAttribute('y')) }, 
+                      parent: causeText, 
+                      fraction: subFraction 
+                  });
+                  diagramNodes.get(causeText).children.push(subCauseText);
+                  makeDraggable(subCauseText);
+                  
+                  // --- INICIO LÓGICA DE AJUSTE ---
+                  subCauseElementsInBranch.push(subCauseText);
+                  // --- FIN LÓGICA DE AJUSTE ---
+              });
+              
+              // --- INICIO LÓGICA DE AJUSTE ---
+              // Ajustar las sub-causas de ESTA causa
+              adjustBranchCollisions(subCauseElementsInBranch, isTop);
+              // --- FIN LÓGICA DE AJUSTE ---
+          });
+
+          // --- INICIO LÓGICA DE AJUSTE ---
+          // Ajustar las causas principales de ESTA categoría
+          adjustBranchCollisions(causeElementsInBranch, isTop);
+          // --- FIN LÓGICA DE AJUSTE ---
+      };
+
+      topCategories.forEach((cat, i) => drawCategoryBranch(cat, i, true));
+      bottomCategories.forEach((cat, i) => drawCategoryBranch(cat, i, false));
+  }
+  
+  function makeDraggable(element) {
+      let isDragging = false;
+      let initialMousePos = { x: 0, y: 0 };
+
+      element.addEventListener('mousedown', startDrag);
+      
+      function startDrag(e) {
+          e.preventDefault();
+          isDragging = true;
+          const CTM = element.ownerSVGElement.getScreenCTM();
+          initialMousePos = { x: (e.clientX - CTM.e) / CTM.a, y: (e.clientY - CTM.f) / CTM.d };
+          
+          document.addEventListener('mousemove', drag);
+          document.addEventListener('mouseup', endDrag);
+      }
+      
+      function drag(e) {
+          if (!isDragging) return;
+          const CTM = element.ownerSVGElement.getScreenCTM();
+          const currentMousePos = { x: (e.clientX - CTM.e) / CTM.a, y: (e.clientY - CTM.f) / CTM.d };
+          const dx = currentMousePos.x - initialMousePos.x;
+          const dy = currentMousePos.y - initialMousePos.y;
+          updateTreePosition(element, dx, dy);
+      }
+
+      function endDrag() {
+          if (!isDragging) return;
+          isDragging = false;
+          for (const [el, node] of diagramNodes.entries()) {
+              node.initialPos.x = parseFloat(el.getAttribute('x'));
+              node.initialPos.y = parseFloat(el.getAttribute('y'));
+          }
+          document.removeEventListener('mousemove', drag);
+          document.removeEventListener('mouseup', endDrag);
+      }
+  }
+
+  function updateTreePosition(element, dx, dy) {
+      const node = diagramNodes.get(element);
+      if (!node) return;
+
+      const newX = node.initialPos.x + dx;
+      const newY = node.initialPos.y + dy;
+      element.setAttribute('x', newX);
+      element.setAttribute('y', newY);
+
+      const { line } = node;
+      if (line) {
+          const textAnchor = element.getAttribute('text-anchor');
+          let xOffset = 0;
+
+          if(textAnchor === 'start') xOffset = -5;
+          if(textAnchor === 'end') xOffset = 5;
+          
+          line.setAttribute('x2', newX + xOffset);
+          line.setAttribute('y2', newY);
+      }
+      
+      node.children.forEach(childElement => {
+          const childNode = diagramNodes.get(childElement);
+          if (line && childNode) {
+              const lineX1 = parseFloat(line.getAttribute('x1'));
+              const lineY1 = parseFloat(line.getAttribute('y1'));
+              const lineX2 = parseFloat(line.getAttribute('x2'));
+              const lineY2 = parseFloat(line.getAttribute('y2'));
+              
+              const newChildStartX = lineX1 + (lineX2 - lineX1) * childNode.fraction;
+              const newChildStartY = lineY1 + (lineY2 - lineY1) * childNode.fraction;
+
+              childNode.line.setAttribute('x1', newChildStartX);
+              childNode.line.setAttribute('y1', newChildStartY);
+          }
+          updateTreePosition(childElement, dx, dy);
+      });
+  }
+
+  // ===================================================================================
+  // --- EXISTING UI AND DATA HANDLING LOGIC (UNCHANGED) ---
+  // ===================================================================================
+
+  function createCategoryUI() {
+      const container = document.getElementById('categories-container');
+      container.innerHTML = '';
+      categoryData.forEach(cat => {
+          const section = document.createElement('div');
+          section.className = 'category-section';
+          section.innerHTML = `
+              <label class="category-label" style="color: ${cat.color};"><i class="fas ${cat.icon}"></i> ${cat.name}</label>
+              <div id="${cat.key}-causes" class="category-causes-container"></div>
+              <button type="button" class="add-cause-btn success" data-category="${cat.key}">➕ Add Cause</button>
+          `;
+          container.appendChild(section);
+      });
+  }
+
+  function addCauseBlock(categoryKey, causeText = '', subCauses = []) {
+      const container = document.getElementById(`${categoryKey}-causes`);
+      const causeBlock = document.createElement('div');
+      causeBlock.className = 'cause-block';
+      
+      const subCausesHTML = subCauses.map((subCause, index) => {
+        const subSubCausesHTML = (subCause.subSubCauses || []).map(subSubCause => `
+          <div class="sub-sub-cause-item">
+              <input type="text" class="sub-sub-cause-input" placeholder="Sub-sub-cause..." value="${subSubCause}">
+              <button type="button" class="action-button danger remove-sub-sub-cause-btn" title="Remove sub-sub-cause">-</button>
+          </div>
+        `).join('');
+        
+        return `
+          <div class="sub-cause-item">
+              <input type="text" class="sub-cause-input" placeholder="Sub-cause..." value="${subCause.text}">
+              <button type="button" class="action-button danger remove-sub-cause-btn" title="Remove sub-cause">-</button>
+              <button type="button" class="add-sub-sub-cause-btn success action-button" title="Add sub-sub-cause">+</button>
+              <div class="sub-sub-causes-container">${subSubCausesHTML}</div>
+          </div>
+        `;
+      }).join('');
+      
+      causeBlock.innerHTML = `
+          <div class="cause-input-wrapper">
+              <input type="text" class="cause-input" placeholder="Main cause..." value="${causeText}">
+              <button type="button" class="action-button danger remove-cause-btn" title="Remove cause and sub-causes">X</button>
+          </div>
+          <div class="sub-causes-container">${subCausesHTML}</div>
+          <button type="button" class="add-sub-cause-btn success action-button" title="Add sub-cause">+</button>
+      `;
+      container.appendChild(causeBlock);
+      
+      // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR CAUSA
+      setTimeout(() => {
+          const problem = document.getElementById("problem").value.trim();
+          if (problem) {
+              const categories = collectDataFromDOM();
+              drawIshikawa(problem, categories);
+          }
+      }, 10);
+  }
+
+  function addSubCauseInput(button) {
+      const container = button.previousElementSibling;
+      const subCauseItem = document.createElement('div');
+      subCauseItem.className = 'sub-cause-item';
+      subCauseItem.innerHTML = `
+          <input type="text" class="sub-cause-input" placeholder="Sub-cause...">
+          <button type="button" class="action-button danger remove-sub-cause-btn" title="Remove sub-cause">-</button>
+          <button type="button" class="add-sub-sub-cause-btn success action-button" title="Add sub-sub-cause">+</button>
+          <div class="sub-sub-causes-container"></div>
+      `;
+      container.appendChild(subCauseItem);
+      subCauseItem.querySelector('input').focus();
+      
+      // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR SUB-CAUSA
+      setTimeout(() => {
+          const problem = document.getElementById("problem").value.trim();
+          if (problem) {
+              const categories = collectDataFromDOM();
+              drawIshikawa(problem, categories);
+          }
+      }, 10);
+  }
+
+  function addSubSubCauseInput(button) {
+      const container = button.nextElementSibling;
+      const subSubCauseItem = document.createElement('div');
+      subSubCauseItem.className = 'sub-sub-cause-item';
+      subSubCauseItem.innerHTML = `
+          <input type="text" class="sub-sub-cause-input" placeholder="Sub-sub-cause...">
+          <button type="button" class="action-button danger remove-sub-sub-cause-btn" title="Remove sub-sub-cause">-</button>
+      `;
+      container.appendChild(subSubCauseItem);
+      subSubCauseItem.querySelector('input').focus();
+      
+      // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR SUB-SUB-CAUSA
+      setTimeout(() => {
+          const problem = document.getElementById("problem").value.trim();
+          if (problem) {
+              const categories = collectDataFromDOM();
+              drawIshikawa(problem, categories);
+          }
+      }, 10);
+  }
+
+  // FUNCIÓN PARA ACTUALIZAR DIAGRAMA CUANDO SE ELIMINAN CAUSAS
+  function updateDiagram() {
+      const problem = document.getElementById("problem").value.trim();
+      if (problem) {
+          const categories = collectDataFromDOM();
+          drawIshikawa(problem, categories);
+      }
+  }
+
+  document.getElementById('categories-container').addEventListener('click', function(e) {
+      const target = e.target.closest('button');
+      if (!target) return;
+      if (target.classList.contains('add-cause-btn')) { 
+          addCauseBlock(target.dataset.category); 
+      }
+      if (target.classList.contains('remove-cause-btn')) { 
+          target.closest('.cause-block').remove(); 
+          updateDiagram(); // ACTUALIZAR DIAGRAMA AL ELIMINAR CAUSA
+      }
+      if (target.classList.contains('add-sub-cause-btn')) { 
+          addSubCauseInput(target); 
+      }
+      if (target.classList.contains('remove-sub-cause-btn')) { 
+          target.closest('.sub-cause-item').remove(); 
+          updateDiagram(); // ACTUALIZAR DIAGRAMA AL ELIMINAR SUB-CAUSA
+      }
+      if (target.classList.contains('add-sub-sub-cause-btn')) { 
+          addSubSubCauseInput(target); 
+      }
+      if (target.classList.contains('remove-sub-sub-cause-btn')) { 
+          target.closest('.sub-sub-cause-item').remove(); 
+          updateDiagram(); // ACTUALIZAR DIAGRAMA AL ELIMINAR SUB-SUB-CAUSA
+      }
+  });
+
+  // ACTUALIZAR DIAGRAMA CUANDO SE CAMBIA EL TEXTO DE LAS CAUSAS
+  document.getElementById('categories-container').addEventListener('input', function(e) {
+      if (e.target.classList.contains('cause-input') || 
+          e.target.classList.contains('sub-cause-input') || 
+          e.target.classList.contains('sub-sub-cause-input')) {
+          const problem = document.getElementById("problem").value.trim();
+          if (problem) {
+              const categories = collectDataFromDOM();
+              drawIshikawa(problem, categories);
+          }
+      }
+  });
+
+  function collectDataFromDOM() {
+      const categories = {};
+      categoryData.forEach(cat => {
+          categories[cat.key] = [];
+          const causeBlocks = document.querySelectorAll(`#${cat.key}-causes .cause-block`);
+          causeBlocks.forEach(block => {
+              const causeText = block.querySelector('.cause-input').value.trim();
+              if (causeText) {
+                  const subCauses = [];
+                  const subCauseItems = block.querySelectorAll('.sub-cause-item');
+                  subCauseItems.forEach(subCauseItem => {
+                      const subCauseText = subCauseItem.querySelector('.sub-cause-input').value.trim();
+                      if (subCauseText) {
+                          const subSubCauses = Array.from(subCauseItem.querySelectorAll('.sub-sub-cause-input'))
+                              .map(input => input.value.trim())
+                              .filter(Boolean);
+                          subCauses.push({ text: subCauseText, subSubCauses: subSubCauses });
+                      }
+                  });
+                  categories[cat.key].push({ text: causeText, subCauses: subCauses });
+              }
+          });
+      });
+      return categories;
+  }
+  
+  function generateIshikawa() {
+    const problem = document.getElementById("problem").value.trim();
+    if (!problem) {
+      alert("⚠️ Please enter a problem statement.");
+      return;
+    }
+    const categories = collectDataFromDOM();
+    currentData = { problem, categories };
+    setTimeout(() => drawIshikawa(problem, categories), 10);
+  }
+  
+  function loadExample() {
+    resetData(false);
+    document.getElementById("problem").value = "Engine Overheating in Automotive Assembly Line";
+    const exampleData = {
+        manpower: [
+          { 
+            text: "Insufficient training", 
+            subCauses: [
+              { text: "New hires not trained" },
+              { text: "No refresher courses" }
+            ]
+          }, 
+          { 
+            text: "High turnover rate", 
+            subCauses: [ { text: "Loss of experienced staff" } ]
+          }
+        ],
+        methods: [
+          { text: "Incorrect assembly sequence", subCauses: [ { text: "Wrong torque sequence" } ] }, 
+          { text: "Improper coolant filling", subCauses: [ { text: "Air pockets in system" }, { text: "Wrong coolant mixture" } ] }
+        ],
+        machines: [
+          { text: "Faulty torque wrenches", subCauses: [ { text: "No calibration records" } ] }, 
+          { text: "Coolant station malfunction", subCauses: [ { text: "Inconsistent pressure" } ] }
+        ],
+        materials: [
+          { text: "Low quality gaskets", subCauses: [ { text: "Supplier quality issues" } ] }, 
+          { text: "Contaminated coolant", subCauses: [ { text: "Storage contamination" } ] }
+        ],
+        environment: [
+          { text: "High humidity in area", subCauses: [ { text: "Affects sensor calibration" } ] },
+          { text: "Temperature fluctuations" }
+        ],
+        measurement: [
+          { text: "Inaccurate pressure testing", subCauses: [ { text: "Faulty pressure gauges" } ] },
+          { text: "Incorrect torque verification" }
+        ]
+    };
+    for (const categoryKey in exampleData) {
+        exampleData[categoryKey].forEach(cause => { 
+            addCauseBlock(categoryKey, cause.text, cause.subCauses); 
+        });
+    }
+    generateIshikawa();
+  }
+
+  function resetData(redraw = true) {
+    document.getElementById("ishikawaForm").reset();
+    createCategoryUI();
+    currentData = { problem: placeholderProblemText, categories: {} };
+    if (redraw) {
+        setTimeout(() => drawIshikawa(currentData.problem, currentData.categories), 10);
+    }
+  }
+
+  function exportToExcel() {
+    if (!currentData.problem || currentData.problem === placeholderProblemText) {
+        alert('⚠️ Please generate a diagram with a problem statement before exporting.');
+        return;
+    }
+    const excelData = [['Problem Statement:', currentData.problem], [], ['Category', 'Cause', 'Sub-Cause', 'Sub-Sub-Cause']]; 
+    categoryData.forEach(catInfo => {
+        const causes = currentData.categories[catInfo.key] || [];
+        if (causes.length > 0) {
+            let isFirstCauseOfCategory = true;
+            causes.forEach(cause => {
+                const categoryCell = isFirstCauseOfCategory ? catInfo.name : '';
+                if (cause.subCauses && cause.subCauses.length > 0) {
+                    cause.subCauses.forEach((subCause, i) => {
+                        if (subCause.subSubCauses && subCause.subSubCauses.length > 0) {
+                            subCause.subSubCauses.forEach((subSubCause, j) => {
+                                if (j === 0) {
+                                    if (i === 0) {
+                                        excelData.push([categoryCell, cause.text, subCause.text, subSubCause]);
+                                    } else {
+                                        excelData.push(['', '', subCause.text, subSubCause]);
+                                    }
+                                } else {
+                                    excelData.push(['', '', '', subSubCause]);
+                                }
+                            });
+                        } else {
+                            if (i === 0) {
+                                excelData.push([categoryCell, cause.text, subCause.text, '']);
+                            } else {
+                                excelData.push(['', '', subCause.text, '']);
+                            }
+                        }
+                    });
+                } else {
+                    excelData.push([categoryCell, cause.text, '', '']);
+                }
+                isFirstCauseOfCategory = false;
+            });
+        } else {
+            excelData.push([catInfo.name, '', '', '']);
+        }
+        excelData.push([]);
+    });
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+    ws['!cols'] = [ { wch: 20 }, { wch: 35 }, { wch: 35 }, { wch: 35 } ];
+    XLSX.utils.book_append_sheet(wb, ws, 'Ishikawa Data');
+    XLSX.writeFile(wb, 'Ishikawa_Diagram_Data_Sigma_Exacta.xlsx');
+  }
+
+  // SOLUCIÓN DEFINITIVA: Usando html2canvas para capturar exactamente lo que se ve
+  function exportToJpg() {
+    if (!currentData.problem || currentData.problem === placeholderProblemText) {
+        alert('⚠️ Please generate a diagram before exporting.');
+        return;
+    }
+    
+    const diagramContainer = document.getElementById('ishikawaDiagramContainer');
+    
+    // Mostrar mensaje de procesamiento
+    const originalText = document.getElementById('exportJpgBtn').innerHTML;
+    document.getElementById('exportJpgBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    document.getElementById('exportJpgBtn').disabled = true;
+    
+    // Configuración para html2canvas
+    const options = {
+        scale: 2, // Doble resolución para mejor calidad
+        useCORS: true, // Permitir imágenes cross-origin
+        allowTaint: true, // Permitir imágenes no CORS
+        backgroundColor: '#ffffff', // Fondo blanco
+        logging: false, // Desactivar logs
+        onclone: function(clonedDoc) {
+            // Asegurar que el SVG se vea bien en el clon
+            const clonedSvg = clonedDoc.getElementById('ishikawaSvgContainer');
+            if (clonedSvg) {
+                clonedSvg.style.width = '100%';
+                clonedSvg.style.height = '100%';
+            }
+        }
+    };
+    
+    // Capturar el diagrama completo con html2canvas
+    html2canvas(diagramContainer, options).then(canvas => {
+        // Convertir a JPG
+        const jpgData = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Crear enlace de descarga
+        const link = document.createElement('a');
+        link.download = 'Ishikawa_Diagram_Sigma_Exacta.jpg';
+        link.href = jpgData;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Restaurar botón
+        document.getElementById('exportJpgBtn').innerHTML = originalText;
+        document.getElementById('exportJpgBtn').disabled = false;
+    }).catch(error => {
+        console.error('Error generating JPG:', error);
+        alert('Error generating JPG image. Please try again.');
+        
+        // Restaurar botón
+        document.getElementById('exportJpgBtn').innerHTML = originalText;
+        document.getElementById('exportJpgBtn').disabled = false;
+    });
+  }
+
+  document.getElementById("ishikawaForm").addEventListener("submit", (e) => { e.preventDefault(); generateIshikawa(); });
+  document.getElementById("exampleBtn").addEventListener("click", loadExample);
+  document.getElementById("resetBtn").addEventListener("click", () => resetData(true));
+  document.getElementById("exportBtn").addEventListener("click", exportToExcel); 
+  document.getElementById("exportJpgBtn").addEventListener("click", exportToJpg); 
+
+  // ACTUALIZAR DIAGRAMA CUANDO CAMBIA EL PROBLEMA
+  document.getElementById("problem").addEventListener("input", function() {
+      const problem = this.value.trim();
+      if (problem) {
+          const categories = collectDataFromDOM();
+          drawIshikawa(problem, categories);
+      }
+  });
+
+  window.addEventListener('resize', () => { 
+    if (currentData.problem && currentData.problem !== placeholderProblemText) { 
+      drawIshikawa(currentData.problem, currentData.categories); 
+    } 
+  });
+</script>
+
+</body>
+</html>

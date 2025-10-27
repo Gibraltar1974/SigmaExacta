@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIZ Problem Solving Tool & 40 Principles | Sigma Exacta</title>
+    <meta name="description" content="Use our free online TRIZ tool to solve complex problems with a structured methodology. Identify contradictions, use the 40 inventive principles, and apply Su-Field analysis for innovation.">
+    <meta name="keywords" content="TRIZ, Theory of Inventive Problem Solving, contradiction matrix, 40 inventive principles, Genrich Altshuller, Su-Field analysis, problem solving, innovation tool, technical contradiction, physical contradiction">
+    <link rel="canonical" href="https://sigmaexacta.com/triz" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* ===== ESTILOS DE LA BARRA DE NAVEGACIÓN (COPIADOS DE INDEX.HTML) ===== */
+        .top-bar {
+            position: sticky; top: 0; z-index: 1001;    
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background-color: #222; 
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
+        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
+        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
+        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
+        .nav-item-dropdown { position: relative; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 0;
+            background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px;
+            z-index: 1000; min-width: 600px; padding: 20px;
+        }
+        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
+        .dropdown-link:hover { background-color: #f1f1f1; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .nav-item-dropdown:hover > .dropdown-menu { display: block; }
+        @media (max-width: 992px) {
+            .nav-toggle { display: block; }
+            .navigation .nav-menu {
+                display: none; flex-direction: column; position: absolute; top: 100%;
+                left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
+            }
+            .navigation .nav-menu .nav-link { color: #333; }
+            .navigation .nav-menu.show-menu { display: flex; }
+            .navigation .nav-item { width: 100%; text-align: left; }
+            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
+            .dropdown-menu {
+                display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
+            }
+            .dropdown-menu.show-submenu { display: block; }
+            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
+            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
+            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+        }
+        
+        /* Estilos de la página (modificado el .header h1 para incluir flexbox) */
+        :root{--primary-color:#2c3e50;--secondary-color:#3498db;--accent-color:#e74c3c;--light-color:#ecf0f1;--dark-color:#2c3e50;--success-color:#27ae60;--warning-color:#f39c12;font-size:16px}*,::after,::before{box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Nunito','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;color:#333;background-color:#f5f7fa;line-height:1.6}
+        
+        /* MODIFICACIÓN 1: Se ha eliminado max-width:1000px y margin:0 auto para que ocupe el ancho completo */
+        .main-content-wrapper{padding:1.25rem}
+        
+        .header{margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid #ddd;text-align:center}.header h1{color:var(--primary-color);font-size:clamp(1.5rem,4vw,1.8rem);margin:.5rem 0;font-weight:800;display:flex;align-items:center;justify-content:center}.header .header-subtitle{font-size:1.1rem;color:#7f8c8d;margin:0;font-weight:400}.content-block{border:1px solid #ddd;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;background-color:#fff;box-shadow:0 4px 6px rgba(0,0,0,.05)}.content-block h2{font-size:1.5em;margin-top:0;margin-bottom:1.25rem;color:var(--primary-color);border-bottom:2px solid var(--secondary-color);padding-bottom:.6rem;font-weight:800}.content-block h2 .fas{margin-right:.75rem}.infographic-flow{display:flex;justify-content:space-between;align-items:stretch;margin-top:1.5rem;text-align:center;flex-wrap:wrap;gap:.6rem}.flow-step{flex:1;min-width:150px;padding:1rem;border:1px solid #ddd;border-radius:8px;background-color:#f8f9fa;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;justify-content:center;align-items:center}.flow-step:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.1)}.flow-step .fas{font-size:1.8rem;color:var(--primary-color);margin-bottom:.6rem}.flow-step strong{display:block;font-size:1.1rem;color:var(--primary-color);font-weight:600}.flow-step span{font-size:.9em;color:#555}.flow-arrow{font-size:2rem;color:var(--secondary-color);margin:auto .6rem;flex-grow:0}.instructions-box ul{margin:.6rem 0 0 0;padding-left:1.25rem}.instructions-box li{margin-bottom:.5rem;line-height:1.6}.solver-step{border:1px solid #eee;border-radius:8px;padding:1.25rem;margin-bottom:1.25rem;background-color:#fdfdfd}.solver-step h3{font-size:1.2em;margin-top:0;margin-bottom:1rem;color:var(--primary-color);border-bottom:1px solid #eee;padding-bottom:.6rem;font-weight:800}.form-group{margin-bottom:1.25rem}label{color:var(--primary-color);font-weight:600;display:block;margin-bottom:.5rem}input[type=text],select,textarea{width:100%;padding:.6rem;border:1px solid #ddd;border-radius:4px;transition:border .3s,box-shadow .3s;font-size:1rem;font-family:'Nunito',sans-serif}button:focus-visible,input:focus,select:focus,textarea:focus{outline:0;border-color:var(--secondary-color);box-shadow:0 0 0 3px rgba(52,152,219,.2)}textarea{min-height:90px;resize:vertical}.radio-group label{display:flex;align-items:center;gap:10px;font-weight:400;margin-bottom:.6rem;cursor:pointer}.radio-group input{width:auto;margin:0}button{background-color:var(--secondary-color);color:#fff;padding:.7rem 1.25rem;border:none;border-radius:4px;cursor:pointer;margin:5px;font-size:1rem;transition:background-color .3s;font-family:'Nunito',sans-serif;font-weight:600}.btn-success{background-color:var(--success-color)}.btn-success:hover{background-color:#219653}.btn-warning{background-color:var(--warning-color)}.btn-warning:hover{background-color:#d4ac0d}#solve-button{width:100%;padding:1rem;font-size:1.2em;font-weight:700;margin-top:1.25rem}#solve-button:hover{background-color:#2980b9}.hidden{display:none}#results-container{border:2px solid var(--success-color);background-color:#f8fef8;border-radius:8px;padding:1.25rem;margin-top:1.5rem}#results-container h3{color:var(--success-color);font-weight:800}.principle-item{border-left:3px solid var(--secondary-color);padding-left:1rem;margin-bottom:1rem}.principle-item strong{color:var(--dark-color);font-size:1.05em;font-weight:600}.results-actions{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #eee}footer{padding:2rem 1.25rem;text-align:center}.disclaimer-note{margin-top:2rem;padding:0 1rem;font-size:.8rem;color:#777;max-width:800px;margin-left:auto;margin-right:auto}@media (max-width: 992px){.infographic-flow{flex-direction:column;align-items:center}.flow-arrow{transform:rotate(90deg);margin:1rem 0}}
+
+        /* NUEVOS ESTILOS SOLICITADOS PARA EL ICONO EN H1 */
+        .triz-h1-icon-style {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px; /* Borde cuadrado suave */
+            background-color: #fc6d26; /* Color de TRIZ (naranja/rojizo) */
+            color: #fff;
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+        }
+
+        /* ===== NUEVOS ESTILOS PARA CONTRADICCIONES FÍSICAS MEJORADAS ===== */
+        .physical-strategy-guide {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .strategy-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .strategy-description {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .strategy-example {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 5px;
+            font-style: italic;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .physical-principle-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .physical-principle-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .principle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .principle-number {
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .principle-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            flex: 1;
+            margin-left: 10px;
+        }
+        
+        .principle-description {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .principle-example {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 3px solid var(--warning-color);
+        }
+        
+        .example-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== NUEVOS ESTILOS PARA DIAGRAMAS SU-FIELD MEJORADOS CON SVG ===== */
+        .sufield-triangle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sufield-svg-container {
+            width: 300px;
+            height: 260px;
+            position: relative;
+        }
+        
+        .sufield-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .triangle-path {
+            fill: rgba(255, 255, 255, 0.8);
+            stroke: #dee2e6;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+        
+        .interaction-line {
+            stroke: #3498db;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+        
+        .problem-interaction {
+            stroke: #e74c3c;
+            stroke-width: 3;
+        }
+        
+        .sufield-node {
+            /* MODIFICACIÓN 1: Eliminar interactividad del ratón */
+            cursor: default;
+            transition: none;
+        }
+        
+        /* MODIFICACIÓN 1: Eliminar hover effects */
+        .sufield-node:hover {
+            transform: none;
+            filter: none;
+        }
+        
+        .s1-node {
+            fill: #3498db;
+        }
+        
+        .s2-node {
+            fill: #e74c3c;
+        }
+        
+        .f-node {
+            fill: #f39c12;
+        }
+        
+        .node-label {
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+            #1a5632;
+            filter: url(#text-background);
+        }
+        
+        .node-type {
+            font-size: 0.7rem;
+            text-anchor: middle;
+            fill: #1a5632;
+            font-weight: 600;
+        }
+        
+        .problem-indicator-svg {
+            fill: #e74c3c;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Estilos para diferentes tipos de problemas en SVG */
+        .problem-insufficient .interaction-line {
+            stroke-dasharray: 5,5;
+            stroke: #3498db;
+        }
+        
+        .problem-harmful .interaction-line {
+            stroke: #e74c3c;
+            stroke-width: 3;
+        }
+        
+        .problem-difficult .interaction-line {
+            stroke-dasharray: 2,2;
+            stroke: #f39c12;
+        }
+        
+        .problem-missing .interaction-line {
+            stroke-dasharray: 10,5;
+            stroke: #9b59b6;
+        }
+        
+        .problem-excessive .interaction-line {
+            stroke: #e67e22;
+            stroke-width: 4;
+        }
+        
+        .problem-inefficient .interaction-line {
+            stroke: #1abc9c;
+            stroke-width: 2;
+            stroke-dasharray: 1,0;
+        }
+        
+        /* ===== NUEVOS ESTILOS PARA SOLUCIONES ESTÁNDAR CON DIAGRAMAS ===== */
+        .standard-solution-visual {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .solution-transformation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .before-state, .after-state {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .state-label {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .transition-arrow {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: 0 1rem;
+        }
+        
+        .problem-state .triangle-path {
+            fill: rgba(255, 230, 230, 0.8);
+        }
+        
+        .solution-state .triangle-path {
+            fill: rgba(230, 255, 230, 0.8);
+        }
+        
+        .solution-description {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .solution-description h5 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 0.5rem;
+        }
+
+        /* ===== NUEVOS ESTILOS PARA MATRIZ VISUAL MEJORADA ===== */
+        .matrix-container {
+            margin-top: 1rem;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+        }
+        
+        .matrix-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.75rem;
+        }
+        
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #e0e0e0;
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .matrix-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            min-width: 40px;
+            height: 40px;
+        }
+        
+        .matrix-table th:first-child {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            position: sticky;
+            left: 0;
+            z-index: 3;
+        }
+        
+        .matrix-table td {
+            background-color: #fafafa;
+            height: 35px;
+            position: relative;
+        }
+        
+        .matrix-table td:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .matrix-table .selected {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+        }
+        
+        .matrix-table .improving {
+            background-color: #e8f5e9;
+        }
+        
+        .matrix-table .worsening {
+            background-color: #ffebee;
+        }
+        
+        .principle-numbers {
+            font-size: 0.7rem;
+            line-height: 1.2;
+            font-weight: bold;
+        }
+        
+        .matrix-toggle {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        /* ===== NUEVOS ESTILOS PARA ICONOS OPTIMIZADOS ===== */
+        .principle-icon, .solution-icon, .class-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .principle-icon {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .solution-icon {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .class-icon {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .principle-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+        
+        .principle-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .principle-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .solution-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+        
+        .solution-card:hover {
+            background: #e9ecef;
+        }
+        
+        .solution-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .class-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e74c3c;
+        }
+        
+        /* MODIFICACIÓN 3: Iconos específicos para principios de contradicciones físicas */
+        .physical-principle-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            margin-right: 12px;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        /* MODIFICACIÓN 4: Iconos específicos para soluciones estándar */
+        .standard-solution-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        /* Iconos específicos para principios */
+        .icon-segmentation { color: #3498db; }
+        .icon-extraction { color: #e74c3c; }
+        .icon-local-quality { color: #2ecc71; }
+        .icon-asymmetry { color: #9b59b6; }
+        .icon-combining { color: #f39c12; }
+        .icon-universality { color: #1abc9c; }
+        .icon-nesting { color: #34495e; }
+        .icon-counterweight { color: #7f8c8d; }
+        .icon-preliminary { color: #d35400; }
+        .icon-prior-action { color: #c0392b; }
+
+        /* Estilos para el sistema Su-Field */
+        .sufield-system {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: #fdfdfd;
+        }
+        
+        .sufield-system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sufield-system-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .sufield-system-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sufield-system-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="main-content-wrapper">
+    <header class="header">
+        <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Free Online Inventive Problem Solving (TRIZ) Tool</h1>
+        <p class="header-subtitle">A data-driven method for systematic innovation and invention.</p>
+    </header>
+    <div class="content-block">
+        <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
+        <p><strong>TRIZ</strong>, a Russian acronym for "Teoriya Resheniya Izobretatelskikh Zadach" (Теория решения изобретательских задач), translates to the <strong>"Theory of Inventive Problem Solving."</strong> It is a unique, data-driven methodology for innovation. Instead of relying on random brainstorming, TRIZ is built on the analysis of patterns in millions of patents, identifying universal principles of invention to solve technical contradictions systematically.</p>
+        <p>The core idea is that inventive problems contain contradictions, and by resolving these contradictions using proven principles, breakthrough solutions can be found.</p>
+        <div class="infographic-flow">
+            <div class="flow-step"><i class="fas fa-tasks"></i><strong>1. Define Problem</strong><span>Analyze the system and its drawback.</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-rocket"></i><strong>2. Formulate Ideal</strong><span>Describe the Ideal Final Result (IFR).</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>3. Find Contradiction</strong><span>Identify the core conflict.</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-tools"></i><strong>4. Apply Principles</strong><span>Use TRIZ tools to find a solution.</span></div>
+        </div>
+    </div>
+    <div class="content-block">
+        <h2><i class="fas fa-history"></i> History & Origin</h2>
+        <p>TRIZ was developed by the Soviet inventor and science fiction author <strong>Genrich Altshuller</strong> and his colleagues, starting in 1946. As a patent officer in the Soviet Navy, Altshuller reviewed thousands of patents and noticed that many inventive problems, regardless of their technical field, were solved using a surprisingly small number of common principles.</p>
+        <p>He hypothesized that innovation was not a random act of genius but a systematic process that could be learned and taught. His team analyzed over 200,000 patents to codify these patterns into the <strong>40 Inventive Principles</strong> and the <strong>Contradiction Matrix</strong>, forming the foundation of TRIZ.</p>
+    </div>
+    <div class="content-block">
+        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+        <div class="instructions-box">
+          <ul>
+            <li><strong>Load Example:</strong> Click "Load Example" to see a variety of pre-filled sample problems. There are 10 different examples!</li>
+            <li><strong>Step 1-4:</strong> Fill in your own problem details following the logical steps.</li>
+            <li><strong>Generate Solutions:</strong> Click "Solve Problem & Generate Report" to receive inventive principles tailored to your contradiction.</li>
+            <li><strong>Export:</strong> Once the report is generated, you can export it to Excel for your records.</li>
+          </ul>
+      </div>
+    </div>
+    <div class="content-block">
+        <h2><i class="fas fa-cogs"></i> TRIZ Problem Solver</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn-success" onclick="loadExample()"><i class="fas fa-magic"></i> Load Next Example</button>
+            <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
+        </div>
+        <div class="solver-step" id="step-1">
+            <h3><i class="fas fa-tasks"></i> Step 1: Define the Problem</h3>
+            <div class="form-group"><label for="problem-system">System/Object to improve?</label><input type="text" id="problem-system" placeholder="e.g., A coffee mug"></div>
+            <div class="form-group"><label for="problem-function">Primary useful function?</label><input type="text" id="problem-function" placeholder="e.g., To hold hot liquid"></div>
+            <div class="form-group"><label for="problem-harm">Main drawback?</label><input type="text" id="problem-harm" placeholder="e.g., Burns the hand"></div>
+        </div>
+        <div class="solver-step" id="step-2">
+            <h3><i class="fas fa-rocket"></i> Step 2: Formulate Ideal Final Result (IFR)</h3>
+            <div class="form-group"><label for="ifr-formulation">The system <strong>itself</strong> performs the function without the drawback:</label><textarea id="ifr-formulation" placeholder="e.g., The coffee mug itself holds hot liquid and protects the hand."></textarea></div>
+        </div>
+        <div class="solver-step" id="step-3">
+            <h3><i class="fas fa-exchange-alt"></i> Step 3: Identify the Core Contradiction</h3>
+            <div class="form-group radio-group">
+                <label><input type="radio" name="contradiction-type" value="technical" onchange="toggleContradictionForms()"> <strong>Technical Contradiction:</strong> Improving one feature makes another worse.</label>
+                <label><input type="radio" name="contradiction-type" value="physical" onchange="toggleContradictionForms()"> <strong>Physical Contradiction:</strong> One feature needs opposite properties.</label>
+            </div>
+            
+            <div id="technical-solver-block" class="hidden">
+                <div class="matrix-toggle">
+                    <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i> Toggle Matrix View</button>
+                </div>
+                
+                <div id="dropdown-view">
+                    <div class="form-group"><label for="improving-feature">Feature to Improve:</label><select id="improving-feature"></select></div>
+                    <div class="form-group"><label for="worsening-feature">Feature that Worsens:</label><select id="worsening-feature"></select></div>
+                </div>
+                
+                <div id="matrix-view" class="hidden">
+                    <p><strong>Click on a cell to select improving (row) and worsening (column) features:</strong></p>
+                    <div class="matrix-container">
+                        <table class="matrix-table" id="contradiction-matrix">
+                            </table>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>Selected:</strong> 
+                        <span id="selected-improving">None</span> → 
+                        <span id="selected-worsening">None</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="physical-solver-block" class="hidden">
+                <div class="form-group">
+                    <label for="conflicting-parameter">Parameter with conflicting requirements?</label>
+                    <input type="text" id="conflicting-parameter" placeholder="e.g., Temperature, Size, Visibility">
+                </div>
+                
+                <div class="form-group">
+                    <label>Operational Zones/Time Relationship (Based on Litvin's Method):</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="oz-relationship" value="separate" onchange="updatePhysicalStrategy()"> OZ/OT do NOT intersect</label>
+                        <label><input type="radio" name="oz-relationship" value="contiguous" onchange="updatePhysicalStrategy()"> OZ/OT are CONTIGUOUS</label>
+                        <label><input type="radio" name="oz-relationship" value="intersect" onchange="updatePhysicalStrategy()"> OZ/OT INTERSECT</label>
+                    </div>
+                </div>
+
+                </div>
+        </div>
+        
+        <div class="solver-step" id="step-4">
+            <h3><i class="fas fa-atom"></i> Step 4: Su-Field Analysis</h3>
+            <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system can have its own problem type.</p>
+            
+            <div id="sufield-systems-container">
+                </div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <button type="button" class="btn-success" onclick="addSuFieldSystem()"><i class="fas fa-plus"></i> Add Su-Field System</button>
+            </div>
+        </div>
+        <button id="solve-button" onclick="solveProblem()"><i class="fas fa-calculator"></i> Solve Problem & Generate Report</button>
+        <div id="results-container" class="hidden"></div>
+    </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> This tool is an educational implementation of the TRIZ (Theory of Inventive Problem Solving) methodology, originally developed by Genrich Altshuller. It is not affiliated with, sponsored by, or endorsed by any official TRIZ organizations. The principles and solutions suggested are for informational purposes only. We make no warranties regarding the effectiveness or novelty of any ideas generated. The user assumes full responsibility for the application and validation of concepts derived from this tool. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
+    </div>
+</footer>
+
+<script src="trizcontradiction.js"></script>
+<script src="physicalContradictionPrinciples.js"></script>
+<script src="76principlestriz.js"></script>
+<script>
+    // CORRECCIÓN: Usar la matriz correcta de trizcontradiction.js
+    const engineeringParameters = trizContradictionMatrix.features;
+    
+    // CORRECCIÓN: Mapeo completo de todos los 40 principios
+    const principles = {
+        1: { 
+            name: "Segmentation", 
+            desc: "Divide an object into independent parts.", 
+            icon: "fa-puzzle-piece",
+            visual: "fa-object-group",
+            example: "Divide a large system into smaller, manageable modules"
+        },
+        2: { 
+            name: "Taking out", 
+            desc: "Separate an interfering part or property from an object.", 
+            icon: "fa-external-link-alt",
+            visual: "fa-external-link-alt",
+            example: "Extract harmful component from a mixture"
+        },
+        3: { 
+            name: "Local quality", 
+            desc: "Change an object's structure from uniform to non-uniform.", 
+            icon: "fa-bullseye",
+            visual: "fa-map-marker-alt",
+            example: "Reinforce only the high-stress areas of a structure"
+        },
+        4: { 
+            name: "Asymmetry", 
+            desc: "Change the shape of an object from symmetrical to asymmetrical.", 
+            icon: "fa-not-equal",
+            visual: "fa-balance-scale-right",
+            example: "Use asymmetrical shapes for better ergonomics"
+        },
+        5: { 
+            name: "Merging", 
+            desc: "Bring closer together (or merge) identical or similar objects.", 
+            icon: "fa-link",
+            visual: "fa-object-ungroup",
+            example: "Combine multiple functions into one device"
+        },
+        6: { 
+            name: "Universality", 
+            desc: "Make a part or object perform multiple functions.", 
+            icon: "fa-toolbox",
+            visual: "fa-tools",
+            example: "A smartphone that also works as a camera, GPS, and payment device"
+        },
+        7: { 
+            name: "Nested doll", 
+            desc: "Place one object inside another.", 
+            icon: "fa-layer-group",
+            visual: "fa-box-open",
+            example: "Russian nesting dolls, telescopic poles"
+        },
+        8: { 
+            name: "Anti-weight", 
+            desc: "Compensate for weight by merging with objects that have lift.", 
+            icon: "fa-feather-alt",
+            visual: "fa-weight-hanging",
+            example: "Use helium balloons to lift heavy objects"
+        },
+        9: { 
+            name: "Preliminary anti-action", 
+            desc: "Pre-load with counter-stresses to oppose known undesirable stresses later.", 
+            icon: "fa-shield-alt",
+            visual: "fa-grip-lines",
+            example: "Pre-stressed concrete, vaccination"
+        },
+        10: { 
+            name: "Preliminary action", 
+            desc: "Perform required changes to an object before it is needed.", 
+            icon: "fa-tasks",
+            visual: "fa-forward",
+            example: "Pre-cut materials, pre-mixed solutions"
+        },
+        11: { 
+            name: "Beforehand cushioning", 
+            desc: "Prepare emergency means beforehand.", 
+            icon: "fa-life-ring",
+            visual: "fa-umbrella",
+            example: "Airbags in cars, safety nets"
+        },
+        12: { 
+            name: "Equipotentiality", 
+            desc: "Limit position changes (e.g. in a gravity field).", 
+            icon: "fa-arrows-alt-v",
+            visual: "fa-balance-scale",
+            example: "Elevators, hydraulic lifts"
+        },
+        13: { 
+            name: "The other way round", 
+            desc: "Invert the action(s) used to solve the problem.", 
+            icon: "fa-retweet",
+            visual: "fa-exchange-alt",
+            example: "Cool instead of heat, reverse process flow"
+        },
+        14: { 
+            name: "Spheroidality - Curvature", 
+            desc: "Use curvilinear parts, surfaces, or forms.", 
+            icon: "fa-circle-notch",
+            visual: "fa-circle",
+            example: "Spiral staircase, curved surfaces"
+        },
+        15: { 
+            name: "Dynamics", 
+            desc: "Allow characteristics to change to be optimal.", 
+            icon: "fa-sliders-h",
+            visual: "fa-expand-arrows-alt",
+            example: "Adjustable seats, variable-speed drives"
+        },
+        16: { 
+            name: "Partial or excessive actions", 
+            desc: "If 100% is hard, do slightly less or slightly more.", 
+            icon: "fa-adjust",
+            visual: "fa-tachometer-alt",
+            example: "Overspray then wipe, overfill then remove excess"
+        },
+        17: { 
+            name: "Another dimension", 
+            desc: "Move into a new dimension (e.g. 2D to 3D).", 
+            icon: "fa-cube",
+            visual: "fa-cubes",
+            example: "Spiral staircase instead of straight, 3D printing"
+        },
+        18: { 
+            name: "Mechanical vibration", 
+            desc: "Cause an object to oscillate or vibrate.", 
+            icon: "fa-wave-square",
+            visual: "fa-wave-square",
+            example: "Ultrasonic cleaning, vibration to prevent sticking"
+        },
+        19: { 
+            name: "Periodic action", 
+            desc: "Instead of continuous action, use periodic or pulsating actions.", 
+            icon: "fa-history",
+            visual: "fa-redo-alt",
+            example: "Pulsed laser, intermittent windshield wipers"
+        },
+        20: { 
+            name: "Continuity of useful action", 
+            desc: "Carry on work continuously.", 
+            icon: "fa-infinity",
+            visual: "fa-infinity",
+            example: "Assembly line, continuous processing"
+        },
+        21: { 
+            name: "Skipping", 
+            desc: "Conduct a process at high speed.", 
+            icon: "fa-shipping-fast",
+            visual: "fa-running",
+            example: "High-speed photography, rapid prototyping"
+        },
+        22: { 
+            name: "Blessing in disguise", 
+            desc: "Use harmful factors to achieve a positive effect.", 
+            icon: "fa-recycle",
+            visual: "fa-recycle",
+            example: "Use waste heat for power generation"
+        },
+        23: { 
+            name: "Feedback", 
+            desc: "Introduce feedback to improve a process.", 
+            icon: "fa-sync-alt",
+            visual: "fa-sync",
+            example: "Thermostats, automatic brightness adjustment"
+        },
+        24: { 
+            name: "Intermediary", 
+            desc: "Use an intermediary carrier article or process.", 
+            icon: "fa-hands-helping",
+            visual: "fa-exchange-alt",
+            example: "Catalyst in chemical reactions, adapter plugs"
+        },
+        25: { 
+            name: "Self-service", 
+            desc: "Make an object serve itself.", 
+            icon: "fa-magic",
+            visual: "fa-robot",
+            example: "Self-cleaning surfaces, self-sharpening blades"
+        },
+        26: { 
+            name: "Copying", 
+            desc: "Use simpler and inexpensive copies.", 
+            icon: "fa-copy",
+            visual: "fa-clone",
+            example: "Virtual prototypes, mockups for testing"
+        },
+        27: { 
+            name: "Cheap short-living objects", 
+            desc: "Replace an expensive object with multiple inexpensive ones.", 
+            icon: "fa-box",
+            visual: "fa-boxes",
+            example: "Disposable razors, single-use packaging"
+        },
+        28: { 
+            name: "Mechanics substitution", 
+            desc: "Replace mechanical means with sensory (optical, acoustic) means.", 
+            icon: "fa-magnet",
+            visual: "fa-microchip",
+            example: "Touch screens instead of buttons, optical sensors"
+        },
+        29: { 
+            name: "Pneumatics and hydraulics", 
+            desc: "Use gas and liquid parts instead of solid parts.", 
+            icon: "fa-water",
+            visual: "fa-tint",
+            example: "Hydraulic brakes, pneumatic tools"
+        },
+        30: { 
+            name: "Flexible shells and thin films", 
+            desc: "Use flexible shells and thin films.", 
+            icon: "fa-film",
+            visual: "fa-layer-group",
+            example: "Bubble wrap, flexible displays"
+        },
+        31: { 
+            name: "Porous materials", 
+            desc: "Make an object porous.", 
+            icon: "fa-braille",
+            visual: "fa-filter",
+            example: "Filters, sponges, breathable fabrics"
+        },
+        32: { 
+            name: "Color changes", 
+            desc: "Change the color of an object or its environment.", 
+            icon: "fa-palette",
+            visual: "fa-fill-drip",
+            example: "Thermochromic materials, warning colors"
+        },
+        33: { 
+            name: "Homogeneity", 
+            desc: "Make objects interacting with a given object of the same material.", 
+            icon: "fa-equals",
+            visual: "fa-align-center",
+            example: "Diamond cutting diamond, compatible materials"
+        },
+        34: { 
+            name: "Discarding and recovering", 
+            desc: "Make portions of an object that have fulfilled their functions go away.", 
+            icon: "fa-trash-restore",
+            visual: "fa-trash-alt",
+            example: "Biodegradable materials, rocket stage separation"
+        },
+        35: { 
+            name: "Parameter changes", 
+            desc: "Change an object's physical state (e.g. gas, liquid, solid).", 
+            icon: "fa-thermometer-half",
+            visual: "fa-tint",
+            example: "Freeze-drying, liquefied gases for storage"
+        },
+        36: { 
+            name: "Phase transitions", 
+            desc: "Use phenomena occurring during phase transitions.", 
+            icon: "fa-wind",
+            visual: "fa-cloud",
+            example: "Heat pipes, refrigeration cycles"
+        },
+        37: { 
+            name: "Thermal expansion", 
+            desc: "Use thermal expansion (or contraction) of materials.", 
+            icon: "fa-arrows-alt-h",
+            visual: "fa-arrows-alt-h",
+            example: "Thermostats, bimetallic strips"
+        },
+        38: { 
+            name: "Strong oxidants", 
+            desc: "Replace ordinary air with enriched air or oxygen.", 
+            icon: "fa-fire",
+            visual: "fa-fire",
+            example: "Oxygen-fuel welding, hyperbaric chambers"
+        },
+        39: { 
+            name: "Inert atmosphere", 
+            desc: "Replace a normal environment with an inert one.", 
+            icon: "fa-flask",
+            visual: "fa-flask",
+            example: "Argon welding, nitrogen packaging"
+        },
+        40: { 
+            name: "Composite materials", 
+            desc: "Change from uniform to composite materials.", 
+            icon: "fa-clone",
+            visual: "fa-layer-group",
+            example: "Carbon fiber composites, reinforced concrete"
+        }
+    };
+
+    // MODIFICACIÓN 3: Mapeo de iconos específicos para principios de contradicciones físicas
+    const physicalPrincipleIcons = {
+        1: "fa-cut",           // Segmentation
+        2: "fa-external-link-alt", // Extraction
+        3: "fa-map-marker-alt", // Local Quality
+        4: "fa-balance-scale-right", // Asymmetry
+        5: "fa-link",          // Merging
+        6: "fa-toolbox",       // Universality
+        7: "fa-box-open",      // Nesting
+        8: "fa-feather-alt",   // Anti-weight
+        9: "fa-shield-alt",    // Preliminary anti-action
+        10: "fa-forward",      // Prior action
+        11: "fa-umbrella",     // Beforehand cushioning
+        12: "fa-balance-scale", // Equipotentiality
+        13: "fa-exchange-alt", // The other way round
+        14: "fa-circle",       // Spheroidality
+        15: "fa-expand-arrows-alt", // Dynamics
+        16: "fa-tachometer-alt", // Partial or excessive actions
+        17: "fa-cubes",        // Another dimension
+        18: "fa-wave-square",  // Mechanical vibration
+        19: "fa-redo-alt",     // Periodic action
+        20: "fa-infinity",     // Continuity of useful action
+        21: "fa-running",      // Skipping
+        22: "fa-recycle",      // Blessing in disguise
+        23: "fa-sync",         // Feedback
+        24: "fa-hands-helping", // Intermediary
+        25: "fa-robot",        // Self-service
+        26: "fa-clone",        // Copying
+        27: "fa-boxes",        // Cheap short-living objects
+        28: "fa-microchip",    // Mechanics substitution
+        29: "fa-tint",         // Pneumatics and hydraulics
+        30: "fa-layer-group",  // Flexible shells and thin films
+        31: "fa-filter",       // Porous materials
+        32: "fa-fill-drip",    // Color changes
+        33: "fa-align-center", // Homogeneity
+        34: "fa-trash-alt",    // Discarding and recovering
+        35: "fa-thermometer-half", // Parameter changes
+        36: "fa-cloud",        // Phase transitions
+        37: "fa-arrows-alt-h", // Thermal expansion
+        38: "fa-fire",         // Strong oxidants
+        39: "fa-flask",        // Inert atmosphere
+        40: "fa-layer-group"   // Composite materials
+    };
+
+    // MODIFICACIÓN 4: Mapeo de iconos específicos para soluciones estándar
+    const standardSolutionIcons = {
+        "1.1.1": "fa-wrench",           // Complete an incomplete system
+        "1.1.2": "fa-plus-circle",      // Internal additive substance
+        "1.1.3": "fa-external-link-alt", // External additive substance
+        "1.1.4": "fa-globe",            // Environment as additive
+        "1.1.5": "fa-sync",             // Modify system environment
+        "1.1.6": "fa-adjust",           // Control by surplus application/removal
+        "1.1.7": "fa-hands-helping",    // Use intermediary object
+        "1.1.8": "fa-shield-alt",       // Protect from strong fields / enhance weak fields
+        "1.2.1": "fa-ban",              // Introduce S3 to eliminate harmful effect
+        "1.2.2": "fa-eraser",           // Modify S1/S2 to eliminate harmful effect
+        "1.2.3": "fa-filter",           // Introduce S3 to absorb harmful field
+        "1.2.4": "fa-balance-scale",    // Counteract harmful field with another field
+        "1.2.5": "fa-magnet",           // Eliminate magnetic harmful effects
+        "2.1.1": "fa-sitemap",          // Transition to complex Su-Field system
+        "2.1.2": "fa-link",             // Develop Su-Field chain
+        "2.1.3": "fa-expand-arrows-alt", // Expand Su-Field system
+        "2.1.4": "fa-compress-arrows-alt", // Simplify Su-Field system
+        "2.1.5": "fa-object-group",     // Integrate similar systems
+        "2.2.1": "fa-sliders-h",        // Replace with better controlled field
+        "2.2.2": "fa-puzzle-piece",     // Divide into smaller units
+        "2.2.3": "fa-filter",           // Use porous/capillary materials
+        "2.2.4": "fa-snowflake",        // Make system flexible
+        "2.2.5": "fa-wave-square",      // Replace with structured field
+        "2.2.6": "fa-project-diagram",  // Change to non-uniform structure
+        "2.3.1": "fa-wave-square",      // Match natural frequencies
+        "2.3.2": "fa-redo-alt",         // Coordinate system rhythms
+        "2.3.3": "fa-clock",            // Operation during downtime
+        "2.4.1": "fa-magnet",           // Use ferromagnetic materials
+        "2.4.2": "fa-bolt",             // Ferromagnetic field application
+        "2.4.3": "fa-tint",             // Use magnetic liquids
+        "2.4.4": "fa-filter",           // Capillary structures with magnetism
+        "2.4.5": "fa-plus-circle",      // Temporary ferromagnetic additive
+        "2.4.6": "fa-globe",            // Magnetic materials in environment
+        "2.4.7": "fa-cloud",            // Magnetic transition effects
+        "2.4.8": "fa-sliders-h",        // Dynamic magnetic fields
+        "2.4.9": "fa-puzzle-piece",     // Magnetic particle structures
+        "3.1.1": "fa-object-group",     // Transition to bisystem
+        "3.1.2": "fa-sitemap",          // Transition to polysystem
+        "3.1.3": "fa-link",             // System integration
+        "3.1.4": "fa-network-wired",    // Develop system links
+        "3.1.5": "fa-compress-arrows-alt", // Simplify bi-/poly-systems
+        "3.1.6": "fa-arrow-up",         // Evolution to higher control
+        "4.1.1": "fa-thermometer-half", // Control via phase transition/thermal expansion
+        "4.1.2": "fa-clone",            // Measure a copy
+        "4.1.3": "fa-search",           // Use detection instead of measurement
+        "4.2.1": "fa-bolt",             // Create detectable field
+        "4.2.2": "fa-magnet",           // Ferromagnetic substance detection
+        "4.2.3": "fa-magnet",           // Magnetic field detection
+        "4.2.4": "fa-wave-square",      // Resonant effects for detection
+        "4.2.5": "fa-bolt",             // Electromagnetic field detection
+        "4.2.6": "fa-ruler",            // Physical effects for measurement
+        "4.3.1": "fa-cloud",            // Measure via natural phenomena
+        "4.3.2": "fa-wave-square",      // Resonant frequency measurement
+        "4.3.3": "fa-search",           // Transition to detection system
+        "4.3.4": "fa-search-plus",      // Develop measurement into detection
+        "4.3.5": "fa-link",             // Integrate measurement and action
+        "4.3.6": "fa-robot",            // Self-controlled measurement
+        "4.3.7": "fa-sync",             // Feedback in measurement
+        "4.3.8": "fa-search-plus",      // Enhanced detection methods
+        "5.1.1.1": "fa-th",             // Add 'nothing' - foam, honeycomb, etc.
+        "5.1.1.2": "fa-bolt",           // Use field instead of substance
+        "5.1.1.3": "fa-external-link-alt", // Use external field instead of internal
+        "5.1.1.4": "fa-vial",           // Use small amounts of active additives
+        "5.1.1.5": "fa-map-marker-alt", // Concentrate additive in one location
+        "5.1.1.6": "fa-clock",          // Temporary additive introduction
+        "5.1.1.7": "fa-clone",          // Apply additives to copy
+        "5.1.2": "fa-bolt",             // Use disposable field
+        "5.1.3": "fa-trash-alt",        // Additive disappears after use
+        "5.1.4": "fa-th",               // Simulate with 'nothing'
+        "5.2.1": "fa-recycle",          // Use waste products as resources
+        "5.3.1": "fa-cloud",            // Phase change utilization
+        "5.3.2": "fa-arrows-alt-h",     // Thermal expansion effects
+        "5.3.3": "fa-fire",             // Use strong oxidants
+        "5.3.4": "fa-flask",            // Use inert environment
+        "5.4.1": "fa-robot",            // Self-controlled changes
+        "5.5.1": "fa-layer-group"       // Composite materials
+    };
+
+    // Mapeo de iconos para las clases de soluciones estándar
+    const classIcons = {
+        "Class 1: Improving system with no/little change": "fa-tools",
+        "Class 2: Improving system by changing system": "fa-arrow-up",
+        "Class 3: System transitions": "fa-exchange-alt",
+        "Class 4: Detection and measurement": "fa-ruler",
+        "Class 5: Strategies for simplification/improvement": "fa-simplify"
+    };
+
+    // Mapeo de iconos para tipos de problemas Su-Field
+    const problemTypeIcons = {
+        insufficient: "fa-tachometer-alt",
+        harmful: "fa-biohazard",
+        difficult: "fa-search",
+        missing: "fa-question-circle",
+        excessive: "fa-bolt",
+        inefficient: "fa-tachometer-alt"
+    };
+
+    const sufieldSolutions = {
+        insufficient: "<strong>Suggestion:</strong> The action is insufficient. Standard Solutions suggest introducing a new substance or field to enhance the action. Can you add a catalyst, a magnetic field, or modify the 'Tool' or 'Object' to be more receptive?",
+        harmful: "<strong>Suggestion:</strong> The action is harmful. Standard Solutions suggest adding a neutralizing substance, modifying the 'Tool' or 'Object' to be immune, or introducing a counter-field to block the harm.",
+        difficult: "<strong>Suggestion:</strong> The interaction is hard to measure. Standard Solutions suggest using a copy of the system, using a ferromagnetic additive that can be easily detected, or using a field that is easier to measure (e.g., optical instead of thermal).",
+        missing: "<strong>Suggestion:</strong> The desired action is missing. Standard Solutions recommend introducing a new substance or field to create the action. This is the most open-ended case, requiring creative application of a new 'Tool' or 'Field'.",
+        excessive: "<strong>Suggestion:</strong> The action is excessive. Standard Solutions suggest reducing the field, introducing a counter-field, or using a substance that can absorb or dissipate the excess.",
+        inefficient: "<strong>Suggestion:</strong> The action is inefficient. Standard Solutions suggest improving field efficiency, using resonance, or changing the phase of the substance."
+    };
+    
+    // Class descriptions for Standard Solutions
+    const standardSolutionClasses = {
+        "Class 1: Improving system with no/little change": "This class focuses on building or improving Su-Field systems. Use these solutions when you need to introduce new elements to create or enhance a system.",
+        "Class 2: Improving system by changing system": "This class deals with evolving and developing existing Su-Field systems. Use these when you need to make an existing system more complex, efficient, or coordinated.",
+        "Class 3: Transition to Supersystem and Microlevel": "This class involves transitions to higher-level systems and micro-level structures. Use these when you need to think beyond the current system boundaries.",
+        "Class 4: Measurement and Detection Standards": "This class provides solutions for measurement, detection and control problems. Use these when you need to improve how you measure or detect system states.",
+        "Class 5: Strategies for simplification and Improvement": "This class offers solutions for simplifying systems and introducing effective changes. Use these when you need to make a system simpler, more efficient, or self-regulating."
+    };
+
+    let problemData = {};
+    let exampleIndex = 0;
+    let improvingFeatureIndex = null;
+    let worseningFeatureIndex = null;
+    
+    // MODIFICACIÓN: Función centralizada para limpiar resultados
+    function clearResults() {
+        const resultsDiv = document.getElementById('results-container');
+        if (resultsDiv && !resultsDiv.classList.contains('hidden')) {
+            resultsDiv.innerHTML = '';
+            resultsDiv.classList.add('hidden');
+        }
+    }
+
+    // CORRECCIÓN: Ejemplos actualizados para usar combinaciones que existen en la matriz
+    const examples = [
+        { 
+            system: "Bicycle Frame", 
+            function: "To support the rider", 
+            harm: "It is too heavy", 
+            ifr: "The frame supports the rider and is lightweight.", 
+            contradictionType: "technical", 
+            improvingFeature: 12,  // 13: Stability of the object (índice 12)
+            worseningFeature: 0,   // 1: Weight of moving object (índice 0)
+            sufield: { systems: [{object: "Rider's weight", tool: "Frame tubes", field: "Mechanical", type: "insufficient"}] } 
+        },
+        { 
+            system: "Sunglasses", 
+            function: "To block UV rays", 
+            harm: "They are too dark indoors", 
+            ifr: "The lenses block UV rays when needed and are clear when not.", 
+            contradictionType: "physical", 
+            conflictingParameter: "Lens Transparency",
+            ozRelationship: "separate",
+            sufield: { systems: [{object: "User's eyes", tool: "Dark lens", field: "Optical", type: "harmful"}] } 
+        },
+        { 
+            system: "Cooking Pot Handle", 
+            function: "To be held by the user", 
+            harm: "It gets too hot", 
+            ifr: "The handle can be held comfortably while the pot is hot.", 
+            contradictionType: "technical", 
+            improvingFeature: 31,  // 32: Ease of manufacture (índice 31)
+            worseningFeature: 15,  // 16: Duration of action by a stationary object (índice 15)
+            sufield: { systems: [{object: "User's hand", tool: "Hot handle", field: "Thermal", type: "harmful"}] } 
+        },
+        { 
+            system: "Packaging for electronics", 
+            function: "To protect the contents", 
+            harm: "It is difficult and frustrating to open", 
+            ifr: "The package protects the contents and opens easily.", 
+            contradictionType: "physical", 
+            conflictingParameter: "Strength/Toughness",
+            ozRelationship: "contiguous",
+            sufield: { systems: [{object: "Electronic device", tool: "Packaging material", field: "Mechanical", type: "excessive"}] } 
+        },
+        { 
+            system: "Umbrella", 
+            function: "To shield from rain", 
+            harm: "It flips inside-out in strong wind", 
+            ifr: "The umbrella shields from rain and remains stable in wind.", 
+            contradictionType: "technical", 
+            improvingFeature: 3,   // 4: Length of stationary object (índice 3)
+            worseningFeature: 10,  // 11: Stress or pressure (índice 10)
+            sufield: { systems: [{object: "User", tool: "Wind force", field: "Mechanical", type: "harmful"}] } 
+        },
+        { 
+            system: "Car Engine", 
+            function: "To generate power", 
+            harm: "It produces a lot of waste heat", 
+            ifr: "The engine generates power without producing waste heat.", 
+            contradictionType: "technical", 
+            improvingFeature: 18,  // 19: Use of energy by moving object (índice 18)
+            worseningFeature: 19,  // 20: Use of energy by stationary object (índice 19)
+            sufield: { systems: [
+                {object: "Piston", tool: "Fuel combustion", field: "Thermal", type: "harmful"}, 
+                {object: "Coolant", tool: "Engine block", field: "Thermal", type: "inefficient"}
+            ]} 
+        }
+    ];
+
+    document.addEventListener('DOMContentLoaded', init);
+    
+    function init() {
+        populateDropdowns();
+        createContradictionMatrix();
+        addSuFieldSystem(); // Add one empty Su-Field system by default
+
+        // MODIFICACIÓN: Añadir listeners para limpiar resultados en dropdowns y campos de texto
+        document.getElementById('improving-feature').addEventListener('change', clearResults);
+        document.getElementById('worsening-feature').addEventListener('change', clearResults);
+        document.getElementById('conflicting-parameter').addEventListener('input', clearResults);
+        
+        // MODIFICACIÓN: Limpiar resultados si se edita el problema base
+        document.getElementById('problem-system').addEventListener('input', clearResults);
+        document.getElementById('problem-function').addEventListener('input', clearResults);
+        document.getElementById('problem-harm').addEventListener('input', clearResults);
+        document.getElementById('ifr-formulation').addEventListener('input', clearResults);
+    }
+    
+    function resetTool() {
+        problemData = {};
+        document.querySelectorAll('input[type="text"], textarea, select').forEach(el => {
+            if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+        });
+        document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        document.getElementById('technical-solver-block').classList.add('hidden');
+        document.getElementById('physical-solver-block').classList.add('hidden');
+        
+        clearResults(); // MODIFICACIÓN: Usar la función centralizada
+        
+        // Reset matrix selection
+        improvingFeatureIndex = null;
+        worseningFeatureIndex = null;
+        document.getElementById('selected-improving').textContent = 'None';
+        document.getElementById('selected-worsening').textContent = 'None';
+        updateMatrixDisplay();
+        
+        // Reset Su-Field systems
+        document.getElementById('sufield-systems-container').innerHTML = '';
+        addSuFieldSystem(); // Add one empty system
+
+        document.getElementById('problem-system').focus();
+    }
+    
+    function loadExample() {
+        resetTool();
+        const currentExample = examples[exampleIndex];
+        
+        document.getElementById('problem-system').value = currentExample.system;
+        document.getElementById('problem-function').value = currentExample.function;
+        document.getElementById('problem-harm').value = currentExample.harm;
+        document.getElementById('ifr-formulation').value = currentExample.ifr;
+
+        const radio = document.querySelector(`input[name="contradiction-type"][value="${currentExample.contradictionType}"]`);
+        if (radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change')); // 'change' llamará a clearResults()
+        }
+
+        if (currentExample.contradictionType === 'technical') {
+            document.getElementById('improving-feature').value = currentExample.improvingFeature;
+            document.getElementById('worsening-feature').value = currentExample.worseningFeature;
+            
+            // Also set matrix selection
+            improvingFeatureIndex = currentExample.improvingFeature;
+            worseningFeatureIndex = currentExample.worseningFeature;
+            updateMatrixDisplay();
+            updateSelectedFeatures();
+        } else {
+            document.getElementById('conflicting-parameter').value = currentExample.conflictingParameter;
+            
+            // Set operational zones relationship if available
+            if (currentExample.ozRelationship) {
+                const ozRadio = document.querySelector(`input[name="oz-relationship"][value="${currentExample.ozRelationship}"]`);
+                if (ozRadio) {
+                    ozRadio.checked = true;
+                    // No disparamos 'change' aquí para evitar limpieza innecesaria
+                }
+            }
+        }
+        
+        // Load Su-Field systems
+        if (currentExample.sufield && currentExample.sufield.systems) {
+            document.getElementById('sufield-systems-container').innerHTML = '';
+            currentExample.sufield.systems.forEach((system, index) => {
+                addSuFieldSystem();
+                const systemContainer = document.getElementById('sufield-systems-container').lastElementChild;
+                systemContainer.querySelector('.sufield-object').value = system.object || '';
+                systemContainer.querySelector('.sufield-tool').value = system.tool || '';
+                systemContainer.querySelector('.sufield-field').value = system.field || '';
+                systemContainer.querySelector('.sufield-type').value = system.type || 'insufficient';
+                
+                // Update diagram
+                updateSuFieldDiagram(systemContainer);
+            });
+        }
+        
+        exampleIndex = (exampleIndex + 1) % examples.length;
+        clearResults(); // MODIFICACIÓN: Limpiar cualquier resultado que 'solve' pudiera haber dejado
+    }
+
+    function addSuFieldSystem() {
+        const container = document.getElementById('sufield-systems-container');
+        const systemCount = container.children.length;
+        const systemId = 'sufield-system-' + systemCount;
+        
+        // MODIFICACIÓN: Añadido clearResults() a todos los eventos oninput/onchange
+        const systemHTML = `
+            <div class="sufield-system" id="${systemId}">
+                <div class="sufield-system-header">
+                    <div class="sufield-system-title">Su-Field System ${systemCount + 1}</div>
+                    <button type="button" class="btn-warning" onclick="removeSuFieldSystem('${systemId}')" aria-label="Remove system"><i class="fas fa-minus"></i></button>
+                </div>
+                
+                <div class="sufield-system-fields">
+                    <div class="form-group">
+                        <label for="sufield-object-${systemCount}">Object (S1)</label>
+                        <input type="text" id="sufield-object-${systemCount}" class="sufield-object" placeholder="e.g., The coffee, the user's hand" oninput="updateSuFieldDiagram(this.parentElement.parentElement.parentElement); clearResults();">
+                    </div>
+                    <div class="form-group">
+                        <label for="sufield-tool-${systemCount}">Tool (S2)</label>
+                        <input type="text" id="sufield-tool-${systemCount}" class="sufield-tool" placeholder="e.g., The mug wall, the robot arm" oninput="updateSuFieldDiagram(this.parentElement.parentElement.parentElement); clearResults();">
+                    </div>
+                    <div class="form-group">
+                        <label for="sufield-field-${systemCount}">Field (F)</label>
+                        <select id="sufield-field-${systemCount}" class="sufield-field" onchange="updateSuFieldDiagram(this.parentElement.parentElement.parentElement); clearResults();">
+                            <option value="">Select a field type</option>
+                            <option value="Mechanical">Mechanical (Force, Pressure)</option>
+                            <option value="Thermal">Thermal (Heat, Cold)</option>
+                            <option value="Electrical">Electrical (Current, Voltage)</option>
+                            <option value="Magnetic">Magnetic (Field, Flux)</option>
+                            <option value="Optical">Optical (Light, Radiation)</option>
+                            <option value="Acoustic">Acoustic (Sound, Vibration)</option>
+                            <option value="Chemical">Chemical (Reaction, Bond)</option>
+                            <option value="Gravitational">Gravitational (Weight, Mass)</option>
+                            <option value="Nuclear">Nuclear (Radiation, Decay)</option>
+                            <option value="Biological">Biological (Growth, Metabolism)</option>
+                            <option value="Other">Other (Specify in text)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="sufield-system-diagram" id="sufield-diagram-${systemCount}">
+                    </div>
+                
+                <div class="form-group">
+                    <label for="sufield-type-${systemCount}">Problem Type:</label>
+                    <select id="sufield-type-${systemCount}" class="sufield-type" onchange="updateSuFieldDiagram(this.parentElement.parentElement); clearResults();">
+                        <option value="insufficient">Useful, but insufficient</option>
+                        <option value="harmful">Harmful or undesired</option>
+                        <option value="difficult">Difficult to measure or detect</option>
+                        <option value="missing">Missing entirely</option>
+                        <option value="excessive">Excessive or too much</option>
+                        <option value="inefficient">Inefficient or wasteful</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', systemHTML);
+        updateSuFieldDiagram(document.getElementById(systemId));
+    }
+
+    function removeSuFieldSystem(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.remove();
+        }
+        // Re-label remaining systems
+        const container = document.getElementById('sufield-systems-container');
+        const systems = container.getElementsByClassName('sufield-system');
+        for (let i = 0; i < systems.length; i++) {
+            const title = systems[i].querySelector('.sufield-system-title');
+            if(title) {
+                title.textContent = `Su-Field System ${i + 1}`;
+            }
+        }
+        clearResults(); // MODIFICACIÓN: Asegurarse de limpiar al borrar
+    }
+    
+    // Función mejorada para actualizar el diagrama Su-Field con mejor posicionamiento de texto
+    function updateSuFieldDiagram(systemElement) {
+        if (!systemElement) return;
+        
+        const object = systemElement.querySelector('.sufield-object').value || 'S1';
+        const tool = systemElement.querySelector('.sufield-tool').value || 'S2';
+        const field = systemElement.querySelector('.sufield-field').value || 'F';
+        const type = systemElement.querySelector('.sufield-type').value || 'insufficient';
+        const diagramElement = systemElement.querySelector('.sufield-system-diagram');
+        
+        // Limpiar contenido existente
+        diagramElement.innerHTML = '';
+        
+        // Función auxiliar para truncar texto si es muy largo
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+        
+        // Crear diagrama SVG mejorado con mejor posicionamiento de texto
+        const diagramHTML = `
+            <div class="sufield-triangle-container">
+                <div class="sufield-svg-container problem-${type}">
+                    <svg class="sufield-svg" viewBox="0 0 200 180">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                    refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+                            </marker>
+                            <filter id="text-background" x="-0.02" y="-0.02" width="1.04" height="1.04">
+                                <feFlood flood-color="#f8f9fa" flood-opacity="0.9" result="COLOR"/>
+                                <feComposite in="COLOR" in2="SourceGraphic" operator="in" result="OUTLINE"/>
+                                <feMerge>
+                                    <feMergeNode in="OUTLINE"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        
+                        <polygon points="100,20 40,150 160,150" class="triangle-path"/>
+                        
+                        <line x1="100" y1="20" x2="40" y2="150" class="interaction-line"/>
+                        <line x1="100" y1="20" x2="160" y2="150" class="interaction-line"/>
+                        <line x1="40" y1="150" x2="160" y2="150" class="interaction-line"/>
+                        
+                        <circle cx="100" cy="20" r="20" class="sufield-node s1-node"/>
+                        <circle cx="40" cy="150" r="20" class="sufield-node s2-node"/>
+                        <circle cx="160" cy="150" r="20" class="sufield-node f-node"/>
+                        
+                        <text x="100" y="20" class="node-label" filter="url(#text-background)" text-anchor="middle" dy="0.3em">${truncateText(object, 8)}</text>
+                        <text x="40" y="150" class="node-label" filter="url(#text-background)" text-anchor="middle" dy="0.3em">${truncateText(tool, 8)}</text>
+                        <text x="160" y="150" class="node-label" filter="url(#text-background)" text-anchor="middle" dy="0.3em">${truncateText(field, 8)}</text>
+                        
+                        <text x="100" y="45" class="node-type" text-anchor="middle">Object (S1)</text>
+                        <text x="40" y="175" class="node-type" text-anchor="middle">Tool (S2)</text>
+                        <text x="160" y="175" class="node-type" text-anchor="middle">Field (F)</text>
+                        
+                        <circle cx="100" cy="100" r="15" class="problem-indicator-svg"/>
+                        <text x="100" y="100" class="node-label" font-size="10" text-anchor="middle" dy="0.3em" filter="url(#text-background)">
+                            <i class="fas ${problemTypeIcons[type]}"></i>
+                        </text>
+                    </svg>
+                </div>
+            </div>
+        `;
+        
+        diagramElement.innerHTML = diagramHTML;
+    }
+    
+    function toggleContradictionForms() {
+        clearResults(); // MODIFICACIÓN: Limpiar al cambiar de tipo
+        const type = document.querySelector('input[name="contradiction-type"]:checked')?.value;
+        document.getElementById('technical-solver-block').classList.toggle('hidden', type !== 'technical');
+        document.getElementById('physical-solver-block').classList.toggle('hidden', type !== 'physical');
+    }
+    
+    // MODIFICACIÓN 2: Función simplificada para actualizar estrategias físicas
+    function updatePhysicalStrategy() {
+        clearResults(); // MODIFICACIÓN: Limpiar al cambiar estrategia física
+        // MODIFICACIÓN 2: No mostrar nada en el paso 3, solo guardar la selección
+        // La estrategia y principios se mostrarán solo en los resultados
+    }
+    
+    function toggleMatrixView() {
+        const dropdownView = document.getElementById('dropdown-view');
+        const matrixView = document.getElementById('matrix-view');
+        
+        if (matrixView.classList.contains('hidden')) {
+            dropdownView.classList.add('hidden');
+            matrixView.classList.remove('hidden');
+        } else {
+            dropdownView.classList.remove('hidden');
+            matrixView.classList.add('hidden');
+        }
+    }
+    
+    function createContradictionMatrix() {
+        const matrixTable = document.getElementById('contradiction-matrix');
+        matrixTable.innerHTML = '';
+        
+        // Create header row
+        let headerRow = '<tr><th></th>';
+        for (let i = 0; i < engineeringParameters.length; i++) {
+            headerRow += `<th>${i+1}</th>`;
+        }
+        headerRow += '</tr>';
+        matrixTable.innerHTML += headerRow;
+        
+        // Create data rows
+        for (let i = 0; i < engineeringParameters.length; i++) {
+            let row = `<tr><th>${i+1}</th>`;
+            for (let j = 0; j < engineeringParameters.length; j++) {
+                const cellClass = getCellClass(i, j);
+                // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
+                const principles = getContradictionPrinciples((i+1).toString(), (j+1).toString());
+                const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
+                
+                row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" title="${engineeringParameters[i]} vs ${engineeringParameters[j]}">
+                    <div class="principle-numbers">${principleNumbers}</div>
+                </td>`;
+            }
+            row += '</tr>';
+            matrixTable.innerHTML += row;
+        }
+    }
+    
+    function getCellClass(row, col) {
+        if (row === improvingFeatureIndex && col === worseningFeatureIndex) {
+            return 'selected';
+        } else if (row === improvingFeatureIndex) {
+            return 'improving';
+        } else if (col === worseningFeatureIndex) {
+            return 'worsening';
+        }
+        return '';
+    }
+    
+    function selectMatrixCell(row, col) {
+        clearResults(); // MODIFICACIÓN: Limpiar al seleccionar celda
+        improvingFeatureIndex = row;
+        worseningFeatureIndex = col;
+        
+        // CORRECCIÓN: Actualizar los dropdowns para mantener consistencia
+        document.getElementById('improving-feature').value = row;
+        document.getElementById('worsening-feature').value = col;
+        
+        updateMatrixDisplay();
+        updateSelectedFeatures();
+    }
+    
+    function updateMatrixDisplay() {
+        const cells = document.querySelectorAll('#contradiction-matrix td');
+        cells.forEach((cell, index) => {
+            const row = Math.floor(index / engineeringParameters.length);
+            const col = index % engineeringParameters.length;
+            cell.className = getCellClass(row, col);
+        });
+    }
+    
+    function updateSelectedFeatures() {
+        const improvingSpan = document.getElementById('selected-improving');
+        const worseningSpan = document.getElementById('selected-worsening');
+        
+        if (improvingFeatureIndex !== null) {
+            improvingSpan.textContent = `${improvingFeatureIndex + 1}: ${engineeringParameters[improvingFeatureIndex]}`;
+        } else {
+            improvingSpan.textContent = 'None';
+        }
+        
+        if (worseningFeatureIndex !== null) {
+            worseningSpan.textContent = `${worseningFeatureIndex + 1}: ${engineeringParameters[worseningFeatureIndex]}`;
+        } else {
+            worseningSpan.textContent = 'None';
+        }
+    }
+    
+    function solveProblem() {
+        // MODIFICACIÓN: Limpiar los resultados anteriores al inicio de la función
+        clearResults();
+
+        problemData = {};
+        problemData.system = document.getElementById('problem-system').value;
+        problemData.function = document.getElementById('problem-function').value;
+        problemData.harm = document.getElementById('problem-harm').value;
+        problemData.ifr = document.getElementById('ifr-formulation').value;
+        
+        const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
+        if (!selectedType) {
+            alert('Please select a contradiction type in Step 3.');
+            return;
+        }
+        problemData.contradictionType = selectedType.value;
+        
+        if (problemData.contradictionType === 'technical') {
+            // CORRECCIÓN: Usar siempre los valores actuales de los dropdowns
+            // ya que pueden haber cambiado después de una selección de matriz
+            let improvingIndex = parseInt(document.getElementById('improving-feature').value);
+            let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
+            
+            // Si no hay selección en dropdowns, usar la selección de matriz
+            if (isNaN(improvingIndex) || improvingIndex < 0) {
+                improvingIndex = improvingFeatureIndex;
+            }
+            if (isNaN(worseningIndex) || worseningIndex < 0) {
+                worseningIndex = worseningFeatureIndex;
+            }
+            
+            // Validación final
+            if (improvingIndex === null || worseningIndex === null || 
+                improvingIndex < 0 || worseningIndex < 0) {
+                alert('Please select an improving and a worsening feature.');
+                return;
+            }
+
+            if (improvingIndex === worseningIndex) {
+                alert('Please select two different features for the technical contradiction.');
+                return;
+            }
+            
+            // CORRECCIÓN: Actualizar las variables globales con la selección actual
+            improvingFeatureIndex = improvingIndex;
+            worseningFeatureIndex = worseningIndex;
+            
+            problemData.improvingFeature = engineeringParameters[improvingIndex];
+            problemData.worseningFeature = engineeringParameters[worseningIndex];
+            
+            // CORRECCIÓN: Usar índices correctos (sumar 1) para la matriz
+            const improvingKey = (improvingIndex + 1).toString();
+            const worseningKey = (worseningIndex + 1).toString();
+            const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
+            
+            problemData.recommendedPrinciples = (principlesList || []).map(id => {
+                // Asegurarse de que el principio existe en nuestro objeto
+                return principles[id] ? {...principles[id], id} : null;
+            }).filter(p => p !== null); // Filtrar principios nulos
+            
+        } else {
+            const parameter = document.getElementById('conflicting-parameter').value;
+            if (!parameter) {
+                alert('Please specify the conflicting parameter for the Physical Contradiction.');
+                return;
+            }
+            problemData.conflictingParameter = parameter;
+            
+            const relationship = document.querySelector('input[name="oz-relationship"]:checked')?.value;
+            if (!relationship) {
+                alert('Please select the Operational Zones/Time relationship for the Physical Contradiction.');
+                return;
+            }
+            problemData.ozRelationship = relationship;
+            
+            const strategy = physicalContradictionPrinciples[relationship];
+            problemData.recommendedPrinciples = strategy.principles.map(p => ({
+                id: p.number,
+                name: p.name,
+                desc: p.description,
+                example: p.example
+            }));
+        }
+        
+        // Collect Su-Field systems
+        problemData.sufield = { systems: [] };
+        const systemElements = document.getElementsByClassName('sufield-system');
+        for (let systemElement of systemElements) {
+            const object = systemElement.querySelector('.sufield-object').value;
+            const tool = systemElement.querySelector('.sufield-tool').value;
+            const field = systemElement.querySelector('.sufield-field').value;
+            const type = systemElement.querySelector('.sufield-type').value;
+            
+            // Get standard solutions for this problem type
+            const standardSolutions = (typeof getRecommendedStandardSolutions === 'function') 
+                                        ? getRecommendedStandardSolutions(type) 
+                                        : [];
+            
+            problemData.sufield.systems.push({
+                object: object,
+                tool: tool,
+                field: field,
+                type: type,
+                suggestion: sufieldSolutions[type] || "No specific suggestion available.",
+                standardSolutions: standardSolutions
+            });
+        }
+        
+        displayResults();
+    }
+    
+    function displayResults() {
+        const resultsDiv = document.getElementById('results-container');
+        // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
+        let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+        
+        html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
+        
+        if (problemData.contradictionType === 'technical') {
+            html += `<div class="contradiction-visual">
+                <div class="improving-side">
+                    <i class="fas fa-arrow-up improving-icon feature-icon"></i>
+                    <h4>Improving</h4>
+                    <p>${problemData.improvingFeature}</p>
+                </div>
+                <div class="contradiction-arrow">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="worsening-side">
+                    <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
+                    <h4>Worsening</h4>
+                    <p>${problemData.worseningFeature}</p>
+                </div>
+            </div>`;
+        } else {
+            html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
+            
+            // MODIFICACIÓN 2: Mostrar estrategia y principios solo en resultados para contradicciones físicas
+            const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
+            if (strategy) {
+                html += `<div class="physical-strategy-guide">
+                    <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
+                    <div class="strategy-description">${strategy.description}</div>
+                    <div class="strategy-example">
+                        <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
+                    </div>
+                </div>`;
+            }
+        }
+        html += `</div>`;
+        
+        html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
+        
+        if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
+            problemData.recommendedPrinciples.forEach(p => {
+                // MODIFICACIÓN 3: Usar iconos específicos para principios de contradicciones físicas
+                let icon;
+                if (problemData.contradictionType === 'physical') {
+                    // Para principios físicos, el ID puede ser "1.1", "2.3.1", etc.
+                    // Necesitamos el número principal (1, 2, 2, etc.)
+                    const mainPrincipleId = Math.floor(parseFloat(p.id));
+                    icon = physicalPrincipleIcons[mainPrincipleId] || 'fa-lightbulb';
+                } else { 
+                    icon = (principles[p.id] && principles[p.id].icon) ? principles[p.id].icon : 'fa-lightbulb'; 
+                }
+                
+                html += `
+                    <div class="principle-card">
+                        <div class="principle-header">
+                            <span class="${problemData.contradictionType === 'physical' ? 'physical-principle-icon' : 'principle-icon'}"><i class="fas ${icon}"></i></span>
+                            <strong>Principle ${p.id}: ${p.name}</strong>
+                        </div>
+                        <p>${p.desc}</p>
+                        <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            html += '<p>No specific principles are commonly recommended for this combination. Consider a different framing of the problem.</p>';
+        }
+        html += `</div>`;
+        
+        // Display Su-Field systems and solutions
+        if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+            html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
+            
+            problemData.sufield.systems.forEach((system, index) => {
+                // Solo mostrar sistemas que tengan al menos un campo rellenado
+                if (system.object || system.tool || system.field) {
+                    html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
+                    
+                    // Show the Su-Field diagram for this system
+                    html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
+                    
+                    // Show problem type with visual indicator
+                    html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                        <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: var(--accent-color); margin-right: 10px;"></i>
+                        <div>
+                            <strong>Problem Type:</strong> ${system.type}
+                            <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                        </div>
+                    </div>`;
+                    
+                    if (system.standardSolutions && system.standardSolutions.length > 0) {
+                        // Group solutions by class
+                        const solutionsByClass = {};
+                        system.standardSolutions.forEach(solution => {
+                            if (!solutionsByClass[solution.class]) {
+                                solutionsByClass[solution.class] = [];
+                            }
+                            solutionsByClass[solution.class].push(solution);
+                        });
+                        
+                        // Display solutions by class with explanations
+                        for (const [className, solutions] of Object.entries(solutionsByClass)) {
+                            const classIcon = classIcons[className] || 'fa-cube';
+                            html += `<div class="standard-solution-visual">`;
+                            html += `
+                                <div class="class-header">
+                                    <span class="class-icon"><i class="fas ${classIcon}"></i></span>
+                                    <h5>${className}</h5>
+                                </div>
+                            `;
+                            html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
+                            
+                            // Add a visual representation of the solution approach
+                            html += `<div class="solution-transformation">
+                                <div class="before-state">
+                                    <div class="sufield-svg-container problem-state problem-${system.type}">
+                                        <svg class="sufield-svg" viewBox="0 0 200 180">
+                                            <polygon points="100,20 40,150 160,150" class="triangle-path"/>
+                                            <line x1="100" y1="20" x2="40" y2="150" class="interaction-line"/>
+                                            <line x1="100" y1="20" x2="160" y2="150" class="interaction-line"/>
+                                            <line x1="40" y1="150" x2="160" y2="150" class="interaction-line"/>
+                                            <circle cx="100" cy="20" r="20" class="sufield-node s1-node"/>
+                                            <circle cx="40" cy="150" r="20" class="sufield-node s2-node"/>
+                                            <circle cx="160" cy="150" r="20" class="sufield-node f-node"/>
+                                            <text x="100" y="20" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
+                                            <text x="40" y="150" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
+                                            <text x="160" y="150" class="node-label">${truncateText(system.field || 'F', 8)}</text>
+                                            <circle cx="100" cy="100" r="15" class="problem-indicator-svg"/>
+                                            <text x="100" y="100" class="node-label" font-size="10">
+                                                <i class="fas ${problemTypeIcons[system.type]}"></i>
+                                            </text>
+                                        </svg>
+                                    </div>
+                                    <div class="state-label">Problem State</div>
+                                </div>
+                                
+                                <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                                
+                                <div class="after-state">
+                                    <div class="sufield-svg-container solution-state">
+                                        <svg class="sufield-svg" viewBox="0 0 200 180">
+                                            <polygon points="100,20 40,150 160,150" class="triangle-path" style="fill:rgba(230,255,230,0.8);"/>
+                                            <line x1="100" y1="20" x2="40" y2="150" class="interaction-line"/>
+                                            <line x1="100" y1="20" x2="160" y2="150" class="interaction-line"/>
+                                            <line x1="40" y1="150" x2="160" y2="150" class="interaction-line"/>
+                                            <circle cx="100" cy="20" r="20" class="sufield-node s1-node"/>
+                                            <circle cx="40" cy="150" r="20" class="sufield-node s2-node"/>
+                                            <circle cx="160" cy="150" r="20" class="sufield-node f-node"/>
+                                            <text x="100" y="20" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
+                                            <text x="40" y="150" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
+                                            <text x="160" y="150" class="node-label">${truncateText(system.field || 'F', 8)}</text>
+                                            <circle cx="100" cy="100" r="15" style="fill:#27ae60;"/>
+                                            <text x="100" y="100" class="node-label" font-size="10">
+                                                <i class="fas fa-check"></i>
+                                            </text>
+                                        </svg>
+                                    </div>
+                                    <div class="state-label">Solution State</div>
+                                </div>
+                            </div>`;
+                            
+                            html += `<div class="solution-description">`;
+                            html += `<h6>Recommended Standard Solutions:</h6>`;
+                            
+                            solutions.forEach(solution => {
+                                // MODIFICACIÓN 4: Usar iconos específicos para soluciones estándar
+                                const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
+                                html += `
+                                    <div class="solution-card">
+                                        <div class="solution-header">
+                                            <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
+                                            <strong>${solution.id}: ${solution.title}</strong>
+                                        </div>
+                                        <p>${solution.description}</p>
+                                    </div>
+                                `;
+                            });
+                            
+                            html += `</div></div>`;
+                        }
+                    } else if (typeof getRecommendedStandardSolutions !== 'function') {
+                        html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
+                    } else {
+                        html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+            });
+            html += `</div>`;
+        }
+        
+        html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        
+        // Función auxiliar para truncar texto si es muy largo
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+    }
+    
+    function exportToExcel() { 
+        if (Object.keys(problemData).length === 0) { 
+            alert("No data to export. Please solve a problem first."); 
+            return; 
+        } 
+        
+        const wb = XLSX.utils.book_new(); 
+        const ws_data = []; 
+        
+        ws_data.push(["TRIZ Problem Solving Report"]); 
+        ws_data.push(["Company: Sigma Exacta"]); 
+        ws_data.push([`Date: ${new Date().toLocaleDateString()}`]); 
+        ws_data.push([]); 
+        ws_data.push(["Problem Definition"]); 
+        ws_data.push(["System/Object", problemData.system]); 
+        ws_data.push(["Primary Function", problemData.function]); 
+        ws_data.push(["Main Drawback", problemData.harm]); 
+        ws_data.push([]); 
+        ws_data.push(["Ideal Final Result (IFR)"]); 
+        ws_data.push([problemData.ifr]); 
+        ws_data.push([]); 
+        ws_data.push(["Contradiction Analysis"]); 
+        
+        if(problemData.contradictionType === 'technical') { 
+            ws_data.push(["Type", "Technical Contradiction"]); 
+            ws_data.push(["Improving Feature", problemData.improvingFeature]); 
+            ws_data.push(["Worsening Feature", problemData.worseningFeature]); 
+        } else { 
+            ws_data.push(["Type", "Physical Contradiction"]); 
+            ws_data.push(["Conflicting Parameter", problemData.conflictingParameter]); 
+            ws_data.push(["Operational Zones Relationship", problemData.ozRelationship]); 
+            ws_data.push(["Recommended Strategy", physicalContradictionPrinciples[problemData.ozRelationship]?.strategy]); 
+        } 
+        
+        ws_data.push([]); 
+        ws_data.push(["Recommended Inventive Principles (from Contradiction)"]); 
+        ws_data.push(["Principle ID", "Name", "Description"]); 
+        
+        problemData.recommendedPrinciples.forEach(p => { 
+            ws_data.push([`Principle ${p.id}`, p.name, p.desc]); 
+        }); 
+
+        ws_data.push([]); 
+        ws_data.push(["Su-Field Analysis"]); 
+        
+        if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+            problemData.sufield.systems.forEach((system, index) => {
+                if (system.object || system.tool || system.field) { // Solo exportar sistemas con datos
+                    ws_data.push([]);
+                    ws_data.push([`System ${index+1}`]);
+                    ws_data.push(["Object (S1)", system.object]); 
+                    ws_data.push(["Tool (S2)", system.tool]); 
+                    ws_data.push(["Field (F)", system.field]);
+                    ws_data.push(["Problem Type", system.type]);
+                    ws_data.push(["Suggestion", system.suggestion.replace(/<[^>]*>?/gm, '')]);
+                    
+                    if (system.standardSolutions && system.standardSolutions.length > 0) {
+                        ws_data.push(["Recommended Standard Solutions"]);
+                        ws_data.push(["Solution ID", "Title", "Description"]);
+                        system.standardSolutions.forEach(solution => {
+                            ws_data.push([solution.id, solution.title, solution.description]);
+                        });
+                    }
+                }
+            });
+        }
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data); 
+        ws['!cols'] = [{wch: 25}, {wch: 60}, {wch: 80}]; 
+        XLSX.utils.book_append_sheet(wb, ws, "TRIZ Report"); 
+        const dateStr = new Date().toISOString().slice(0, 10); 
+        XLSX.writeFile(wb, `TRIZ_Report_Sigma_Exacta_${dateStr}.xlsx`); 
+    } 
+    
+    function populateDropdowns() { 
+        const improvingSelect = document.getElementById('improving-feature'); 
+        const worseningSelect = document.getElementById('worsening-feature'); 
+        
+        improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+        worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+        
+        engineeringParameters.forEach((param, index) => { 
+            improvingSelect.innerHTML += `<option value="${index}">${param}</option>`; 
+            worseningSelect.innerHTML += `<option value="${index}">${param}</option>`; 
+        }); 
+
+        // CORRECCIÓN: Resetear las selecciones globales
+        improvingFeatureIndex = null;
+        worseningFeatureIndex = null;
+    } 
+</script>
+
+<script defer>
+    // ===== SCRIPT PARA EL MENÚ DE NAVEGACIÓN MÓVIL (COPIADO DE INDEX.HTML) =====
+    document.addEventListener('DOMContentLoaded', () => {
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+        
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            if (!navMenu.classList.contains('show-menu')) {
+                toolsDropdownMenu.classList.remove('show-submenu');
+                toolsDropdownContainer.classList.remove('active');
+            }
+        });
+
+        toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+                event.preventDefault(); 
+                toolsDropdownMenu.classList.toggle('show-submenu');
+                toolsDropdownContainer.classList.toggle('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

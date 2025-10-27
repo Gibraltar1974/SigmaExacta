@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="canonical" href="https://sigmaexacta.com/qfd" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive QFD Tool - House of Quality | Sigma Exacta</title>
+  <meta name="description" content="Create a detailed Quality Function Deployment (QFD) matrix with our free, interactive House of Quality tool. Translate customer needs into technical specifications and prioritize engineering efforts. Export to Excel.">
+  <meta name="keywords" content="QFD, Quality Function Deployment, House of Quality, HOQ, customer needs, voice of the customer, technical requirements, product design, engineering, quality tool, free tool">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* --- Estilos base para la barra de navegación --- */
+        .top-bar {
+            /* === MODIFICACIÓN: Header fijo al hacer scroll === */
+            position: sticky; /* Cambiado de 'relative' para que la barra se fije en la parte superior */
+            top: 0;           /* Se posiciona en el borde superior de la ventana */
+            z-index: 1001;    /* Se asegura que esté por encima de otro contenido al hacer scroll */
+            /* === FIN DE LA MODIFICACIÓN === */
+            
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222; /* Un negro suave, puedes cambiarlo por #000 */
+        }
+        .logo-text, .navigation .nav-link, .nav-toggle {
+            color: #fff; /* Color blanco para el texto y el icono */
+        }
+
+        .nav-toggle {
+            display: none; 
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .navigation .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navigation .nav-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+        
+        .navigation .nav-link i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        /* --- Estilos para el menú desplegable (escritorio) --- */
+        .nav-item-dropdown {
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff; /* Fondo blanco para el desplegable */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 5px;
+            z-index: 1000;
+            min-width: 600px;
+            padding: 20px;
+        }
+        
+        /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
+        .dropdown-menu a, .dropdown-menu h4 {
+            color: #333;
+        }
+        .dropdown-link:hover {
+            background-color: #f1f1f1;
+        }
+
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-item-dropdown:hover > .dropdown-menu {
+            display: block;
+        }
+
+        /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
+        @media (max-width: 992px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .navigation .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff; /* Fondo blanco para el menú desplegado */
+                border-top: 1px solid #eee;
+            }
+            
+            /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
+            .navigation .nav-menu .nav-link {
+                color: #333; 
+            }
+
+            .navigation .nav-menu.show-menu {
+                display: flex;
+            }
+            
+            .navigation .nav-item {
+                width: 100%;
+                text-align: left;
+            }
+
+            .nav-item-dropdown > .nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown-menu {
+                display: none; 
+                position: static; 
+                width: 100%;
+                box-shadow: none;
+                border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px;
+                min-width: unset;
+                background-color: #f9f9f9;
+            }
+
+            .dropdown-menu.show-submenu {
+                display: block;
+            }
+            
+            .dropdown-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-item-dropdown:hover > .dropdown-menu {
+                display: none;
+            }
+            .nav-item-dropdown.active:hover > .dropdown-menu {
+                display: block;
+            }
+            
+            .nav-item-dropdown.active > .nav-link i {
+                transform: rotate(180deg);
+            }
+        }
+    </style>
+    <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --warning-color: #f39c12;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      --success-color: #27ae60;
+      font-size: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { 
+        font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        margin: 0; padding: 0; color: #333; 
+        background-color: #f5f7fa; line-height: 1.6;
+    }
+    .main-content-wrapper { margin: 0; padding: 1.25rem; }
+    .header { max-width: 1000px; margin: 0 auto 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
+    .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: 0.5rem 0; font-weight: 800; }
+    .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+    
+    .content-block { max-width: 1000px; margin: 0 auto 1.5rem; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .content-block h2 { font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem; color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.6rem; font-weight: 800; }
+    .content-block h2 .fas { margin-right: 0.75rem; }
+    .tool-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+
+    /* Estilo para el ícono del H1 actualizado (para imitar el naranja del tool-logo) */
+    .header h1 .fas.fa-chart-bar {
+        color: var(--warning-color); /* Usando el color naranja/amarillo definido en --warning-color */
+    }
+    
+    .infographic-flow { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; text-align: center; flex-wrap: wrap; gap: 1rem; }
+    .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; margin: 5px; transition: transform 0.2s, box-shadow 0.2s; }
+    .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+    .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
+    .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
+    .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: 0 0.6rem; }
+    
+    .key-components-list { list-style: none; padding-left: 0; }
+    .key-components-list li { margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative; }
+    .key-components-list li::before { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--success-color); position: absolute; left: 0; top: 2px; }
+    .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
+    
+    label { display: block; margin-bottom: 0.6rem; color: var(--primary-color); font-weight: 600; }
+    input[type="text"], select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; transition: border 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif; }
+    input:focus, select:focus, button:focus-visible { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
+    button { background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px; cursor: pointer; margin: 5px; font-size: 1rem; transition: background-color 0.3s; font-family: 'Nunito', sans-serif; font-weight: 600; }
+    button:hover { background-color: #2980b9; }
+    .btn-add { background-color: var(--success-color); padding: 0; width: 42px; height: 42px; font-size: 1.2em; flex-shrink: 0; }
+    .btn-remove { background-color: var(--accent-color); padding: 0; width: 32px; height: 32px; border-radius: 50%; font-size: 1em; flex-shrink: 0; }
+
+    .list-container { min-height: 100px; border: 1px solid #eee; padding: 0.6rem; border-radius: 4px; margin-bottom: 1rem; }
+    .list-item { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 0.5rem; }
+    .list-item span { flex-grow: 1; word-break: break-word; }
+    .customer-importance-container { display: flex; align-items: center; gap: 8px; width: 150px; flex-shrink: 0; }
+    .customer-importance-bar-bg { flex-grow: 1; background-color: #e0e0e0; border-radius: 4px; height: 18px; }
+    .customer-importance-bar { height: 100%; background-color: var(--success-color); border-radius: 4px; transition: width 0.3s ease; }
+    
+    .add-item-form { display: flex; gap: 0.6rem; align-items: center; }
+    .add-item-form .input-group { flex-grow: 1; }
+    .add-item-form .select-group { width: 150px; }
+    
+    /* FIX: Nueva clase para envolver tablas anchas y hacerlas desplazables */
+    .table-responsive-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Mejora el scroll en iOS */
+        margin-top: 1rem;
+    }
+
+    #qfdMatrixContainer { width: 100%; overflow-x: auto; padding: 2px; }
+    .qfd-table { border-collapse: collapse; font-size: 1rem; width: 100%; /* Asegura que la tabla intente usar el espacio disponible */ }
+    .qfd-table th, .qfd-table td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; vertical-align: middle; white-space: nowrap; }
+    .qfd-table th { background-color: var(--primary-color); color: white; font-weight: 600; }
+    .qfd-table .customer-requirements { text-align: left; max-width: 200px; word-wrap: break-word; font-weight: bold; background-color: #eaf2f8; white-space: normal; }
+    .qfd-table .importance-cell { font-weight: bold; background-color: #fef9e7; }
+    
+    .qfd-table .technical-requirements {
+        background-color: var(--primary-color); color: white; font-weight: bold;
+        vertical-align: middle; white-space: normal; max-width: 150px;
+    }
+    
+    .relationship-strong, .correlation-positive-strong { background-color: var(--success-color); color: var(--dark-color); font-weight: bold; }
+    .relationship-medium, .correlation-positive-weak { background-color: var(--warning-color); color: var(--dark-color); font-weight: bold; }
+    .relationship-weak, .correlation-negative-weak { background-color: var(--accent-color); color: white; font-weight: bold; }
+    .correlation-negative-strong { background-color: #7d3c98; color: white; font-weight: bold; }
+    
+    .tabs { display: flex; margin-bottom: 1.25rem; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+    .tab { padding: 0.6rem 1.25rem; cursor: pointer; background-color: transparent; border: none; border-bottom: 3px solid transparent; font-weight: 600; font-size: 1rem; color: #777; margin-bottom: -1px; }
+    .tab.active { color: var(--primary-color); border-bottom-color: var(--secondary-color); }
+    .tab-content { display: none; padding-top: 1rem; }
+    .tab-content.active { display: block; }
+    
+    .priority-bar-container { background-color: #e0e0e0; border-radius: 4px; height: 20px; width: 100%; min-width: 100px; }
+    .priority-bar { height: 100%; background-color: var(--secondary-color); border-radius: 4px; transition: width 0.5s ease-in-out; }
+
+    .example-btn { background-color: var(--success-color); }
+    .reset-btn { background-color: var(--warning-color); }
+
+    #toast-notification { position: fixed; top: 20px; right: 20px; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; transform: translateY(-20px); }
+    #toast-notification.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    #toast-notification.success { background-color: var(--success-color); }
+    #toast-notification.info { background-color: #3498db; }
+
+    footer { padding: 2rem 1.25rem; text-align: center; }
+    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+
+    @media (max-width: 768px) {
+      .infographic-flow { flex-direction: column; align-items: stretch; }
+      .flow-arrow { transform: rotate(90deg); margin: 1rem 0; }
+    }
+  </style>
+</head>
+<body>
+<header role="banner" class="top-bar">
+    <a href="index.html" class="logo-container-link">
+        <div class="logo-container">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+            <span class="logo-text">SigmaExacta</span>
+        </div>
+    </a>
+
+    <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            
+            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" id="tools-dropdown-menu">
+                    <div class="dropdown-grid">
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Process & Quality</h4>
+                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Design & Innovation</h4>
+                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                            <a href="fmea.html" class="dropdown-link">FMEA</a>
+                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                            <a href="kano.html" class="dropdown-link">Kano Model</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4 class="dropdown-category">Problem Solving</h4>
+                            <a href="8d.html" class="dropdown-link">8D Report</a>
+                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                            <a href="triz.html" class="dropdown-link">TRIZ</a>
+                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                        </div>
+                         <div class="dropdown-column">
+                            <h4 class="dropdown-category">Strategy & Management</h4>
+                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content-wrapper">
+  <div id="toast-notification"></div>
+  <header class="header">
+    <h1><i class="fas fa-chart-bar"></i> Free Online Quality Function Deployment (QFD) Tool</h1>
+    <p class="header-subtitle">Translating Customer Needs into Technical Reality with the House of Quality</p>
+  </header>
+
+    <div class="content-block">
+        <h2><i class="fas fa-question-circle"></i> What is Quality Function Deployment?</h2>
+        <p>Quality Function Deployment (QFD) is a structured methodology used to translate customer requirements—the "Voice of the Customer" (VOC)—into detailed engineering specifications for a product or service. The primary tool of QFD is the <strong>House of Quality</strong>, a matrix that connects what the customer wants to how the organization can deliver it. It's a roadmap for prioritizing design efforts on what truly matters to the customer.</p>
+        <div class="infographic-flow">
+            <div class="flow-step"><i class="fas fa-users"></i><strong>1. Customer Needs</strong><span>What do they want?</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-cogs"></i><strong>2. Technical Specs</strong><span>How can we achieve it?</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-link"></i><strong>3. Relationships</strong><span>How do they connect?</span></div>
+            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div class="flow-step"><i class="fas fa-trophy"></i><strong>4. Priorities</strong><span>What's most important?</span></div>
+        </div>
+    </div>
+
+    <div class="content-block">
+        <h2><i class="fas fa-list-ol"></i> Key Components of the House of Quality</h2>
+        <p>The "House of Quality" gets its name from its house-like shape. Each section has a specific purpose:</p>
+        <ul class="key-components-list">
+            <li><strong>Customer Requirements (The "Whats"):</strong> The left "wall" of the house, listing the wants and needs gathered from the customer.</li>
+            <li><strong>Importance to Customer:</strong> A ranking of how critical each customer requirement is, typically on a 1-5 scale.</li>
+            <li><strong>Technical Requirements (The "Hows"):</strong> The "ceiling" of the house, listing the engineering characteristics or design parameters that can be measured and controlled.</li>
+            <li><strong>Relationship Matrix:</strong> The main "room" of the house, where the relationships between customer needs and technical requirements are scored (e.g., strong, medium, weak).</li>
+            <li><strong>Correlation Matrix (The "Roof"):</strong> Shows how the technical requirements interact with each other—do they support or conflict with one another?</li>
+            <li><strong>Technical Priorities:</strong> The "floor" or "basement" of the house, which calculates the importance of each technical requirement based on the customer needs it affects. This is the primary output of the matrix.</li>
+        </ul>
+    </div>
+
+    <div class="content-block">
+        <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
+        <p>QFD was developed in Japan in the late 1960s by quality experts Yoji Akao and Shigeru Mizuno. It was first implemented at Mitsubishi's Kobe shipyard and later popularized by Toyota and its suppliers. The core purpose of QFD is to ensure that the <strong>Voice of the Customer</strong> is not lost during the complex process of design, engineering, and manufacturing.</p>
+        <p>By systematically linking customer desires to technical functions, QFD helps teams focus resources on the most critical features. This proactive approach prevents costly late-stage design changes, shortens development time, and ultimately leads to higher customer satisfaction and market success.</p>
+    </div>
+
+    <div class="content-block">
+        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+        <div class="instructions-box">
+          <ul>
+              <li>Use the tabs to navigate between the different input sections.</li>
+              <li><strong>Customer Needs & Technical Specs:</strong> Type a requirement/spec into the text field and click the green `+` button to add it to the list. Remove items with the red `-` button.</li>
+              <li><strong>Relationships & Correlations:</strong> Simply select a value from the dropdowns. Your changes are saved automatically.</li>
+              <li>Click <strong><i class="fas fa-home"></i> Generate House of Quality</strong> to build the matrix and see the prioritized technical requirements.</li>
+              <li>Use <strong><i class="fas fa-lightbulb"></i> Load Example</strong> for a pre-filled demonstration or <strong><i class="fas fa-file-excel"></i> Export to Excel</strong> to save your work.</li>
+          </ul>
+      </div>
+    </div>
+
+  <div class="content-block">
+    <div class="tool-header">
+      <h2><i class="fas fa-drafting-compass"></i> QFD Tool - House of Quality Inputs</h2>
+      <div>
+        <button id="loadExampleBtn" class="example-btn"><i class="fas fa-lightbulb"></i> Load Example</button>
+        <button id="resetBtn" class="reset-btn"><i class="fas fa-undo"></i> Reset All</button>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="customer-needs">Customer Needs</div>
+      <div class="tab" data-tab="technical-specs">Technical Specifications</div>
+      <div class="tab" data-tab="relationships">Relationships</div>
+      <div class="tab" data-tab="correlations">Correlations</div>
+    </div>
+    
+    <div class="tab-content active" id="customer-needs">
+      <label for="newCustomerReqText"><i class="fas fa-users"></i> Current Customer Requirements:</label>
+      <div id="customerReqList" class="list-container"></div>
+      <div class="add-item-form">
+          <div class="input-group">
+            <input type="text" id="newCustomerReqText" placeholder="Enter a new requirement...">
+          </div>
+          <div class="select-group">
+            <select id="importanceScale">
+                <option value="1">Importance: 1</option><option value="2">Importance: 2</option><option value="3">Importance: 3</option><option value="4">Importance: 4</option><option value="5" selected>Importance: 5</option>
+            </select>
+          </div>
+          <button id="addCustomerReqBtn" class="btn-add" title="Add Requirement"><i class="fas fa-plus"></i></button>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="technical-specs">
+      <label for="newTechnicalSpecText"><i class="fas fa-cogs"></i> Current Technical Specifications:</label>
+      <div id="technicalSpecList" class="list-container"></div>
+      <div class="add-item-form">
+        <div class="input-group">
+            <input type="text" id="newTechnicalSpecText" placeholder="Enter a new technical specification...">
+        </div>
+        <button id="addTechnicalSpecBtn" class="btn-add" title="Add Specification"><i class="fas fa-plus"></i></button>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="relationships">
+      <p>Define relationships between customer needs and technical specifications. Changes are saved automatically.</p>
+      <div id="relationshipControls" class="table-responsive-wrapper"></div>
+    </div>
+    
+    <div class="tab-content" id="correlations">
+      <p>Define correlations between technical specifications (Roof of the House). Changes are saved automatically.</p>
+      <div id="correlationControls" class="table-responsive-wrapper"></div>
+    </div>
+    
+    <button id="generateQfdBtn" style="margin-top: 20px;"><i class="fas fa-home"></i> Generate House of Quality</button>
+  </div>
+
+  <div id="qfdMatrix" style="display: none;" class="content-block">
+    <h2><i class="fas fa-table"></i> House of Quality Matrix</h2>
+    <div id="qfdMatrixContainer" class="table-responsive-wrapper"></div>
+  </div>
+
+  <div class="content-block">
+    <h2><i class="fas fa-award"></i> Prioritized Technical Requirements</h2>
+    <div class="table-responsive-wrapper">
+        <table id="priorityTable" class="qfd-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Technical Requirement</th>
+              <th style="width: 15%;">Priority Score</th>
+              <th style="width: 35%;">Priority</th>
+              <th style="width: 10%;">Rank</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+    </div>
+    
+    <button id="exportQfdBtn" style="margin-top: 20px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
+  </div>
+</main>
+<footer>
+    <div class="disclaimer-note">
+        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is based on the Quality Function Deployment (QFD) methodology, also known as the House of Quality, developed by Yoji Akao and Shigeru Mizuno. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators or any specific institution. While we strive for accuracy, we make no warranty or guarantee regarding the results. All decisions related to product design, engineering priorities, or strategic planning based on the output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+    </div>
+</footer>
+
+<script>
+  let customerRequirements = [];
+  let technicalRequirements = [];
+  let relationships = {};
+  let correlations = {};
+  
+  function renderCustomerRequirements() {
+    const list = document.getElementById('customerReqList');
+    list.innerHTML = customerRequirements.map(req => `
+        <div class="list-item" data-id="${req.id}">
+            <span>${req.text}</span>
+            <div class="customer-importance-container">
+                <div class="customer-importance-bar-bg"><div class="customer-importance-bar" style="width: ${(req.importance / 5) * 100}%;"></div></div>
+                <span>${req.importance}</span>
+            </div>
+            <button class="btn-remove" title="Remove Requirement"><i class="fas fa-minus"></i></button>
+        </div>
+    `).join('');
+  }
+  function renderTechnicalSpecs() {
+      const list = document.getElementById('technicalSpecList');
+      list.innerHTML = technicalRequirements.map(spec => `
+          <div class="list-item" data-id="${spec.id}">
+              <span>${spec.text}</span>
+              <button class="btn-remove" title="Remove Specification"><i class="fas fa-minus"></i></button>
+          </div>
+      `).join('');
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCustomerRequirements(); renderTechnicalSpecs();
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelector('.tab.active')?.classList.remove('active');
+            document.querySelector('.tab-content.active')?.classList.remove('active');
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+            if (tab.dataset.tab === 'relationships') updateRelationshipControls();
+            if (tab.dataset.tab === 'correlations') updateCorrelationControls();
+        });
+    });
+    document.getElementById('addCustomerReqBtn').addEventListener('click', () => {
+        const input = document.getElementById('newCustomerReqText'); const text = input.value.trim();
+        if (!text) return;
+        const importance = document.getElementById('importanceScale').value;
+        customerRequirements.push({ id: 'cr_' + Date.now(), text, importance: parseInt(importance) });
+        input.value = ''; input.focus(); renderCustomerRequirements();
+    });
+    document.getElementById('addTechnicalSpecBtn').addEventListener('click', () => {
+        const input = document.getElementById('newTechnicalSpecText'); const text = input.value.trim();
+        if (!text) return;
+        technicalRequirements.push({ id: 'tr_' + Date.now(), text });
+        input.value = ''; input.focus(); renderTechnicalSpecs();
+    });
+    document.getElementById('customerReqList').addEventListener('click', (e) => {
+        if (e.target.closest('.btn-remove')) {
+            const itemId = e.target.closest('.list-item').dataset.id;
+            customerRequirements = customerRequirements.filter(req => req.id !== itemId);
+            renderCustomerRequirements(); showToast('Requirement removed.', 'info');
+        }
+    });
+    document.getElementById('technicalSpecList').addEventListener('click', (e) => {
+        if (e.target.closest('.btn-remove')) {
+            const itemId = e.target.closest('.list-item').dataset.id;
+            technicalRequirements = technicalRequirements.filter(spec => spec.id !== itemId);
+            renderTechnicalSpecs(); showToast('Specification removed.', 'info');
+        }
+    });
+    document.getElementById('relationshipControls').addEventListener('change', e => {
+        if (e.target.tagName === 'SELECT') {
+            const relationshipId = `${e.target.dataset.crId}_${e.target.dataset.trId}`;
+            if (e.target.value) relationships[relationshipId] = e.target.value; else delete relationships[relationshipId];
+        }
+    });
+    document.getElementById('correlationControls').addEventListener('change', e => {
+        if (e.target.tagName === 'SELECT') {
+            const correlationId = `${e.target.dataset.tr1Id}_${e.target.dataset.tr2Id}`;
+            if (e.target.value) correlations[correlationId] = e.target.value; else delete correlations[correlationId];
+        }
+    });
+    document.getElementById('generateQfdBtn').addEventListener('click', () => {
+        if (customerRequirements.length === 0 || technicalRequirements.length === 0) {
+            showToast('Please add customer and technical requirements first.', 'info'); return;
+        }
+        generateQfdMatrix(); calculatePriorities();
+        document.getElementById('qfdMatrix').style.display = 'block';
+        document.getElementById('qfdMatrix').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    document.getElementById('exportQfdBtn').addEventListener('click', exportToExcel);
+  });
+  
+  function updateRelationshipControls() {
+    const container = document.getElementById('relationshipControls');
+    if (customerRequirements.length === 0 || technicalRequirements.length === 0) {
+        container.innerHTML = '<p>Please add both customer and technical requirements first.</p>'; return;
+    }
+    const table = document.createElement('table'); table.className = 'qfd-table';
+    let headerHtml = '<thead><tr><th>Customer Need</th>';
+    technicalRequirements.forEach(tr => { headerHtml += `<th>${tr.text}</th>`; });
+    headerHtml += '</tr></thead><tbody>';
+    customerRequirements.forEach(cr => {
+        headerHtml += `<tr><td class="customer-requirements">${cr.text}</td>`;
+        technicalRequirements.forEach(tr => {
+            const relId = `${cr.id}_${tr.id}`; const currentVal = relationships[relId] || '';
+            headerHtml += `<td><select data-cr-id="${cr.id}" data-tr-id="${tr.id}" style="min-width:100px;">
+                <option value="" ${!currentVal ? 'selected' : ''}>None</option>
+                <option value="strong" ${currentVal === 'strong' ? 'selected' : ''}>Strong (9)</option>
+                <option value="medium" ${currentVal === 'medium' ? 'selected' : ''}>Medium (3)</option>
+                <option value="weak" ${currentVal === 'weak' ? 'selected' : ''}>Weak (1)</option>
+            </select></td>`;
+        });
+        headerHtml += `</tr>`;
+    });
+    table.innerHTML = headerHtml + '</tbody>'; container.innerHTML = ''; container.appendChild(table);
+  }
+  function updateCorrelationControls() {
+    const container = document.getElementById('correlationControls');
+    if (technicalRequirements.length < 2) {
+        container.innerHTML = '<p>Please add at least 2 technical requirements first.</p>'; return;
+    }
+    const table = document.createElement('table'); table.className = 'qfd-table';
+    let tableHtml = '<thead><tr><th></th>';
+    technicalRequirements.forEach(tr => { tableHtml += `<th>${tr.text}</th>`; });
+    tableHtml += '</tr></thead><tbody>';
+    technicalRequirements.forEach((tr1, i) => {
+        tableHtml += `<tr><th class="customer-requirements">${tr1.text}</th>`;
+        technicalRequirements.forEach((tr2, j) => {
+            if (i >= j) { tableHtml += `<td style="background-color: #f5f5f5;"></td>`; } 
+            else {
+                const corrId = `${tr1.id}_${tr2.id}`; const currentVal = correlations[corrId] || '';
+                tableHtml += `<td><select data-tr1-id="${tr1.id}" data-tr2-id="${tr2.id}" style="min-width:100px;">
+                    <option value="" ${!currentVal ? 'selected' : ''}>None</option>
+                    <option value="positive-strong" ${currentVal === 'positive-strong' ? 'selected' : ''}>++ Strong Positive</option>
+                    <option value="positive-weak" ${currentVal === 'positive-weak' ? 'selected' : ''}>+ Positive</option>
+                    <option value="negative-weak" ${currentVal === 'negative-weak' ? 'selected' : ''}>- Negative</option>
+                    <option value="negative-strong" ${currentVal === 'negative-strong' ? 'selected' : ''}>-- Strong Negative</option>
+                </select></td>`;
+            }
+        });
+        tableHtml += '</tr>';
+    });
+    table.innerHTML = tableHtml + '</tbody>'; container.innerHTML = ''; container.appendChild(table);
+  }
+  function generateQfdMatrix() {
+    const container = document.getElementById('qfdMatrixContainer');
+    const table = document.createElement('table'); table.className = 'qfd-table'; table.id = 'qfdFinalTable';
+    const thead = table.createTHead();
+    for (let i = 0; i < technicalRequirements.length; i++) {
+        const row = thead.insertRow();
+        if (i === 0) {
+            const cell = document.createElement('th');
+            cell.rowSpan = technicalRequirements.length; cell.colSpan = 2;
+            cell.style.backgroundColor = "#f5f5f5"; cell.style.border = "none"; row.appendChild(cell);
+        }
+        for (let j = 0; j < i; j++) row.insertCell().style.border = 'none';
+        const th = document.createElement('th'); th.className = "technical-requirements"; th.innerHTML = technicalRequirements[i].text; row.appendChild(th);
+        for (let j = i + 1; j < technicalRequirements.length; j++) {
+            const cell = row.insertCell(); const corr = correlations[`${technicalRequirements[i].id}_${technicalRequirements[j].id}`] || '';
+            if (corr.includes('positive')) { cell.textContent = corr.includes('weak') ? '+' : '++'; cell.className = `correlation-${corr}`; }
+            if (corr.includes('negative')) { cell.textContent = corr.includes('weak') ? '-' : '--'; cell.className = `correlation-${corr}`; }
+        }
+    }
+    const tbody = table.createTBody();
+    customerRequirements.forEach(cr => {
+        const row = tbody.insertRow(); row.innerHTML = `<td class="customer-requirements">${cr.text}</td><td class="importance-cell">${cr.importance}</td>`;
+        technicalRequirements.forEach(tr => {
+            const cell = row.insertCell(); const rel = relationships[`${cr.id}_${tr.id}`] || '';
+            if (rel === 'strong') { cell.textContent = '●'; cell.className = 'relationship-strong'; }
+            else if (rel === 'medium') { cell.textContent = '○'; cell.className = 'relationship-medium'; }
+            else if (rel === 'weak') { cell.textContent = '▲'; cell.className = 'relationship-weak'; }
+        });
+    });
+    const tfoot = table.createTFoot(); const priorityRow = tfoot.insertRow();
+    priorityRow.innerHTML = `<th class="technical-requirements" colspan="2">Technical Priority</th>`;
+    technicalRequirements.forEach(tr => priorityRow.insertCell().id = `priority_${tr.id}`);
+    const rankRow = tfoot.insertRow();
+    rankRow.innerHTML = `<th class="technical-requirements" colspan="2">Rank</th>`;
+    technicalRequirements.forEach(tr => rankRow.insertCell().id = `rank_${tr.id}`);
+    container.innerHTML = ''; container.appendChild(table);
+  }
+  function calculatePriorities() {
+    const priorityTableBody = document.querySelector('#priorityTable tbody');
+    priorityTableBody.innerHTML = '';
+    const techScores = calculatePrioritiesForExport();
+    const maxScore = Math.max(...techScores.map(t => t.score), 1);
+    techScores.forEach(tech => {
+      const row = priorityTableBody.insertRow();
+      row.innerHTML = `<td>${tech.text}</td><td>${tech.score}</td><td><div class="priority-bar-container"><div class="priority-bar" style="width: ${ (tech.score / maxScore) * 100}%;"></div></div></td><td>${tech.rank}</td>`;
+      document.getElementById(`priority_${tech.id}`).textContent = tech.score;
+      document.getElementById(`rank_${tech.id}`).textContent = tech.rank;
+    });
+  }
+  function resetAll() {
+    if (confirm("Are you sure you want to reset all data?")) {
+        customerRequirements = []; technicalRequirements = []; relationships = {}; correlations = {};
+        renderCustomerRequirements(); renderTechnicalSpecs();
+        document.getElementById('qfdMatrix').style.display = 'none';
+        document.querySelector('#priorityTable tbody').innerHTML = '';
+        showToast('All data has been reset.', 'info');
+    }
+  }
+  function loadExample() {
+    customerRequirements = [ { id: 'cr_1', text: "Easy to use", importance: 5 }, { id: 'cr_2', text: "Durable", importance: 4 }, { id: 'cr_3', text: "Lightweight", importance: 3 }, { id: 'cr_4', text: "Affordable", importance: 4 } ];
+    technicalRequirements = [ { id: 'tr_1', text: "Weight (g)" }, { id: 'tr_2', text: "Material thickness (mm)" }, { id: 'tr_3', text: "Number of components" }, { id: 'tr_4', text: "Manufacturing cost ($)" } ];
+    relationships = { "cr_1_tr_3": "strong", "cr_2_tr_2": "strong", "cr_3_tr_1": "strong", "cr_4_tr_4": "strong", "cr_2_tr_3": "medium", "cr_3_tr_2": "weak" };
+    correlations = { "tr_1_tr_4": "positive-strong", "tr_2_tr_4": "positive-weak", "tr_1_tr_3": "negative-strong" };
+    renderCustomerRequirements(); renderTechnicalSpecs();
+    showToast('Example loaded. Click "Generate House of Quality".', 'success');
+  }
+  function exportToExcel() {
+    const finalTable = document.getElementById('qfdFinalTable');
+    if (!finalTable) { showToast('Please generate the matrix first.', 'info'); return; }
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.table_to_sheet(finalTable);
+    ws['!cols'] = [{wch: 30}, {wch: 10}].concat(technicalRequirements.map(() => ({wch: 15})));
+    XLSX.utils.book_append_sheet(wb, ws, 'QFD Matrix');
+    const priorityData = [["Technical Requirement", "Priority Score", "Rank"]];
+    const techScores = calculatePrioritiesForExport();
+    techScores.forEach(t => priorityData.push([t.text, t.score, t.rank]));
+    const ws_priority = XLSX.utils.aoa_to_sheet(priorityData);
+    ws_priority['!cols'] = [{wch: 30}, {wch: 15}, {wch: 10}];
+    XLSX.utils.book_append_sheet(wb, ws_priority, 'Priorities');
+    XLSX.writeFile(wb, 'QFD_Analysis_Sigma_Exacta.xlsx');
+  }
+  function calculatePrioritiesForExport() {
+    const relValues = { strong: 9, medium: 3, weak: 1 };
+    const techScores = technicalRequirements.map(tr => ({
+        id: tr.id, text: tr.text,
+        score: customerRequirements.reduce((sum, cr) => sum + (cr.importance * (relValues[relationships[`${cr.id}_${tr.id}`]] || 0)), 0)
+    })).sort((a, b) => b.score - a.score);
+    let rank = 0, lastScore = -1;
+    techScores.forEach((tech, i) => {
+        if (tech.score !== lastScore) { rank = i + 1; lastScore = tech.score; }
+        tech.rank = rank;
+    });
+    return techScores;
+  }
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-notification');
+    toast.textContent = message; toast.className = 'show ' + type;
+    setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+  }
+</script>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CÓDIGO DEL SONIDO DE HOVER (SIN CAMBIOS) ---
+        const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/8AADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
+        hoverSound.preload = 'auto';
+        let audioUnlocked = false;
+
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            hoverSound.volume = 0;
+            hoverSound.play().then(() => {
+                hoverSound.pause();
+                hoverSound.currentTime = 0;
+                hoverSound.volume = 1;
+                audioUnlocked = true;
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            }).catch(e => {});
+        }
+
+        document.addEventListener('click', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
+
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if (audioUnlocked) {
+                    hoverSound.currentTime = 0;
+                    hoverSound.play().catch(e => {}); 
+                }
+            });
+        });
+
+        // --- JAVASCRIPT NUEVO Y MEJORADO PARA LA NAVEGACIÓN (DE INDEX.HTML) ---
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            
+            if (!navMenu.classList.contains('show-menu')) {
+                toolsDropdownMenu.classList.remove('show-submenu');
+                toolsDropdownContainer.classList.remove('active');
+            }
+        });
+        
+        toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+                event.preventDefault(); 
+                toolsDropdownMenu.classList.toggle('show-submenu');
+                toolsDropdownContainer.classList.toggle('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>
