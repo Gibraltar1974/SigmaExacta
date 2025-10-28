@@ -170,6 +170,158 @@
         }
         /* --- FIN CSS DEL HEADER --- */
 
+        /* --- INICIO MODIFICACIÓN 2 y 3: Estilos Rueda Deming --- */
+        .pdca-wheel-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem auto;
+            max-width: 600px; /* Ancho máximo de la rueda */
+        }
+        
+        .pdca-wheel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            width: 100%; /* Ancho flexible */
+            padding-top: 100%; /* Truco para mantener relación 1:1 (cuadrado) */
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            border: 5px solid #555;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .pdca-quadrant {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        
+        /* Colocación de cuadrantes */
+        .quadrant-plan { top: 0; left: 0; background-color: #3498db; } /* Azul */
+        .quadrant-do { top: 0; right: 0; background-color: #e67e22; } /* Naranja */
+        .quadrant-act { bottom: 0; left: 0; background-color: #9b59b6; } /* Morado */
+        .quadrant-check { bottom: 0; right: 0; background-color: #2ecc71; } /* Verde */
+
+        /* Títulos de los cuadrantes */
+        .pdca-quadrant h3 {
+            margin: 0 0 10px 0;
+            padding: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: none;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Iconos (para la rueda estática) */
+        .pdca-quadrant .fas {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+         .pdca-quadrant span {
+            font-size: 0.9em;
+         }
+
+        /* Contenido (para la rueda de resultados dinámica) */
+        .pdca-quadrant .quadrant-content {
+            font-size: 0.85rem;
+            max-height: 170px; /* Ajustar altura */
+            overflow-y: auto;
+            background: rgba(0,0,0,0.1);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: left;
+            width: 100%;
+        }
+        .pdca-quadrant .quadrant-content p {
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0 0 5px 0;
+        }
+        .pdca-quadrant .quadrant-content strong {
+            font-weight: 800;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        /* Scrollbar para la rueda */
+        .quadrant-content::-webkit-scrollbar { width: 6px; }
+        .quadrant-content::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.3); border-radius: 3px; }
+        .quadrant-content::-webkit-scrollbar-track { background-color: rgba(255,255,255,0.1); }
+
+        /* Flechas de la rueda */
+        .pdca-wheel::after, .pdca-wheel::before {
+            content: '';
+            position: absolute;
+            background: #555;
+            z-index: 10;
+        }
+        .pdca-wheel::after { /* Línea vertical */
+            width: 5px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .pdca-wheel::before { /* Línea horizontal */
+            height: 5px;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* Círculo central */
+        .pdca-center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20%; /* Tamaño relativo */
+            height: 20%; /* Tamaño relativo */
+            min-width: 80px;
+            min-height: 80px;
+            background: white;
+            border-radius: 50%;
+            border: 5px solid #555;
+            z-index: 11;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .pdca-quadrant {
+                padding: 10px;
+            }
+            .pdca-quadrant h3 {
+                font-size: 1.1rem;
+            }
+            .pdca-quadrant .fas {
+                font-size: 1.5rem;
+            }
+            .pdca-quadrant .quadrant-content {
+                font-size: 0.75rem;
+                max-height: 100px; /* Ajustar altura */
+            }
+            .pdca-center-circle {
+                font-size: 1.2rem;
+                min-width: 60px;
+                min-height: 60px;
+            }
+        }
+        /* --- FIN MODIFICACIÓN 2 y 3 --- */
+
+
         /* Estilo AÑADIDO para el icono PDCA: tamaño y forma definidos */
         .main-tool-logo {
             width: 50px; 
@@ -207,7 +359,13 @@
             margin: 0;
         }
         
-        .main-content-wrapper { max-width: 1000px; margin: 20px auto; padding: 1.25rem; }
+        /* --- MODIFICACIÓN 1: Ancho completo --- */
+        .main-content-wrapper { 
+            max-width: 100%; /* Cambiado de 1000px */
+            margin: 20px auto; 
+            padding: 1.25rem; 
+            box-sizing: border-box; /* Añadido para gestionar el padding */
+        }
 
         .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
         /* REGLA MODIFICADA para incluir la alineación flex */
@@ -220,6 +378,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-wrap: wrap; /* Para móviles */
         }
         .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
 
@@ -239,7 +398,8 @@
         }
         .content-block h2 .fas { margin-right: 0.75rem; }
         
-        .infographic-flow { 
+        /* --- INICIO MODIFICACIÓN 3: Estilos de infografía antigua eliminados --- */
+        /* .infographic-flow { 
             display: flex; 
             justify-content: space-between; 
             align-items: stretch; 
@@ -253,7 +413,8 @@
         .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
         .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
         .flow-step span { font-size: 0.9em; color: #555; }
-        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto 0.6rem; flex-grow: 0; }
+        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto 0.6rem; flex-grow: 0; } */
+        /* --- FIN MODIFICACIÓN 3 --- */
 
         .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
         .instructions-box li { margin-bottom: 0.5rem; line-height: 1.6; }
@@ -292,20 +453,36 @@
 
         .hidden { display: none; }
         
+        /* --- INICIO MODIFICACIÓN 2: Estilos de resultados --- */
         #results-container { border: 2px solid var(--success-color); background-color: #f8fef8; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; }
-        #results-container h3 { color: var(--success-color); font-weight: 800; }
-        .results-summary { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 1.5rem; }
-        .results-summary h4 { margin: 0 0 0.5rem 0; color: var(--dark-color); }
-        .results-summary p { white-space: pre-wrap; margin: 0; background: #fff; padding: 0.5rem; border-radius: 4px; border: 1px solid #eee; word-break: break-word; }
+        #results-container h3 { 
+            color: var(--success-color); 
+            font-weight: 800; 
+            text-align: center; /* Centrado */
+            margin-bottom: 1rem; /* Espacio */
+        }
         
-        .results-actions { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #eee; }
+        /* Estilos de resumen antiguos eliminados */
+        /* .results-summary { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 1.5rem; }
+        .results-summary h4 { margin: 0 0 0.5rem 0; color: var(--dark-color); }
+        .results-summary p { white-space: pre-wrap; margin: 0; background: #fff; padding: 0.5rem; border-radius: 4px; border: 1px solid #eee; word-break: break-word; } */
+        
+        .results-actions { 
+            margin-top: 1.25rem; 
+            padding-top: 1.25rem; 
+            border-top: 1px solid #eee; 
+            text-align: center; /* Centrado */
+        }
+        /* --- FIN MODIFICACIÓN 2 --- */
 
         footer[role="contentinfo"] { background-color: #222; color: #ccc; padding: 50px 20px; text-align: center; }
         .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #a0a0a0; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.8; }
         
         @media (max-width: 992px) {
-            .infographic-flow { flex-direction: column; align-items: center; }
-            .flow-arrow { display: none; }
+            /* --- INICIO MODIFICACIÓN 3: Media query antigua eliminada --- */
+            /* .infographic-flow { flex-direction: column; align-items: center; }
+            .flow-arrow { display: none; } */
+            /* --- FIN MODIFICACIÓN 3 --- */
         }
     </style>
 </head>
@@ -368,7 +545,6 @@
         </ul>
     </nav>
 </header>
-
 <main class="main-content-wrapper">
     <header class="header">
         <h1>
@@ -382,16 +558,35 @@
         <h2><i class="fas fa-question-circle"></i> What is the PDCA Cycle?</h2>
         <p>The <strong>PDCA Cycle</strong> (Plan-Do-Check-Act), also known as the Deming Wheel or Shewhart Cycle, is a systematic, iterative four-stage approach for continuous improvement in processes and products. It provides a simple but powerful framework for solving problems, managing change, and implementing quality control.</p>
         <p>By repeatedly cycling through the four phases, organizations can refine their processes, identify root causes of problems, and create a culture of continuous learning and improvement.</p>
-        <div class="infographic-flow">
-            <div class="flow-step"><i class="fas fa-clipboard-list"></i><strong>1. Plan</strong><span>Identify goal & plan action.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-cogs"></i><strong>2. Do</strong><span>Implement the plan.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-chart-line"></i><strong>3. Check</strong><span>Analyze the results.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-bullhorn"></i><strong>4. Act</strong><span>Standardize or adjust.</span></div>
+        
+        <div class="pdca-wheel-container">
+            <div class="pdca-wheel">
+                <div class="pdca-quadrant quadrant-plan">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>1. Plan</h3>
+                    <span>Identify goal & plan action.</span>
+                </div>
+                <div class="pdca-quadrant quadrant-do">
+                    <i class="fas fa-cogs"></i>
+                    <h3>2. Do</h3>
+                    <span>Implement the plan.</span>
+                </div>
+                <div class="pdca-quadrant quadrant-act">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>4. Act</h3>
+                    <span>Standardize or adjust.</span>
+                </div>
+                <div class="pdca-quadrant quadrant-check">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>3. Check</h3>
+                    <span>Analyze the results.</span>
+                </div>
+                <div class="pdca-center-circle">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+            </div>
         </div>
-    </div>
+        </div>
     
     <div class="content-block">
         <h2><i class="fas fa-history"></i> History & Origin</h2>
@@ -405,7 +600,7 @@
           <ul>
             <li><strong>Load Example:</strong> Click "Load Example" to see a pre-filled PDCA cycle for a common business problem.</li>
             <li><strong>Follow the Steps:</strong> Document your own improvement project by filling in the details for each of the four phases (Plan, Do, Check, Act).</li>
-            <li><strong>Generate Report:</strong> Click "Generate PDCA Report" to create a consolidated summary of your cycle.</li>
+            <li><strong>Generate Report:</strong> Click "Generate PDCA Report" to create a consolidated summary of your cycle, displayed as a Deming Wheel.</li>
             <li><strong>Export:</strong> Once the report is generated, you can export it to an Excel file for documentation or to share with your team.</li>
           </ul>
       </div>
@@ -447,12 +642,12 @@
         <div id="results-container" class="hidden"></div>
     </div>
 </main>
+
 <footer role="contentinfo">
     <div class="disclaimer-note">
         <p><strong>Disclaimer:</strong> The PDCA Cycle was developed by Walter A. Shewhart and later popularized by W. Edwards Deming. This tool is an independent implementation provided for educational and informational purposes only. It is not affiliated with, sponsored by, or endorsed by the estates of Deming or Shewhart, or their respective organizations. The effectiveness of the process depends on the user's application. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
     </div>
 </footer>
-
 <script>
     let cycleData = {};
 
@@ -551,21 +746,77 @@
         displayResults();
     }
 
+    // --- INICIO MODIFICACIÓN 2: Función displayResults actualizada ---
     function displayResults() {
         const resultsDiv = document.getElementById('results-container');
-        let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>`;
+        
+        // Helper function to sanitize text
+        function escapeHTML(str) {
+            if (!str) return 'N/A';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
 
-        html += `<div class="results-summary"><h4><i class="fas fa-clipboard-list"></i> PLAN</h4><p>${cycleData.plan.problem || 'N/A'}</p><br><p>${cycleData.plan.goal || 'N/A'}</p><br><p>${cycleData.plan.actions || 'N/A'}</p></div>`;
-        html += `<div class="results-summary"><h4><i class="fas fa-cogs"></i> DO</h4><p>${cycleData.do.execution || 'N/A'}</p><br><p>${cycleData.do.problems || 'N/A'}</p></div>`;
-        html += `<div class="results-summary"><h4><i class="fas fa-chart-line"></i> CHECK</h4><p>${cycleData.check.data || 'N/A'}</p><br><p>${cycleData.check.analysis || 'N/A'}</p></div>`;
-        html += `<div class="results-summary"><h4><i class="fas fa-bullhorn"></i> ACT</h4><p>${cycleData.act.conclusions || 'N/A'}</p><br><p>${cycleData.act.next || 'N/A'}</p></div>`;
+        let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report</h3>`;
 
-        html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+        // Construir la rueda de resultados
+        html += `<div class="pdca-wheel-container">
+            <div class="pdca-wheel">
+                <div class="pdca-quadrant quadrant-plan">
+                    <h3>Plan</h3>
+                    <div class="quadrant-content">
+                        <strong>Problem:</strong>
+                        <p>${escapeHTML(cycleData.plan.problem)}</p>
+                        <strong>Goal:</strong>
+                        <p>${escapeHTML(cycleData.plan.goal)}</p>
+                        <strong>Actions:</strong>
+                        <p>${escapeHTML(cycleData.plan.actions)}</p>
+                    </div>
+                </div>
+                <div class="pdca-quadrant quadrant-do">
+                    <h3>Do</h3>
+                    <div class="quadrant-content">
+                        <strong>Executed:</strong>
+                        <p>${escapeHTML(cycleData.do.execution)}</p>
+                        <strong>Problems:</strong>
+                        <p>${escapeHTML(cycleData.do.problems)}</p>
+                    </div>
+                </div>
+                <div class="pdca-quadrant quadrant-act">
+                    <h3>Act</h3>
+                    <div class="quadrant-content">
+                        <strong>Conclusions:</strong>
+                        <p>${escapeHTML(cycleData.act.conclusions)}</p>
+                        <strong>Next Steps:</strong>
+                        <p>${escapeHTML(cycleData.act.next)}</p>
+                    </div>
+                </div>
+                <div class="pdca-quadrant quadrant-check">
+                    <h3>Check</h3>
+                    <div class="quadrant-content">
+                        <strong>Data/Results:</strong>
+                        <p>${escapeHTML(cycleData.check.data)}</p>
+                        <strong>Analysis:</strong>
+                        <p>${escapeHTML(cycleData.check.analysis)}</p>
+                    </div>
+                </div>
+                <div class="pdca-center-circle">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+            </div>
+        </div>`;
+        
+        // Acciones
+        html += `<div class="results-actions">
+                    <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                 </div>`;
         
         resultsDiv.innerHTML = html;
         resultsDiv.classList.remove('hidden');
         resultsDiv.scrollIntoView({ behavior: 'smooth' });
     }
+    // --- FIN MODIFICACIÓN 2 ---
 
     function exportToExcel() {
         if (Object.keys(cycleData).length === 0) {
