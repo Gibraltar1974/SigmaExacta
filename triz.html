@@ -1576,36 +1576,35 @@
             matrixView.classList.add('hidden');
         }
     }
+   function createContradictionMatrix() {
+    const matrixTable = document.getElementById('contradiction-matrix');
+    matrixTable.innerHTML = '';
     
-    function createContradictionMatrix() {
-        const matrixTable = document.getElementById('contradiction-matrix');
-        matrixTable.innerHTML = '';
-        
-        // Create header row
-        let headerRow = '<tr><th></th>';
-        for (let i = 0; i < engineeringParameters.length; i++) {
-            headerRow += `<th>${i+1}</th>`;
-        }
-        headerRow += '</tr>';
-        matrixTable.innerHTML += headerRow;
-        
-        // Create data rows
-        for (let i = 0; i < engineeringParameters.length; i++) {
-            let row = `<tr><th>${i+1}</th>`;
-            for (let j = 0; j < engineeringParameters.length; j++) {
-                const cellClass = getCellClass(i, j);
-                // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
-                const principles = getContradictionPrinciples((i+1).toString(), (j+1).toString());
-                const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
-                
-                row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" title="${engineeringParameters[i]} vs ${engineeringParameters[j]}">
-                    <div class="principle-numbers">${principleNumbers}</div>
-                </td>`;
-            }
-            row += '</tr>';
-            matrixTable.innerHTML += row;
-        }
+    // Create header row with clear labeling and full feature names
+    let headerRow = '<tr><th class="matrix-corner">Desired →<br>Worsening ↓</th>';
+    for (let i = 0; i < engineeringParameters.length; i++) {
+        headerRow += `<th title="${engineeringParameters[i]}">${engineeringParameters[i]}</th>`;
     }
+    headerRow += '</tr>';
+    matrixTable.innerHTML += headerRow;
+    
+    // Create data rows with row headers showing full feature names
+    for (let i = 0; i < engineeringParameters.length; i++) {
+        let row = `<tr><th title="${engineeringParameters[i]}">${engineeringParameters[i]}</th>`;
+        for (let j = 0; j < engineeringParameters.length; j++) {
+            const cellClass = getCellClass(i, j);
+            // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
+            const principles = getContradictionPrinciples((i+1).toString(), (j+1).toString());
+            const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
+            
+            row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" title="Improving: ${engineeringParameters[i]}\nWorsening: ${engineeringParameters[j]}">
+                <div class="principle-numbers">${principleNumbers}</div>
+            </td>`;
+        }
+        row += '</tr>';
+        matrixTable.innerHTML += row;
+    }
+}
     
     function getCellClass(row, col) {
         if (row === improvingFeatureIndex && col === worseningFeatureIndex) {
@@ -2097,6 +2096,90 @@
             }
         });
     });
+// =======================================================
+// 🔧 Renderizador de Soluciones Estándar TRIZ (Su-Field)
+// =======================================================
+function renderStandardSolutions(problemType) {
+    const resultsDiv = document.getElementById("results-container");
+    resultsDiv.classList.remove("hidden");
+    resultsDiv.innerHTML = ""; // Limpia resultados anteriores
+
+    const solutions = getRecommendedStandardSolutions(problemType);
+
+    if (!solutions.length) {
+        resultsDiv.innerHTML = `<p>No standard solutions found for problem type: <strong>${problemType}</strong>.</p>`;
+        return;
+    }
+
+    const header = document.createElement("h3");
+    header.innerHTML = `<i class="fas fa-lightbulb"></i> Standard TRIZ Solutions for <strong>${problemType}</strong> Problems`;
+    resultsDiv.appendChild(header);
+
+    solutions.forEach(sol => {
+        const card = document.createElement("div");
+        card.classList.add("standard-solution-visual");
+
+        // Ícono asociado a la solución, si existe
+        const icon = standardSolutionIcons[sol.id] || "fa-cogs";
+
+        card.innerHTML = `
+            <div class="solution-header">
+                <div class="standard-solution-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div>
+                    <h4 class="solution-title">Solution ${sol.id}: ${sol.title}</h4>
+                    <p class="solution-class"><em>${sol.class}</em></p>
+                </div>
+            </div>
+            <div class="solution-description">
+                <p>${sol.description}</p>
+            </div>
+        `;
+
+        // === Principios TRIZ asociados ===
+        if (sol.principles && sol.principles.length > 0) {
+            const principlesSection = document.createElement("div");
+            principlesSection.classList.add("principle-list");
+            principlesSection.innerHTML = `<h5><i class="fas fa-cubes"></i> Related Inventive Principles</h5>`;
+
+            sol.principles.forEach(num => {
+                const p = principles[num];
+                if (!p) return;
+                const principleCard = document.createElement("div");
+                principleCard.classList.add("solution-card");
+
+                principleCard.innerHTML = `
+                    <div class="solution-header">
+                        <div class="principle-icon">
+                            <i class="fas ${p.icon}"></i>
+                        </div>
+                        <strong>Principle ${num}: ${p.name}</strong>
+                    </div>
+                    <p>${p.desc}</p>
+                    <div class="principle-example"><em>Example:</em> ${p.example}</div>
+                `;
+
+                principlesSection.appendChild(principleCard);
+            });
+
+            card.appendChild(principlesSection);
+        }
+
+        resultsDiv.appendChild(card);
+    });
+
+    // Botón para exportar resultados
+    const actions = document.createElement("div");
+    actions.classList.add("results-actions");
+    actions.innerHTML = `
+        <button class="btn-success" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i> Export Results to Excel
+        </button>
+    `;
+    resultsDiv.appendChild(actions);
+}
+
 </script>
 </body>
 </html>

@@ -405,63 +405,36 @@ const trizStandardSolutions = {
                 principles: [40] // Composite materials
             }
         }
-    }
-};
+    }    
+}; // 🔹 Cierre correcto del objeto trizStandardSolutions
 
-// Verification function - CORRECTED
-function verifySolutionCount() {
-    let total = 0;
-    const counts = {};
-    
-    for (const classKey in trizStandardSolutions) {
-        const count = Object.keys(trizStandardSolutions[classKey].solutions).length;
-        counts[classKey] = count;
-        total += count;
-    }
-    
-    console.log('Solution counts by class:', counts);
-    console.log('Total solutions:', total);
-    
-    // Verify against expected counts from PDF
-    const expectedCounts = {
-        "Class 1: Improving system with no/little change": 13,
-        "Class 2: Improving system by changing system": 23,
-        "Class 3: System transitions": 6,
-        "Class 4: Detection and measurement": 17,
-        "Class 5: Strategies for simplification/improvement": 17
-    };
-    
-    let allMatch = true;
-    for (const classKey in expectedCounts) {
-        if (counts[classKey] !== expectedCounts[classKey]) {
-            console.error(`MISMATCH in ${classKey}: Expected ${expectedCounts[classKey]}, got ${counts[classKey]}`);
-            allMatch = false;
-        }
-    }
-    
-    if (allMatch && total === 76) {
-        console.log('✅ SUCCESS: All class counts match the PDF exactly! Total: 76 solutions.');
-    } else {
-        console.error('❌ ERROR: Counts do not match the PDF specification.');
-    }
-    
-    return {counts, total, allMatch};
-}
-
-// Updated recommendation function
+// ==========================================================
+// 🔧 Versión extendida: cubre los 6 tipos de problemas Su-Field
+// ==========================================================
 function getRecommendedStandardSolutions(problemType) {
     const solutionMap = {
+        // Acción insuficiente: el campo o sustancia no actúa con suficiente fuerza
         "insufficient": ["1.1.1", "1.1.2", "1.1.6", "2.2.1", "2.2.3"],
+
+        // Acción excesiva: la interacción es demasiado intensa
         "excessive": ["1.1.4", "2.1.4", "2.3.1", "5.1.4"],
+
+        // Acción dañina: el campo o sustancia provoca efectos negativos
         "harmful": ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5"],
-        "measurement": ["4.1.1", "4.1.2", "4.2.1", "4.2.3", "4.3.1"],
-        "magnetic": ["2.4.1", "2.4.2", "2.4.3", "2.4.8", "2.4.9"],
-        "simplification": ["5.1.1.1", "5.1.2", "5.1.3", "5.4.1", "5.5.1"]
+
+        // Interacción difícil de medir o controlar
+        "difficult": ["4.1.1", "4.1.2", "4.2.4", "4.3.1", "4.3.4", "4.3.6"],
+
+        // Acción ausente o inexistente: no hay campo ni interacción útil
+        "missing": ["1.1.1", "1.1.2", "1.1.3", "2.1.1", "2.2.1", "2.2.5"],
+
+        // Acción ineficiente: el sistema existe pero no optimiza su efecto
+        "inefficient": ["2.2.1", "2.3.1", "2.3.2", "5.4.1", "5.5.1"]
     };
-    
+
     const recommendedIds = solutionMap[problemType] || [];
     const recommendedSolutions = [];
-    
+
     for (const classKey in trizStandardSolutions) {
         const solutionClass = trizStandardSolutions[classKey];
         for (const solutionId in solutionClass.solutions) {
@@ -474,9 +447,50 @@ function getRecommendedStandardSolutions(problemType) {
             }
         }
     }
-    
+
     return recommendedSolutions;
 }
 
-// Verify the implementation
+// ==========================================================
+// 🔍 Función de verificación de integridad (mantener igual)
+// ==========================================================
+function verifySolutionCount() {
+    let total = 0;
+    const counts = {};
+
+    for (const classKey in trizStandardSolutions) {
+        const count = Object.keys(trizStandardSolutions[classKey].solutions).length;
+        counts[classKey] = count;
+        total += count;
+    }
+
+    console.log('Solution counts by class:', counts);
+    console.log('Total solutions:', total);
+
+    const expectedCounts = {
+        "Class 1: Improving system with no/little change": 13,
+        "Class 2: Improving system by changing system": 23,
+        "Class 3: System transitions": 6,
+        "Class 4: Detection and measurement": 17,
+        "Class 5: Strategies for simplification/improvement": 17
+    };
+
+    let allMatch = true;
+    for (const classKey in expectedCounts) {
+        if (counts[classKey] !== expectedCounts[classKey]) {
+            console.error(`MISMATCH in ${classKey}: Expected ${expectedCounts[classKey]}, got ${counts[classKey]}`);
+            allMatch = false;
+        }
+    }
+
+    if (allMatch && total === 76) {
+        console.log('✅ SUCCESS: All class counts match the PDF exactly! Total: 76 solutions.');
+    } else {
+        console.error('❌ ERROR: Counts do not match the PDF specification.');
+    }
+
+    return {counts, total, allMatch};
+}
+
+// Verificación automática al cargar
 verifySolutionCount();
