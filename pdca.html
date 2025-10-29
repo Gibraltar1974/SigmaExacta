@@ -20,20 +20,17 @@
     <style>
         /* --- Estilos base para la barra de navegación --- */
         .top-bar {
-            /* === MODIFICACIÓN: Header fijo al hacer scroll === */
-            position: sticky; /* Cambiado de 'relative' para que la barra se fije en la parte superior */
-            top: 0;           /* Se posiciona en el borde superior de la ventana */
-            z-index: 1001;    /* Se asegura que esté por encima de otro contenido al hacer scroll */
-            /* === FIN DE LA MODIFICACIÓN === */
-            
+            position: sticky; 
+            top: 0;           
+            z-index: 1001;    
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            background-color: #222; /* Un negro suave, puedes cambiarlo por #000 */
+            background-color: #222; 
         }
         .logo-text, .navigation .nav-link, .nav-toggle {
-            color: #fff; /* Color blanco para el texto y el icono */
+            color: #fff; 
         }
 
         .nav-toggle {
@@ -74,7 +71,7 @@
             position: absolute;
             top: 100%;
             left: 0;
-            background-color: #fff; /* Fondo blanco para el desplegable */
+            background-color: #fff; 
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
             border-radius: 5px;
             z-index: 1000;
@@ -82,7 +79,6 @@
             padding: 20px;
         }
         
-        /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
         .dropdown-menu a, .dropdown-menu h4 {
             color: #333;
         }
@@ -101,7 +97,7 @@
             display: block;
         }
 
-        /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
+        /* --- ESTILOS PARA MÓVIL --- */
         @media (max-width: 992px) {
             .nav-toggle {
                 display: block;
@@ -114,11 +110,10 @@
                 top: 100%;
                 left: 0;
                 width: 100%;
-                background-color: #fff; /* Fondo blanco para el menú desplegado */
+                background-color: #fff; 
                 border-top: 1px solid #eee;
             }
             
-            /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
             .navigation .nav-menu .nav-link {
                 color: #333; 
             }
@@ -170,21 +165,21 @@
         }
         /* --- FIN CSS DEL HEADER --- */
 
-        /* --- INICIO MODIFICACIÓN 2 y 3: Estilos Rueda Deming --- */
+        /* --- Estilos para la RUEDA ESTÁTICA (que es solo ilustrativa) --- */
         .pdca-wheel-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 2rem auto;
-            max-width: 600px; /* Ancho máximo de la rueda */
+            max-width: 600px; 
         }
         
         .pdca-wheel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            width: 100%; /* Ancho flexible */
-            padding-top: 100%; /* Truco para mantener relación 1:1 (cuadrado) */
+            width: 100%; 
+            padding-top: 100%; 
             border-radius: 50%;
             overflow: hidden;
             position: relative;
@@ -202,90 +197,120 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: #333; /* Cambiado de blanco a oscuro para mejor contraste */
             text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            /* Efectos 3D iniciales */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            transform: translateZ(0);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
-        /* Colocación de cuadrantes */
-        .quadrant-plan { top: 0; left: 0; background-color: #3498db; } /* Azul */
-        .quadrant-do { top: 0; right: 0; background-color: #e67e22; } /* Naranja */
-        .quadrant-act { bottom: 0; left: 0; background-color: #9b59b6; } /* Morado */
-        .quadrant-check { bottom: 0; right: 0; background-color: #2ecc71; } /* Verde */
+        /* Efectos hover para cada cuadrante con sombreados, brillos y efecto 3D */
+        .pdca-quadrant:hover {
+            transform: translateZ(10px) scale(1.03);
+            box-shadow: 
+                inset 0 0 30px rgba(255,255,255,0.3),
+                0 5px 15px rgba(0,0,0,0.2);
+            z-index: 5;
+            filter: brightness(1.1);
+        }
+        
+        /* Colocación de cuadrantes con colores actualizados para coincidir con la tabla */
+        .quadrant-plan { 
+            top: 0; 
+            left: 0; 
+            background-color: #eaf4ff; 
+            color: #333; 
+            /* Gradiente para efecto 3D */
+            background: linear-gradient(135deg, #eaf4ff 0%, #c2e0ff 100%);
+        }
+        .quadrant-do { 
+            top: 0; 
+            right: 0; 
+            background-color: #ffe6cc; 
+            color: #333; 
+            background: linear-gradient(135deg, #ffe6cc 0%, #ffcc99 100%);
+        }
+        .quadrant-act { 
+            bottom: 0; 
+            left: 0; 
+            background-color: #f7e6ff; 
+            color: #333; 
+            background: linear-gradient(135deg, #f7e6ff 0%, #e6ccff 100%);
+        }
+        .quadrant-check { 
+            bottom: 0; 
+            right: 0; 
+            background-color: #eafbe7; 
+            color: #333; 
+            background: linear-gradient(135deg, #eafbe7 0%, #ccffcc 100%);
+        }
 
-        /* Títulos de los cuadrantes */
         .pdca-quadrant h3 {
             margin: 0 0 10px 0;
             padding: 0;
             font-size: 1.5rem;
             font-weight: 800;
             border: none;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            color: inherit; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Reducida intensidad para mejor legibilidad */
+            transition: all 0.3s ease;
         }
 
-        /* Iconos (para la rueda estática) */
+        .pdca-quadrant:hover h3 {
+            transform: translateY(-3px);
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        }
+
         .pdca-quadrant .fas {
             font-size: 2.5rem;
             margin-bottom: 10px;
+            color: #333; /* Iconos en color oscuro para mejor contraste */
+            transition: all 0.3s ease;
         }
-         .pdca-quadrant span {
-            font-size: 0.9em;
-         }
 
-        /* Contenido (para la rueda de resultados dinámica) */
-        .pdca-quadrant .quadrant-content {
-            font-size: 0.85rem;
-            max-height: 170px; /* Ajustar altura */
-            overflow-y: auto;
-            background: rgba(0,0,0,0.1);
-            padding: 8px;
-            border-radius: 4px;
-            text-align: left;
-            width: 100%;
-        }
-        .pdca-quadrant .quadrant-content p {
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin: 0 0 5px 0;
-        }
-        .pdca-quadrant .quadrant-content strong {
-            font-weight: 800;
-            color: rgba(255,255,255,0.8);
+        .pdca-quadrant:hover .fas {
+            transform: scale(1.2);
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
         }
         
-        /* Scrollbar para la rueda */
-        .quadrant-content::-webkit-scrollbar { width: 6px; }
-        .quadrant-content::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.3); border-radius: 3px; }
-        .quadrant-content::-webkit-scrollbar-track { background-color: rgba(255,255,255,0.1); }
+         .pdca-quadrant span {
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+         }
 
-        /* Flechas de la rueda */
+        .pdca-quadrant:hover span {
+            transform: translateY(2px);
+        }
+        
         .pdca-wheel::after, .pdca-wheel::before {
             content: '';
             position: absolute;
             background: #555;
             z-index: 10;
         }
-        .pdca-wheel::after { /* Línea vertical */
+        .pdca-wheel::after { 
             width: 5px;
             height: 100%;
             left: 50%;
             transform: translateX(-50%);
         }
-        .pdca-wheel::before { /* Línea horizontal */
+        .pdca-wheel::before { 
             height: 5px;
             width: 100%;
             top: 50%;
             transform: translateY(-50%);
         }
         
-        /* Círculo central */
         .pdca-center-circle {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 20%; /* Tamaño relativo */
-            height: 20%; /* Tamaño relativo */
+            width: 20%; 
+            height: 20%; 
             min-width: 80px;
             min-height: 80px;
             background: white;
@@ -297,6 +322,31 @@
             align-items: center;
             font-size: 1.8rem;
             color: #555;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        /* Animación de rotación para el ícono central - CORREGIDA */
+        .pdca-center-circle i {
+            animation: rotate 10s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .pdca-center-circle:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .pdca-center-circle:hover i {
+            animation-duration: 5s; /* Acelera la rotación al hacer hover */
         }
 
         @media (max-width: 600px) {
@@ -309,18 +359,73 @@
             .pdca-quadrant .fas {
                 font-size: 1.5rem;
             }
-            .pdca-quadrant .quadrant-content {
-                font-size: 0.75rem;
-                max-height: 100px; /* Ajustar altura */
-            }
             .pdca-center-circle {
                 font-size: 1.2rem;
                 min-width: 60px;
                 min-height: 60px;
             }
         }
-        /* --- FIN MODIFICACIÓN 2 y 3 --- */
+        /* --- Fin Estilos Rueda Estática --- */
 
+        /* --- Estilos para el contenedor de resultados (Tabla de resumen) --- */
+        #results-container { 
+            border: 2px solid var(--success-color); 
+            background-color: #f8fef8; 
+            border-radius: 8px; 
+            padding: 1.25rem; 
+            margin-top: 1.5rem; 
+            overflow-x: auto; /* Permite scroll en móvil si la tabla es grande */
+        }
+        #results-container h3 { 
+            color: var(--success-color); 
+            font-weight: 800; 
+            text-align: center; 
+            margin-bottom: 1rem; 
+        }
+        
+        /* Nuevo: Estilos para la tabla de resumen */
+        .pdca-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            table-layout: fixed; /* Ayuda a controlar el ancho de las columnas */
+        }
+        .pdca-summary-table th, .pdca-summary-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+        .pdca-summary-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 800;
+            vertical-align: top;
+            width: 15%; /* Ancho de la columna de la fase */
+        }
+        .pdca-summary-table td:nth-child(2) {
+             font-weight: 600;
+             width: 25%; /* Ancho de la columna de la categoría */
+             background-color: #f1f1f1;
+        }
+        .pdca-summary-table td:nth-child(3) {
+             width: 60%; /* Ancho de la columna de detalles */
+             white-space: pre-wrap; /* Mantiene saltos de línea y formato del textarea */
+             vertical-align: top;
+        }
+        
+        .phase-row {
+            background-color: #eaf4ff; /* Fondo claro para distinguir la fase principal */
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .results-actions { 
+            margin-top: 1.25rem; 
+            padding-top: 1.25rem; 
+            border-top: 1px solid #eee; 
+            text-align: center; 
+        }
+        /* --- FIN Estilos Resultados --- */
 
         /* Estilo AÑADIDO para el icono PDCA: tamaño y forma definidos */
         .main-tool-logo {
@@ -334,13 +439,13 @@
             font-size: 1.8rem; 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
             flex-shrink: 0; 
-            margin-right: 15px; /* Espacio entre el icono y el texto */
+            margin-right: 15px; 
         }
         .main-tool-logo[data-color='9'] { 
             background-color: #7ed321; 
         }
 
-        /* Estilos específicos para PDCA */
+        /* Estilos generales de la página */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -359,26 +464,23 @@
             margin: 0;
         }
         
-        /* --- MODIFICACIÓN 1: Ancho completo --- */
         .main-content-wrapper { 
-            max-width: 100%; /* Cambiado de 1000px */
+            max-width: 100%; 
             margin: 20px auto; 
             padding: 1.25rem; 
-            box-sizing: border-box; /* Añadido para gestionar el padding */
+            box-sizing: border-box; 
         }
 
         .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
-        /* REGLA MODIFICADA para incluir la alineación flex */
         .header h1 { 
             color: var(--primary-color); 
             font-size: clamp(1.5rem, 4vw, 1.8rem); 
             margin: 0.5rem 0; 
             font-weight: 800;
-            /* Nuevas propiedades para alinear el icono: */
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap; /* Para móviles */
+            flex-wrap: wrap; 
         }
         .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
 
@@ -398,24 +500,6 @@
         }
         .content-block h2 .fas { margin-right: 0.75rem; }
         
-        /* --- INICIO MODIFICACIÓN 3: Estilos de infografía antigua eliminados --- */
-        /* .infographic-flow { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: stretch; 
-            margin-top: 1.5rem; 
-            text-align: center; 
-            flex-wrap: wrap; 
-            gap: 0.6rem;
-        }
-        .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-        .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
-        .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
-        .flow-step span { font-size: 0.9em; color: #555; }
-        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto 0.6rem; flex-grow: 0; } */
-        /* --- FIN MODIFICACIÓN 3 --- */
-
         .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
         .instructions-box li { margin-bottom: 0.5rem; line-height: 1.6; }
         
@@ -431,7 +515,7 @@
             min-height: 45px;
             resize: none;
             overflow-y: hidden;
-            box-sizing: border-box; /* Previene desbordamiento por padding */
+            box-sizing: border-box; 
         }
         textarea:focus, button:focus-visible {
             outline: none; border-color: var(--secondary-color);
@@ -453,37 +537,9 @@
 
         .hidden { display: none; }
         
-        /* --- INICIO MODIFICACIÓN 2: Estilos de resultados --- */
-        #results-container { border: 2px solid var(--success-color); background-color: #f8fef8; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; }
-        #results-container h3 { 
-            color: var(--success-color); 
-            font-weight: 800; 
-            text-align: center; /* Centrado */
-            margin-bottom: 1rem; /* Espacio */
-        }
-        
-        /* Estilos de resumen antiguos eliminados */
-        /* .results-summary { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 1.5rem; }
-        .results-summary h4 { margin: 0 0 0.5rem 0; color: var(--dark-color); }
-        .results-summary p { white-space: pre-wrap; margin: 0; background: #fff; padding: 0.5rem; border-radius: 4px; border: 1px solid #eee; word-break: break-word; } */
-        
-        .results-actions { 
-            margin-top: 1.25rem; 
-            padding-top: 1.25rem; 
-            border-top: 1px solid #eee; 
-            text-align: center; /* Centrado */
-        }
-        /* --- FIN MODIFICACIÓN 2 --- */
-
         footer[role="contentinfo"] { background-color: #222; color: #ccc; padding: 50px 20px; text-align: center; }
         .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #a0a0a0; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.8; }
         
-        @media (max-width: 992px) {
-            /* --- INICIO MODIFICACIÓN 3: Media query antigua eliminada --- */
-            /* .infographic-flow { flex-direction: column; align-items: center; }
-            .flow-arrow { display: none; } */
-            /* --- FIN MODIFICACIÓN 3 --- */
-        }
     </style>
 </head>
 <body>
@@ -746,66 +802,74 @@
         displayResults();
     }
 
-    // --- INICIO MODIFICACIÓN 2: Función displayResults actualizada ---
+    // === FUNCIÓN CLAVE: displayResults actualizada para usar TABLA ===
     function displayResults() {
         const resultsDiv = document.getElementById('results-container');
         
         // Helper function to sanitize text
         function escapeHTML(str) {
-            if (!str) return 'N/A';
-            return str.replace(/[&<>"']/g, function(m) {
+            return str ? str.replace(/[&<>"']/g, function(m) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-            });
+            }) : 'N/A';
         }
 
-        let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report</h3>`;
+        let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>`;
 
-        // Construir la rueda de resultados
-        html += `<div class="pdca-wheel-container">
-            <div class="pdca-wheel">
-                <div class="pdca-quadrant quadrant-plan">
-                    <h3>Plan</h3>
-                    <div class="quadrant-content">
-                        <strong>Problem:</strong>
-                        <p>${escapeHTML(cycleData.plan.problem)}</p>
-                        <strong>Goal:</strong>
-                        <p>${escapeHTML(cycleData.plan.goal)}</p>
-                        <strong>Actions:</strong>
-                        <p>${escapeHTML(cycleData.plan.actions)}</p>
-                    </div>
-                </div>
-                <div class="pdca-quadrant quadrant-do">
-                    <h3>Do</h3>
-                    <div class="quadrant-content">
-                        <strong>Executed:</strong>
-                        <p>${escapeHTML(cycleData.do.execution)}</p>
-                        <strong>Problems:</strong>
-                        <p>${escapeHTML(cycleData.do.problems)}</p>
-                    </div>
-                </div>
-                <div class="pdca-quadrant quadrant-act">
-                    <h3>Act</h3>
-                    <div class="quadrant-content">
-                        <strong>Conclusions:</strong>
-                        <p>${escapeHTML(cycleData.act.conclusions)}</p>
-                        <strong>Next Steps:</strong>
-                        <p>${escapeHTML(cycleData.act.next)}</p>
-                    </div>
-                </div>
-                <div class="pdca-quadrant quadrant-check">
-                    <h3>Check</h3>
-                    <div class="quadrant-content">
-                        <strong>Data/Results:</strong>
-                        <p>${escapeHTML(cycleData.check.data)}</p>
-                        <strong>Analysis:</strong>
-                        <p>${escapeHTML(cycleData.check.analysis)}</p>
-                    </div>
-                </div>
-                <div class="pdca-center-circle">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
-            </div>
-        </div>`;
+        // Construir la tabla de resumen
+        html += `<table class="pdca-summary-table">
+            <thead>
+                <tr>
+                    <th>Phase</th>
+                    <th>Category</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="phase-row">
+                    <td rowspan="3"><strong>1. PLAN</strong><br><i class="fas fa-clipboard-list"></i></td>
+                    <td>Problem/Opportunity</td>
+                    <td>${escapeHTML(cycleData.plan.problem)}</td>
+                </tr>
+                <tr>
+                    <td>Goal/Hypothesis</td>
+                    <td>${escapeHTML(cycleData.plan.goal)}</td>
+                </tr>
+                <tr>
+                    <td>Action Plan</td>
+                    <td>${escapeHTML(cycleData.plan.actions)}</td>
+                </tr>
+
+                <tr class="phase-row" style="background-color: #ffe6cc; border-bottom: 3px solid #e67e22;">
+                    <td rowspan="2"><strong>2. DO</strong><br><i class="fas fa-cogs"></i></td>
+                    <td>Execution Record</td>
+                    <td>${escapeHTML(cycleData.do.execution)}</td>
+                </tr>
+                <tr>
+                    <td>Problems/Observations</td>
+                    <td>${escapeHTML(cycleData.do.problems)}</td>
+                </tr>
+                
+                <tr class="phase-row" style="background-color: #eafbe7; border-bottom: 3px solid #2ecc71;">
+                    <td rowspan="2"><strong>3. CHECK</strong><br><i class="fas fa-chart-line"></i></td>
+                    <td>Data & Results</td>
+                    <td>${escapeHTML(cycleData.check.data)}</td>
+                </tr>
+                <tr>
+                    <td>Analysis</td>
+                    <td>${escapeHTML(cycleData.check.analysis)}</td>
+                </tr>
+
+                <tr class="phase-row" style="background-color: #f7e6ff; border-bottom: 3px solid #9b59b6;">
+                    <td rowspan="2"><strong>4. ACT</strong><br><i class="fas fa-bullhorn"></i></td>
+                    <td>Conclusions/Learnings</td>
+                    <td>${escapeHTML(cycleData.act.conclusions)}</td>
+                </tr>
+                <tr>
+                    <td>Next Steps</td>
+                    <td>${escapeHTML(cycleData.act.next)}</td>
+                </tr>
+            </tbody>
+        </table>`;
         
         // Acciones
         html += `<div class="results-actions">
@@ -816,7 +880,7 @@
         resultsDiv.classList.remove('hidden');
         resultsDiv.scrollIntoView({ behavior: 'smooth' });
     }
-    // --- FIN MODIFICACIÓN 2 ---
+    // --- FIN FUNCIÓN CLAVE ---
 
     function exportToExcel() {
         if (Object.keys(cycleData).length === 0) {
