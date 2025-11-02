@@ -587,6 +587,22 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Estilos para el selector de matriz */
+        .matrix-version-selector {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3498db;
+        }
+        
+        .matrix-version-info {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -700,6 +716,27 @@
         </div>
         <div class="solver-step" id="step-3">
             <h3><i class="fas fa-exchange-alt"></i> Step 3: Identify the Core Contradiction</h3>
+            
+            <!-- NUEVO SELECTOR DE VERSIÓN DE MATRIZ -->
+            <div class="matrix-version-selector">
+                <div class="form-group">
+                    <label for="matrix-version">TRIZ Matrix Version:</label>
+                    <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <label>
+                            <input type="radio" name="matrix-version" value="classic" checked onchange="changeMatrixVersion()">
+                            <strong>Classic Matrix</strong> (39 parameters, 40 principles)
+                        </label>
+                        <label>
+                            <input type="radio" name="matrix-version" value="2003" onchange="changeMatrixVersion()">
+                            <strong>2003 Matrix</strong> (48 parameters, 48 principles)
+                        </label>
+                    </div>
+                    <div class="matrix-version-info" id="matrix-version-info">
+                        Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles
+                    </div>
+                </div>
+            </div>
+            
             <div class="form-group radio-group">
                 <label><input type="radio" name="contradiction-type" value="technical" onchange="toggleContradictionForms()"> <strong>Technical Contradiction:</strong> Improving one feature makes another worse.</label>
                 <label><input type="radio" name="contradiction-type" value="physical" onchange="toggleContradictionForms()"> <strong>Physical Contradiction:</strong> One feature needs opposite properties.</label>
@@ -743,8 +780,7 @@
                         <label><input type="radio" name="oz-relationship" value="intersect" onchange="updatePhysicalStrategy()"> OZ/OT INTERSECT</label>
                     </div>
                 </div>
-
-                </div>
+            </div>
         </div>
         
         <div class="solver-step" id="step-4">
@@ -769,13 +805,76 @@
 </footer>
 
 <script src="trizcontradiction.js"></script>
+<script src="trizcontradiction2003.js"></script>
 <script src="physicalContradictionPrinciples.js"></script>
 <script src="76principlestriz.js"></script>
 <script>
-    // CORRECCIÓN: Usar la matriz correcta de trizcontradiction.js
-    const engineeringParameters = trizContradictionMatrix.features;
+    // ===== GESTIÓN DE VERSIONES DE MATRIZ TRIZ =====
+    let currentMatrixVersion = 'classic'; // 'classic' or '2003'
+
+    function changeMatrixVersion() {
+        const selectedVersion = document.querySelector('input[name="matrix-version"]:checked').value;
+        currentMatrixVersion = selectedVersion;
+        
+        // Actualizar la interfaz según la versión seleccionada
+        populateDropdowns();
+        createContradictionMatrix();
+        
+        // Limpiar selecciones anteriores
+        improvingFeatureIndex = null;
+        worseningFeatureIndex = null;
+        updateMatrixDisplay();
+        updateSelectedFeatures();
+        clearResults();
+        
+        // Mostrar información sobre la versión seleccionada
+        const versionInfo = document.getElementById('matrix-version-info');
+        if (currentMatrixVersion === 'classic') {
+            versionInfo.textContent = "Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles";
+        } else {
+            versionInfo.textContent = "Using 2003 TRIZ Matrix - Updated 48x48 matrix with 48 inventive principles";
+        }
+    }
+
+    // CORRECCIÓN: Usar la matriz correcta según la versión seleccionada
+    function getCurrentMatrix() {
+        return currentMatrixVersion === 'classic' ? trizContradictionMatrix : trizContradictionMatrix2003;
+    }
     
-    // CORRECCIÓN: Mapeo completo de todos los 40 principios
+    function getCurrentFeatures() {
+        return getCurrentMatrix().features;
+    }
+    
+    function getCurrentPrinciples() {
+        return getCurrentMatrix().principles;
+    }
+
+    // MODIFICAR: Función para obtener principios según la matriz seleccionada
+    function getContradictionPrinciples(improvingFeature, worseningFeature) {
+        const matrix = getCurrentMatrix().matrix;
+        if (matrix[improvingFeature] && matrix[improvingFeature][worseningFeature]) {
+            return matrix[improvingFeature][worseningFeature];
+        }
+        return [];
+    }
+
+    function getPrincipleName(principleNumber) {
+        const principles = getCurrentPrinciples();
+        if (principleNumber >= 1 && principleNumber <= principles.length) {
+            return principles[principleNumber - 1];
+        }
+        return "Unknown Principle";
+    }
+
+    function getFeatureName(featureNumber) {
+        const features = getCurrentFeatures();
+        if (featureNumber >= 1 && featureNumber <= features.length) {
+            return features[featureNumber - 1];
+        }
+        return "Unknown Feature";
+    }
+
+    // CORRECCIÓN: Mapeo completo de todos los principios (combinando ambos sets)
     const principles = {
         1: { 
             name: "Segmentation", 
@@ -1056,6 +1155,63 @@
             icon: "fa-clone",
             visual: "fa-layer-group",
             example: "Carbon fiber composites, reinforced concrete"
+        },
+        // Principios adicionales para la matriz 2003
+        41: { 
+            name: "Directional properties", 
+            desc: "Use anisotropic materials or structures.", 
+            icon: "fa-arrows-alt",
+            visual: "fa-arrow-right",
+            example: "Use materials that are stronger in one direction"
+        },
+        42: { 
+            name: "Homogeneity in materials", 
+            desc: "Make interacting elements from the same material.", 
+            icon: "fa-equals",
+            visual: "fa-align-center",
+            example: "Use same material for all parts to avoid corrosion"
+        },
+        43: { 
+            name: "Inexpensive short-life", 
+            desc: "Replace expensive durable objects with cheap disposables.", 
+            icon: "fa-recycle",
+            visual: "fa-trash-alt",
+            example: "Disposable medical equipment"
+        },
+        44: { 
+            name: "Replacement of mechanical system", 
+            desc: "Replace mechanical systems with optical, thermal or acoustic systems.", 
+            icon: "fa-microchip",
+            visual: "fa-lightbulb",
+            example: "Use laser instead of mechanical cutter"
+        },
+        45: { 
+            name: "Feedback introduction", 
+            desc: "Introduce feedback to improve system performance.", 
+            icon: "fa-sync-alt",
+            visual: "fa-retweet",
+            example: "Automatic brightness adjustment on displays"
+        },
+        46: { 
+            name: "Counterweight application", 
+            desc: "Use counterweights to balance systems.", 
+            icon: "fa-balance-scale",
+            visual: "fa-weight-hanging",
+            example: "Counterweights in elevators and cranes"
+        },
+        47: { 
+            name: "Preliminary saturation", 
+            desc: "Pre-saturate a system to prevent unwanted effects.", 
+            icon: "fa-fill-drip",
+            visual: "fa-tint",
+            example: "Pre-humidify air to prevent static electricity"
+        },
+        48: { 
+            name: "Mediator utilization", 
+            desc: "Use an intermediate object to transfer or transmit an action.", 
+            icon: "fa-hands-helping",
+            visual: "fa-exchange-alt",
+            example: "Use a catalyst in chemical reactions"
         }
     };
 
@@ -1100,7 +1256,15 @@
         37: "fa-arrows-alt-h", // Thermal expansion
         38: "fa-fire",         // Strong oxidants
         39: "fa-flask",        // Inert atmosphere
-        40: "fa-layer-group"   // Composite materials
+        40: "fa-layer-group",  // Composite materials
+        41: "fa-arrows-alt",   // Directional properties
+        42: "fa-align-center", // Homogeneity in materials
+        43: "fa-recycle",      // Inexpensive short-life
+        44: "fa-microchip",    // Replacement of mechanical system
+        45: "fa-sync-alt",     // Feedback introduction
+        46: "fa-balance-scale", // Counterweight application
+        47: "fa-fill-drip",    // Preliminary saturation
+        48: "fa-hands-helping" // Mediator utilization
     };
 
     // MODIFICACIÓN 4: Mapeo de iconos específicos para soluciones estándar
@@ -1328,6 +1492,10 @@
         document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
         document.getElementById('technical-solver-block').classList.add('hidden');
         document.getElementById('physical-solver-block').classList.add('hidden');
+        
+        // Restablecer la versión de matriz a clásica
+        document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
+        changeMatrixVersion();
         
         clearResults(); // MODIFICACIÓN: Usar la función centralizada
         
@@ -1576,35 +1744,44 @@
             matrixView.classList.add('hidden');
         }
     }
-   function createContradictionMatrix() {
-    const matrixTable = document.getElementById('contradiction-matrix');
-    matrixTable.innerHTML = '';
-    
-    // Create header row with clear labeling and full feature names
-    let headerRow = '<tr><th class="matrix-corner">Desired →<br>Worsening ↓</th>';
-    for (let i = 0; i < engineeringParameters.length; i++) {
-        headerRow += `<th title="${engineeringParameters[i]}">${engineeringParameters[i]}</th>`;
-    }
-    headerRow += '</tr>';
-    matrixTable.innerHTML += headerRow;
-    
-    // Create data rows with row headers showing full feature names
-    for (let i = 0; i < engineeringParameters.length; i++) {
-        let row = `<tr><th title="${engineeringParameters[i]}">${engineeringParameters[i]}</th>`;
-        for (let j = 0; j < engineeringParameters.length; j++) {
-            const cellClass = getCellClass(i, j);
-            // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
-            const principles = getContradictionPrinciples((i+1).toString(), (j+1).toString());
-            const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
-            
-            row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" title="Improving: ${engineeringParameters[i]}\nWorsening: ${engineeringParameters[j]}">
-                <div class="principle-numbers">${principleNumbers}</div>
-            </td>`;
+   
+    function createContradictionMatrix() {
+        const matrixTable = document.getElementById('contradiction-matrix');
+        matrixTable.innerHTML = '';
+        
+        const features = getCurrentFeatures();
+
+        // CORRECCIÓN 1: Cambiar el orden - Filas: Desired, Columnas: Worsening
+        let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
+        for (let i = 0; i < features.length; i++) {
+            headerRow += `<th title="${features[i]}">${i + 1}</th>`;
         }
-        row += '</tr>';
-        matrixTable.innerHTML += row;
+        headerRow += '</tr>';
+        matrixTable.innerHTML += headerRow;
+        
+        // CORRECCIÓN 1: Cambiar el orden - Filas: Desired, Columnas: Worsening
+        for (let i = 0; i < features.length; i++) {
+            let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
+            for (let j = 0; j < features.length; j++) {
+                const cellClass = getCellClass(i, j);
+                // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
+                const principles = getContradictionPrinciples((i+1).toString(), (j+1).toString());
+                const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
+                
+                // CORRECCIÓN 2: Añadir tooltip con nombres de principios
+                const principleNames = principles && principles.length > 0 
+                    ? principles.map(p => getPrincipleName(p)).join(', ')
+                    : 'No principles recommended';
+                
+                row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
+                        title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
+                    <div class="principle-numbers">${principleNumbers}</div>
+                </td>`;
+            }
+            row += '</tr>';
+            matrixTable.innerHTML += row;
+        }
     }
-}
     
     function getCellClass(row, col) {
         if (row === improvingFeatureIndex && col === worseningFeatureIndex) {
@@ -1632,25 +1809,29 @@
     
     function updateMatrixDisplay() {
         const cells = document.querySelectorAll('#contradiction-matrix td');
+        const features = getCurrentFeatures();
         cells.forEach((cell, index) => {
-            const row = Math.floor(index / engineeringParameters.length);
-            const col = index % engineeringParameters.length;
+            const row = Math.floor(index / features.length);
+            const col = index % features.length;
             cell.className = getCellClass(row, col);
         });
     }
     
     function updateSelectedFeatures() {
+        const features = getCurrentFeatures();
         const improvingSpan = document.getElementById('selected-improving');
         const worseningSpan = document.getElementById('selected-worsening');
         
         if (improvingFeatureIndex !== null) {
-            improvingSpan.textContent = `${improvingFeatureIndex + 1}: ${engineeringParameters[improvingFeatureIndex]}`;
+            improvingSpan.textContent = `${improvingFeatureIndex + 1}: ${features[improvingFeatureIndex]}`;
+            improvingSpan.title = features[improvingFeatureIndex]; // CORRECCIÓN 2: Añadir tooltip
         } else {
             improvingSpan.textContent = 'None';
         }
         
         if (worseningFeatureIndex !== null) {
-            worseningSpan.textContent = `${worseningFeatureIndex + 1}: ${engineeringParameters[worseningFeatureIndex]}`;
+            worseningSpan.textContent = `${worseningFeatureIndex + 1}: ${features[worseningFeatureIndex]}`;
+            worseningSpan.title = features[worseningFeatureIndex]; // CORRECCIÓN 2: Añadir tooltip
         } else {
             worseningSpan.textContent = 'None';
         }
@@ -1703,8 +1884,9 @@
             improvingFeatureIndex = improvingIndex;
             worseningFeatureIndex = worseningIndex;
             
-            problemData.improvingFeature = engineeringParameters[improvingIndex];
-            problemData.worseningFeature = engineeringParameters[worseningIndex];
+            const features = getCurrentFeatures();
+            problemData.improvingFeature = features[improvingIndex];
+            problemData.worseningFeature = features[worseningIndex];
             
             // CORRECCIÓN: Usar índices correctos (sumar 1) para la matriz
             const improvingKey = (improvingIndex + 1).toString();
@@ -1771,6 +1953,11 @@
         const resultsDiv = document.getElementById('results-container');
         // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
         let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+        
+        // Mostrar información de la matriz utilizada
+        html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
+            <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+        </div>`;
         
         html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
         
@@ -1988,6 +2175,7 @@
         ws_data.push(["TRIZ Problem Solving Report"]); 
         ws_data.push(["Company: Sigma Exacta"]); 
         ws_data.push([`Date: ${new Date().toLocaleDateString()}`]); 
+        ws_data.push([`Matrix Version: ${currentMatrixVersion === 'classic' ? 'Classic (39 parameters)' : '2003 (48 parameters)'}`]);
         ws_data.push([]); 
         ws_data.push(["Problem Definition"]); 
         ws_data.push(["System/Object", problemData.system]); 
@@ -2057,15 +2245,28 @@
         improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
         worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
         
-        engineeringParameters.forEach((param, index) => { 
-            improvingSelect.innerHTML += `<option value="${index}">${param}</option>`; 
-            worseningSelect.innerHTML += `<option value="${index}">${param}</option>`; 
+        const features = getCurrentFeatures();
+        
+        features.forEach((param, index) => { 
+            // CORRECCIÓN 2: Añadir tooltips a las opciones del dropdown
+            improvingSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`; 
+            worseningSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`; 
         }); 
 
         // CORRECCIÓN: Resetear las selecciones globales
         improvingFeatureIndex = null;
         worseningFeatureIndex = null;
     } 
+
+    // Función auxiliar para ejemplos de contradicciones físicas
+    function getPhysicalContradictionExample(relationship) {
+        const examples = {
+            separate: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
+            contiguous: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
+            intersect: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material."
+        };
+        return examples[relationship] || "Apply separation principles to resolve the contradiction.";
+    }
 </script>
 
 <script defer>
@@ -2096,90 +2297,6 @@
             }
         });
     });
-// =======================================================
-// 🔧 Renderizador de Soluciones Estándar TRIZ (Su-Field)
-// =======================================================
-function renderStandardSolutions(problemType) {
-    const resultsDiv = document.getElementById("results-container");
-    resultsDiv.classList.remove("hidden");
-    resultsDiv.innerHTML = ""; // Limpia resultados anteriores
-
-    const solutions = getRecommendedStandardSolutions(problemType);
-
-    if (!solutions.length) {
-        resultsDiv.innerHTML = `<p>No standard solutions found for problem type: <strong>${problemType}</strong>.</p>`;
-        return;
-    }
-
-    const header = document.createElement("h3");
-    header.innerHTML = `<i class="fas fa-lightbulb"></i> Standard TRIZ Solutions for <strong>${problemType}</strong> Problems`;
-    resultsDiv.appendChild(header);
-
-    solutions.forEach(sol => {
-        const card = document.createElement("div");
-        card.classList.add("standard-solution-visual");
-
-        // Ícono asociado a la solución, si existe
-        const icon = standardSolutionIcons[sol.id] || "fa-cogs";
-
-        card.innerHTML = `
-            <div class="solution-header">
-                <div class="standard-solution-icon">
-                    <i class="fas ${icon}"></i>
-                </div>
-                <div>
-                    <h4 class="solution-title">Solution ${sol.id}: ${sol.title}</h4>
-                    <p class="solution-class"><em>${sol.class}</em></p>
-                </div>
-            </div>
-            <div class="solution-description">
-                <p>${sol.description}</p>
-            </div>
-        `;
-
-        // === Principios TRIZ asociados ===
-        if (sol.principles && sol.principles.length > 0) {
-            const principlesSection = document.createElement("div");
-            principlesSection.classList.add("principle-list");
-            principlesSection.innerHTML = `<h5><i class="fas fa-cubes"></i> Related Inventive Principles</h5>`;
-
-            sol.principles.forEach(num => {
-                const p = principles[num];
-                if (!p) return;
-                const principleCard = document.createElement("div");
-                principleCard.classList.add("solution-card");
-
-                principleCard.innerHTML = `
-                    <div class="solution-header">
-                        <div class="principle-icon">
-                            <i class="fas ${p.icon}"></i>
-                        </div>
-                        <strong>Principle ${num}: ${p.name}</strong>
-                    </div>
-                    <p>${p.desc}</p>
-                    <div class="principle-example"><em>Example:</em> ${p.example}</div>
-                `;
-
-                principlesSection.appendChild(principleCard);
-            });
-
-            card.appendChild(principlesSection);
-        }
-
-        resultsDiv.appendChild(card);
-    });
-
-    // Botón para exportar resultados
-    const actions = document.createElement("div");
-    actions.classList.add("results-actions");
-    actions.innerHTML = `
-        <button class="btn-success" onclick="exportToExcel()">
-            <i class="fas fa-file-excel"></i> Export Results to Excel
-        </button>
-    `;
-    resultsDiv.appendChild(actions);
-}
-
 </script>
 </body>
 </html>
