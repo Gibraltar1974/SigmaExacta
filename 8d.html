@@ -245,23 +245,39 @@
     body {
       background-color: #f5f7fa;
       font-family: 'Nunito', sans-serif;
+      /* === MODIFICACIÓN: Asegurar que el body ocupe todo el ancho de la pantalla === */
+      width: 100%;
+      overflow-x: hidden;
     }
 
+    /* === MODIFICACIÓN: Contenedor principal ahora ocupa todo el ancho === */
     .main-content-wrapper {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 1.25rem;
-        box-sizing: border-box; /* Ensures padding doesn't cause overflow */
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
         /* MODIFICACIÓN 2: Añadir margen superior para que el contenido no quede oculto detrás del header fijo. */
         /* La altura del header es aprox. 60px (40px del logo + 10px de padding superior + 10px de padding inferior) */
         margin-top: 60px;
     }
     
+    /* === MODIFICACIÓN: Contenedor para centrar contenido en pantallas grandes === */
+    .content-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      box-sizing: border-box;
+    }
+    
     .header {
       margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
+      padding: 1.25rem;
       border-bottom: 1px solid #ddd;
       text-align: center;
+      /* === MODIFICACIÓN: Fondo para el header === */
+      background-color: white;
     }
         
     .header h1 {
@@ -286,6 +302,10 @@
       margin-bottom: 1.5rem;
       background-color: white;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      /* === MODIFICACIÓN: Asegurar que los bloques se adapten al ancho === */
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     
     .calculation-block h2 {
@@ -370,6 +390,7 @@
       border: 1px solid #ddd;
       width: 100%;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
     }
     
     #results p { margin-bottom: 0.75rem; color: var(--primary-color); word-wrap: break-word; }
@@ -378,12 +399,45 @@
     .discipline-title { font-weight: 800; color: var(--primary-color); margin-bottom: 0.6rem; display: flex; align-items: center; }
     .discipline-title i { margin-right: 0.6rem; color: var(--secondary-color); }
     
-    footer { padding: 2rem 1.25rem; text-align: center; }
-    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+    /* === MODIFICACIÓN: Footer adaptado al ancho de pantalla === */
+    footer { 
+      padding: 2rem 1.25rem; 
+      text-align: center; 
+      /* Asegurar que el footer ocupe todo el ancho */
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .disclaimer-note { 
+      margin-top: 2rem; 
+      padding: 0 1rem; 
+      font-size: 0.8rem; 
+      color: #777; 
+      max-width: 100%; 
+      margin-left: auto; 
+      margin-right: auto; 
+      box-sizing: border-box;
+    }
 
+    /* === MODIFICACIÓN: Ajustes para dispositivos móviles === */
     @media (max-width: 768px) {
-      .top-button-group, .results-actions-group { flex-direction: column; align-items: stretch; }
-      .top-button-group button, .results-actions-group button { width: 100%; margin: 0.25rem 0; }
+      .header {
+        padding: 1rem;
+      }
+      
+      .calculation-block {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .top-button-group, .results-actions-group { 
+        flex-direction: column; 
+        align-items: stretch; 
+      }
+      
+      .top-button-group button, .results-actions-group button { 
+        width: 100%; 
+        margin: 0.25rem 0; 
+      }
     }
   </style>
 </head>
@@ -451,208 +505,214 @@
     </nav>
 </header>
 
+<!-- === MODIFICACIÓN: Contenedor principal para el contenido del cuerpo === -->
 <main class="main-content-wrapper">
-  <header class="header">
-    <h1>
-      <div style="
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        background-color: #f5a623;
-        color: white;
-        font-size: 1.5rem;
-        margin-right: 0.5rem;
-        vertical-align: middle;
-      ">
-        <i class="fas fa-clipboard-list"></i>
-      </div> 
-      Free Online 8D Problem Solving Tool
-    </h1>
-    <p class="header-subtitle">A structured methodology for Problem Solving Analysis in 8 Disciplines.</p>
-  </header>
+  <div class="content-container">
+    <header class="header">
+      <h1>
+        <div style="
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background-color: #f5a623;
+          color: white;
+          font-size: 1.5rem;
+          margin-right: 0.5rem;
+          vertical-align: middle;
+        ">
+          <i class="fas fa-clipboard-list"></i>
+        </div> 
+        Free Online 8D Problem Solving Tool
+      </h1>
+      <p class="header-subtitle">A structured methodology for Problem Solving Analysis in 8 Disciplines.</p>
+    </header>
 
-  <div class="calculation-block">
-    <h2><i class="fas fa-question-circle"></i> What is the 8D Methodology?</h2>
-    <p>The <strong>8D (Eight Disciplines) methodology</strong> is a structured, team-based approach to problem-solving, designed to identify, correct, and eliminate the recurrence of complex problems. Originally used in the manufacturing industry, its effectiveness has extended it to a wide variety of sectors.</p>
-    <p>The process guides teams through eight key steps, ensuring that the root cause of the problem is addressed rather than just treating the symptoms. The disciplines are:</p>
-    <ul>
-        <li><strong>D0:</strong> Plan and Prepare.</li>
-        <li><strong>D1:</strong> Form a Team.</li>
-        <li><strong>D2:</strong> Describe the Problem.</li>
-        <li><strong>D3:</strong> Implement Containment Actions.</li>
-        <li><strong>D4:</strong> Identify and Verify the Root Cause.</li>
-        <li><strong>D5:</strong> Develop Permanent Corrective Actions.</li>
-        <li><strong>D6:</strong> Implement and Validate Corrective Actions.</li>
-        <li><strong>D7:</strong> Prevent Recurrence.</li>
-        <li><strong>D8:</strong> Recognize the Team.</li>
-    </ul>
-  </div>
-
-  <div class="calculation-block">
-      <h2><i class="fas fa-history"></i> Brief History of 8D</h2>
-      <p>The 8D methodology was developed by <strong>Ford Motor Company</strong> during the 1980s. Initially, it was known as "Team Oriented Problem Solving" (TOPS) and was officially documented in their 1987 manual of the same name. The U.S. government was one of the first to adopt it, referring to it as a military standard.</p>
-      <p>The purpose was to create a standardized method for analyzing and resolving quality and production issues. Ford found that a cross-functional team approach, following a disciplined process, was far more effective at finding robust and permanent solutions than individual efforts. The method's success at Ford led to its widespread adoption in the automotive industry and, subsequently, in the electronics, healthcare, and general manufacturing sectors, becoming a pillar of modern quality management.</p>
-  </div>
-
-  <div class="calculation-block">
-      <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-      <ol>
-          <li><strong>Complete Team Information (D0):</strong> Enter the team leader's name, members, and date to document who is in charge of the analysis.</li>
-          <li><strong>Describe the Problem (D1):</strong> Be specific about what the problem is, where and when it occurs, and its magnitude. The more information, the better.</li>
-          <li><strong>Detail Containment Actions (D2):</strong> Document the immediate measures taken to protect the customer and isolate the problem while the root cause is being investigated.</li>
-          <li><strong>Analyze the Root Cause (D3):</strong> List potential causes and describe how they were verified to confirm the definitive root cause(s).</li>
-          <li><strong>Define Corrective Actions (D4):</strong> Propose solutions that will directly address the root cause.</li>
-          <li><strong>Verify Effectiveness (D5):</strong> Enter the data and date that demonstrate the corrective actions have solved the problem.</li>
-          <li><strong>Establish Preventive Actions (D6):</strong> Define what will be done to prevent this or similar problems from recurring in the future.</li>
-          <li><strong>Recognize the Team (D7):</strong> Document how the team's effort was recognized and the lessons learned to share the knowledge.</li>
-          <li><strong>Generate and Export the Report:</strong> Click "Generate Report Summary" to see a summary. You can then print it or export a complete, detailed report to Excel for your documentation.</li>
-      </ol>
-  </div>
-
-
-  <div class="calculation-block">
-    <div class="calculation-title">8D Problem Solving Form</div>
-    
-    <div class="top-button-group">
-      <button type="button" id="loadExampleBtn" class="btn-example"><i class="fas fa-lightbulb"></i> Load Example</button>
-      <button type="button" id="resetBtn" class="btn-reset"><i class="fas fa-undo"></i> Reset Form</button>
+    <div class="calculation-block">
+      <h2><i class="fas fa-question-circle"></i> What is the 8D Methodology?</h2>
+      <p>The <strong>8D (Eight Disciplines) methodology</strong> is a structured, team-based approach to problem-solving, designed to identify, correct, and eliminate the recurrence of complex problems. Originally used in the manufacturing industry, its effectiveness has extended it to a wide variety of sectors.</p>
+      <p>The process guides teams through eight key steps, ensuring that the root cause of the problem is addressed rather than just treating the symptoms. The disciplines are:</p>
+      <ul>
+          <li><strong>D0:</strong> Plan and Prepare.</li>
+          <li><strong>D1:</strong> Form a Team.</li>
+          <li><strong>D2:</strong> Describe the Problem.</li>
+          <li><strong>D3:</strong> Implement Containment Actions.</li>
+          <li><strong>D4:</strong> Identify and Verify the Root Cause.</li>
+          <li><strong>D5:</strong> Develop Permanent Corrective Actions.</li>
+          <li><strong>D6:</strong> Implement and Validate Corrective Actions.</li>
+          <li><strong>D7:</strong> Prevent Recurrence.</li>
+          <li><strong>D8:</strong> Recognize the Team.</li>
+      </ul>
     </div>
 
-    <form id="eightDForm" onsubmit="event.preventDefault();">
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-users"></i> D0: Team Information</div>
-        <label for="teamLeader"><i class="fas fa-user-tie"></i> Team Leader:</label>
-        <input type="text" id="teamLeader" required />
-        
-        <label for="teamMembers"><i class="fas fa-users"></i> Team Members (comma separated):</label>
-        <input type="text" id="teamMembers" required />
-        
-        <label for="date"><i class="fas fa-calendar-alt"></i> Date:</label>
-        <input type="text" id="date" required />
+    <div class="calculation-block">
+        <h2><i class="fas fa-history"></i> Brief History of 8D</h2>
+        <p>The 8D methodology was developed by <strong>Ford Motor Company</strong> during the 1980s. Initially, it was known as "Team Oriented Problem Solving" (TOPS) and was officially documented in their 1987 manual of the same name. The U.S. government was one of the first to adopt it, referring to it as a military standard.</p>
+        <p>The purpose was to create a standardized method for analyzing and resolving quality and production issues. Ford found that a cross-functional team approach, following a disciplined process, was far more effective at finding robust and permanent solutions than individual efforts. The method's success at Ford led to its widespread adoption in the automotive industry and, subsequently, in the electronics, healthcare, and general manufacturing sectors, becoming a pillar of modern quality management.</p>
+    </div>
+
+    <div class="calculation-block">
+        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+        <ol>
+            <li><strong>Complete Team Information (D0):</strong> Enter the team leader's name, members, and date to document who is in charge of the analysis.</li>
+            <li><strong>Describe the Problem (D1):</strong> Be specific about what the problem is, where and when it occurs, and its magnitude. The more information, the better.</li>
+            <li><strong>Detail Containment Actions (D2):</strong> Document the immediate measures taken to protect the customer and isolate the problem while the root cause is being investigated.</li>
+            <li><strong>Analyze the Root Cause (D3):</strong> List potential causes and describe how they were verified to confirm the definitive root cause(s).</li>
+            <li><strong>Define Corrective Actions (D4):</strong> Propose solutions that will directly address the root cause.</li>
+            <li><strong>Verify Effectiveness (D5):</strong> Enter the data and date that demonstrate the corrective actions have solved the problem.</li>
+            <li><strong>Establish Preventive Actions (D6):</strong> Define what will be done to prevent this or similar problems from recurring in the future.</li>
+            <li><strong>Recognize the Team (D7):</strong> Document how the team's effort was recognized and the lessons learned to share the knowledge.</li>
+            <li><strong>Generate and Export the Report:</strong> Click "Generate Report Summary" to see a summary. You can then print it or export a complete, detailed report to Excel for your documentation.</li>
+        </ol>
+    </div>
+
+
+    <div class="calculation-block">
+      <div class="calculation-title">8D Problem Solving Form</div>
+      
+      <div class="top-button-group">
+        <button type="button" id="loadExampleBtn" class="btn-example"><i class="fas fa-lightbulb"></i> Load Example</button>
+        <button type="button" id="resetBtn" class="btn-reset"><i class="fas fa-undo"></i> Reset Form</button>
       </div>
 
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D1: Problem Description</div>
-        <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement:</label>
-        <textarea id="problemStatement" required rows="1"></textarea>
-        
-        <label for="issueDescription"><i class="fas fa-bullseye"></i> What is the issue?</label>
-        <textarea id="issueDescription" required rows="1"></textarea>
-        
-        <label for="location"><i class="fas fa-map-marker-alt"></i> Where does it occur?</label>
-        <textarea id="location" required rows="1"></textarea>
-        
-        <label for="timing"><i class="fas fa-clock"></i> When was it first noticed?</label>
-        <textarea id="timing" required rows="1"></textarea>
-        
-        <label for="magnitude"><i class="fas fa-ruler-combined"></i> How big is the problem? (Quantity, % affected, etc.)</label>
-        <textarea id="magnitude" required rows="1"></textarea>
+      <form id="eightDForm" onsubmit="event.preventDefault();">
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-users"></i> D0: Team Information</div>
+          <label for="teamLeader"><i class="fas fa-user-tie"></i> Team Leader:</label>
+          <input type="text" id="teamLeader" required />
+          
+          <label for="teamMembers"><i class="fas fa-users"></i> Team Members (comma separated):</label>
+          <input type="text" id="teamMembers" required />
+          
+          <label for="date"><i class="fas fa-calendar-alt"></i> Date:</label>
+          <input type="text" id="date" required />
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D1: Problem Description</div>
+          <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement:</label>
+          <textarea id="problemStatement" required rows="1"></textarea>
+          
+          <label for="issueDescription"><i class="fas fa-bullseye"></i> What is the issue?</label>
+          <textarea id="issueDescription" required rows="1"></textarea>
+          
+          <label for="location"><i class="fas fa-map-marker-alt"></i> Where does it occur?</label>
+          <textarea id="location" required rows="1"></textarea>
+          
+          <label for="timing"><i class="fas fa-clock"></i> When was it first noticed?</label>
+          <textarea id="timing" required rows="1"></textarea>
+          
+          <label for="magnitude"><i class="fas fa-ruler-combined"></i> How big is the problem? (Quantity, % affected, etc.)</label>
+          <textarea id="magnitude" required rows="1"></textarea>
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-shield-alt"></i> D2: Containment Actions</div>
+          <label for="containmentActions"><i class="fas fa-ban"></i> Immediate containment actions:</label>
+          <textarea id="containmentActions" required rows="1"></textarea>
+          
+          <label for="containmentDate"><i class="fas fa-calendar-check"></i> Implementation date:</label>
+          <input type="text" id="containmentDate" required />
+          
+          <label for="containmentResponsible"><i class="fas fa-user-check"></i> Responsible person:</label>
+          <input type="text" id="containmentResponsible" required />
+          
+          <label for="containmentVerification"><i class="fas fa-check-circle"></i> Effectiveness verification:</label>
+          <textarea id="containmentVerification" required rows="1"></textarea>
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-search"></i> D3: Root Cause Analysis</div>
+          <label for="potentialCauses"><i class="fas fa-project-diagram"></i> Potential causes (use 5 Whys, Fishbone, etc.):</label>
+          <textarea id="potentialCauses" required rows="1"></textarea>
+          
+          <label for="rootCauseVerification"><i class="fas fa-flask"></i> Root cause verification (tests, data analysis):</label>
+          <textarea id="rootCauseVerification" required rows="1"></textarea>
+          
+          <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s):</label>
+          <textarea id="rootCause" required rows="1"></textarea>
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-wrench"></i> D4: Corrective Actions</div>
+          <label for="correctiveActions"><i class="fas fa-lightbulb"></i> Proposed corrective actions:</label>
+          <textarea id="correctiveActions" required rows="1"></textarea>
+          
+          <label for="correctiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
+          <input type="text" id="correctiveResponsible" required />
+          
+          <label for="correctiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
+          <input type="text" id="correctiveDeadline" required />
+          
+          <label for="correctiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
+          <textarea id="correctiveVerification" required rows="1"></textarea>
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-check-circle"></i> D5: Effectiveness Verification</div>
+          <label for="effectivenessData"><i class="fas fa-chart-line"></i> Data showing effectiveness:</label>
+          <textarea id="effectivenessData" required rows="1"></textarea>
+          
+          <label for="verificationDate"><i class="fas fa-calendar-times"></i> Date verified:</label>
+          <input type="text" id="verificationDate" required />
+          
+          <label for="verifiedBy"><i class="fas fa-user-check"></i> Verified by:</label>
+          <input type="text" id="verifiedBy" required />
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-cogs"></i> D6: Preventive Actions</div>
+          <label for="preventiveActions"><i class="fas fa-shield-virus"></i> Actions to prevent recurrence:</label>
+          <textarea id="preventiveActions" required rows="1"></textarea>
+          
+          <label for="preventiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
+          <input type="text" id="preventiveResponsible" required />
+          
+          <label for="preventiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
+          <input type="text" id="preventiveDeadline" required />
+          
+          <label for="preventiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
+          <textarea id="preventiveVerification" required rows="1"></textarea>
+        </div>
+
+        <div class="discipline-section">
+          <div class="discipline-title"><i class="fas fa-trophy"></i> D7: Congratulate the Team</div>
+          <label for="teamRecognition"><i class="fas fa-award"></i> Team recognition:</label>
+          <textarea id="teamRecognition" required rows="1"></textarea>
+          
+          <label for="lessonsLearned"><i class="fas fa-lightbulb"></i> Lessons learned:</label>
+          <textarea id="lessonsLearned" required rows="1"></textarea>
+          
+          <label for="knowledgeSharing"><i class="fas fa-share-alt"></i> Knowledge sharing plan:</label>
+          <textarea id="knowledgeSharing" required rows="1"></textarea>
+        </div>
+
+        <button type="button" id="generateReportBtn" style="background-color: var(--primary-color); width: 100%; padding: 12px; font-size: 1rem;"><i class="fas fa-cogs"></i> Generate Report Summary</button>
+
+      </form>
+    </div>
+
+    <div class="calculation-block" id="results" style="display:none;">
+      <div class="calculation-title">8D Report Summary</div>
+      <div id="reportSummary"></div>
+      
+      <div class="results-actions-group">
+          <button type="button" id="exportBtn" class="btn-export"><i class="fas fa-file-excel"></i> Export Full Report to Excel</button>
+          <button type="button" id="printBtn"><i class="fas fa-print"></i> Print Summary</button>
       </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-shield-alt"></i> D2: Containment Actions</div>
-        <label for="containmentActions"><i class="fas fa-ban"></i> Immediate containment actions:</label>
-        <textarea id="containmentActions" required rows="1"></textarea>
-        
-        <label for="containmentDate"><i class="fas fa-calendar-check"></i> Implementation date:</label>
-        <input type="text" id="containmentDate" required />
-        
-        <label for="containmentResponsible"><i class="fas fa-user-check"></i> Responsible person:</label>
-        <input type="text" id="containmentResponsible" required />
-        
-        <label for="containmentVerification"><i class="fas fa-check-circle"></i> Effectiveness verification:</label>
-        <textarea id="containmentVerification" required rows="1"></textarea>
-      </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-search"></i> D3: Root Cause Analysis</div>
-        <label for="potentialCauses"><i class="fas fa-project-diagram"></i> Potential causes (use 5 Whys, Fishbone, etc.):</label>
-        <textarea id="potentialCauses" required rows="1"></textarea>
-        
-        <label for="rootCauseVerification"><i class="fas fa-flask"></i> Root cause verification (tests, data analysis):</label>
-        <textarea id="rootCauseVerification" required rows="1"></textarea>
-        
-        <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s):</label>
-        <textarea id="rootCause" required rows="1"></textarea>
-      </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-wrench"></i> D4: Corrective Actions</div>
-        <label for="correctiveActions"><i class="fas fa-lightbulb"></i> Proposed corrective actions:</label>
-        <textarea id="correctiveActions" required rows="1"></textarea>
-        
-        <label for="correctiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
-        <input type="text" id="correctiveResponsible" required />
-        
-        <label for="correctiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
-        <input type="text" id="correctiveDeadline" required />
-        
-        <label for="correctiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
-        <textarea id="correctiveVerification" required rows="1"></textarea>
-      </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-check-circle"></i> D5: Effectiveness Verification</div>
-        <label for="effectivenessData"><i class="fas fa-chart-line"></i> Data showing effectiveness:</label>
-        <textarea id="effectivenessData" required rows="1"></textarea>
-        
-        <label for="verificationDate"><i class="fas fa-calendar-times"></i> Date verified:</label>
-        <input type="text" id="verificationDate" required />
-        
-        <label for="verifiedBy"><i class="fas fa-user-check"></i> Verified by:</label>
-        <input type="text" id="verifiedBy" required />
-      </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-cogs"></i> D6: Preventive Actions</div>
-        <label for="preventiveActions"><i class="fas fa-shield-virus"></i> Actions to prevent recurrence:</label>
-        <textarea id="preventiveActions" required rows="1"></textarea>
-        
-        <label for="preventiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
-        <input type="text" id="preventiveResponsible" required />
-        
-        <label for="preventiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
-        <input type="text" id="preventiveDeadline" required />
-        
-        <label for="preventiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
-        <textarea id="preventiveVerification" required rows="1"></textarea>
-      </div>
-
-      <div class="discipline-section">
-        <div class="discipline-title"><i class="fas fa-trophy"></i> D7: Congratulate the Team</div>
-        <label for="teamRecognition"><i class="fas fa-award"></i> Team recognition:</label>
-        <textarea id="teamRecognition" required rows="1"></textarea>
-        
-        <label for="lessonsLearned"><i class="fas fa-lightbulb"></i> Lessons learned:</label>
-        <textarea id="lessonsLearned" required rows="1"></textarea>
-        
-        <label for="knowledgeSharing"><i class="fas fa-share-alt"></i> Knowledge sharing plan:</label>
-        <textarea id="knowledgeSharing" required rows="1"></textarea>
-      </div>
-
-      <button type="button" id="generateReportBtn" style="background-color: var(--primary-color); width: 100%; padding: 12px; font-size: 1rem;"><i class="fas fa-cogs"></i> Generate Report Summary</button>
-
-    </form>
-  </div>
-
-  <div class="calculation-block" id="results" style="display:none;">
-    <div class="calculation-title">8D Report Summary</div>
-    <div id="reportSummary"></div>
-    
-    <div class="results-actions-group">
-        <button type="button" id="exportBtn" class="btn-export"><i class="fas fa-file-excel"></i> Export Full Report to Excel</button>
-        <button type="button" id="printBtn"><i class="fas fa-print"></i> Print Summary</button>
     </div>
   </div>
 </main>
 
+<!-- === MODIFICACIÓN: Footer adaptado al ancho de pantalla === -->
 <footer>
+  <div class="content-container">
     <div class="disclaimer-note">
         <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. Some tools, like this one, are based on established methodologies (e.g., the 8D methodology as developed by Ford Motor Company), which may be the intellectual property of their respective owners. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based on the output of these tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
     </div>
+  </div>
 </footer>
 
 <script>
