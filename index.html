@@ -85,29 +85,64 @@
             line-height: 1.6;
         }
 
-        /* --- INICIO DE CAMBIOS PARA ANCHO COMPLETO (BORDE A BORDE) --- */
+        /* --- HEADER Y TEXTO DE BIENVENIDA --- */
         .header {
             width: 100%;
             margin: 40px auto 0;
-            padding: 0; /* Eliminado el padding lateral */
+            padding: 0;
             text-align: center;
             border-bottom: none !important; 
         }
         
-        .header h1, .header h2 {
-            /* Eliminado el padding de los headings para que el texto toque el borde */
-            color: #333;
-            padding: 0; 
-        }
-        
         .header h1 {
+            color: #333;
+            padding: 0;
             margin-bottom: 5px; 
         }
         
         .header h2 {
-            margin-bottom: 0; 
+            color: #333;
+            padding: 0;
+            margin: 0 auto;
+            width: 100%;
+            max-width: none;
+            text-align: center;
+            line-height: 1.8;
         }
-        /* --- FIN DE CAMBIOS PARA ANCHO COMPLETO (BORDE A BORDE) --- */
+        
+        /* SOLUCIÓN DEFINITIVA - FORZAR ANCHO COMPLETO */
+        @media (min-width: 993px) {
+         .header h2.tagline {
+    color: #333;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    text-align: center;
+    line-height: 1.8;
+    /* NUEVAS PROPIEDADES AGREGADAS */
+    box-sizing: border-box;
+    padding: 0 20px;
+}
+
+/* ELIMINAR la solución anterior que usaba vw */
+@media (min-width: 993px) {
+    .header h2.tagline {
+        width: 100%;
+        position: static;
+        left: auto;
+        right: auto;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0 20px;
+    }
+}
+        
+        .header, .intro-section, .bio-section {
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+        /* --- FIN DE MODIFICACIÓN --- */
         
         .excel-icon-color {
             color: #21a366; 
@@ -118,7 +153,6 @@
         .bio-section {
             width: 100%;
             margin: 0 auto 40px auto; 
-            padding: 0 15px; /* Mantiene un padding pequeño para el body/footer para legibilidad de bloques largos */
             line-height: 1.8; 
             font-size: 1.1rem;
             color: #333;
@@ -248,16 +282,6 @@
             }
             .tool-item {
                 max-width: 100px;
-            }
-            
-            /* Eliminamos el padding de móvil también para los títulos */
-            .header {
-                padding-left: 0;
-                padding-right: 0;
-            }
-            .header h1, .header h2 {
-                padding-left: 0;
-                padding-right: 0;
             }
         }
     </style>
