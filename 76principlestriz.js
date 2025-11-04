@@ -411,27 +411,18 @@ const trizStandardSolutions = {
 // ==========================================================
 // 🔧 Versión extendida: cubre los 6 tipos de problemas Su-Field
 // ==========================================================
+
+// Hacer el solutionMap disponible globalmente
+const solutionMap = {
+    insufficient: ["1.1.1", "1.1.2", "1.1.6", "2.2.1", "2.2.3"],
+    excessive: ["1.1.4", "2.1.4", "2.3.1", "5.1.4"],
+    harmful: ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5"],
+    difficult: ["4.1.1", "4.1.2", "4.2.4", "4.3.1", "4.3.4", "4.3.6"],
+    missing: ["1.1.1", "1.1.2", "1.1.3", "2.1.1", "2.2.1", "2.2.5"],
+    inefficient: ["2.2.1", "2.3.1", "2.3.2", "5.4.1", "5.5.1"]
+};
+
 function getRecommendedStandardSolutions(problemType) {
-    const solutionMap = {
-        // Acción insuficiente: el campo o sustancia no actúa con suficiente fuerza
-        "insufficient": ["1.1.1", "1.1.2", "1.1.6", "2.2.1", "2.2.3"],
-
-        // Acción excesiva: la interacción es demasiado intensa
-        "excessive": ["1.1.4", "2.1.4", "2.3.1", "5.1.4"],
-
-        // Acción dañina: el campo o sustancia provoca efectos negativos
-        "harmful": ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5"],
-
-        // Interacción difícil de medir o controlar
-        "difficult": ["4.1.1", "4.1.2", "4.2.4", "4.3.1", "4.3.4", "4.3.6"],
-
-        // Acción ausente o inexistente: no hay campo ni interacción útil
-        "missing": ["1.1.1", "1.1.2", "1.1.3", "2.1.1", "2.2.1", "2.2.5"],
-
-        // Acción ineficiente: el sistema existe pero no optimiza su efecto
-        "inefficient": ["2.2.1", "2.3.1", "2.3.2", "5.4.1", "5.5.1"]
-    };
-
     const recommendedIds = solutionMap[problemType] || [];
     const recommendedSolutions = [];
 
