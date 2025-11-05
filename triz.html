@@ -772,12 +772,57 @@
                     <input type="text" id="conflicting-parameter" placeholder="e.g., Temperature, Size, Visibility">
                 </div>
                 
-                <div class="form-group">
-                    <label>Operational Zones/Time Relationship (Based on Litvin's Method):</label>
-                    <div class="radio-group">
-                        <label><input type="radio" name="oz-relationship" value="separate" onchange="updatePhysicalStrategy()"> OZ/OT do NOT intersect</label>
-                        <label><input type="radio" name="oz-relationship" value="contiguous" onchange="updatePhysicalStrategy()"> OZ/OT are CONTIGUOUS</label>
-                        <label><input type="radio" name="oz-relationship" value="intersect" onchange="updatePhysicalStrategy()"> OZ/OT INTERSECT</label>
+                <!-- Paso 1: Definir OZ/OT -->
+                <div class="solver-step" id="physical-step-1">
+                    <h4><i class="fas fa-cogs"></i> Step 1: Analyze Functions & Define OZ/OT</h4>
+                    <div class="form-group">
+                        <label>Define Operational Zones/Times (OZ/OT):</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="oz-definition" value="spatial" onchange="updatePhysicalStrategy()"> Spatial Zones (different locations)</label>
+                            <label><input type="radio" name="oz-definition" value="temporal" onchange="updatePhysicalStrategy()"> Temporal Zones (different times)</label>
+                            <label><input type="radio" name="oz-definition" value="conditional" onchange="updatePhysicalStrategy()"> Conditional Zones (different conditions)</label>
+                            <label><input type="radio" name="oz-definition" value="system" onchange="updatePhysicalStrategy()"> System Levels (different system hierarchies)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 2: Determinar interacción OZ/OT -->
+                <div class="solver-step hidden" id="physical-step-2">
+                    <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Interaction</h4>
+                    <div class="form-group">
+                        <label>Do the Operational Zones/Times intersect?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="oz-intersection" value="intersect" onchange="updatePhysicalStrategy()"> Yes, OZ/OT INTERSECT (Use Satisfy strategy)</label>
+                            <label><input type="radio" name="oz-intersection" value="no-intersect" onchange="updatePhysicalStrategy()"> No, OZ/OT do NOT intersect (Use Bypass strategy)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 3: Elegir método de separación -->
+                <div class="solver-step hidden" id="physical-step-3">
+                    <h4><i class="fas fa-object-group"></i> Step 3: Choose Separation Method</h4>
+                    <div class="form-group">
+                        <label>Select separation method:</label>
+                        <div class="radio-group" id="separation-methods">
+                            <!-- Las opciones se generan dinámicamente según la estrategia -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botón para mostrar tabla de principios - SIEMPRE VISIBLE -->
+                <div class="form-group" id="principles-toggle-container" style="display: none;">
+                    <button type="button" class="btn-success" onclick="togglePrinciplesTable()">
+                        <i class="fas fa-table"></i> Show/Hide Complete Physical Contradiction Principles Table
+                    </button>
+                </div>
+                
+                <!-- Tabla de principios (oculta inicialmente) -->
+                <div class="hidden" id="principles-table-container">
+                    <div class="content-block">
+                        <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles Reference</h4>
+                        <div id="principles-table-content">
+                            <!-- La tabla se genera dinámicamente -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -806,7 +851,7 @@
 
 <script src="trizcontradiction.js"></script>
 <script src="trizcontradiction2003.js"></script>
-<script src="physicalContradictionPrinciples.js"></script>
+<script src="physicalContradictionPrinciples1993.js"></script> <!-- CAMBIADO litvin 1993-->
 <script src="76principlestriz.js"></script>
 <script>
     // ===== GESTIÓN DE VERSIONES DE MATRIZ TRIZ =====
@@ -1389,6 +1434,15 @@
     let improvingFeatureIndex = null;
     let worseningFeatureIndex = null;
     
+    // Variables para el flujo de contradicciones físicas
+    let physicalStrategyFlow = {
+        step1: false,
+        step2: false,
+        step3: false,
+        selectedStrategy: null,
+        selectedMethod: null
+    };
+    
     // MODIFICACIÓN: Función centralizada para limpiar resultados
     function clearResults() {
         const resultsDiv = document.getElementById('results-container');
@@ -1417,7 +1471,9 @@
             ifr: "The lenses block UV rays when needed and are clear when not.", 
             contradictionType: "physical", 
             conflictingParameter: "Lens Transparency",
-            ozRelationship: "separate",
+            ozDefinition: "conditional",
+            ozIntersection: "intersect",
+            separationMethod: "separationInRelation",
             sufield: { systems: [{object: "User's eyes", tool: "Dark lens", field: "Optical", type: "harmful"}] } 
         },
         { 
@@ -1437,7 +1493,9 @@
             ifr: "The package protects the contents and opens easily.", 
             contradictionType: "physical", 
             conflictingParameter: "Strength/Toughness",
-            ozRelationship: "contiguous",
+            ozDefinition: "temporal",
+            ozIntersection: "no-intersect",
+            separationMethod: "bypassContradictoryDemands",
             sufield: { systems: [{object: "Electronic device", tool: "Packaging material", field: "Mechanical", type: "excessive"}] } 
         },
         { 
@@ -1497,6 +1555,22 @@
         document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
         changeMatrixVersion();
         
+        // Reset physical strategy flow
+        physicalStrategyFlow = {
+            step1: false,
+            step2: false,
+            step3: false,
+            selectedStrategy: null,
+            selectedMethod: null
+        };
+        
+        // Reset physical steps UI
+        document.getElementById('physical-step-2').classList.add('hidden');
+        document.getElementById('physical-step-3').classList.add('hidden');
+        document.getElementById('principles-toggle-container').style.display = 'none';
+        document.getElementById('principles-table-container').classList.add('hidden');
+        document.getElementById('separation-methods').innerHTML = '';
+        
         clearResults(); // MODIFICACIÓN: Usar la función centralizada
         
         // Reset matrix selection
@@ -1540,12 +1614,28 @@
         } else {
             document.getElementById('conflicting-parameter').value = currentExample.conflictingParameter;
             
-            // Set operational zones relationship if available
-            if (currentExample.ozRelationship) {
-                const ozRadio = document.querySelector(`input[name="oz-relationship"][value="${currentExample.ozRelationship}"]`);
-                if (ozRadio) {
-                    ozRadio.checked = true;
-                    // No disparamos 'change' aquí para evitar limpieza innecesaria
+            // Set physical contradiction steps if available
+            if (currentExample.ozDefinition) {
+                const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.ozDefinition}"]`);
+                if (ozDefinitionRadio) {
+                    ozDefinitionRadio.checked = true;
+                    updatePhysicalStrategy();
+                }
+            }
+            
+            if (currentExample.ozIntersection) {
+                const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.ozIntersection}"]`);
+                if (ozIntersectionRadio) {
+                    ozIntersectionRadio.checked = true;
+                    updatePhysicalStrategy();
+                }
+            }
+            
+            if (currentExample.separationMethod) {
+                const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.separationMethod}"]`);
+                if (separationMethodRadio) {
+                    separationMethodRadio.checked = true;
+                    updatePhysicalStrategy();
                 }
             }
         }
@@ -1723,13 +1813,190 @@
         const type = document.querySelector('input[name="contradiction-type"]:checked')?.value;
         document.getElementById('technical-solver-block').classList.toggle('hidden', type !== 'technical');
         document.getElementById('physical-solver-block').classList.toggle('hidden', type !== 'physical');
+        
+        // CORRECCIÓN: Mostrar/ocultar el botón de la tabla de principios según el tipo
+        document.getElementById('principles-toggle-container').style.display = type === 'physical' ? 'block' : 'none';
+        
+        // Reset physical strategy flow when switching to physical
+        if (type === 'physical') {
+            physicalStrategyFlow = {
+                step1: false,
+                step2: false,
+                step3: false,
+                selectedStrategy: null,
+                selectedMethod: null
+            };
+            
+            // Reset physical steps UI
+            document.getElementById('physical-step-2').classList.add('hidden');
+            document.getElementById('physical-step-3').classList.add('hidden');
+            document.getElementById('principles-table-container').classList.add('hidden');
+            document.getElementById('separation-methods').innerHTML = '';
+            
+            // Reset all radio buttons in physical section
+            const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
+            physicalRadios.forEach(radio => {
+                radio.checked = false;
+            });
+        }
     }
     
-    // MODIFICACIÓN 2: Función simplificada para actualizar estrategias físicas
+    // CORRECCIÓN: Función mejorada para actualizar estrategias físicas
     function updatePhysicalStrategy() {
-        clearResults(); // MODIFICACIÓN: Limpiar al cambiar estrategia física
-        // MODIFICACIÓN 2: No mostrar nada en el paso 3, solo guardar la selección
-        // La estrategia y principios se mostrarán solo en los resultados
+        clearResults();
+        
+        // Paso 1: Verificar definición de OZ/OT
+        const ozDefinition = document.querySelector('input[name="oz-definition"]:checked');
+        if (ozDefinition) {
+            document.getElementById('physical-step-2').classList.remove('hidden');
+            physicalStrategyFlow.step1 = true;
+            
+            // Paso 2: Verificar intersección OZ/OT
+            const ozIntersection = document.querySelector('input[name="oz-intersection"]:checked');
+            if (ozIntersection) {
+                document.getElementById('physical-step-3').classList.remove('hidden');
+                physicalStrategyFlow.step2 = true;
+                
+                // Determinar estrategia general
+                if (ozIntersection.value === 'intersect') {
+                    physicalStrategyFlow.selectedStrategy = 'satisfy';
+                } else {
+                    physicalStrategyFlow.selectedStrategy = 'bypass';
+                }
+                
+                // Generar opciones de separación según la estrategia
+                generateSeparationMethods(physicalStrategyFlow.selectedStrategy);
+                
+                // Paso 3: Verificar método de separación seleccionado - CORREGIDO
+                // Usar un setTimeout para asegurar que los radio buttons se hayan renderizado
+                setTimeout(() => {
+                    const separationMethod = document.querySelector('input[name="separation-method"]:checked');
+                    if (separationMethod) {
+                        physicalStrategyFlow.step3 = true;
+                        physicalStrategyFlow.selectedMethod = separationMethod.value;
+                    } else {
+                        physicalStrategyFlow.step3 = false;
+                    }
+                }, 50);
+            } else {
+                document.getElementById('physical-step-3').classList.add('hidden');
+                physicalStrategyFlow.step2 = false;
+                physicalStrategyFlow.step3 = false;
+            }
+        } else {
+            document.getElementById('physical-step-2').classList.add('hidden');
+            document.getElementById('physical-step-3').classList.add('hidden');
+            physicalStrategyFlow.step1 = false;
+            physicalStrategyFlow.step2 = false;
+            physicalStrategyFlow.step3 = false;
+        }
+        
+        // CORRECCIÓN: El botón de la tabla de principios está SIEMPRE visible en contradicciones físicas
+        document.getElementById('principles-toggle-container').style.display = 'block';
+    }
+
+    // CORRECCIÓN: Generar métodos de separación según la estrategia
+    function generateSeparationMethods(strategy) {
+        const container = document.getElementById('separation-methods');
+        
+        // Limpiar contenedor
+        container.innerHTML = '';
+        
+        let methodsHTML = '';
+        
+        if (strategy === 'satisfy') {
+            // Estrategia Satisfy - Métodos de separación
+            methodsHTML = `
+                <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange()"> Separation in Space</label>
+                <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange()"> Separation in Time</label>
+                <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange()"> Separation in Relation</label>
+                <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange()"> Separation in System Level</label>
+                <label><input type="radio" name="separation-method" value="satisfyContradictoryDemands" onchange="handleSeparationMethodChange()"> Satisfy Contradictory Demands</label>
+            `;
+        } else {
+            // Estrategia Bypass
+            methodsHTML = `
+                <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange()"> Bypass Contradictory Demands</label>
+            `;
+        }
+        
+        container.innerHTML = methodsHTML;
+    }
+
+    // CORRECCIÓN: Nueva función para manejar cambios en los métodos de separación
+    function handleSeparationMethodChange() {
+        const separationMethod = document.querySelector('input[name="separation-method"]:checked');
+        if (separationMethod) {
+            physicalStrategyFlow.step3 = true;
+            physicalStrategyFlow.selectedMethod = separationMethod.value;
+            
+            // Ocultar la tabla de principios si estaba visible
+            document.getElementById('principles-table-container').classList.add('hidden');
+        } else {
+            physicalStrategyFlow.step3 = false;
+        }
+    }
+
+    // CORRECCIÓN: Generar tabla completa con TODOS los principios de contradicciones físicas
+    function generatePrinciplesTable() {
+        const container = document.getElementById('principles-table-content');
+        
+        let html = `<p style="margin-bottom: 1.5rem; font-style: italic;">This table shows all physical contradiction resolution strategies and their associated inventive principles.</p>`;
+        
+        // Iterar sobre TODAS las estrategias del archivo JS
+        for (const [method, strategy] of Object.entries(physicalContradictionPrinciples)) {
+            html += `
+                <div class="physical-strategy-guide">
+                    <div class="strategy-title">${strategy.strategy}</div>
+                    <div class="strategy-description">${strategy.description}</div>
+                    <div class="strategy-example">
+                        <strong>Example:</strong> ${getPhysicalContradictionExample(method)}
+                    </div>
+                </div>
+                <table class="matrix-table" style="margin-top: 1rem; margin-bottom: 2rem;">
+                    <thead>
+                        <tr>
+                            <th>Principle #</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            strategy.principles.forEach(principle => {
+                html += `
+                    <tr>
+                        <td><strong>${principle.number}</strong></td>
+                        <td>${principle.name}</td>
+                        <td>${principle.description}</td>
+                        <td><em>${principle.example}</em></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    // CORRECCIÓN: Mostrar/ocultar tabla de principios
+    function togglePrinciplesTable() {
+        const tableContainer = document.getElementById('principles-table-container');
+        const isVisible = !tableContainer.classList.contains('hidden');
+        
+        if (!isVisible) {
+            // Generar la tabla si no está visible
+            generatePrinciplesTable();
+            tableContainer.classList.remove('hidden');
+        } else {
+            tableContainer.classList.add('hidden');
+        }
     }
     
     function toggleMatrixView() {
@@ -1906,14 +2173,16 @@
             }
             problemData.conflictingParameter = parameter;
             
-            const relationship = document.querySelector('input[name="oz-relationship"]:checked')?.value;
-            if (!relationship) {
-                alert('Please select the Operational Zones/Time relationship for the Physical Contradiction.');
+            // Verificar que se haya completado el flujo
+            if (!physicalStrategyFlow.step3) {
+                alert('Please complete all steps for the Physical Contradiction analysis.');
                 return;
             }
-            problemData.ozRelationship = relationship;
             
-            const strategy = physicalContradictionPrinciples[relationship];
+            problemData.ozRelationship = physicalStrategyFlow.selectedMethod;
+            problemData.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
+            
+            const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
             problemData.recommendedPrinciples = strategy.principles.map(p => ({
                 id: p.number,
                 name: p.name,
@@ -2261,16 +2530,19 @@
     // Función auxiliar para ejemplos de contradicciones físicas
     function getPhysicalContradictionExample(relationship) {
         const examples = {
-            separate: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
-            contiguous: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
-            intersect: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material."
+            separationInSpace: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
+            separationInTime: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
+            separationInRelation: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material.",
+            separationInSystemLevel: "Traffic light with segmented pole elements for easy repair, separating maintenance requirements at different system levels.",
+            satisfyContradictoryDemands: "Heat packs using phase transition of gel to provide warmth without external heat source, satisfying both heating and portability demands.",
+            bypassContradictoryDemands: "Digital clocks replacing mechanical clockwork, bypassing the need for mechanical timekeeping altogether."
         };
         return examples[relationship] || "Apply separation principles to resolve the contradiction.";
     }
 </script>
 
 <script defer>
-    // ===== SCRIPT PARA EL MENÚ DE NAVEGACIÓN MÓVIL (COPIADO DE INDEX.HTML) =====
+    // ===== SCRIPT PARA EL MENÚ DE NAVEGACIÓN MÓVIL (COPIADOS DE INDEX.HTML) =====
     document.addEventListener('DOMContentLoaded', () => {
         const navToggle = document.getElementById('nav-toggle');
         const navMenu = document.getElementById('nav-menu');
