@@ -99,60 +99,65 @@ const trizStandardSolutions = {
                 description: "Integrate multiple similar systems into unified structure",
                 principles: [5] // Merging
             },
+            "2.1.6": {
+                title: "Transition to microlevel Su-Field system",
+                description: "Move from macro to microlevel interactions",
+                principles: [1, 2, 4, 7, 30] // Segmentation, Taking out, Asymmetry, Nesting, Flexible shells
+            },
+            "2.1.7": {
+                title: "Use microlevel resources/elements",
+                description: "Utilize microlevel resources (e.g., small holes, thin films)",
+                principles: [30, 31, 32] // Flexible shells, Porous materials, Change color
+            },
             "2.2.1": {
-                title: "Replace with better controlled field",
-                description: "Replace/supplement poorly controlled field with more easily controlled field",
-                principles: [28] // Replace mechanical system with fields
+                title: "Simplify field F",
+                description: "Use simplified fields (e.g., gravity, centrifugal force)",
+                principles: [12] // Equipotentiality
             },
             "2.2.2": {
-                title: "Divide into smaller units",
-                description: "Use particles instead of whole object",
-                principles: [1] // Segmentation  
+                title: "Use multiple fields F1, F2",
+                description: "Use two fields simultaneously to improve action",
+                principles: [5] // Merging
             },
             "2.2.3": {
-                title: "Use porous/capillary materials",
-                description: "Use porous or capillary materials in system",
-                principles: [31] // Porous materials
-            },
-            "2.2.4": {
-                title: "Make system flexible",
-                description: "Divide object into parts, make flexible by linking parts",
-                principles: [1, 15] // Segmentation, Dynamism
-            },
-            "2.2.5": {
-                title: "Replace with structured field",
-                description: "Replace uncontrolled field with structured one",
-                principles: [19] // Periodic action
-            },
-            "2.2.6": {
-                title: "Change to non-uniform structure",
-                description: "Change from uniform to structure specific to situation",
-                principles: [3, 4, 30, 31] // Local quality, Asymmetry, Flexible shell, Porous materials
+                title: "Use fields that can be manipulated easily",
+                description: "Transition to fields that can be easily controlled (e.g., electric, magnetic)",
+                principles: [28] // Replace mechanical system with fields
             },
             "2.3.1": {
-                title: "Match natural frequencies", 
-                description: "Match field frequencies with substance natural frequencies",
-                principles: [18] // Mechanical vibration
+                title: "Use intermediate element S3 to transfer action",
+                description: "Transfer action between S1 and S2 using a non-standard intermediary S3",
+                principles: [24] // Intermediary
             },
             "2.3.2": {
-                title: "Coordinate system rhythms",
-                description: "Coordinate rhythms of different system elements",
-                principles: [19] // Periodic action
+                title: "Transfer action to microlevel",
+                description: "Transfer the necessary action to a microlevel structure",
+                principles: [31] // Porous materials
             },
             "2.3.3": {
-                title: "Operation during downtime",
-                description: "Do one operation during downtime of another",
-                principles: [20] // Continuity of action
+                title: "Transfer function to a different part of system",
+                description: "Redistribute functions among components",
+                principles: [3] // Local quality
+            },
+            "2.3.4": {
+                title: "Introduce S3 to change properties of S1/S2",
+                description: "Introduce S3 to temporarily or permanently change S1 or S2 properties",
+                principles: [35] // Change parameters
+            },
+            "2.3.5": {
+                title: "Use S3 to activate S1/S2",
+                description: "Use S3 to activate or reactivate S1 or S2",
+                principles: [35] // Change parameters
             },
             "2.4.1": {
-                title: "Use ferromagnetic materials",
-                description: "Use ferromagnetism and ferromagnetic materials",
+                title: "Use magnetic system / ferromagnetic materials",
+                description: "Convert a mechanical system into a magnetic one for control",
                 principles: [28] // Replace mechanical system with fields
             },
             "2.4.2": {
                 title: "Ferromagnetic field application",
                 description: "Apply ferromagnetic fields to system",
-                principles: [28] // Replace mechanical system with fields  
+                principles: [28] // Replace mechanical system with fields
             },
             "2.4.3": {
                 title: "Use magnetic liquids",
@@ -175,74 +180,84 @@ const trizStandardSolutions = {
                 principles: [13] // Other way around
             },
             "2.4.7": {
-                title: "Magnetic transition effects",
-                description: "Use physical effects of magnetic transitions", 
-                principles: [36] // Use phase transition
+                title: "Transition to non-magnetic field",
+                description: "Change from magnetic field to another field (e.g., electric)",
+                principles: [28] // Replace mechanical system with fields
             },
             "2.4.8": {
-                title: "Dynamic magnetic fields",
-                description: "Use dynamic magnetic fields",
-                principles: [15, 23, 25] // Dynamism, Feedback, Self-service
-            },
-            "2.4.9": {
-                title: "Magnetic particle structures",
-                description: "Create structures using magnetic particles",
-                principles: [24] // Intermediary
+                title: "Eliminate ferromagnetic component",
+                description: "Remove the ferromagnetic component from the system",
+                principles: [2] // Take out
             }
         }
     },
     "Class 3: System transitions": {
-        description: "6 standard solutions for system evolution",
+        description: "6 standard solutions for system transformation and stage changes",
         solutions: {
             "3.1.1": {
-                title: "Transition to bisystem",
-                description: "Transition from monosystem to bisystem",
-                principles: [5] // Merging
+                title: "Transition to Field Control",
+                description: "Change the system from simple mechanical to field-based control",
+                principles: [28] // Replace mechanical system with fields
             },
             "3.1.2": {
-                title: "Transition to polysystem", 
-                description: "Transition to multiple systems working together",
-                principles: [5] // Merging
+                title: "Transition to Subsystem Control",
+                description: "Introduce a controlling subsystem",
+                principles: [35] // Change parameters
             },
             "3.1.3": {
-                title: "System integration",
-                description: "Integrate different systems into supersystem",
+                title: "Transition to Bi-Field System",
+                description: "Use two independent fields that can be controlled separately",
                 principles: [5] // Merging
             },
-            "3.1.4": {
-                title: "Develop system links",
-                description: "Develop stronger links between systems",
-                principles: [5] // Merging
+            "3.2.1": {
+                title: "Use phase transitions",
+                description: "Utilize changes in state (e.g., solid/liquid/gas) to perform an action",
+                principles: [36] // Phase transition
             },
-            "3.1.5": {
-                title: "Simplify bi-/poly-systems", 
-                description: "Simplification of bi- and poly-systems",
-                principles: [5] // Merging
+            "3.2.2": {
+                title: "Use physical and chemical effects",
+                description: "Employ physical or chemical phenomena to perform an action (e.g., adsorption)",
+                principles: [35] // Change parameters
             },
-            "3.1.6": {
-                title: "Evolution to higher control",
-                description: "Transition system control to higher organizational level",
-                principles: [12, 23] // Equipotentiality, Feedback
+            "3.2.3": {
+                title: "Use high-speed processes",
+                description: "Utilize phenomena that occur only at high speeds",
+                principles: [21] // Skipping
             }
         }
     },
     "Class 4: Detection and measurement": {
-        description: "17 standard solutions for measurement and control",
+        description: "17 standard solutions focused on measurement, detection, and failure analysis",
         solutions: {
             "4.1.1": {
-                title: "Control via phase transition/thermal expansion",
-                description: "Control system via phase transition/thermal expansion instead of direct measurement",
-                principles: [36, 37] // Phase transition, Thermal expansion
+                title: "Inversion for measurement",
+                description: "Use reverse effect (e.g., measure by destroying the object)",
+                principles: [13] // Other way around
             },
             "4.1.2": {
-                title: "Measure a copy",
-                description: "Measure copy or model instead of actual object",
-                principles: [24, 26] // Intermediary, Copying
+                title: "Change system state for measurement",
+                description: "Temporarily change the state of the object for measurement (e.g., heat it)",
+                principles: [35] // Change parameters
             },
             "4.1.3": {
-                title: "Use detection instead of measurement", 
-                description: "Use detection methods instead of precise measurement",
-                principles: [32] // Change color
+                title: "Use different measurement scales",
+                description: "Measure on different scales (micro/macro)",
+                principles: [17] // Another dimension
+            },
+            "4.1.4": {
+                title: "Measure an indirect property",
+                description: "Measure related properties (e.g., temperature instead of pressure)",
+                principles: [24] // Intermediary
+            },
+            "4.1.5": {
+                title: "Use high-speed measurement",
+                description: "Measure using short-duration events (e.g., pulses)",
+                principles: [10, 21] // Prior action, Skipping
+            },
+            "4.1.6": {
+                title: "Use environment for measurement",
+                description: "Use the environment's response for indirect measurement",
+                principles: [3] // Local quality
             },
             "4.2.1": {
                 title: "Create detectable field",
@@ -270,63 +285,48 @@ const trizStandardSolutions = {
                 principles: [28] // Replace mechanical system with fields
             },
             "4.2.6": {
-                title: "Physical effects for measurement",
-                description: "Use physical effects for measurement",
+                title: "Chemical field detection",
+                description: "Use chemical reactions or indicators for detection",
                 principles: [35] // Change parameters
             },
             "4.3.1": {
-                title: "Measure via natural phenomena",
-                description: "Measure system using natural phenomena and phase changes",
-                principles: [32, 36] // Change color, Phase transition
+                title: "Use temporary field for detection",
+                description: "Apply a temporary field to make an object detectable",
+                principles: [24] // Intermediary
             },
             "4.3.2": {
-                title: "Resonant frequency measurement",
-                description: "Measure changes via changes in resonant frequency",
-                principles: [18] // Mechanical vibration
+                title: "Use temporary chemical additive",
+                description: "Introduce a temporary chemical substance for detection",
+                principles: [24] // Intermediary
             },
-            "4.3.3": {
-                title: "Transition to detection system",
-                description: "Transition from measuring to detecting system states",
-                principles: [3, 32] // Local quality, Change color
+            "4.4.1": {
+                title: "Use system change for failure analysis",
+                description: "Introduce a field to cause a failure for observation",
+                principles: [25] // Copying
             },
-            "4.3.4": {
-                title: "Develop measurement into detection",
-                description: "Develop measurement system into detecting system",
-                principles: [3, 23] // Local quality, Feedback
+            "4.4.2": {
+                title: "Modify system for failure analysis",
+                description: "Change parameters to simplify failure analysis",
+                principles: [25] // Copying
             },
-            "4.3.5": {
-                title: "Integrate measurement and action",
-                description: "Combine measurement with action system",
-                principles: [23] // Feedback
-            },
-            "4.3.6": {
-                title: "Self-controlled measurement",
-                description: "Implement self-controlled measurement changes",
-                principles: [23, 25] // Feedback, Self-service
-            },
-            "4.3.7": {
-                title: "Feedback in measurement",
-                description: "Introduce feedback between measurement and action",
-                principles: [23] // Feedback
-            },
-            "4.3.8": {
-                title: "Enhanced detection methods",
-                description: "Use advanced methods for improved detection and measurement",
-                principles: [28, 32] // Replace mechanical system with fields, Change color
+            "4.4.3": {
+                title: "Modify system elements for failure analysis",
+                description: "Change the elements of the system for better observation",
+                principles: [25] // Copying
             }
         }
     },
     "Class 5: Strategies for simplification/improvement": {
-        description: "17 standard solutions for system simplification",
+        description: "17 standard solutions for radical elimination or simplification of systems",
         solutions: {
             "5.1.1.1": {
-                title: "Add 'nothing' - foam, honeycomb, etc.",
-                description: "Use voids, foam, honeycomb structures as additive",
-                principles: [29, 40] // Pneumatic/hydraulic, Composite materials
+                title: "Use S1's own field",
+                description: "Use S1's internal energy or field instead of an external field F",
+                principles: [9, 29, 36] // Preliminary anti-action, Pneumatic/hydraulic, Phase transition
             },
             "5.1.1.2": {
-                title: "Use field instead of substance",
-                description: "Apply field as substitute for physical substance",
+                title: "Use environment's field",
+                description: "Utilize the surrounding environment's field as F",
                 principles: [28] // Replace mechanical system with fields
             },
             "5.1.1.3": {
@@ -340,110 +340,126 @@ const trizStandardSolutions = {
                 principles: [38] // Strong oxidants
             },
             "5.1.1.5": {
-                title: "Concentrate additive in one location", 
+                title: "Concentrate additive in one location",
                 description: "Localize additive concentration where needed",
                 principles: [3] // Local quality
             },
             "5.1.1.6": {
-                title: "Temporary additive introduction",
-                description: "Introduce additive temporarily then remove",
+                title: "Temporary additive (Substance)",
+                description: "Introduce S3 temporarily to achieve the effect, then remove it",
                 principles: [24] // Intermediary
             },
             "5.1.1.7": {
-                title: "Apply additives to copy",
-                description: "Apply additives to copy instead of original object",
-                principles: [26] // Copying
+                title: "Temporary additive (Field)",
+                description: "Apply Field F temporarily to achieve the effect, then remove it",
+                principles: [24] // Intermediary
             },
-            "5.1.2": {
-                title: "Use disposable field",
-                description: "Introduce field that disappears after use",
-                principles: [1] // Segmentation
+            "5.1.2.1": {
+                title: "Use two fields and two substances",
+                description: "Introduce a new system (S3 + F2) for a synergistic effect",
+                principles: [5] // Merging
             },
-            "5.1.3": {
-                title: "Additive disappears after use",
-                description: "Use substances that vanish or transform after function",
-                principles: [34] // Discard/recover
+            "5.1.2.2": {
+                title: "Use Field F to replace S2",
+                description: "Replace the substance S2 with an intense or modified field F",
+                principles: [28] // Replace mechanical system with fields
+            },
+            "5.1.3.1": {
+                title: "Simplify field F to S2's field",
+                description: "Use the field generated by S2 itself as the operating field",
+                principles: [28] // Replace mechanical system with fields
+            },
+            "5.1.3.2": {
+                title: "Eliminate S1/S2 entirely",
+                description: "Remove the object or tool, letting the other system component perform the action",
+                principles: [2] // Taking out
+            },
+            "5.1.3.3": {
+                title: "Eliminate Field F entirely",
+                description: "Achieve the action through substance-substance interaction (S1-S2)",
+                principles: [2] // Taking out
             },
             "5.1.4": {
-                title: "Simulate with 'nothing'",
-                description: "Use voids or environmental fields to simulate structures",
-                principles: [16, 29] // Partial/excessive action, Pneumatic/hydraulic
+                title: "Simplify field F by using environment",
+                description: "Utilize environment resources to simplify the field F",
+                principles: [28] // Replace mechanical system with fields
             },
             "5.2.1": {
-                title: "Use waste products as resources",
-                description: "Utilize waste products and energy in system",
-                principles: [25] // Self-service
+                title: "Use system's internal energy for control",
+                description: "Use internal resources (heat, waste, etc.) for control",
+                principles: [29] // Pneumatic/hydraulic
+            },
+            "5.2.2": {
+                title: "Use system's side effects for control",
+                description: "Utilize unintended, secondary effects for control",
+                principles: [22] // Blessing in disguise
             },
             "5.3.1": {
-                title: "Phase change utilization",
-                description: "Use phase transitions to change substance properties",
-                principles: [35] // Change parameters
+                title: "Simplify measurement by fusion",
+                description: "Integrate the measurement element with the substance S1/S2",
+                principles: [5] // Merging
             },
             "5.3.2": {
-                title: "Thermal expansion effects",
-                description: "Utilize thermal expansion for system functions",
-                principles: [37] // Use thermal expansion
-            },
-            "5.3.3": {
-                title: "Use strong oxidants",
-                description: "Apply strong oxidants to enhance reactions",
-                principles: [38] // Strong oxidants
-            },
-            "5.3.4": {
-                title: "Use inert environment",
-                description: "Apply inert environment to prevent unwanted reactions", 
-                principles: [39] // Inert atmosphere
-            },
-            "5.4.1": {
-                title: "Self-controlled changes",
-                description: "System serves itself without external help",
-                principles: [23, 25] // Feedback, Self-service
-            },
-            "5.5.1": {
-                title: "Use composite materials",
-                description: "Apply composite materials with enhanced properties",
-                principles: [40] // Composite materials
-            }
-        }
-    }    
-}; // 🔹 Cierre correcto del objeto trizStandardSolutions
-
-// ==========================================================
-// 🔧 Versión extendida: cubre los 6 tipos de problemas Su-Field
-// ==========================================================
-
-// Hacer el solutionMap disponible globalmente
-const solutionMap = {
-    insufficient: ["1.1.1", "1.1.2", "1.1.6", "2.2.1", "2.2.3"],
-    excessive: ["1.1.4", "2.1.4", "2.3.1", "5.1.4"],
-    harmful: ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5"],
-    difficult: ["4.1.1", "4.1.2", "4.2.4", "4.3.1", "4.3.4", "4.3.6"],
-    missing: ["1.1.1", "1.1.2", "1.1.3", "2.1.1", "2.2.1", "2.2.5"],
-    inefficient: ["2.2.1", "2.3.1", "2.3.2", "5.4.1", "5.5.1"]
-};
-
-function getRecommendedStandardSolutions(problemType) {
-    const recommendedIds = solutionMap[problemType] || [];
-    const recommendedSolutions = [];
-
-    for (const classKey in trizStandardSolutions) {
-        const solutionClass = trizStandardSolutions[classKey];
-        for (const solutionId in solutionClass.solutions) {
-            if (recommendedIds.includes(solutionId)) {
-                recommendedSolutions.push({
-                    id: solutionId,
-                    ...solutionClass.solutions[solutionId],
-                    class: classKey
-                });
+                title: "Simplify measurement by environment",
+                description: "Use the environment as the measurement tool",
+                principles: [3] // Local quality
             }
         }
     }
+};
+
+// ==========================================================
+// 🗺️ Mapeo de soluciones a tipos de problemas Su-Field (Existente)
+// ==========================================================
+const solutionMap = {
+    // Soluciones recomendadas para cada tipo de problema Su-Field
+    insufficient: ["1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7", "1.1.8", "2.1.1", "2.1.2", "2.1.3", "2.1.6", "2.1.7", "2.2.2", "2.2.3", "2.3.1", "2.3.2", "2.3.4", "2.3.5", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3", "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.4", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1", "5.1.4", "5.2.1", "5.2.2"],
+    harmful: ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5", "2.1.4", "2.2.1", "2.4.8", "5.1.3.2", "5.1.3.3"],
+    difficult: ["1.1.6", "1.1.7", "2.1.4", "2.2.1", "2.3.3", "2.4.7", "3.2.3", "4.1.1", "4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.1.6", "4.3.1", "4.3.2", "4.4.1", "4.4.2", "4.4.3", "5.3.1", "5.3.2"],
+    missing: ["1.1.1", "2.1.1", "2.1.2", "2.1.3", "2.1.5", "2.1.6", "2.1.7", "2.2.2", "2.3.1", "2.3.4", "2.3.5", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3", "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.4", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1", "5.1.4"],
+    excessive: ["1.1.6", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5", "2.1.4", "2.2.1", "2.3.3", "2.4.8", "5.1.3.2", "5.1.3.3"],
+    inefficient: ["1.1.1", "1.1.4", "2.1.4", "2.1.7", "2.2.1", "2.3.2", "2.3.3", "3.2.3", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.2.2", "5.1.3.1", "5.1.3.2", "5.1.3.3", "5.1.4", "5.2.1", "5.2.2", "5.3.1", "5.3.2"]
+};
+
+// ==========================================================
+// 💡 Función para obtener soluciones recomendadas (Existente)
+// ==========================================================
+function getRecommendedStandardSolutions(problemType) {
+    if (!solutionMap[problemType]) {
+        return [];
+    }
+
+    const recommendedIds = solutionMap[problemType];
+    const recommendedSolutions = [];
+
+    // Recorrer las soluciones recomendadas por ID
+    recommendedIds.forEach(id => {
+        // Buscar la solución en trizStandardSolutions
+        for (const classKey in trizStandardSolutions) {
+            if (trizStandardSolutions[classKey].solutions[id]) {
+                recommendedSolutions.push({
+                    id: id,
+                    title: trizStandardSolutions[classKey].solutions[id].title,
+                    description: trizStandardSolutions[classKey].solutions[id].description,
+                    class: classKey.split(':')[0]
+                });
+                return; // Una vez encontrada, pasar a la siguiente ID
+            }
+        }
+    });
 
     return recommendedSolutions;
 }
 
 // ==========================================================
-// 🔍 Función de verificación de integridad (mantener igual)
+// 🌍 Hacer las variables accesibles globalmente (NUEVO)
+// ==========================================================
+window.solutionMap = solutionMap;
+window.trizStandardSolutions = trizStandardSolutions;
+window.getRecommendedStandardSolutions = getRecommendedStandardSolutions;
+
+// ==========================================================
+// 🔍 Función de verificación de integridad (Existente)
 // ==========================================================
 function verifySolutionCount() {
     let total = 0;
