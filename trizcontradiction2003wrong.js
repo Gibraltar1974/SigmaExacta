@@ -5001,6 +5001,7 @@ const trizContradictionMatrix2003 = {
             "47": [26, 28, 24, 10, 13, 1],
             "48": []
         }
+    }
 };
 
 // Function to get inventive principles for a contradiction
