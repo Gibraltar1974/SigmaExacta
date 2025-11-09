@@ -1171,15 +1171,17 @@
         <h4><i class="fas fa-rocket"></i> Ideal Final Result (IFR)</h4>
         <p>The IFR is a powerful concept that defines the perfect solution where the system performs its function without any drawbacks, costs, or harmful effects. Formulating the IFR helps innovators break psychological inertia and focus on the essential function rather than being constrained by existing implementations.</p>
 
-        <h4><i class="fas fa-table"></i> Contradiction Matrix</h4>
-        <p>The matrix systematically maps 39 improving parameters against 39 worsening parameters to suggest the most relevant principles for resolving specific technical contradictions. Modern versions (like the 2003 matrix) expand this to 48 parameters for greater precision and applicability to contemporary engineering challenges.</p>
-
 
         <p><strong>Technical Contradictions</strong> occur when improving one parameter of a system causes another parameter to worsen. For example, making a car stronger typically makes it heavier. These contradictions are resolved using the <strong>Contradiction Matrix</strong> and <strong>40 Inventive Principles</strong>, which provide specific guidance on how to overcome the trade-off.</p>
         
         <h4><i class="fas fa-lightbulb"></i> 40 Inventive Principles</h4>
         <p>The 40 Principles represent the most common patterns of invention found across all technical fields, from Segmentation and Asymmetry to Phase Transitions and Composite Materials. Each principle provides concrete strategies for transforming systems to resolve contradictions and achieve breakthrough improvements.</p>
         
+
+        <h4><i class="fas fa-table"></i> Contradiction Matrix</h4>
+        <p>The matrix systematically maps 39 improving parameters against 39 worsening parameters to suggest the most relevant principles for resolving specific technical contradictions. Modern versions (like the 2003 matrix) expand this to 48 parameters for greater precision and applicability to contemporary engineering challenges.</p>
+
+
         <p><strong>Physical Contradictions</strong> occur when a single parameter requires opposite states or properties. For example, a coffee cup needs to be hot to keep coffee warm but cool to hold comfortably. These are resolved using <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System Level) that allow the contradictory requirements to be satisfied simultaneously.</p>
         
         <h4><i class="fas fa-atom"></i> Su-Field Analysis</h4>
@@ -2245,10 +2247,10 @@
         document.getElementById('tese-stage-select').value = 'maturity';
         updateTESE();
 
-        document.getElementById('problem-system').focus();
+       
         
-        // NUEVO: Scroll al Step 1 (TESE Analysis) al hacer reset
-        document.getElementById('step-tese').scrollIntoView({ behavior: 'smooth' });
+        // CORRECCIÓN: ELIMINADO el scroll automático al hacer reset
+        // document.getElementById('step-tese').scrollIntoView({ behavior: 'smooth' });
     }
     
     function loadExample() {
@@ -2332,8 +2334,8 @@
         exampleIndex = (exampleIndex + 1) % examples.length;
         clearResults(); // MODIFICACIÓN: Limpiar cualquier resultado que 'solve' pudiera haber dejado
         
-        // MODIFICACIÓN: Hacer scroll al Step 1 (TESE Analysis) en lugar del Step 2
-        document.getElementById('step-tese').scrollIntoView({ behavior: 'smooth' });
+        // CORRECCIÓN: ELIMINADO el scroll automático al cargar ejemplo
+        // document.getElementById('step-tese').scrollIntoView({ behavior: 'smooth' });
     }
 
     // ===== NUEVA FUNCIONALIDAD TESE CON SELECTOR =====
@@ -3154,256 +3156,341 @@
         
         displayResults();
     }
-    
     function displayResults() {
-        const resultsDiv = document.getElementById('results-container');
-        // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
-        let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+    const resultsDiv = document.getElementById('results-container');
+    // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
+    let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+    
+    // MODIFICACIÓN: Mover información de la matriz al principio
+    html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
+        <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+    </div>`;
+    
+    // Agregar información TESE
+    html += `<div class="solver-step"><h4><i class="fas fa-chart-line"></i> TESE Analysis</h4>
+        <p><strong>Product Evolution Stage:</strong> ${problemData.tese.stage}</p>
+        <p><strong>Recommended Trends:</strong> ${problemData.tese.recommendedTrends}</p>
         
-        // MODIFICACIÓN: Mover información de la matriz al principio
-        html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
-            <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+        <!-- NUEVO: Mostrar tendencias recomendadas con iconos -->
+        <div class="tese-trends-icons">`;
+
+    // Generar iconos específicos para las tendencias de esta etapa
+    let trendsArray = [];
+    switch(problemData.tese.stage.toLowerCase()) {
+        case 'infancy':
+            trendsArray = ['Increasing dynamism', 'Coordination', 'Controllability'];
+            break;
+        case 'growth':
+            trendsArray = ['Increasing ideality', 'Completeness', 'Uneven development of parts'];
+            break;
+        case 'maturity':
+            trendsArray = ['Increasing complexity', 'Trimming', 'Transition to supersystem'];
+            break;
+        case 'decline':
+            trendsArray = ['Transition to new system (discontinuity)'];
+            break;
+        default:
+            trendsArray = ['Increasing complexity', 'Trimming', 'Transition to supersystem'];
+    }
+
+    trendsArray.forEach(trend => {
+        const iconClass = teseTrendIconsDetailed[trend] || 'fa-chart-line';
+        html += `
+            <div class="tese-trend-item">
+                <div class="tese-trend-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="tese-trend-name">${trend}</div>
+            </div>
+        `;
+    });
+
+    html += `</div>
+        <p style="margin-top: 1rem; font-style: italic; text-align: center;">
+            Focus on these evolutionary trends to guide your innovation strategy
+        </p>
+    </div>`;
+    
+    html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
+    
+    if (problemData.contradictionType === 'technical') {
+        html += `<div class="contradiction-visual">
+            <div class="improving-side">
+                <i class="fas fa-arrow-up improving-icon feature-icon"></i>
+                <h4>Improving</h4>
+                <p>${problemData.improvingFeature}</p>
+            </div>
+            <div class="contradiction-arrow">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="worsening-side">
+                <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
+                <h4>Worsening</h4>
+                <p>${problemData.worseningFeature}</p>
+            </div>
         </div>`;
+    } else {
+        html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
         
-        // Agregar información TESE
-        html += `<div class="solver-step"><h4><i class="fas fa-chart-line"></i> TESE Analysis</h4>
-            <p><strong>Product Evolution Stage:</strong> ${problemData.tese.stage}</p>
-            <p><strong>Recommended Trends:</strong> ${problemData.tese.recommendedTrends}</p>
-            
-            <!-- NUEVO: Mostrar tendencias recomendadas con iconos -->
-            <div class="tese-trends-icons">`;
-
-        // Generar iconos específicos para las tendencias de esta etapa
-        let trendsArray = [];
-        switch(problemData.tese.stage.toLowerCase()) {
-            case 'infancy':
-                trendsArray = ['Increasing dynamism', 'Coordination', 'Controllability'];
-                break;
-            case 'growth':
-                trendsArray = ['Increasing ideality', 'Completeness', 'Uneven development of parts'];
-                break;
-            case 'maturity':
-                trendsArray = ['Increasing complexity', 'Trimming', 'Transition to supersystem'];
-                break;
-            case 'decline':
-                trendsArray = ['Transition to new system (discontinuity)'];
-                break;
-            default:
-                trendsArray = ['Increasing complexity', 'Trimming', 'Transition to supersystem'];
+        // MODIFICACIÓN 2: Mostrar estrategia y principios solo en resultados para contradicciones físicas
+        const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
+        if (strategy) {
+            html += `<div class="physical-strategy-guide">
+                <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
+                <div class="strategy-description">${strategy.description}</div>
+                <div class="strategy-example">
+                    <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
+                </div>
+            </div>`;
         }
-
-        trendsArray.forEach(trend => {
-            const iconClass = teseTrendIconsDetailed[trend] || 'fa-chart-line';
+    }
+    html += `</div>`;
+    
+    html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
+    
+    if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
+        problemData.recommendedPrinciples.forEach(p => {
             html += `
-                <div class="tese-trend-item">
-                    <div class="tese-trend-icon">
-                        <i class="fas ${iconClass}"></i>
+                <div class="principle-card">
+                    <div class="principle-header">
+                        <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
+                        <strong>Principle ${p.id}: ${p.name}</strong>
                     </div>
-                    <div class="tese-trend-name">${trend}</div>
+                    <p>${p.desc}</p>
+                    <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                    </div>
                 </div>
             `;
         });
-
-        html += `</div>
-            <p style="margin-top: 1rem; font-style: italic; text-align: center;">
-                Focus on these evolutionary trends to guide your innovation strategy
-            </p>
-        </div>`;
+    } else {
+        html += '<p>No specific principles are commonly recommended for this combination. Consider a different framing of the problem.</p>';
+    }
+    html += `</div>`;
+    
+    // Display Su-Field systems and solutions
+    if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+        html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
         
-        html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
-        
-        if (problemData.contradictionType === 'technical') {
-            html += `<div class="contradiction-visual">
-                <div class="improving-side">
-                    <i class="fas fa-arrow-up improving-icon feature-icon"></i>
-                    <h4>Improving</h4>
-                    <p>${problemData.improvingFeature}</p>
-                </div>
-                <div class="contradiction-arrow">
-                    <i class="fas fa-exchange-alt"></i>
-                </div>
-                <div class="worsening-side">
-                    <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
-                    <h4>Worsening</h4>
-                    <p>${problemData.worseningFeature}</p>
-                </div>
-            </div>`;
-        } else {
-            html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
-            
-            // MODIFICACIÓN 2: Mostrar estrategia y principios solo en resultados para contradicciones físicas
-            const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
-            if (strategy) {
-                html += `<div class="physical-strategy-guide">
-                    <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
-                    <div class="strategy-description">${strategy.description}</div>
-                    <div class="strategy-example">
-                        <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
-                    </div>
-                </div>`;
-            }
-        }
-        html += `</div>`;
-        
-        html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
-        
-        if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
-            problemData.recommendedPrinciples.forEach(p => {
+        problemData.sufield.systems.forEach((system, index) => {
+            // Solo mostrar sistemas que tengan al menos un campo rellenado
+            if (system.object || system.tool || system.field) {
+                html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
+                
+                // Show the Su-Field diagram for this system - USANDO EL MISMO CÓDIGO QUE EN updateSuFieldDiagram
+                html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
+                
+                // Función auxiliar para truncar texto (copiada de updateSuFieldDiagram)
+                function truncateText(text, maxLength) {
+                    if (!text || text.length <= maxLength) return text;
+                    return text.substring(0, maxLength) + '...';
+                }
+                
+                // Coordenadas de los nodos (las mismas que en updateSuFieldDiagram)
+                const s1 = { x: 110, y: 30, r: 22 };
+                const s2 = { x: 50, y: 160, r: 22 };
+                const f = { x: 170, y: 160, r: 22 };
+                
+                // Calcular puntos de intersección para las flechas (mismo código)
+                function getCircleIntersection(cx, cy, r, tx, ty) {
+                    const dx = tx - cx;
+                    const dy = ty - cy;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const nx = dx / distance;
+                    const ny = dy / distance;
+                    const ix = cx + nx * r;
+                    const iy = cy + ny * r;
+                    return { x: ix, y: iy };
+                }
+                
+                const s1ToS2Start = getCircleIntersection(s1.x, s1.y, s1.r, s2.x, s2.y);
+                const s1ToS2End = getCircleIntersection(s2.x, s2.y, s2.r, s1.x, s1.y);
+                const s1ToFStart = getCircleIntersection(s1.x, s1.y, s1.r, f.x, f.y);
+                const s1ToFEnd = getCircleIntersection(f.x, f.y, f.r, s1.x, s1.y);
+                const s2ToFStart = getCircleIntersection(s2.x, s2.y, s2.r, f.x, f.y);
+                const s2ToFEnd = getCircleIntersection(f.x, f.y, f.r, s2.x, s2.y);
+                
+                // MOSTRAR EL DIAGRAMA IDÉNTICO AL DE ENTRADA
                 html += `
-                    <div class="principle-card">
-                        <div class="principle-header">
-                            <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
-                            <strong>Principle ${p.id}: ${p.name}</strong>
-                        </div>
-                        <p>${p.desc}</p>
-                        <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                            <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                    <div class="sufield-triangle-container">
+                        <div class="sufield-svg-container problem-${system.type}">
+                            <svg class="sufield-svg" viewBox="0 0 220 190">
+                                <defs>
+                                    <marker id="arrowhead-${index}" markerWidth="10" markerHeight="7" 
+                                            refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+                                    </marker>
+                                </defs>
+                                
+                                <polygon points="110,30 50,160 170,160" class="triangle-path"/>
+                                
+                                <!-- Líneas mejoradas -->
+                                <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
+                                <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
+                                <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
+                                
+                                <!-- Nodos con fondos de texto -->
+                                <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
+                                <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
+                                <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
+                                
+                                <!-- Texto con fondo mejorado -->
+                                <rect x="${s1.x - 25}" y="${s1.y - 8}" width="50" height="16" rx="3" class="text-background"/>
+                                <rect x="${s2.x - 25}" y="${s2.y - 8}" width="50" height="16" rx="3" class="text-background"/>
+                                <rect x="${f.x - 25}" y="${f.y - 8}" width="50" height="16" rx="3" class="text-background"/>
+                                
+                                <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 10)}</text>
+                                <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 10)}</text>
+                                <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 10)}</text>
+                                
+                                <!-- Etiquetas de tipo -->
+                                <text x="${s1.x}" y="${s1.y + 28}" class="node-type">Object (S1)</text>
+                                <text x="${s2.x}" y="${s2.y + 28}" class="node-type">Tool (S2)</text>
+                                <text x="${f.x}" y="${f.y + 28}" class="node-type">Field (F)</text>
+                                
+                                <!-- Icono representativo del tipo de problema -->
+                                <foreignObject x="95" y="95" width="30" height="30">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas ${problemTypeIcons[system.type]} problem-indicator-icon" style="color: ${problemTypeColors[system.type]}; font-size: 1.8rem;"></i>
+                                    </div>
+                                </foreignObject>
+                            </svg>
                         </div>
                     </div>
                 `;
-            });
-        } else {
-            html += '<p>No specific principles are commonly recommended for this combination. Consider a different framing of the problem.</p>';
-        }
-        html += `</div>`;
-        
-        // Display Su-Field systems and solutions
-        if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
-            html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
-            
-            problemData.sufield.systems.forEach((system, index) => {
-                // Solo mostrar sistemas que tengan al menos un campo rellenado
-                if (system.object || system.tool || system.field) {
-                    html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
+                
+                // Show problem type with visual indicator
+                html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
+                    <div>
+                        <strong>Problem Type:</strong> ${system.type}
+                        <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                    </div>
+                </div>`;
+                
+                if (system.standardSolutions && system.standardSolutions.length > 0) {
+                    // Group solutions by class
+                    const solutionsByClass = {};
+                    system.standardSolutions.forEach(solution => {
+                        if (!solutionsByClass[solution.class]) {
+                            solutionsByClass[solution.class] = [];
+                        }
+                        solutionsByClass[solution.class].push(solution);
+                    });
                     
-                    // Show the Su-Field diagram for this system
-                    html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
-                    
-                    // Show problem type with visual indicator
-                    html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                        <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
-                        <div>
-                            <strong>Problem Type:</strong> ${system.type}
-                            <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
-                        </div>
-                    </div>`;
-                    
-                    if (system.standardSolutions && system.standardSolutions.length > 0) {
-                        // Group solutions by class
-                        const solutionsByClass = {};
-                        system.standardSolutions.forEach(solution => {
-                            if (!solutionsByClass[solution.class]) {
-                                solutionsByClass[solution.class] = [];
-                            }
-                            solutionsByClass[solution.class].push(solution);
-                        });
+                    // Display solutions by class with explanations
+                    for (const [className, solutions] of Object.entries(solutionsByClass)) {
+                        const classIcon = classIcons[className] || 'fa-cube';
+                        html += `<div class="standard-solution-visual">`;
+                        html += `
+                            <div class="class-header">
+                                <span class="class-icon"><i class="fas ${classIcon}"></i></span>
+                                <h5>${className}</h5>
+                            </div>
+                        `;
+                        html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
                         
-                        // Display solutions by class with explanations
-                        for (const [className, solutions] of Object.entries(solutionsByClass)) {
-                            const classIcon = classIcons[className] || 'fa-cube';
-                            html += `<div class="standard-solution-visual">`;
+                        // Add a visual representation of the solution approach
+                        html += `<div class="solution-transformation">
+                            <div class="before-state">
+                                <div class="sufield-svg-container problem-state problem-${system.type}">
+                                    <svg class="sufield-svg" viewBox="0 0 220 190">
+                                        <defs>
+                                            <marker id="arrowhead-problem-${index}" markerWidth="10" markerHeight="7" 
+                                                    refX="9" refY="3.5" orient="auto">
+                                                <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+                                            </marker>
+                                        </defs>
+                                        <polygon points="110,30 50,160 170,160" class="triangle-path"/>
+                                        <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
+                                        <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
+                                        <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
+                                        <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
+                                        <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
+                                        <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
+                                        <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
+                                        <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
+                                        <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 8)}</text>
+                                        <foreignObject x="95" y="95" width="30" height="30">
+                                            <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas ${problemTypeIcons[system.type]}" style="color: ${problemTypeColors[system.type]}; font-size: 1.8rem;"></i>
+                                            </div>
+                                        </foreignObject>
+                                    </svg>
+                                </div>
+                                <div class="state-label">Problem State</div>
+                            </div>
+                            
+                            <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            
+                            <div class="after-state">
+                                <div class="sufield-svg-container solution-state">
+                                    <svg class="sufield-svg" viewBox="0 0 220 190">
+                                        <defs>
+                                            <marker id="arrowhead-solution-${index}" markerWidth="10" markerHeight="7" 
+                                                    refX="9" refY="3.5" orient="auto">
+                                                <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
+                                            </marker>
+                                        </defs>
+                                        <polygon points="110,30 50,160 170,160" class="triangle-path" style="fill:rgba(230,255,230,0.8);"/>
+                                        <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
+                                        <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
+                                        <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
+                                        <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
+                                        <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
+                                        <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
+                                        <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
+                                        <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
+                                        <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 8)}</text>
+                                        <foreignObject x="95" y="95" width="30" height="30">
+                                            <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-check" style="color: #27ae60; font-size: 1.8rem;"></i>
+                                            </div>
+                                        </foreignObject>
+                                    </svg>
+                                </div>
+                                <div class="state-label">Solution State</div>
+                            </div>
+                        </div>`;
+                        
+                        html += `<div class="solution-description">`;
+                        html += `<h6>Recommended Standard Solutions:</h6>`;
+                        
+                        solutions.forEach(solution => {
+                            // MODIFICACIÓN 4: Usar iconos específicos para soluciones estándar
+                            const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
                             html += `
-                                <div class="class-header">
-                                    <span class="class-icon"><i class="fas ${classIcon}"></i></span>
-                                    <h5>${className}</h5>
+                                <div class="solution-card">
+                                    <div class="solution-header">
+                                        <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
+                                        <strong>${solution.id}: ${solution.title}</strong>
+                                    </div>
+                                    <p>${solution.description}</p>
                                 </div>
                             `;
-                            html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
-                            
-                            // Add a visual representation of the solution approach
-                            html += `<div class="solution-transformation">
-                                <div class="before-state">
-                                    <div class="sufield-svg-container problem-state problem-${system.type}">
-                                        <svg class="sufield-svg" viewBox="0 0 200 180">
-                                            <polygon points="100,20 40,150 160,150" class="triangle-path"/>
-                                            <line x1="100" y1="20" x2="40" y2="150" class="interaction-line"/>
-                                            <line x1="100" y1="20" x2="160" y2="150" class="interaction-line"/>
-                                            <line x1="40" y1="150" x2="160" y2="150" class="interaction-line"/>
-                                            <circle cx="100" cy="20" r="20" class="sufield-node s1-node"/>
-                                            <circle cx="40" cy="150" r="20" class="sufield-node s2-node"/>
-                                            <circle cx="160" cy="150" r="20" class="sufield-node f-node"/>
-                                            <text x="100" y="20" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
-                                            <text x="40" y="150" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
-                                            <text x="160" y="150" class="node-label">${truncateText(system.field || 'F', 8)}</text>
-                                            <foreignObject x="85" y="85" width="30" height="30">
-                                                <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="fas ${problemTypeIcons[system.type]}" style="color: ${problemTypeColors[system.type]}; font-size: 1.8rem;"></i>
-                                                </div>
-                                            </foreignObject>
-                                        </svg>
-                                    </div>
-                                    <div class="state-label">Problem State</div>
-                                </div>
-                                
-                                <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                                
-                                <div class="after-state">
-                                    <div class="sufield-svg-container solution-state">
-                                        <svg class="sufield-svg" viewBox="0 0 200 180">
-                                            <polygon points="100,20 40,150 160,150" class="triangle-path" style="fill:rgba(230,255,230,0.8);"/>
-                                            <line x1="100" y1="20" x2="40" y2="150" class="interaction-line"/>
-                                            <line x1="100" y1="20" x2="160" y2="150" class="interaction-line"/>
-                                            <line x1="40" y1="150" x2="160" y2="150" class="interaction-line"/>
-                                            <circle cx="100" cy="20" r="20" class="sufield-node s1-node"/>
-                                            <circle cx="40" cy="150" r="20" class="sufield-node s2-node"/>
-                                            <circle cx="160" cy="150" r="20" class="sufield-node f-node"/>
-                                            <text x="100" y="20" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
-                                            <text x="40" y="150" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
-                                            <text x="160" y="150" class="node-label">${truncateText(system.field || 'F', 8)}</text>
-                                            <foreignObject x="85" y="85" width="30" height="30">
-                                                <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="fas fa-check" style="color: #27ae60; font-size: 1.8rem;"></i>
-                                                </div>
-                                            </foreignObject>
-                                        </svg>
-                                    </div>
-                                    <div class="state-label">Solution State</div>
-                                </div>
-                            </div>`;
-                            
-                            html += `<div class="solution-description">`;
-                            html += `<h6>Recommended Standard Solutions:</h6>`;
-                            
-                            solutions.forEach(solution => {
-                                // MODIFICACIÓN 4: Usar iconos específicos para soluciones estándar
-                                const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
-                                html += `
-                                    <div class="solution-card">
-                                        <div class="solution-header">
-                                            <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
-                                            <strong>${solution.id}: ${solution.title}</strong>
-                                        </div>
-                                        <p>${solution.description}</p>
-                                    </div>
-                                `;
-                            });
-                            
-                            html += `</div></div>`;
-                        }
-                    } else if (typeof getRecommendedStandardSolutions !== 'function') {
-                        html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
-                    } else {
-                        html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                        });
+                        
+                        html += `</div></div>`;
                     }
-                    
-                    html += `</div>`;
+                } else if (typeof getRecommendedStandardSolutions !== 'function') {
+                    html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
+                } else {
+                    html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
                 }
-            });
-            html += `</div>`;
-        }
-        
-        html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
-        
-        resultsDiv.innerHTML = html;
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.scrollIntoView({ behavior: 'smooth' });
-        
-        // Función auxiliar para truncar texto si es muy largo
-        function truncateText(text, maxLength) {
-            if (text.length <= maxLength) return text;
-            return text.substring(0, maxLength) + '...';
-        }
+                
+                html += `</div>`;
+            }
+        });
+        html += `</div>`;
     }
+    
+    html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+    
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+    
     
     function exportToExcel() { 
         if (Object.keys(problemData).length === 0) { 
