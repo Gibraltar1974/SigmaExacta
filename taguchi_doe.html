@@ -15,6 +15,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     
+    <!-- AÑADIDO: Incluir KaTeX para renderizar fórmulas matemáticas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    
     <link rel="stylesheet" href="styles.css">
 
     <link rel="canonical" href="https://sigmaexacta.com/taguchi_doe">
@@ -235,9 +240,26 @@
         .analysis-run-report { border: 1px solid #ddd; padding: 1.5rem; margin-top: 2rem; border-radius: 8px; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         footer { padding: 2rem 1.25rem; text-align: center; }
         .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+        
+        /* Estilos para la sección de fórmulas matemáticas */
+        .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; text-align: center; margin-top: 1.5rem;}
+        .formula-item { padding: 1.5rem 1rem; border: 1px solid #eee; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 120px; font-size: 1.1em;}
+        .formula-item h3 { margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); }
+        .legend { margin-top: 2rem; padding: 1rem; border: 1px solid #eee; border-radius: 8px; background-color: #fdfdfd; }
+        .legend h3 { margin-top: 0; color: var(--primary-color); }
+        .legend ul { list-style: none; padding: 0; }
+        .legend li { margin-bottom: 0.5rem; }
+        .legend code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        
+        /* Estilos para mejorar la visualización de fórmulas KaTeX */
+        .katex { font-size: 1.1rem !important; }
+        .katex-display { margin: 1rem 0 !important; }
+        
         @media (max-width: 768px) {
             .factor-inputs { flex-direction: column; align-items: stretch; }
             .remove-factor { width: 100%; margin-top: 0.5rem; }
+            .formula-grid { grid-template-columns: 1fr; }
+            .katex { font-size: 1rem !important; }
         }
         @media (max-width: 480px) {
             .container { padding: 1rem; }
@@ -309,6 +331,29 @@
         <h1><span style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #673ab7; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i class="fas fa-flask" style="color: white; font-size: 22px;"></i></span> Free Online Robust Design (Taguchi Method) Tool</h1>
         <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
     </header>
+    
+    <!-- NEW SECTIONS ADDED HERE -->
+    <div class="container">
+        <h2><i class="fas fa-question-circle"></i> What is the Taguchi Method?</h2>
+        <p>The <strong>Taguchi Method</strong>, developed by Japanese engineer and statistician Genichi Taguchi, is a systematic approach to improving product and process quality through robust design. Unlike traditional experimental design methods that focus primarily on optimizing mean performance, the Taguchi Method emphasizes minimizing the effects of uncontrollable factors (noise) to create products and processes that perform consistently under varying conditions.</p>
+        <p>The core principles of the Taguchi Method include:</p>
+        <ul>
+            <li><strong>Robust Design:</strong> Designing products and processes that are insensitive to variations in manufacturing, environmental conditions, and component aging.</li>
+            <li><strong>Quality Loss Function:</strong> Quantifying the economic loss when a product deviates from its target value, even if it remains within specification limits.</li>
+            <li><strong>Orthogonal Arrays:</strong> Using specially designed fractional factorial experiments that allow testing multiple factors simultaneously with a minimal number of experimental runs.</li>
+            <li><strong>Signal-to-Noise (S/N) Ratios:</strong> Metrics that simultaneously consider both the mean performance and variability, helping identify factor settings that maximize performance while minimizing variation.</li>
+        </ul>
+        <p>The Taguchi Method has been widely adopted in manufacturing, engineering, and product development for its practical approach to quality improvement and cost reduction.</p>
+    </div>
+
+    <div class="container">
+        <h2><i class="fas fa-history"></i> Brief History of the Taguchi Method</h2>
+        <p>The Taguchi Method was developed by <strong>Genichi Taguchi</strong> in the 1950s while he was working at the Electrical Communications Laboratory (ECL) of Nippon Telegraph and Telephone (NTT) in Japan. His early work focused on improving telephone switching systems, where he recognized that traditional quality control methods were insufficient for preventing quality loss throughout the product lifecycle.</p>
+        <p>Taguchi's key insight was that <strong>quality should be measured by the deviation from a target value</strong>, not just by conformance to specification limits. He introduced the concept of the <strong>Quality Loss Function</strong>, which mathematically represents the economic loss incurred when a product characteristic deviates from its ideal value.</p>
+        <p>In the 1980s, Taguchi's methods gained international recognition when American companies, particularly in the automotive industry, began adopting them to compete with Japanese manufacturers. Companies like Ford, Xerox, and ITT successfully applied Taguchi methods to improve product quality and reduce costs.</p>
+        <p>Today, the Taguchi Method remains a fundamental tool in quality engineering, design of experiments, and robust design methodologies worldwide.</p>
+    </div>
+    <!-- END OF NEW SECTIONS -->
     
     <div class="container">
         <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
@@ -399,6 +444,56 @@
             </div>
         </div>
     </div>
+    
+    <!-- NEW MATHEMATICAL FORMULAS SECTION ADDED HERE -->
+    <div class="container">
+        <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+        <div class="formula-grid">
+            <div class="formula-item">
+                <h3>Signal-to-Noise Ratio (Smaller is Better)</h3>
+                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} y_i^2 \right) $$</div>
+                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+            </div>
+            <div class="formula-item">
+                <h3>Signal-to-Noise Ratio (Larger is Better)</h3>
+                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} \frac{1}{y_i^2} \right) $$</div>
+                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+            </div>
+            <div class="formula-item">
+                <h3>Signal-to-Noise Ratio (Nominal is Best)</h3>
+                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} (y_i - T)^2 \right) $$</div>
+                <p>Where \( T \) is the target value, \( y_i \) are the measured responses, and \( n \) is the number of observations.</p>
+            </div>
+            <div class="formula-item">
+                <h3>Mean Response</h3>
+                <div>$$ \bar{y} = \frac{1}{n} \sum_{i=1}^{n} y_i $$</div>
+                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+            </div>
+            <div class="formula-item">
+                <h3>Main Effect</h3>
+                <div>$$ ME = \frac{\sum \text{Responses at Level } i}{\text{Number of observations at Level } i} $$</div>
+                <p>Where \( i \) represents a specific factor level.</p>
+            </div>
+            <div class="formula-item">
+                <h3>ANOVA Sum of Squares</h3>
+                <div>$$ SS = \sum_{i=1}^{k} n_i (\bar{y}_i - \bar{y})^2 $$</div>
+                <p>Where \( n_i \) is the number of observations at level \( i \), \( \bar{y}_i \) is the mean at level \( i \), and \( \bar{y} \) is the overall mean.</p>
+            </div>
+        </div>
+        <div class="legend">
+            <h3>Taguchi Method Legend</h3>
+            <ul>
+                <li><code>S/N</code>: Signal-to-Noise Ratio - measures robustness against noise factors</li>
+                <li><code>\( y_i \)</code>: Individual measured response value</li>
+                <li><code>\( T \)</code>: Target value for nominal-is-best characteristics</li>
+                <li><code>\( n \)</code>: Number of observations or experimental runs</li>
+                <li><code>ME</code>: Main Effect - average response at a specific factor level</li>
+                <li><code>SS</code>: Sum of Squares - measures variation attributed to a factor</li>
+                <li><code>ANOVA</code>: Analysis of Variance - statistical method to determine factor significance</li>
+            </ul>
+        </div>
+    </div>
+    <!-- END OF MATHEMATICAL FORMULAS SECTION -->
 </main>
 <footer>
     <div class="disclaimer-note">
@@ -1030,4 +1125,3 @@
 </script>
 </body>
 </html>
-```
