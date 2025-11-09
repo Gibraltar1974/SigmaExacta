@@ -9,6 +9,12 @@
   <meta name="keywords" content="Open Source, free Solftware, SigmaExacta Weibull analysis, Weibull calculator, failure prediction, reliability engineering, mttf, beta, eta, probability plot, maintenance, life data analysis, Mean Time to Failure">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- AÑADIDO: KaTeX para fórmulas matemáticas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -469,10 +475,65 @@
         margin-top: 5px;
     }
 
+    /* AÑADIDO: Estilos para la sección de fórmulas matemáticas */
+    .formula-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+      gap: 1.5rem; 
+      text-align: center; 
+      margin-top: 1.5rem;
+    }
+    .formula-item { 
+      padding: 1.5rem 1rem; 
+      border: 1px solid #eee; 
+      border-radius: 8px; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 120px; 
+      font-size: 1.1em;
+    }
+    .formula-item h3 { 
+      margin-top: 0; 
+      margin-bottom: 1rem; 
+      color: var(--primary-color); 
+    }
+    .legend { 
+      margin-top: 2rem; 
+      padding: 1rem; 
+      border: 1px solid #eee; 
+      border-radius: 8px; 
+      background-color: #fdfdfd; 
+    }
+    .legend h3 { 
+      margin-top: 0; 
+      color: var(--primary-color); 
+    }
+    .legend ul { 
+      list-style: none; 
+      padding: 0; 
+    }
+    .legend li { 
+      margin-bottom: 0.5rem; 
+    }
+    .legend code { 
+      background-color: #eee; 
+      padding: 2px 6px; 
+      border-radius: 4px; 
+      font-weight: 600; 
+    }
+
     @media (max-width: 768px) {
       .results-container { flex-direction: column; }
       #results, #weibullChartContainer { width: 100%; }
       .main-content-wrapper { margin-top: 10px; }
+      .formula-grid { 
+        grid-template-columns: 1fr; 
+      }
+      .katex { 
+        font-size: 0.9rem !important; 
+      }
     }
     @media (max-width: 480px) {
       body { line-height: 1.5; }
@@ -577,6 +638,19 @@
     </ul>
   </div>
 
+  <!-- AÑADIDO: Sección History & Origin -->
+  <div class="container">
+    <h2><i class="fas fa-history"></i> History & Origin</h2>
+    <p>The Weibull distribution was first described by Swedish engineer and mathematician <strong>Waloddi Weibull</strong> in 1937. Initially developed to model material strength and fatigue life, Weibull presented his distribution to the American Society of Mechanical Engineers in 1951 in a famous paper titled "A Statistical Distribution Function of Wide Applicability."</p>
+    <p>What made Weibull's approach revolutionary was its flexibility to model various failure patterns through its shape parameter (β). Unlike the normal distribution, which assumes symmetrical variation around a mean, the Weibull distribution can effectively model:</p>
+    <ul>
+      <li><strong>Infant Mortality</strong> (β < 1): Early failures due to manufacturing defects</li>
+      <li><strong>Random Failures</strong> (β = 1): Constant failure rate, equivalent to exponential distribution</li>
+      <li><strong>Wear-Out Failures</strong> (β > 1): Age-related failures that increase over time</li>
+    </ul>
+    <p>This versatility made Weibull analysis particularly valuable in reliability engineering, maintenance planning, and failure analysis across industries from aerospace to manufacturing.</p>
+  </div>
+
   <div class="container">
     <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
     <ol>
@@ -636,6 +710,56 @@
           </div>
         <button id="exportBtn" style="margin-top: 10px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
       </div>
+  </div>
+
+  <!-- AÑADIDO: Sección Mathematical Formulas -->
+  <div class="container">
+    <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+    <div class="formula-grid">
+      <div class="formula-item">
+        <h3>Weibull Probability Density Function (PDF)</h3>
+        <div style="font-size: 1rem;">$$ f(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+        <p>Where $t$ is time, $\beta$ is the shape parameter, and $\eta$ is the scale parameter.</p>
+      </div>
+      <div class="formula-item">
+        <h3>Cumulative Distribution Function (CDF)</h3>
+        <div style="font-size: 1rem;">$$ F(t) = 1 - e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+        <p>Probability of failure by time $t$.</p>
+      </div>
+      <div class="formula-item">
+        <h3>Reliability Function</h3>
+        <div style="font-size: 1rem;">$$ R(t) = e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+        <p>Probability of survival beyond time $t$.</p>
+      </div>
+      <div class="formula-item">
+        <h3>Mean Time To Failure (MTTF)</h3>
+        <div style="font-size: 1rem;">$$ MTTF = \eta \cdot \Gamma\left(1 + \frac{1}{\beta}\right) $$</div>
+        <p>Where $\Gamma$ is the Gamma function.</p>
+      </div>
+      <div class="formula-item">
+        <h3>Failure Rate (Hazard Function)</h3>
+        <div style="font-size: 1rem;">$$ h(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} $$</div>
+        <p>Instantaneous failure rate at time $t$.</p>
+      </div>
+      <div class="formula-item">
+        <h3>Median Life</h3>
+        <div style="font-size: 1rem;">$$ t_{0.5} = \eta (\ln 2)^{1/\beta} $$</div>
+        <p>Time when 50% of units have failed.</p>
+      </div>
+    </div>
+    <div class="legend">
+      <h3>Weibull Parameters Legend</h3>
+      <ul>
+        <li><code>β (Beta)</code>: Shape parameter - determines failure pattern</li>
+        <li><code>η (Eta)</code>: Scale parameter - characteristic life (63.2% failure point)</li>
+        <li><code>t</code>: Time or cycles</li>
+        <li><code>Γ</code>: Gamma function</li>
+        <li><code>f(t)</code>: Probability density at time t</li>
+        <li><code>F(t)</code>: Cumulative probability of failure by time t</li>
+        <li><code>R(t)</code>: Reliability (survival probability) at time t</li>
+        <li><code>h(t)</code>: Failure rate at time t</li>
+      </ul>
+    </div>
   </div>
 </main>
 <footer>
