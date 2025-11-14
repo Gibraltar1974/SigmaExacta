@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taguchi DOE Calculator & Analyzer | Orthogonal Array Generator</title>
     <link rel="canonical" href="https://sigmaexacta.com/taguchi_doe" />
-    <meta name="description" content="Free online Taguchi DOE calculator to create and analyze robust experiments. Generate L4, L8, L9, L16 orthogonal arrays, calculate S/N ratios, find optimal factor levels, and perform ANOVA. An essential tool for quality engineering, process optimization, and robust design.">
-    <meta name="keywords" content="open source, free software, SigmaExacta, taguchi calculator, doe calculator, taguchi method, taguchi, design of experiments, doe, orthogonal array, L4, L8, L9, L16, s/n ratio, signal to noise, robust design, anova, process optimization, quality engineering, ANOVA, Analysis of Variance">
+    <meta name="description"
+        content="Free online Taguchi DOE calculator to create and analyze robust experiments. Generate L4, L8, L9, L16 orthogonal arrays, calculate S/N ratios, find optimal factor levels, and perform ANOVA. An essential tool for quality engineering, process optimization, and robust design.">
+    <meta name="keywords"
+        content="open source, free software, SigmaExacta, taguchi calculator, doe calculator, taguchi method, taguchi, design of experiments, doe, orthogonal array, L4, L8, L9, L16, s/n ratio, signal to noise, robust design, anova, process optimization, quality engineering, ANOVA, Analysis of Variance">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,160 +17,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
-    
+
     <!-- AÑADIDO: Incluir KaTeX para renderizar fórmulas matemáticas -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
     <link rel="stylesheet" href="styles.css">
 
     <link rel="canonical" href="https://sigmaexacta.com/taguchi_doe">
-    <style>
-        /* --- Estilos base para la barra de navegación --- */
-        .top-bar {
-            position: sticky;
-            top: 0;
-            z-index: 1001;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #222;
-        }
-        .logo-text, .navigation .nav-link, .nav-toggle {
-            color: #fff;
-        }
-
-        .nav-toggle {
-            display: none; 
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .navigation .nav-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-        }
-
-        .navigation .nav-link {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-        }
-        
-        .navigation .nav-link i {
-            margin-left: 5px;
-            transition: transform 0.3s ease;
-        }
-        
-        .nav-item-dropdown {
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: #fff;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            border-radius: 5px;
-            z-index: 1000;
-            min-width: 600px;
-            padding: 20px;
-        }
-        
-        .dropdown-menu a, .dropdown-menu h4 {
-            color: #333;
-        }
-        .dropdown-link:hover {
-            background-color: #f1f1f1;
-        }
-
-
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-
-        .nav-item-dropdown:hover > .dropdown-menu {
-            display: block;
-        }
-
-        @media (max-width: 992px) {
-            .nav-toggle {
-                display: block;
-            }
-
-            .navigation .nav-menu {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                border-top: 1px solid #eee;
-            }
-            
-            .navigation .nav-menu .nav-link {
-                color: #333; 
-            }
-
-            .navigation .nav-menu.show-menu {
-                display: flex;
-            }
-            
-            .navigation .nav-item {
-                width: 100%;
-                text-align: left;
-            }
-
-            .nav-item-dropdown > .nav-link {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .dropdown-menu {
-                display: none; 
-                position: static; 
-                width: 100%;
-                box-shadow: none;
-                border-top: 1px solid #f0f0f0;
-                padding: 10px 0 10px 30px;
-                min-width: unset;
-                background-color: #f9f9f9;
-            }
-
-            .dropdown-menu.show-submenu {
-                display: block;
-            }
-            
-            .dropdown-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-item-dropdown:hover > .dropdown-menu {
-                display: none;
-            }
-            .nav-item-dropdown.active:hover > .dropdown-menu {
-                display: block;
-            }
-            
-            .nav-item-dropdown.active > .nav-link i {
-                transform: rotate(180deg);
-            }
-        }
-    </style>
     <style>
         /* Estilos específicos de la página */
         :root {
@@ -180,574 +43,971 @@
             --success-bg-color: #e8f8f5;
             font-size: 16px;
         }
-        *, *::before, *::after { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: #333; background-color: #f5f7fa; line-height: 1.6; }
-        img, canvas { max-width: 100%; height: auto; }
-        .main-content-wrapper { padding: 1.25rem; }
-        .main-content-wrapper > .header, .main-content-wrapper > .container { max-width: 1200px; margin-left: auto; margin-right: auto; }
-        .header { text-align: center; padding: 1rem 0; margin-bottom: 1.25rem; border-bottom: 1px solid #ddd; }
-        .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: 0.5rem 0; font-weight: 800; }
-        .header p { color: #7f8c8d; max-width: 700px; margin: 0 auto; font-size: 1.1rem; font-weight: 400; }
-        .container { background-color: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary-color); margin-top: 0; font-weight: 800; }
-        h3 { color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.5rem; margin-bottom: 1rem; font-weight: 800; }
-        .container ol, .container ul { padding-left: 1.25rem; line-height: 1.8; }
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--primary-color); }
-        input, select, button, textarea { padding: 0.7rem; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; font-size: 1rem; font-family: 'Nunito', sans-serif; transition: border-color 0.3s, box-shadow 0.3s; }
-        textarea { min-height: 80px; resize: vertical; }
-        button { background-color: var(--secondary-color); color: white; border: none; cursor: pointer; padding: 0.75rem 1.25rem; margin-top: 1rem; font-weight: 600; }
-        button:hover { background-color: #2980b9; }
-        button:focus-visible, input:focus, select:focus, textarea:focus { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
-        button.danger { background-color: var(--accent-color); }
-        button.danger:hover { background-color: #c0392b; }
-        button.add-factor { background-color: var(--success-color); }
-        button.add-factor:hover { background-color: #27ae60; }
-        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; box-shadow: 0 2px 3px rgba(0,0,0,0.1); display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        th, td { border: 1px solid #e0e0e0; padding: 0.75rem; text-align: center; white-space: normal; }
-        th { background-color: var(--secondary-color); color: white; font-weight: 600; }
-        tr:nth-child(even) { background-color: #f8f9fa; }
-        tr:hover { background-color: #f1f7fd; }
-        .hidden { display: none; }
-        .factor-inputs { display: flex; gap: 0.8rem; margin-bottom: 1rem; align-items: center; }
-        .factor-inputs input { flex: 1; }
-        .remove-factor { background-color: var(--accent-color); width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-top: 0; }
-        .button-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
-        .button-group button { flex: 1; min-width: 150px; margin-top:0;}
-        .snr-type-selector label { display: inline-block; margin-right: 1rem; cursor: pointer; }
-        .snr-type-selector input[type="radio"] { width: auto; margin-right: 5px; }
-        .interpretation { background-color: #f8f9fa; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid var(--secondary-color); }
-        .optimal-levels, .conclusion-box { background-color: var(--success-bg-color); padding: 1rem; border-radius: 6px; margin: 1.25rem 0; border-left: 4px solid var(--success-color); }
-        .charts-parent-container { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; margin: 2rem 0; }
-        .chart-wrapper { flex: 1; min-width: 300px; max-width: 450px; position: relative; height: 350px; border: 1px solid #ddd; padding: 0.8rem; border-radius: 8px; background-color: #fdfdfd; }
-        .factor-table th { background-color: var(--primary-color); }
-        .highlight { background-color: #fffacd; font-weight: bold; }
-        .info-icon { cursor: help; color: var(--secondary-color); margin-left: 8px; font-size: 0.9em; }
-        .anova-table th.significant { background-color: var(--success-color); }
-        .anova-table td.significant { background-color: var(--success-bg-color); font-weight: bold; }
-        .conclusion-box ul { list-style-type: none; padding-left: 0; }
-        .conclusion-box li { margin-bottom: 0.6rem; display: flex; align-items: flex-start; }
-        .conclusion-box li .fas { margin-right: 10px; color: var(--success-color); font-size: 1.2rem; padding-top: 4px; }
-        
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+
+        img,
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .main-content-wrapper {
+            padding: 1.25rem;
+        }
+
+        .main-content-wrapper>.header,
+        .main-content-wrapper>.container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1rem 0;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: 0.5rem 0;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-weight: 800;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .container ol,
+        .container ul {
+            padding-left: 1.25rem;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input,
+        select,
+        button,
+        textarea {
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 0.75rem 1.25rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:focus-visible,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        button.danger {
+            background-color: var(--accent-color);
+        }
+
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+
+        button.add-factor {
+            background-color: var(--success-color);
+        }
+
+        button.add-factor:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        th,
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem;
+            text-align: center;
+            white-space: normal;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #f1f7fd;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .factor-inputs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .factor-inputs input {
+            flex: 1;
+        }
+
+        .remove-factor {
+            background-color: var(--accent-color);
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-top: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .button-group button {
+            flex: 1;
+            min-width: 150px;
+            margin-top: 0;
+        }
+
+        .snr-type-selector label {
+            display: inline-block;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+
+        .snr-type-selector input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .interpretation {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .optimal-levels,
+        .conclusion-box {
+            background-color: var(--success-bg-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.25rem 0;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .charts-parent-container {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            position: relative;
+            height: 350px;
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .factor-table th {
+            background-color: var(--primary-color);
+        }
+
+        .highlight {
+            background-color: #fffacd;
+            font-weight: bold;
+        }
+
+        .info-icon {
+            cursor: help;
+            color: var(--secondary-color);
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+
+        .anova-table th.significant {
+            background-color: var(--success-color);
+        }
+
+        .anova-table td.significant {
+            background-color: var(--success-bg-color);
+            font-weight: bold;
+        }
+
+        .conclusion-box ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .conclusion-box li {
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .conclusion-box li .fas {
+            margin-right: 10px;
+            color: var(--success-color);
+            font-size: 1.2rem;
+            padding-top: 4px;
+        }
+
         /* ===== MODIFICACIÓN PARA ARREGLAR DESBORDAMIENTO DE TEXTO ===== */
         .conclusion-box li .summary-text {
-            word-break: break-word; /* Permite que palabras largas se rompan y pasen a la siguiente línea */
-            min-width: 0; /* Esencial para que los ítems de flexbox se encojan correctamente */
+            word-break: break-word;
+            /* Permite que palabras largas se rompan y pasen a la siguiente línea */
+            min-width: 0;
+            /* Esencial para que los ítems de flexbox se encojan correctamente */
         }
+
         /* ===== FIN DE LA MODIFICACIÓN ===== */
 
-        .analysis-run-report { border: 1px solid #ddd; padding: 1.5rem; margin-top: 2rem; border-radius: 8px; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        footer { padding: 2rem 1.25rem; text-align: center; }
-        .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
-        
-        /* Estilos para la sección de fórmulas matemáticas */
-        .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; text-align: center; margin-top: 1.5rem;}
-        .formula-item { padding: 1.5rem 1rem; border: 1px solid #eee; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 120px; font-size: 1.1em;}
-        .formula-item h3 { margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); }
-        .legend { margin-top: 2rem; padding: 1rem; border: 1px solid #eee; border-radius: 8px; background-color: #fdfdfd; }
-        .legend h3 { margin-top: 0; color: var(--primary-color); }
-        .legend ul { list-style: none; padding: 0; }
-        .legend li { margin-bottom: 0.5rem; }
-        .legend code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
-        
-        /* Estilos para mejorar la visualización de fórmulas KaTeX */
-        .katex { font-size: 1.1rem !important; }
-        .katex-display { margin: 1rem 0 !important; }
-        
-        @media (max-width: 768px) {
-            .factor-inputs { flex-direction: column; align-items: stretch; }
-            .remove-factor { width: 100%; margin-top: 0.5rem; }
-            .formula-grid { grid-template-columns: 1fr; }
-            .katex { font-size: 1rem !important; }
+        .analysis-run-report {
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
+        footer {
+            padding: 2rem 1.25rem;
+            text-align: center;
+        }
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Estilos para la sección de fórmulas matemáticas */
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .formula-item {
+            padding: 1.5rem 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+            font-size: 1.1em;
+        }
+
+        .formula-item h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .legend {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .legend h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .legend ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .legend li {
+            margin-bottom: 0.5rem;
+        }
+
+        .legend code {
+            background-color: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Estilos para mejorar la visualización de fórmulas KaTeX */
+        .katex {
+            font-size: 1.1rem !important;
+        }
+
+        .katex-display {
+            margin: 1rem 0 !important;
+        }
+
+        @media (max-width: 768px) {
+            .factor-inputs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .remove-factor {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            .formula-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .katex {
+                font-size: 1rem !important;
+            }
+        }
+
         @media (max-width: 480px) {
-            .container { padding: 1rem; }
-            .button-group { flex-direction: column; }
+            .container {
+                padding: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
-    <header role="banner" class="top-bar">
-        <a href="index.html" class="logo-container-link">
-            <div class="logo-container">
-                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-                <span class="logo-text">SigmaExacta</span>
-            </div>
-        </a>
-        <nav class="navigation">
-            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                    <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                    <div class="dropdown-menu" id="tools-dropdown-menu">
-                        <div class="dropdown-grid">
-                            <div class="dropdown-column">
-                                <h4 class="dropdown-category">Process & Quality</h4>
-                                <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                                <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                                <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                                <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                            </div>
-                            <div class="dropdown-column">
-                                <h4 class="dropdown-category">Design & Innovation</h4>
-                                <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                                <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                                <a href="fmea.html" class="dropdown-link">FMEA</a>
-                                <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                                <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                                <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                                <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                                <a href="kano.html" class="dropdown-link">Kano Model</a>
-                            </div>
-                            <div class="dropdown-column">
-                                <h4 class="dropdown-category">Problem Solving</h4>
-                                <a href="8d.html" class="dropdown-link">8D Report</a>
-                                <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                                <a href="triz.html" class="dropdown-link">TRIZ</a>
-                                <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                            </div>
-                             <div class="dropdown-column">
-                                <h4 class="dropdown-category">Strategy & Management</h4>
-                                <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                                <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                                <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                                <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-                <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <!-- Contenedor para cargar el header dinámicamente -->
+    <div id="header-container"></div>
 
-<main class="main-content-wrapper">
-    <header class="header">
-        <h1><span style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #673ab7; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i class="fas fa-flask" style="color: white; font-size: 22px;"></i></span> Free Online Robust Design (Taguchi Method) Tool</h1>
-        <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
-    </header>
-    
-    <!-- NEW SECTIONS ADDED HERE -->
-    <div class="container">
-        <h2><i class="fas fa-question-circle"></i> What is the Taguchi Method?</h2>
-        <p>The <strong>Taguchi Method</strong>, developed by Japanese engineer and statistician Genichi Taguchi, is a systematic approach to improving product and process quality through robust design. Unlike traditional experimental design methods that focus primarily on optimizing mean performance, the Taguchi Method emphasizes minimizing the effects of uncontrollable factors (noise) to create products and processes that perform consistently under varying conditions.</p>
-        <p>The core principles of the Taguchi Method include:</p>
-        <ul>
-            <li><strong>Robust Design:</strong> Designing products and processes that are insensitive to variations in manufacturing, environmental conditions, and component aging.</li>
-            <li><strong>Quality Loss Function:</strong> Quantifying the economic loss when a product deviates from its target value, even if it remains within specification limits.</li>
-            <li><strong>Orthogonal Arrays:</strong> Using specially designed fractional factorial experiments that allow testing multiple factors simultaneously with a minimal number of experimental runs.</li>
-            <li><strong>Signal-to-Noise (S/N) Ratios:</strong> Metrics that simultaneously consider both the mean performance and variability, helping identify factor settings that maximize performance while minimizing variation.</li>
-        </ul>
-        <p>The Taguchi Method has been widely adopted in manufacturing, engineering, and product development for its practical approach to quality improvement and cost reduction.</p>
-    </div>
+    <main class="main-content-wrapper">
+        <header class="header">
+            <h1><span
+                    style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #673ab7; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i
+                        class="fas fa-flask" style="color: white; font-size: 22px;"></i></span> Free Online Robust
+                Design (Taguchi Method) Tool</h1>
+            <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
+        </header>
 
-    <div class="container">
-        <h2><i class="fas fa-history"></i> Brief History of the Taguchi Method</h2>
-        <p>The Taguchi Method was developed by <strong>Genichi Taguchi</strong> in the 1950s while he was working at the Electrical Communications Laboratory (ECL) of Nippon Telegraph and Telephone (NTT) in Japan. His early work focused on improving telephone switching systems, where he recognized that traditional quality control methods were insufficient for preventing quality loss throughout the product lifecycle.</p>
-        <p>Taguchi's key insight was that <strong>quality should be measured by the deviation from a target value</strong>, not just by conformance to specification limits. He introduced the concept of the <strong>Quality Loss Function</strong>, which mathematically represents the economic loss incurred when a product characteristic deviates from its ideal value.</p>
-        <p>In the 1980s, Taguchi's methods gained international recognition when American companies, particularly in the automotive industry, began adopting them to compete with Japanese manufacturers. Companies like Ford, Xerox, and ITT successfully applied Taguchi methods to improve product quality and reduce costs.</p>
-        <p>Today, the Taguchi Method remains a fundamental tool in quality engineering, design of experiments, and robust design methodologies worldwide.</p>
-    </div>
-    <!-- END OF NEW SECTIONS -->
-    
-    <div class="container">
-        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-        <ol>
-            <li><strong>Load Data or Start Fresh:</strong> Use "Load Example Data" for a quick demo or fill in the setup fields yourself. Use "Reset Form" to start over.</li>
-            <li><strong>Experiment Setup:</strong> Give your experiment a clear name and a concise objective.</li>
-            <li><strong>Define Factors and Levels:</strong> A "factor" is a variable you want to test (e.g., Temperature, Pressure). "Levels" are the specific settings for that factor (e.g., 100°C, 120°C for Temperature).</li>
-            <li><strong>Response and S/N Type:</strong> Enter the name of what you are measuring (the "Response Variable") and select the appropriate Signal-to-Noise (S/N) ratio (Smaller is better, Larger is better, or Nominal is best).</li>
-            <li><strong>Generate Design:</strong> Click "Generate Taguchi Design." The tool will create an experimental plan.</li>
-            <li><strong>Enter Data:</strong> Perform the experiments and enter your measured result for each run.</li>
-            <li><strong>Calculate and Analyze:</strong> Click "Calculate Full Analysis." The full report will appear below. Each new calculation will be added below the previous one.</li>
-            <li><strong>Export:</strong> Click "Export to Excel" at the bottom of the report to save the results of the *last* analysis.</li>
-        </ol>
-    </div>
-    
-    <div class="container">
-        <button type="button" id="load-example-btn" class="add-factor" style="margin-top: 0; margin-bottom: 1.5rem;">📋 Load Example Data</button>
-
-        <h2>Experiment Setup</h2>
-        <div class="form-group">
-            <label for="experiment-name">Experiment Name:</label>
-            <input type="text" id="experiment-name" placeholder="E.g., Coffee Brewing Optimization" value="">
-        </div>
-        <div class="form-group">
-            <label for="objective">Experiment Objective:</label>
-            <textarea id="objective" placeholder="Describe the goal, e.g., to maximize coffee flavor"></textarea>
-        </div>
-        
-        <h3>Factors and Levels</h3>
-        <div id="factors-container"></div>
-        <button type="button" id="add-factor" class="add-factor">➕ Add Factor</button>
-        
-        <div class="form-group">
-            <label for="response-variable">Response Variable:</label>
-            <input type="text" id="response-variable" placeholder="E.g., Flavor Score (1-10)" value="">
-        </div>
-        
-        <div class="form-group">
-            <label for="array-select">Select Taguchi Array
-                <i class="fas fa-info-circle info-icon" title="An Orthogonal Array allows studying many factors with a small number of experiments, saving time and resources. 'Automatic' selects the most efficient array for your setup."></i>
-            </label>
-            <select id="array-select">
-                <option value="">-- Automatic selection (recommended) --</option>
-                <option value="L4">L4 (up to 3 factors, 2 levels)</option>
-                <option value="L8">L8 (up to 7 factors, 2 levels)</option>
-                <option value="L9">L9 (up to 4 factors, 3 levels)</option>
-                <option value="L16">L16 (up to 15 factors, 2 levels)</option>
-            </select>
-        </div>
-        
-        <div class="form-group snr-type-selector">
-            <label>Signal-to-Noise Ratio Type
-                <i class="fas fa-info-circle info-icon" title="S/N ratio measures robustness. Choose 'Smaller' to minimize things like defects or cost. Choose 'Larger' to maximize things like strength or yield. Choose 'Nominal' to hit a specific target value, like a dimension."></i>
-            </label>
-            <div>
-                <label><input type="radio" name="snr-type" value="smaller" checked> Smaller is better (Minimize)</label>
-                <label><input type="radio" name="snr-type" value="larger"> Larger is better (Maximize)</label>
-                <label><input type="radio" name="snr-type" value="nominal"> Nominal is best (Target)</label>
-            </div>
-            <div id="nominal-target-group" class="form-group hidden" style="margin-top: 1rem;">
-                <label for="nominal-target">Target Value (for Nominal is best):</label>
-                <input type="number" id="nominal-target" step="any" placeholder="Enter target value">
-            </div>
-            </div>
-
-        <div class="button-group">
-             <button type="button" id="reset-form-btn" class="danger">❌ Reset Form</button>
-        </div>
-        
-        <button type="button" id="generate-design">🔧 Generate Taguchi Design</button>
-    </div>
-    
-    <div id="results-container" class="container hidden">
-        <div id="design-and-data-section">
-            <h2><i class="fas fa-table"></i> Design & Data Entry</h2>
-            <div id="experiment-info"></div>
-            <div id="orthogonal-array"></div>
-            <button type="button" id="calculate-analysis">📊 Calculate Full Analysis</button>
-        </div>
-        <div id="analysis-output-section" class="hidden">
-            <div id="analysis-history-container"></div>
-            <hr style="margin: 2rem 0;">
-            <div class="button-group">
-                <button type="button" id="export-excel">📋 Export to Excel</button>
-            </div>
-            <div id="success-message" class="success-message" style="display:none; background-color: var(--success-bg-color); color: var(--success-color); border: 1px solid var(--success-color); padding: 1rem; border-radius: 6px; margin-top: 1rem; text-align: center;">
-                Excel file generated successfully!
-            </div>
-        </div>
-    </div>
-    
-    <!-- NEW MATHEMATICAL FORMULAS SECTION ADDED HERE -->
-    <div class="container">
-        <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
-        <div class="formula-grid">
-            <div class="formula-item">
-                <h3>Signal-to-Noise Ratio (Smaller is Better)</h3>
-                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} y_i^2 \right) $$</div>
-                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
-            </div>
-            <div class="formula-item">
-                <h3>Signal-to-Noise Ratio (Larger is Better)</h3>
-                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} \frac{1}{y_i^2} \right) $$</div>
-                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
-            </div>
-            <div class="formula-item">
-                <h3>Signal-to-Noise Ratio (Nominal is Best)</h3>
-                <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} (y_i - T)^2 \right) $$</div>
-                <p>Where \( T \) is the target value, \( y_i \) are the measured responses, and \( n \) is the number of observations.</p>
-            </div>
-            <div class="formula-item">
-                <h3>Mean Response</h3>
-                <div>$$ \bar{y} = \frac{1}{n} \sum_{i=1}^{n} y_i $$</div>
-                <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
-            </div>
-            <div class="formula-item">
-                <h3>Main Effect</h3>
-                <div>$$ ME = \frac{\sum \text{Responses at Level } i}{\text{Number of observations at Level } i} $$</div>
-                <p>Where \( i \) represents a specific factor level.</p>
-            </div>
-            <div class="formula-item">
-                <h3>ANOVA Sum of Squares</h3>
-                <div>$$ SS = \sum_{i=1}^{k} n_i (\bar{y}_i - \bar{y})^2 $$</div>
-                <p>Where \( n_i \) is the number of observations at level \( i \), \( \bar{y}_i \) is the mean at level \( i \), and \( \bar{y} \) is the overall mean.</p>
-            </div>
-        </div>
-        <div class="legend">
-            <h3>Taguchi Method Legend</h3>
+        <!-- NEW SECTIONS ADDED HERE -->
+        <div class="container">
+            <h2><i class="fas fa-question-circle"></i> What is the Taguchi Method?</h2>
+            <p>The <strong>Taguchi Method</strong>, developed by Japanese engineer and statistician Genichi Taguchi, is
+                a systematic approach to improving product and process quality through robust design. Unlike traditional
+                experimental design methods that focus primarily on optimizing mean performance, the Taguchi Method
+                emphasizes minimizing the effects of uncontrollable factors (noise) to create products and processes
+                that perform consistently under varying conditions.</p>
+            <p>The core principles of the Taguchi Method include:</p>
             <ul>
-                <li><code>S/N</code>: Signal-to-Noise Ratio - measures robustness against noise factors</li>
-                <li><code>\( y_i \)</code>: Individual measured response value</li>
-                <li><code>\( T \)</code>: Target value for nominal-is-best characteristics</li>
-                <li><code>\( n \)</code>: Number of observations or experimental runs</li>
-                <li><code>ME</code>: Main Effect - average response at a specific factor level</li>
-                <li><code>SS</code>: Sum of Squares - measures variation attributed to a factor</li>
-                <li><code>ANOVA</code>: Analysis of Variance - statistical method to determine factor significance</li>
+                <li><strong>Robust Design:</strong> Designing products and processes that are insensitive to variations
+                    in manufacturing, environmental conditions, and component aging.</li>
+                <li><strong>Quality Loss Function:</strong> Quantifying the economic loss when a product deviates from
+                    its target value, even if it remains within specification limits.</li>
+                <li><strong>Orthogonal Arrays:</strong> Using specially designed fractional factorial experiments that
+                    allow testing multiple factors simultaneously with a minimal number of experimental runs.</li>
+                <li><strong>Signal-to-Noise (S/N) Ratios:</strong> Metrics that simultaneously consider both the mean
+                    performance and variability, helping identify factor settings that maximize performance while
+                    minimizing variation.</li>
             </ul>
+            <p>The Taguchi Method has been widely adopted in manufacturing, engineering, and product development for its
+                practical approach to quality improvement and cost reduction.</p>
         </div>
-    </div>
-    <!-- END OF MATHEMATICAL FORMULAS SECTION -->
-</main>
-<footer>
-    <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based on the output of these tools are the sole responsibility of the user.</p>
-    </div>
-</footer>
-<script>
-    const orthogonalArrays = { 
-        'L4': { 'name': 'L4', 'description': '3 factors with 2 levels', 'factors': 3, 'levels': 2, 'runs': 4, 'array': [[1, 1, 1], [1, 2, 2], [2, 1, 2], [2, 2, 1]] }, 
-        'L8': { 'name': 'L8', 'description': '7 factors with 2 levels', 'factors': 7, 'levels': 2, 'runs': 8, 'array': [[1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 2, 2, 2, 2], [1, 2, 2, 1, 1, 2, 2], [1, 2, 2, 2, 2, 1, 1], [2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 2, 1, 2, 1], [2, 2, 1, 1, 2, 2, 1], [2, 2, 1, 2, 1, 1, 2]] }, 
-        'L9': { 'name': 'L9', 'description': '4 factors with 3 levels', 'factors': 4, 'levels': 3, 'runs': 9, 'array': [[1, 1, 1, 1], [1, 2, 2, 2], [1, 3, 3, 3], [2, 1, 2, 3], [2, 2, 3, 1], [2, 3, 1, 2], [3, 1, 3, 2], [3, 2, 1, 3], [3, 3, 2, 1]] }, 
-        'L16': { 'name': 'L16', 'description': '15 factors with 2 levels', 'factors': 15, 'levels': 2, 'runs': 16, 'array': [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], [1,1,1,1,1,1,1,2,2,2,2,2,2,2,2], [1,1,1,2,2,2,2,1,1,1,1,2,2,2,2], [1,1,1,2,2,2,2,2,2,2,2,1,1,1,1], [1,2,2,1,1,2,2,1,1,2,2,1,1,2,2], [1,2,2,1,1,2,2,2,2,1,1,2,2,1,1], [1,2,2,2,2,1,1,1,1,2,2,2,2,1,1], [1,2,2,2,2,1,1,2,2,1,1,1,1,2,2], [2,1,2,1,2,1,2,1,2,1,2,1,2,1,2], [2,1,2,1,2,1,2,2,1,2,1,2,1,2,1], [2,1,2,2,1,2,1,1,2,1,2,2,1,2,1], [2,1,2,2,1,2,1,2,1,2,1,1,2,1,2], [2,2,1,1,2,2,1,1,2,2,1,1,2,2,1], [2,2,1,1,2,2,1,2,1,1,2,2,1,1,2], [2,2,1,2,1,1,2,1,2,2,1,2,1,1,2], [2,2,1,2,1,1,2,2,1,1,2,1,2,2,1]] } 
-    };
-    
-    const DOM = { 
-        addFactorBtn: document.getElementById('add-factor'), 
-        generateDesignBtn: document.getElementById('generate-design'), 
-        calculateAnalysisBtn: document.getElementById('calculate-analysis'), 
-        exportExcelBtn: document.getElementById('export-excel'), 
-        loadExampleBtn: document.getElementById('load-example-btn'), 
-        resetFormBtn: document.getElementById('reset-form-btn'), 
-        resultsContainer: document.getElementById('results-container'), 
-        designAndDataSection: document.getElementById('design-and-data-section'), 
-        analysisOutputSection: document.getElementById('analysis-output-section'), 
-        factorsContainer: document.getElementById('factors-container'), 
-        orthogonalArrayDiv: document.getElementById('orthogonal-array'), 
-        experimentInfoDiv: document.getElementById('experiment-info'), 
-        analysisHistoryContainer: document.getElementById('analysis-history-container'), 
-        successMessage: document.getElementById('success-message'), 
-    };
-    
-    let experimentData = {}, allCharts = [], calculationCount = 0;
-    
-    const logoImage = new Image();
-    const logoPlugin = {
-        id: 'sigmaExactaLogo',
-        afterDraw: (chart) => {
-            if (logoImage.complete) {
-                const ctx = chart.ctx;
-                const logoSize = 30;
-                const margin = 10;
-                ctx.drawImage(logoImage, margin, margin, logoSize, logoSize);
+
+        <div class="container">
+            <h2><i class="fas fa-history"></i> Brief History of the Taguchi Method</h2>
+            <p>The Taguchi Method was developed by <strong>Genichi Taguchi</strong> in the 1950s while he was working at
+                the Electrical Communications Laboratory (ECL) of Nippon Telegraph and Telephone (NTT) in Japan. His
+                early work focused on improving telephone switching systems, where he recognized that traditional
+                quality control methods were insufficient for preventing quality loss throughout the product lifecycle.
+            </p>
+            <p>Taguchi's key insight was that <strong>quality should be measured by the deviation from a target
+                    value</strong>, not just by conformance to specification limits. He introduced the concept of the
+                <strong>Quality Loss Function</strong>, which mathematically represents the economic loss incurred when
+                a product characteristic deviates from its ideal value.</p>
+            <p>In the 1980s, Taguchi's methods gained international recognition when American companies, particularly in
+                the automotive industry, began adopting them to compete with Japanese manufacturers. Companies like
+                Ford, Xerox, and ITT successfully applied Taguchi methods to improve product quality and reduce costs.
+            </p>
+            <p>Today, the Taguchi Method remains a fundamental tool in quality engineering, design of experiments, and
+                robust design methodologies worldwide.</p>
+        </div>
+        <!-- END OF NEW SECTIONS -->
+
+        <div class="container">
+            <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+            <ol>
+                <li><strong>Load Data or Start Fresh:</strong> Use "Load Example Data" for a quick demo or fill in the
+                    setup fields yourself. Use "Reset Form" to start over.</li>
+                <li><strong>Experiment Setup:</strong> Give your experiment a clear name and a concise objective.</li>
+                <li><strong>Define Factors and Levels:</strong> A "factor" is a variable you want to test (e.g.,
+                    Temperature, Pressure). "Levels" are the specific settings for that factor (e.g., 100°C, 120°C for
+                    Temperature).</li>
+                <li><strong>Response and S/N Type:</strong> Enter the name of what you are measuring (the "Response
+                    Variable") and select the appropriate Signal-to-Noise (S/N) ratio (Smaller is better, Larger is
+                    better, or Nominal is best).</li>
+                <li><strong>Generate Design:</strong> Click "Generate Taguchi Design." The tool will create an
+                    experimental plan.</li>
+                <li><strong>Enter Data:</strong> Perform the experiments and enter your measured result for each run.
+                </li>
+                <li><strong>Calculate and Analyze:</strong> Click "Calculate Full Analysis." The full report will appear
+                    below. Each new calculation will be added below the previous one.</li>
+                <li><strong>Export:</strong> Click "Export to Excel" at the bottom of the report to save the results of
+                    the *last* analysis.</li>
+            </ol>
+        </div>
+
+        <div class="container">
+            <button type="button" id="load-example-btn" class="add-factor"
+                style="margin-top: 0; margin-bottom: 1.5rem;">📋 Load Example Data</button>
+
+            <h2>Experiment Setup</h2>
+            <div class="form-group">
+                <label for="experiment-name">Experiment Name:</label>
+                <input type="text" id="experiment-name" placeholder="E.g., Coffee Brewing Optimization" value="">
+            </div>
+            <div class="form-group">
+                <label for="objective">Experiment Objective:</label>
+                <textarea id="objective" placeholder="Describe the goal, e.g., to maximize coffee flavor"></textarea>
+            </div>
+
+            <h3>Factors and Levels</h3>
+            <div id="factors-container"></div>
+            <button type="button" id="add-factor" class="add-factor">➕ Add Factor</button>
+
+            <div class="form-group">
+                <label for="response-variable">Response Variable:</label>
+                <input type="text" id="response-variable" placeholder="E.g., Flavor Score (1-10)" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="array-select">Select Taguchi Array
+                    <i class="fas fa-info-circle info-icon"
+                        title="An Orthogonal Array allows studying many factors with a small number of experiments, saving time and resources. 'Automatic' selects the most efficient array for your setup."></i>
+                </label>
+                <select id="array-select">
+                    <option value="">-- Automatic selection (recommended) --</option>
+                    <option value="L4">L4 (up to 3 factors, 2 levels)</option>
+                    <option value="L8">L8 (up to 7 factors, 2 levels)</option>
+                    <option value="L9">L9 (up to 4 factors, 3 levels)</option>
+                    <option value="L16">L16 (up to 15 factors, 2 levels)</option>
+                </select>
+            </div>
+
+            <div class="form-group snr-type-selector">
+                <label>Signal-to-Noise Ratio Type
+                    <i class="fas fa-info-circle info-icon"
+                        title="S/N ratio measures robustness. Choose 'Smaller' to minimize things like defects or cost. Choose 'Larger' to maximize things like strength or yield. Choose 'Nominal' to hit a specific target value, like a dimension."></i>
+                </label>
+                <div>
+                    <label><input type="radio" name="snr-type" value="smaller" checked> Smaller is better
+                        (Minimize)</label>
+                    <label><input type="radio" name="snr-type" value="larger"> Larger is better (Maximize)</label>
+                    <label><input type="radio" name="snr-type" value="nominal"> Nominal is best (Target)</label>
+                </div>
+                <div id="nominal-target-group" class="form-group hidden" style="margin-top: 1rem;">
+                    <label for="nominal-target">Target Value (for Nominal is best):</label>
+                    <input type="number" id="nominal-target" step="any" placeholder="Enter target value">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" id="reset-form-btn" class="danger">❌ Reset Form</button>
+            </div>
+
+            <button type="button" id="generate-design">🔧 Generate Taguchi Design</button>
+        </div>
+
+        <div id="results-container" class="container hidden">
+            <div id="design-and-data-section">
+                <h2><i class="fas fa-table"></i> Design & Data Entry</h2>
+                <div id="experiment-info"></div>
+                <div id="orthogonal-array"></div>
+                <button type="button" id="calculate-analysis">📊 Calculate Full Analysis</button>
+            </div>
+            <div id="analysis-output-section" class="hidden">
+                <div id="analysis-history-container"></div>
+                <hr style="margin: 2rem 0;">
+                <div class="button-group">
+                    <button type="button" id="export-excel">📋 Export to Excel</button>
+                </div>
+                <div id="success-message" class="success-message"
+                    style="display:none; background-color: var(--success-bg-color); color: var(--success-color); border: 1px solid var(--success-color); padding: 1rem; border-radius: 6px; margin-top: 1rem; text-align: center;">
+                    Excel file generated successfully!
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW MATHEMATICAL FORMULAS SECTION ADDED HERE -->
+        <div class="container">
+            <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+            <div class="formula-grid">
+                <div class="formula-item">
+                    <h3>Signal-to-Noise Ratio (Smaller is Better)</h3>
+                    <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} y_i^2 \right) $$</div>
+                    <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+                </div>
+                <div class="formula-item">
+                    <h3>Signal-to-Noise Ratio (Larger is Better)</h3>
+                    <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} \frac{1}{y_i^2} \right) $$</div>
+                    <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+                </div>
+                <div class="formula-item">
+                    <h3>Signal-to-Noise Ratio (Nominal is Best)</h3>
+                    <div>$$ S/N = -10 \log_{10} \left( \frac{1}{n} \sum_{i=1}^{n} (y_i - T)^2 \right) $$</div>
+                    <p>Where \( T \) is the target value, \( y_i \) are the measured responses, and \( n \) is the
+                        number of observations.</p>
+                </div>
+                <div class="formula-item">
+                    <h3>Mean Response</h3>
+                    <div>$$ \bar{y} = \frac{1}{n} \sum_{i=1}^{n} y_i $$</div>
+                    <p>Where \( y_i \) are the measured responses and \( n \) is the number of observations.</p>
+                </div>
+                <div class="formula-item">
+                    <h3>Main Effect</h3>
+                    <div>$$ ME = \frac{\sum \text{Responses at Level } i}{\text{Number of observations at Level } i} $$
+                    </div>
+                    <p>Where \( i \) represents a specific factor level.</p>
+                </div>
+                <div class="formula-item">
+                    <h3>ANOVA Sum of Squares</h3>
+                    <div>$$ SS = \sum_{i=1}^{k} n_i (\bar{y}_i - \bar{y})^2 $$</div>
+                    <p>Where \( n_i \) is the number of observations at level \( i \), \( \bar{y}_i \) is the mean at
+                        level \( i \), and \( \bar{y} \) is the overall mean.</p>
+                </div>
+            </div>
+            <div class="legend">
+                <h3>Taguchi Method Legend</h3>
+                <ul>
+                    <li><code>S/N</code>: Signal-to-Noise Ratio - measures robustness against noise factors</li>
+                    <li><code>\( y_i \)</code>: Individual measured response value</li>
+                    <li><code>\( T \)</code>: Target value for nominal-is-best characteristics</li>
+                    <li><code>\( n \)</code>: Number of observations or experimental runs</li>
+                    <li><code>ME</code>: Main Effect - average response at a specific factor level</li>
+                    <li><code>SS</code>: Sum of Squares - measures variation attributed to a factor</li>
+                    <li><code>ANOVA</code>: Analysis of Variance - statistical method to determine factor significance
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- END OF MATHEMATICAL FORMULAS SECTION -->
+    </main>
+    <footer>
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
+                educational purposes only. The tools on this site are independent implementations and are not affiliated
+                with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for
+                accuracy, we make no warranty or guarantee regarding the results. All calculations and decisions based
+                on the output of these tools are the sole responsibility of the user.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cargar el header dinámicamente
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                initializeMenu(); // Inicializar el menú después de cargar el header
+            })
+            .catch(error => console.error('Error loading header:', error));
+
+        // Función para inicializar el menú
+        function initializeMenu() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                    if (!navMenu.classList.contains('show-menu')) {
+                        toolsDropdownMenu.classList.remove('show-submenu');
+                        toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
             }
         }
-    };
 
-    // Expanded F-distribution critical values for alpha=0.05
-    const fCriticalValues = {
-        // df1 (Factor DF)
-        1: { 1: 161.4, 2: 18.51, 3: 10.13, 4: 7.71, 5: 6.61, 6: 5.99, 7: 5.59, 8: 5.32, 9: 5.12, 10: 4.96, 11: 4.84, 12: 4.75, 13: 4.67, 14: 4.60, 15: 4.54, 16: 4.49, 20: 4.35, 30: 4.17 },
-        2: { 1: 199.5, 2: 19.00, 3: 9.55, 4: 6.94, 5: 5.79, 6: 5.14, 7: 4.74, 8: 4.46, 9: 4.26, 10: 4.10, 11: 3.98, 12: 3.89, 13: 3.81, 14: 3.74, 15: 3.68, 16: 3.63, 20: 3.49, 30: 3.32 },
-        3: { 1: 215.7, 2: 19.16, 3: 9.28, 4: 6.59, 5: 5.41, 6: 4.76, 7: 4.35, 8: 4.07, 9: 3.86, 10: 3.71, 11: 3.59, 12: 3.49, 13: 3.41, 14: 3.34, 15: 3.29, 16: 3.24, 20: 3.10, 30: 2.92 },
-        4: { 1: 224.6, 2: 19.25, 3: 9.12, 4: 6.39, 5: 5.19, 6: 4.53, 7: 4.12, 8: 3.84, 9: 3.63, 10: 3.48, 11: 3.36, 12: 3.26, 13: 3.18, 14: 3.11, 15: 3.06, 16: 3.01, 20: 2.87, 30: 2.69 },
-        5: { 1: 230.2, 2: 19.30, 3: 9.01, 4: 6.26, 5: 5.05, 6: 4.39, 7: 3.97, 8: 3.69, 9: 3.48, 10: 3.33, 11: 3.20, 12: 3.11, 13: 3.03, 14: 2.96, 15: 2.90, 16: 2.85, 20: 2.71, 30: 2.53 },
-        6: { 1: 234.0, 2: 19.33, 3: 8.94, 4: 6.16, 5: 4.95, 6: 4.28, 7: 3.87, 8: 3.58, 9: 3.37, 10: 3.22, 11: 3.09, 12: 3.00, 13: 2.92, 14: 2.85, 15: 2.79, 16: 2.74, 20: 2.60, 30: 2.42 },
-        7: { 1: 236.8, 2: 19.35, 3: 8.89, 4: 6.09, 5: 4.88, 6: 4.21, 7: 3.79, 8: 3.50, 9: 3.29, 10: 3.14, 11: 3.01, 12: 2.91, 13: 2.83, 14: 2.76, 15: 2.71, 16: 2.66, 20: 2.51, 30: 2.33 },
-        8: { 1: 238.9, 2: 19.37, 3: 8.85, 4: 6.04, 5: 4.82, 6: 4.15, 7: 3.73, 8: 3.44, 9: 3.23, 10: 3.07, 11: 2.95, 12: 2.85, 13: 2.77, 14: 2.70, 15: 2.64, 16: 2.59, 20: 2.45, 30: 2.26 },
-        10: { 1: 241.9, 2: 19.40, 3: 8.79, 4: 5.96, 5: 4.74, 6: 4.06, 7: 3.64, 8: 3.35, 9: 3.14, 10: 2.98, 11: 2.85, 12: 2.75, 13: 2.67, 14: 2.60, 15: 2.54, 16: 2.49, 20: 2.35, 30: 2.16 },
-        15: { 1: 245.9, 2: 19.43, 3: 8.70, 4: 5.86, 5: 4.62, 6: 3.94, 7: 3.51, 8: 3.22, 9: 3.01, 10: 2.85, 11: 2.72, 12: 2.62, 13: 2.53, 14: 2.46, 15: 2.40, 16: 2.35, 20: 2.20, 30: 2.01 }
-    };
+        // El resto del código JavaScript permanece igual
+        const orthogonalArrays = {
+            'L4': { 'name': 'L4', 'description': '3 factors with 2 levels', 'factors': 3, 'levels': 2, 'runs': 4, 'array': [[1, 1, 1], [1, 2, 2], [2, 1, 2], [2, 2, 1]] },
+            'L8': { 'name': 'L8', 'description': '7 factors with 2 levels', 'factors': 7, 'levels': 2, 'runs': 8, 'array': [[1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 2, 2, 2, 2], [1, 2, 2, 1, 1, 2, 2], [1, 2, 2, 2, 2, 1, 1], [2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 2, 1, 2, 1], [2, 2, 1, 1, 2, 2, 1], [2, 2, 1, 2, 1, 1, 2]] },
+            'L9': { 'name': 'L9', 'description': '4 factors with 3 levels', 'factors': 4, 'levels': 3, 'runs': 9, 'array': [[1, 1, 1, 1], [1, 2, 2, 2], [1, 3, 3, 3], [2, 1, 2, 3], [2, 2, 3, 1], [2, 3, 1, 2], [3, 1, 3, 2], [3, 2, 1, 3], [3, 3, 2, 1]] },
+            'L16': { 'name': 'L16', 'description': '15 factors with 2 levels', 'factors': 15, 'levels': 2, 'runs': 16, 'array': [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2], [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1], [1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2], [1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1], [1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1], [1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2], [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1], [2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1], [2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2], [2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1], [2, 2, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2], [2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1, 1, 2], [2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1]] }
+        };
 
-    // Improved F-critical lookup
-    function getFCritical(df1, df2) {
-        if (df1 <= 0 || df2 <= 0) return Infinity; // Cannot calculate F-value
+        const DOM = {
+            addFactorBtn: document.getElementById('add-factor'),
+            generateDesignBtn: document.getElementById('generate-design'),
+            calculateAnalysisBtn: document.getElementById('calculate-analysis'),
+            exportExcelBtn: document.getElementById('export-excel'),
+            loadExampleBtn: document.getElementById('load-example-btn'),
+            resetFormBtn: document.getElementById('reset-form-btn'),
+            resultsContainer: document.getElementById('results-container'),
+            designAndDataSection: document.getElementById('design-and-data-section'),
+            analysisOutputSection: document.getElementById('analysis-output-section'),
+            factorsContainer: document.getElementById('factors-container'),
+            orthogonalArrayDiv: document.getElementById('orthogonal-array'),
+            experimentInfoDiv: document.getElementById('experiment-info'),
+            analysisHistoryContainer: document.getElementById('analysis-history-container'),
+            successMessage: document.getElementById('success-message'),
+        };
 
-        const availableDf1 = Object.keys(fCriticalValues).map(Number).sort((a, b) => a - b);
-        const availableDf2Map = fCriticalValues[availableDf1[0]]; // Assume all df1 keys have same df2 keys
-        const availableDf2 = Object.keys(availableDf2Map).map(Number).sort((a, b) => a - b);
+        let experimentData = {}, allCharts = [], calculationCount = 0;
 
-        // Find conservative DFs
-        const conservativeDf1 = availableDf1.slice().reverse().find(k => k <= df1) || availableDf1[0];
-        const conservativeDf2 = availableDf2.slice().reverse().find(k => k <= df2) || availableDf2[0];
+        const logoImage = new Image();
+        const logoPlugin = {
+            id: 'sigmaExactaLogo',
+            afterDraw: (chart) => {
+                if (logoImage.complete) {
+                    const ctx = chart.ctx;
+                    const logoSize = 30;
+                    const margin = 10;
+                    ctx.drawImage(logoImage, margin, margin, logoSize, logoSize);
+                }
+            }
+        };
 
-        if (fCriticalValues[conservativeDf1] && fCriticalValues[conservativeDf1][conservativeDf2]) {
-            return fCriticalValues[conservativeDf1][conservativeDf2];
+        // Expanded F-distribution critical values for alpha=0.05
+        const fCriticalValues = {
+            // df1 (Factor DF)
+            1: { 1: 161.4, 2: 18.51, 3: 10.13, 4: 7.71, 5: 6.61, 6: 5.99, 7: 5.59, 8: 5.32, 9: 5.12, 10: 4.96, 11: 4.84, 12: 4.75, 13: 4.67, 14: 4.60, 15: 4.54, 16: 4.49, 20: 4.35, 30: 4.17 },
+            2: { 1: 199.5, 2: 19.00, 3: 9.55, 4: 6.94, 5: 5.79, 6: 5.14, 7: 4.74, 8: 4.46, 9: 4.26, 10: 4.10, 11: 3.98, 12: 3.89, 13: 3.81, 14: 3.74, 15: 3.68, 16: 3.63, 20: 3.49, 30: 3.32 },
+            3: { 1: 215.7, 2: 19.16, 3: 9.28, 4: 6.59, 5: 5.41, 6: 4.76, 7: 4.35, 8: 4.07, 9: 3.86, 10: 3.71, 11: 3.59, 12: 3.49, 13: 3.41, 14: 3.34, 15: 3.29, 16: 3.24, 20: 3.10, 30: 2.92 },
+            4: { 1: 224.6, 2: 19.25, 3: 9.12, 4: 6.39, 5: 5.19, 6: 4.53, 7: 4.12, 8: 3.84, 9: 3.63, 10: 3.48, 11: 3.36, 12: 3.26, 13: 3.18, 14: 3.11, 15: 3.06, 16: 3.01, 20: 2.87, 30: 2.69 },
+            5: { 1: 230.2, 2: 19.30, 3: 9.01, 4: 6.26, 5: 5.05, 6: 4.39, 7: 3.97, 8: 3.69, 9: 3.48, 10: 3.33, 11: 3.20, 12: 3.11, 13: 3.03, 14: 2.96, 15: 2.90, 16: 2.85, 20: 2.71, 30: 2.53 },
+            6: { 1: 234.0, 2: 19.33, 3: 8.94, 4: 6.16, 5: 4.95, 6: 4.28, 7: 3.87, 8: 3.58, 9: 3.37, 10: 3.22, 11: 3.09, 12: 3.00, 13: 2.92, 14: 2.85, 15: 2.79, 16: 2.74, 20: 2.60, 30: 2.42 },
+            7: { 1: 236.8, 2: 19.35, 3: 8.89, 4: 6.09, 5: 4.88, 6: 4.21, 7: 3.79, 8: 3.50, 9: 3.29, 10: 3.14, 11: 3.01, 12: 2.91, 13: 2.83, 14: 2.76, 15: 2.71, 16: 2.66, 20: 2.51, 30: 2.33 },
+            8: { 1: 238.9, 2: 19.37, 3: 8.85, 4: 6.04, 5: 4.82, 6: 4.15, 7: 3.73, 8: 3.44, 9: 3.23, 10: 3.07, 11: 2.95, 12: 2.85, 13: 2.77, 14: 2.70, 15: 2.64, 16: 2.59, 20: 2.45, 30: 2.26 },
+            10: { 1: 241.9, 2: 19.40, 3: 8.79, 4: 5.96, 5: 4.74, 6: 4.06, 7: 3.64, 8: 3.35, 9: 3.14, 10: 2.98, 11: 2.85, 12: 2.75, 13: 2.67, 14: 2.60, 15: 2.54, 16: 2.49, 20: 2.35, 30: 2.16 },
+            15: { 1: 245.9, 2: 19.43, 3: 8.70, 4: 5.86, 5: 4.62, 6: 3.94, 7: 3.51, 8: 3.22, 9: 3.01, 10: 2.85, 11: 2.72, 12: 2.62, 13: 2.53, 14: 2.46, 15: 2.40, 16: 2.35, 20: 2.20, 30: 2.01 }
+        };
+
+        // Improved F-critical lookup
+        function getFCritical(df1, df2) {
+            if (df1 <= 0 || df2 <= 0) return Infinity; // Cannot calculate F-value
+
+            const availableDf1 = Object.keys(fCriticalValues).map(Number).sort((a, b) => a - b);
+            const availableDf2Map = fCriticalValues[availableDf1[0]]; // Assume all df1 keys have same df2 keys
+            const availableDf2 = Object.keys(availableDf2Map).map(Number).sort((a, b) => a - b);
+
+            // Find conservative DFs
+            const conservativeDf1 = availableDf1.slice().reverse().find(k => k <= df1) || availableDf1[0];
+            const conservativeDf2 = availableDf2.slice().reverse().find(k => k <= df2) || availableDf2[0];
+
+            if (fCriticalValues[conservativeDf1] && fCriticalValues[conservativeDf1][conservativeDf2]) {
+                return fCriticalValues[conservativeDf1][conservativeDf2];
+            }
+
+            return 4.0; // Fallback default
         }
 
-        return 4.0; // Fallback default
-    }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            Chart.register(logoPlugin);
+            logoImage.src = 'sigma-exacta-icon.jpg';
 
-    document.addEventListener('DOMContentLoaded', () => {
-        Chart.register(logoPlugin);
-        logoImage.src = 'sigma-exacta-icon.jpg';
-        const navToggle = document.getElementById('nav-toggle'), navMenu = document.getElementById('nav-menu'), toolsDropdownToggle = document.getElementById('tools-dropdown-toggle'), toolsDropdownMenu = document.getElementById('tools-dropdown-menu'), toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-        navToggle.addEventListener('click', () => { navMenu.classList.toggle('show-menu'); const icon = navToggle.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); if (!navMenu.classList.contains('show-menu')) { toolsDropdownMenu.classList.remove('show-submenu'); toolsDropdownContainer.classList.remove('active'); } });
-        toolsDropdownToggle.addEventListener('click', (event) => { if (window.innerWidth <= 992) { event.preventDefault(); toolsDropdownMenu.classList.toggle('show-submenu'); toolsDropdownContainer.classList.toggle('active'); } });
-        resetForm();
-        DOM.addFactorBtn.addEventListener('click', () => addFactorInput());
-        DOM.generateDesignBtn.addEventListener('click', generateDesign);
-        DOM.calculateAnalysisBtn.addEventListener('click', runFullAnalysis);
-        DOM.exportExcelBtn.addEventListener('click', exportToExcel);
-        DOM.loadExampleBtn.addEventListener('click', loadExampleData);
-        DOM.resetFormBtn.addEventListener('click', resetForm);
-        
-        // Show/Hide Nominal Target Input
-        document.querySelectorAll('input[name="snr-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                experimentData.snrType = this.value;
-                const targetGroup = document.getElementById('nominal-target-group');
-                if (this.value === 'nominal') {
-                    targetGroup.classList.remove('hidden');
-                } else {
-                    targetGroup.classList.add('hidden');
-                }
+            // El resto del código de inicialización de la aplicación
+            resetForm();
+            DOM.addFactorBtn.addEventListener('click', () => addFactorInput());
+            DOM.generateDesignBtn.addEventListener('click', generateDesign);
+            DOM.calculateAnalysisBtn.addEventListener('click', runFullAnalysis);
+            DOM.exportExcelBtn.addEventListener('click', exportToExcel);
+            DOM.loadExampleBtn.addEventListener('click', loadExampleData);
+            DOM.resetFormBtn.addEventListener('click', resetForm);
+
+            // Show/Hide Nominal Target Input
+            document.querySelectorAll('input[name="snr-type"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    experimentData.snrType = this.value;
+                    const targetGroup = document.getElementById('nominal-target-group');
+                    if (this.value === 'nominal') {
+                        targetGroup.classList.remove('hidden');
+                    } else {
+                        targetGroup.classList.add('hidden');
+                    }
+                });
             });
         });
-    });
 
-    function resetExperimentData() { 
-        experimentData = { 
-            name: '', objective: '', factors: [], responseVariable: '', 
-            selectedArray: null, results: [], snrType: 'smaller', nominalTarget: null,
-            factorEffects: {}, anova: {}, predictedResult: null, optimalSettings: {} 
-        }; 
-    }
-    
-    function resetForm() { 
-        document.getElementById('experiment-name').value = ''; 
-        document.getElementById('objective').value = ''; 
-        document.getElementById('response-variable').value = ''; 
-        document.getElementById('array-select').value = ''; 
-        document.querySelector('input[name="snr-type"][value="smaller"]').checked = true; 
-        document.getElementById('nominal-target-group').classList.add('hidden'); // Hide target input
-        document.getElementById('nominal-target').value = ''; // Clear target input
-        DOM.factorsContainer.innerHTML = ''; 
-        DOM.resultsContainer.classList.add('hidden'); 
-        DOM.analysisOutputSection.classList.add('hidden'); 
-        DOM.analysisHistoryContainer.innerHTML = ''; 
-        resetExperimentData(); 
-        if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; } 
-        calculationCount = 0; 
-    }
-    
-    function loadExampleData() { 
-        resetForm(); 
-        document.getElementById('experiment-name').value = 'Process Optimization Study'; 
-        document.getElementById('objective').value = 'Minimize defects in the production process while maintaining quality standards'; 
-        document.getElementById('response-variable').value = 'Defect rate (%)'; 
-        addFactorInput('Temperature', '100°C, 120°C, 140°C'); 
-        addFactorInput('Pressure', '50 psi, 60 psi'); 
-        addFactorInput('Speed', 'Low, Medium, High');
-    }
-    
-    function addFactorInput(name = '', levels = '') { 
-        const factorDiv = document.createElement('div'); 
-        factorDiv.className = 'factor-inputs'; 
-        factorDiv.innerHTML = `<input type="text" class="factor-name" placeholder="Factor name" value="${name}" required><input type="text" class="factor-levels" placeholder="Levels (comma separated)" value="${levels}" required><button type="button" class="remove-factor danger" title="Remove factor">−</button>`; 
-        DOM.factorsContainer.appendChild(factorDiv); 
-        factorDiv.querySelector('.remove-factor').addEventListener('click', () => factorDiv.remove()); 
-    }
-    
-    function generateDesign() { 
-        DOM.analysisHistoryContainer.innerHTML = ''; 
-        if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; } 
-        calculationCount = 0; 
-        DOM.analysisOutputSection.classList.add('hidden'); 
-        resetExperimentData(); 
-        
-        experimentData.name = document.getElementById('experiment-name').value; 
-        experimentData.objective = document.getElementById('objective').value; 
-        experimentData.responseVariable = document.getElementById('response-variable').value; 
-        experimentData.snrType = document.querySelector('input[name="snr-type"]:checked').value; 
-        experimentData.factors = []; 
-        
-        document.querySelectorAll('.factor-inputs').forEach(input => { 
-            const name = input.querySelector('.factor-name').value; 
-            const levelsStr = input.querySelector('.factor-levels').value; 
-            if (name && levelsStr) { 
-                const levels = levelsStr.split(',').map(level => level.trim()).filter(Boolean); 
-                if (levels.length >= 2) experimentData.factors.push({ name, levels }); 
-            } 
-        }); 
-        
-        if (!experimentData.name || !experimentData.objective || !experimentData.responseVariable || experimentData.factors.length === 0) { 
-            alert('Please fill in all experiment information and add at least one factor.'); 
-            return; 
-        } 
-        
-        const selectedArray = document.getElementById('array-select').value; 
-        let arrayKey = selectedArray; 
-        if (!arrayKey) { 
-            const maxLevels = Math.max(...experimentData.factors.map(f => f.levels.length)); 
-            const numFactors = experimentData.factors.length; 
-            if (maxLevels <= 2) { 
-                if (numFactors <= 3) arrayKey = 'L4'; 
-                else if (numFactors <= 7) arrayKey = 'L8'; 
-                else if (numFactors <= 15) arrayKey = 'L16'; 
-            } else if (maxLevels === 3 && numFactors <= 4) arrayKey = 'L9'; 
-            if (!arrayKey) { 
-                alert('Could not automatically select an array for your combination of factors and levels. Please choose a suitable one manually.'); 
-                return; 
-            } 
-        } 
-        experimentData.selectedArray = orthogonalArrays[arrayKey]; 
-        generateDesignTable(); 
-        DOM.resultsContainer.classList.remove('hidden'); 
-    }
-    
-    function generateDesignTable() { 
-        DOM.experimentInfoDiv.innerHTML = `<p><strong>Experiment Name:</strong> ${experimentData.name}</p><p><strong>Objective:</strong> ${experimentData.objective}</p>`; 
-        let tableHTML = `<table><thead><tr><th>Run</th>${experimentData.factors.map(f => `<th>${f.name}</th>`).join('')}<th>${experimentData.responseVariable}</th></tr></thead><tbody>`; 
-        experimentData.selectedArray.array.forEach((run, index) => { 
-            tableHTML += `<tr><td>${index + 1}</td>`; 
-            for (let i = 0; i < experimentData.factors.length; i++) { 
-                const factor = experimentData.factors[i]; 
-                const levelIndex = Math.min(run[i] - 1, factor.levels.length - 1); 
-                tableHTML += `<td>${factor.levels[levelIndex]}</td>`; 
-            } 
-            tableHTML += `<td><input type="number" class="response-input" step="any" placeholder="Enter value"></td></tr>`; 
-        }); 
-        tableHTML += '</tbody></table>'; 
-        DOM.orthogonalArrayDiv.innerHTML = tableHTML; 
-        experimentData.results = Array(experimentData.selectedArray.runs).fill(null); 
-        document.querySelectorAll('.response-input').forEach((input, index) => { 
-            input.addEventListener('change', () => { 
-                experimentData.results[index] = parseFloat(input.value); 
-            }); 
-        }); 
-    }
-    
-    function runFullAnalysis() { 
-        if (experimentData.results.some(val => val === null || isNaN(val))) { 
-            alert('Please fill in all response values before running the analysis.'); 
-            return; 
-        } 
+        function resetExperimentData() {
+            experimentData = {
+                name: '', objective: '', factors: [], responseVariable: '',
+                selectedArray: null, results: [], snrType: 'smaller', nominalTarget: null,
+                factorEffects: {}, anova: {}, predictedResult: null, optimalSettings: {}
+            };
+        }
 
-        // Validate Target for Nominal
-        if (experimentData.snrType === 'nominal') {
-            const targetInput = document.getElementById('nominal-target');
-            if (!targetInput.value || isNaN(parseFloat(targetInput.value))) {
-                alert('"Nominal is best" S/N ratio requires a Target Value. Please enter a target value before calculating.');
-                targetInput.focus();
+        function resetForm() {
+            document.getElementById('experiment-name').value = '';
+            document.getElementById('objective').value = '';
+            document.getElementById('response-variable').value = '';
+            document.getElementById('array-select').value = '';
+            document.querySelector('input[name="snr-type"][value="smaller"]').checked = true;
+            document.getElementById('nominal-target-group').classList.add('hidden'); // Hide target input
+            document.getElementById('nominal-target').value = ''; // Clear target input
+            DOM.factorsContainer.innerHTML = '';
+            DOM.resultsContainer.classList.add('hidden');
+            DOM.analysisOutputSection.classList.add('hidden');
+            DOM.analysisHistoryContainer.innerHTML = '';
+            resetExperimentData();
+            if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; }
+            calculationCount = 0;
+        }
+
+        function loadExampleData() {
+            resetForm();
+            document.getElementById('experiment-name').value = 'Process Optimization Study';
+            document.getElementById('objective').value = 'Minimize defects in the production process while maintaining quality standards';
+            document.getElementById('response-variable').value = 'Defect rate (%)';
+            addFactorInput('Temperature', '100°C, 120°C, 140°C');
+            addFactorInput('Pressure', '50 psi, 60 psi');
+            addFactorInput('Speed', 'Low, Medium, High');
+        }
+
+        function addFactorInput(name = '', levels = '') {
+            const factorDiv = document.createElement('div');
+            factorDiv.className = 'factor-inputs';
+            factorDiv.innerHTML = `<input type="text" class="factor-name" placeholder="Factor name" value="${name}" required><input type="text" class="factor-levels" placeholder="Levels (comma separated)" value="${levels}" required><button type="button" class="remove-factor danger" title="Remove factor">−</button>`;
+            DOM.factorsContainer.appendChild(factorDiv);
+            factorDiv.querySelector('.remove-factor').addEventListener('click', () => factorDiv.remove());
+        }
+
+        function generateDesign() {
+            DOM.analysisHistoryContainer.innerHTML = '';
+            if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; }
+            calculationCount = 0;
+            DOM.analysisOutputSection.classList.add('hidden');
+            resetExperimentData();
+
+            experimentData.name = document.getElementById('experiment-name').value;
+            experimentData.objective = document.getElementById('objective').value;
+            experimentData.responseVariable = document.getElementById('response-variable').value;
+            experimentData.snrType = document.querySelector('input[name="snr-type"]:checked').value;
+            experimentData.factors = [];
+
+            document.querySelectorAll('.factor-inputs').forEach(input => {
+                const name = input.querySelector('.factor-name').value;
+                const levelsStr = input.querySelector('.factor-levels').value;
+                if (name && levelsStr) {
+                    const levels = levelsStr.split(',').map(level => level.trim()).filter(Boolean);
+                    if (levels.length >= 2) experimentData.factors.push({ name, levels });
+                }
+            });
+
+            if (!experimentData.name || !experimentData.objective || !experimentData.responseVariable || experimentData.factors.length === 0) {
+                alert('Please fill in all experiment information and add at least one factor.');
                 return;
             }
+
+            const selectedArray = document.getElementById('array-select').value;
+            let arrayKey = selectedArray;
+            if (!arrayKey) {
+                const maxLevels = Math.max(...experimentData.factors.map(f => f.levels.length));
+                const numFactors = experimentData.factors.length;
+                if (maxLevels <= 2) {
+                    if (numFactors <= 3) arrayKey = 'L4';
+                    else if (numFactors <= 7) arrayKey = 'L8';
+                    else if (numFactors <= 15) arrayKey = 'L16';
+                } else if (maxLevels === 3 && numFactors <= 4) arrayKey = 'L9';
+                if (!arrayKey) {
+                    alert('Could not automatically select an array for your combination of factors and levels. Please choose a suitable one manually.');
+                    return;
+                }
+            }
+            experimentData.selectedArray = orthogonalArrays[arrayKey];
+            generateDesignTable();
+            DOM.resultsContainer.classList.remove('hidden');
         }
-        
-        calculationCount++; 
-        calculateSNR(); // Calculate SNR first
-        calculateFactorEffects(); // Calculate for Response
-        calculateFactorEffects(true); // Calculate for SNR
-        determineOptimalLevels(); // Determine optimal based on SNR
-        calculatePredictedOutcome(); // Predict response based on optimal levels
-        calculateANOVA(); 
-        createAndDisplayReportBlock(calculationCount); 
-        DOM.analysisOutputSection.classList.remove('hidden'); 
-        document.getElementById(`analysis-run-${calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); 
-    }
-    
-    function createAndDisplayReportBlock(runId) { 
-        const reportWrapper = document.createElement('div'); 
-        reportWrapper.id = `analysis-run-${runId}`; 
-        reportWrapper.className = 'analysis-run-report'; 
-        reportWrapper.innerHTML = ` 
+
+        function generateDesignTable() {
+            DOM.experimentInfoDiv.innerHTML = `<p><strong>Experiment Name:</strong> ${experimentData.name}</p><p><strong>Objective:</strong> ${experimentData.objective}</p>`;
+            let tableHTML = `<table><thead><tr><th>Run</th>${experimentData.factors.map(f => `<th>${f.name}</th>`).join('')}<th>${experimentData.responseVariable}</th></tr></thead><tbody>`;
+            experimentData.selectedArray.array.forEach((run, index) => {
+                tableHTML += `<tr><td>${index + 1}</td>`;
+                for (let i = 0; i < experimentData.factors.length; i++) {
+                    const factor = experimentData.factors[i];
+                    const levelIndex = Math.min(run[i] - 1, factor.levels.length - 1);
+                    tableHTML += `<td>${factor.levels[levelIndex]}</td>`;
+                }
+                tableHTML += `<td><input type="number" class="response-input" step="any" placeholder="Enter value"></td></tr>`;
+            });
+            tableHTML += '</tbody></table>';
+            DOM.orthogonalArrayDiv.innerHTML = tableHTML;
+            experimentData.results = Array(experimentData.selectedArray.runs).fill(null);
+            document.querySelectorAll('.response-input').forEach((input, index) => {
+                input.addEventListener('change', () => {
+                    experimentData.results[index] = parseFloat(input.value);
+                });
+            });
+        }
+
+        function runFullAnalysis() {
+            if (experimentData.results.some(val => val === null || isNaN(val))) {
+                alert('Please fill in all response values before running the analysis.');
+                return;
+            }
+
+            // Validate Target for Nominal
+            if (experimentData.snrType === 'nominal') {
+                const targetInput = document.getElementById('nominal-target');
+                if (!targetInput.value || isNaN(parseFloat(targetInput.value))) {
+                    alert('"Nominal is best" S/N ratio requires a Target Value. Please enter a target value before calculating.');
+                    targetInput.focus();
+                    return;
+                }
+            }
+
+            calculationCount++;
+            calculateSNR(); // Calculate SNR first
+            calculateFactorEffects(); // Calculate for Response
+            calculateFactorEffects(true); // Calculate for SNR
+            determineOptimalLevels(); // Determine optimal based on SNR
+            calculatePredictedOutcome(); // Predict response based on optimal levels
+            calculateANOVA();
+            createAndDisplayReportBlock(calculationCount);
+            DOM.analysisOutputSection.classList.remove('hidden');
+            document.getElementById(`analysis-run-${calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function createAndDisplayReportBlock(runId) {
+            const reportWrapper = document.createElement('div');
+            reportWrapper.id = `analysis-run-${runId}`;
+            reportWrapper.className = 'analysis-run-report';
+            reportWrapper.innerHTML = ` 
             <div id="executive-summary-${runId}"></div> 
             <hr style="margin: 2rem 0;"> 
             <div class="effects-analysis"> 
@@ -778,175 +1038,175 @@
                     </div> 
                 </div> 
             </div> 
-        `; 
-        DOM.analysisHistoryContainer.appendChild(reportWrapper); 
-        displayExecutiveSummary(runId); 
-        displayFactorEffectsTables(runId); 
-        displayAnovaTable(runId); 
-        displaySnrResults(runId); 
-        createParetoChart(runId); 
-        createMainEffectsCharts(runId); 
-    }
-    
-    function calculateFactorEffects(useSnr = false) { 
-        const effects = {}; 
-        const data = useSnr ? experimentData.snrEffects.perRun : experimentData.results; 
-        experimentData.factors.forEach((factor, factorIndex) => { 
-            effects[factor.name] = { levels: {}, range: 0 }; 
-            factor.levels.forEach((level, levelIndex) => { 
-                let sum = 0, count = 0; 
-                experimentData.selectedArray.array.forEach((run, runIndex) => { 
-                    const runLevelIndex = Math.min(run[factorIndex] - 1, factor.levels.length - 1); 
-                    if (runLevelIndex === levelIndex) { 
-                        sum += data[runIndex]; 
-                        count++; 
-                    } 
-                }); 
-                effects[factor.name].levels[level] = count > 0 ? sum / count : 0; 
-            }); 
-            const avgs = Object.values(effects[factor.name].levels); 
-            effects[factor.name].range = Math.max(...avgs) - Math.min(...avgs); 
-        }); 
-        if (useSnr) { 
-            experimentData.snrEffects.byFactor = effects; 
-        } else { 
-            experimentData.factorEffects = effects; 
-        } 
-    }
-    
-    function determineOptimalLevels() { 
-        // Optimal levels are *always* determined by *maximizing* the S/N ratio,
-        // regardless of the S/N type (smaller, larger, nominal).
-        // The `calculateFactorEffects(true)` must have been run first.
-        experimentData.optimalSettings = {}; 
-        Object.keys(experimentData.snrEffects.byFactor).forEach(factorName => { 
-            const factor = experimentData.snrEffects.byFactor[factorName]; 
-            const levels = Object.entries(factor.levels); 
-            let optimalEntry = levels.reduce((max, curr) => curr[1] > max[1] ? curr : max); 
-            experimentData.optimalSettings[factorName] = { level: optimalEntry[0], snr_avg: optimalEntry[1] }; 
-        }); 
-        
-        // Now, find the *expected response* at those optimal levels
-        // The `calculateFactorEffects(false)` must have been run first.
-        Object.keys(experimentData.optimalSettings).forEach(factorName => { 
-            const optimalLevelName = experimentData.optimalSettings[factorName].level; 
-            experimentData.optimalSettings[factorName].response_avg = experimentData.factorEffects[factorName].levels[optimalLevelName]; 
-        }); 
-    }
-    
-    function calculatePredictedOutcome() {
-        const overallMean = experimentData.results.reduce((s, v) => s + v, 0) / experimentData.results.length;
-        let predictedEffect = overallMean;
-        
-        // Prediction formula:
-        // y_pred = T_avg + (A_opt_avg - T_avg) + (B_opt_avg - T_avg) + ...
-        Object.entries(experimentData.optimalSettings).forEach(([factorName, setting]) => {
-            const factorEffect = setting.response_avg - overallMean;
-            predictedEffect += factorEffect;
-        });
-        
-        experimentData.predictedResult = predictedEffect;
-    }
-    
-    function calculateSNR() {
-        let target = null;
-        if (experimentData.snrType === 'nominal') {
-            target = parseFloat(document.getElementById('nominal-target').value);
-            experimentData.nominalTarget = target; // Save for report
+        `;
+            DOM.analysisHistoryContainer.appendChild(reportWrapper);
+            displayExecutiveSummary(runId);
+            displayFactorEffectsTables(runId);
+            displayAnovaTable(runId);
+            displaySnrResults(runId);
+            createParetoChart(runId);
+            createMainEffectsCharts(runId);
         }
 
-        const perRunSNR = experimentData.results.map(y => {
-            if (y === null || isNaN(y)) return 0;
-            switch (experimentData.snrType) {
-                case 'smaller': 
-                    // S/N = -10 * log10 ( 1/n * sum(y_i^2) )
-                    // For n=1, this is -10 * log10(y^2)
-                    return y === 0 ? -100 : -10 * Math.log10(y * y);
-                case 'larger': 
-                    // S/N = -10 * log10 ( 1/n * sum(1/y_i^2) )
-                    // For n=1, this is -10 * log10(1/y^2)
-                    return y === 0 ? -100 : -10 * Math.log10(1 / (y * y));
-                case 'nominal': 
-                    // S/N = -10 * log10( (y - T)^2 ) -> Mean Squared Deviation from Target T
-                    // This is the correct formula for n=1 and a known target.
-                    const deviation = y - target;
-                    // Return a large positive number if deviation is zero
-                    return deviation === 0 ? 100 : -10 * Math.log10(deviation * deviation);
-                default: 
-                    return 0;
+        function calculateFactorEffects(useSnr = false) {
+            const effects = {};
+            const data = useSnr ? experimentData.snrEffects.perRun : experimentData.results;
+            experimentData.factors.forEach((factor, factorIndex) => {
+                effects[factor.name] = { levels: {}, range: 0 };
+                factor.levels.forEach((level, levelIndex) => {
+                    let sum = 0, count = 0;
+                    experimentData.selectedArray.array.forEach((run, runIndex) => {
+                        const runLevelIndex = Math.min(run[factorIndex] - 1, factor.levels.length - 1);
+                        if (runLevelIndex === levelIndex) {
+                            sum += data[runIndex];
+                            count++;
+                        }
+                    });
+                    effects[factor.name].levels[level] = count > 0 ? sum / count : 0;
+                });
+                const avgs = Object.values(effects[factor.name].levels);
+                effects[factor.name].range = Math.max(...avgs) - Math.min(...avgs);
+            });
+            if (useSnr) {
+                experimentData.snrEffects.byFactor = effects;
+            } else {
+                experimentData.factorEffects = effects;
             }
-        });
-        experimentData.snrEffects = { perRun: perRunSNR };
-    }
-    
-    // === FUNCTION WITH CORRECTION FROM PROBLEM 3 ===
-    function calculateANOVA() {
-        const results = experimentData.results;
-        const n = results.length;
-        if (n < 2) return;
-        
-        const overallMean = results.reduce((s, v) => s + v, 0) / n;
-        const SSt = results.reduce((s, v) => s + (v - overallMean) ** 2, 0);
-        
-        let totalFactorSS = 0;
-        let totalFactorDF = 0;
-        experimentData.anova = {};
-        
-        experimentData.factors.forEach(factor => {
-            let factorSS = 0;
-            // This shortcut is valid *because* the arrays L4-L16 are balanced
-            const runsPerLevel = n / factor.levels.length; 
-            Object.values(experimentData.factorEffects[factor.name].levels).forEach(levelMean => {
-                factorSS += runsPerLevel * (levelMean - overallMean) ** 2;
-            });
-            const df = factor.levels.length - 1;
-            totalFactorSS += factorSS;
-            totalFactorDF += df;
-            experimentData.anova[factor.name] = { ss: factorSS, df: df };
-        });
-        
-        const errorDF = (n - 1) - totalFactorDF;
-        // === CORRECTION 3 IMPLEMENTED ===
-        // Ensure Error SS is not negative due to floating point rounding
-        const errorSS = Math.max(0, SSt - totalFactorSS); 
-        // === END CORRECTION ===
-        
-        if (errorDF <= 0) {
-            experimentData.anova.error = { ss: errorSS, df: 0, ms: 0 }; // SS was already checked
-            experimentData.anova.total = { ss: SSt, df: n - 1 };
-            Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(k => {
-                experimentData.anova[k].ms = experimentData.anova[k].df > 0 ? experimentData.anova[k].ss / experimentData.anova[k].df : 0;
-                experimentData.anova[k].f = Infinity;
-                experimentData.anova[k].isSignificant = 'N/A (Saturated)';
-            });
-            return;
         }
-        
-        const errorMS = errorSS / errorDF;
-        
-        Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
-            const anovaFactor = experimentData.anova[factorName];
-            if (!anovaFactor.df) return;
-            
-            anovaFactor.ms = anovaFactor.ss / anovaFactor.df;
-            anovaFactor.f = errorMS > 0 ? anovaFactor.ms / errorMS : Infinity;
-            
-            // Use improved F-test for significance
-            const fCritical = getFCritical(anovaFactor.df, errorDF);
-            anovaFactor.isSignificant = anovaFactor.f > fCritical;
-        });
-        
-        experimentData.anova.error = { ss: errorSS, df: errorDF, ms: errorMS };
-        experimentData.anova.total = { ss: SSt, df: n - 1 };
-    }
-    
-    function displayExecutiveSummary(runId) {
-        const calculationDate = new Date().toLocaleString();
-        const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
-        const mostInfluential = sortedFactors.length > 0 ? sortedFactors[0][0] : 'N/A';
-        const settingsList = Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><i class="fas fa-check-circle"></i><strong>${name}:</strong> ${setting.level}</li>`).join('');
-        const summaryDiv = document.getElementById(`executive-summary-${runId}`);
-        summaryDiv.innerHTML = `
+
+        function determineOptimalLevels() {
+            // Optimal levels are *always* determined by *maximizing* the S/N ratio,
+            // regardless of the S/N type (smaller, larger, nominal).
+            // The `calculateFactorEffects(true)` must have been run first.
+            experimentData.optimalSettings = {};
+            Object.keys(experimentData.snrEffects.byFactor).forEach(factorName => {
+                const factor = experimentData.snrEffects.byFactor[factorName];
+                const levels = Object.entries(factor.levels);
+                let optimalEntry = levels.reduce((max, curr) => curr[1] > max[1] ? curr : max);
+                experimentData.optimalSettings[factorName] = { level: optimalEntry[0], snr_avg: optimalEntry[1] };
+            });
+
+            // Now, find the *expected response* at those optimal levels
+            // The `calculateFactorEffects(false)` must have been run first.
+            Object.keys(experimentData.optimalSettings).forEach(factorName => {
+                const optimalLevelName = experimentData.optimalSettings[factorName].level;
+                experimentData.optimalSettings[factorName].response_avg = experimentData.factorEffects[factorName].levels[optimalLevelName];
+            });
+        }
+
+        function calculatePredictedOutcome() {
+            const overallMean = experimentData.results.reduce((s, v) => s + v, 0) / experimentData.results.length;
+            let predictedEffect = overallMean;
+
+            // Prediction formula:
+            // y_pred = T_avg + (A_opt_avg - T_avg) + (B_opt_avg - T_avg) + ...
+            Object.entries(experimentData.optimalSettings).forEach(([factorName, setting]) => {
+                const factorEffect = setting.response_avg - overallMean;
+                predictedEffect += factorEffect;
+            });
+
+            experimentData.predictedResult = predictedEffect;
+        }
+
+        function calculateSNR() {
+            let target = null;
+            if (experimentData.snrType === 'nominal') {
+                target = parseFloat(document.getElementById('nominal-target').value);
+                experimentData.nominalTarget = target; // Save for report
+            }
+
+            const perRunSNR = experimentData.results.map(y => {
+                if (y === null || isNaN(y)) return 0;
+                switch (experimentData.snrType) {
+                    case 'smaller':
+                        // S/N = -10 * log10 ( 1/n * sum(y_i^2) )
+                        // For n=1, this is -10 * log10(y^2)
+                        return y === 0 ? -100 : -10 * Math.log10(y * y);
+                    case 'larger':
+                        // S/N = -10 * log10 ( 1/n * sum(1/y_i^2) )
+                        // For n=1, this is -10 * log10(1/y^2)
+                        return y === 0 ? -100 : -10 * Math.log10(1 / (y * y));
+                    case 'nominal':
+                        // S/N = -10 * log10( (y - T)^2 ) -> Mean Squared Deviation from Target T
+                        // This is the correct formula for n=1 and a known target.
+                        const deviation = y - target;
+                        // Return a large positive number if deviation is zero
+                        return deviation === 0 ? 100 : -10 * Math.log10(deviation * deviation);
+                    default:
+                        return 0;
+                }
+            });
+            experimentData.snrEffects = { perRun: perRunSNR };
+        }
+
+        // === FUNCTION WITH CORRECTION FROM PROBLEM 3 ===
+        function calculateANOVA() {
+            const results = experimentData.results;
+            const n = results.length;
+            if (n < 2) return;
+
+            const overallMean = results.reduce((s, v) => s + v, 0) / n;
+            const SSt = results.reduce((s, v) => s + (v - overallMean) ** 2, 0);
+
+            let totalFactorSS = 0;
+            let totalFactorDF = 0;
+            experimentData.anova = {};
+
+            experimentData.factors.forEach(factor => {
+                let factorSS = 0;
+                // This shortcut is valid *because* the arrays L4-L16 are balanced
+                const runsPerLevel = n / factor.levels.length;
+                Object.values(experimentData.factorEffects[factor.name].levels).forEach(levelMean => {
+                    factorSS += runsPerLevel * (levelMean - overallMean) ** 2;
+                });
+                const df = factor.levels.length - 1;
+                totalFactorSS += factorSS;
+                totalFactorDF += df;
+                experimentData.anova[factor.name] = { ss: factorSS, df: df };
+            });
+
+            const errorDF = (n - 1) - totalFactorDF;
+            // === CORRECTION 3 IMPLEMENTED ===
+            // Ensure Error SS is not negative due to floating point rounding
+            const errorSS = Math.max(0, SSt - totalFactorSS);
+            // === END CORRECTION ===
+
+            if (errorDF <= 0) {
+                experimentData.anova.error = { ss: errorSS, df: 0, ms: 0 }; // SS was already checked
+                experimentData.anova.total = { ss: SSt, df: n - 1 };
+                Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(k => {
+                    experimentData.anova[k].ms = experimentData.anova[k].df > 0 ? experimentData.anova[k].ss / experimentData.anova[k].df : 0;
+                    experimentData.anova[k].f = Infinity;
+                    experimentData.anova[k].isSignificant = 'N/A (Saturated)';
+                });
+                return;
+            }
+
+            const errorMS = errorSS / errorDF;
+
+            Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
+                const anovaFactor = experimentData.anova[factorName];
+                if (!anovaFactor.df) return;
+
+                anovaFactor.ms = anovaFactor.ss / anovaFactor.df;
+                anovaFactor.f = errorMS > 0 ? anovaFactor.ms / errorMS : Infinity;
+
+                // Use improved F-test for significance
+                const fCritical = getFCritical(anovaFactor.df, errorDF);
+                anovaFactor.isSignificant = anovaFactor.f > fCritical;
+            });
+
+            experimentData.anova.error = { ss: errorSS, df: errorDF, ms: errorMS };
+            experimentData.anova.total = { ss: SSt, df: n - 1 };
+        }
+
+        function displayExecutiveSummary(runId) {
+            const calculationDate = new Date().toLocaleString();
+            const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
+            const mostInfluential = sortedFactors.length > 0 ? sortedFactors[0][0] : 'N/A';
+            const settingsList = Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><i class="fas fa-check-circle"></i><strong>${name}:</strong> ${setting.level}</li>`).join('');
+            const summaryDiv = document.getElementById(`executive-summary-${runId}`);
+            summaryDiv.innerHTML = `
             <div class="conclusion-box" style="border-left-color: var(--primary-color); background-color: #f8f9fa;">
                 <h3><i class="fas fa-bullseye"></i> Executive Summary (Run #${runId})</h3>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem;">
@@ -959,169 +1219,170 @@
                     <li><i class="fas fa-calculator"></i><div class="summary-text">With these settings, the predicted result for '<strong>${experimentData.responseVariable}</strong>' is approximately <strong>${experimentData.predictedResult.toFixed(3)}</strong>.</div></li>
                 </ul>
             </div>`;
-    }
+        }
 
-    function displayFactorEffectsTables(runId) { 
-        const container = document.getElementById(`factor-effects-content-${runId}`); 
-        let html = ''; 
-        const sortedFactors = Object.keys(experimentData.factorEffects).sort((a, b) => experimentData.factorEffects[b].range - experimentData.factorEffects[a].range); 
-        sortedFactors.forEach(factorName => { 
-            const factor = experimentData.factorEffects[factorName]; 
-            html += `<div class="factor-table"><table><thead><tr><th colspan="2">${factorName} (Effect Range: ${factor.range.toFixed(3)})</th></tr>`; 
-            html += '<tr><th>Level</th><th>Average Response</th></tr></thead><tbody>'; 
-            Object.entries(factor.levels).forEach(([level, avg]) => { 
-                const isOptimal = level === experimentData.optimalSettings[factorName].level; 
-                html += `<tr class="${isOptimal ? 'highlight' : ''}"><td>${level}</td><td>${avg.toFixed(3)}</td></tr>`; 
-            }); 
-            html += '</tbody></table></div>'; 
-        }); 
-        container.innerHTML = html; 
-    }
-    
-    function displayAnovaTable(runId) { 
-        const container = document.getElementById(`anova-table-container-${runId}`); 
-        let html = `<table class="anova-table"><thead><tr><th>Source</th><th>Sum of Squares (SS)</th><th>DF</th><th>Mean Square (MS)</th><th>F-Value</th><th>Significant?</th></tr></thead><tbody>`; 
-        Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => { 
-            const d = experimentData.anova[factorName]; 
-            const sigText = typeof d.isSignificant === 'boolean' ? (d.isSignificant ? 'Yes' : 'No') : d.isSignificant; 
-            const sigClass = d.isSignificant === true ? 'significant' : ''; 
-            html += `<tr class="${sigClass}"><td class="${sigClass}">${factorName}</td><td>${d.ss.toFixed(3)}</td><td>${d.df}</td><td>${(d.ms || 0).toFixed(3)}</td><td>${(d.f === Infinity ? '∞' : (d.f || 0).toFixed(3))}</td><td>${sigText}</td></tr>`; 
-        }); 
-        const e = experimentData.anova.error; 
-        html += `<tr><td>Error</td><td>${(e.ss || 0).toFixed(3)}</td><td>${e.df}</td><td>${(e.ms || 0).toFixed(3)}</td><td></td><td></td></tr>`; 
-        const t = experimentData.anova.total; 
-        html += `<tr><td><strong>Total</strong></td><td><strong>${(t.ss || 0).toFixed(3)}</strong></td><td><strong>${t.df}</strong></td><td></td><td></td><td></td></tr>`; 
-        html += '</tbody></table>'; 
-        if (e.df <= 0) { 
-            html += `<p class="interpretation">Note: ANOVA could not be fully calculated because there are no degrees of freedom for the error term (the design is "saturated"). F-values and significance cannot be determined.</p>`; 
-        } 
-        container.innerHTML = html; 
-    }
-    
-    function displaySnrResults(runId) { 
-        const overallSnr = experimentData.snrEffects.perRun.reduce((a, b) => a + b, 0) / experimentData.snrEffects.perRun.length; 
-        // Use getSnrTypeName to include the target value in the report
-        document.getElementById(`snr-results-content-${runId}`).innerHTML = `<p><strong>Overall S/N Ratio (${getSnrTypeName(experimentData.snrType)}):</strong> <span class="snr-value" style="font-weight: bold; color: var(--primary-color);">${(overallSnr || 0).toFixed(2)} dB</span></p>`; 
-        const optimalDiv = document.getElementById(`optimal-levels-${runId}`); 
-        let html = `<h4>Optimal Levels for Robustness</h4><p>These are the settings that maximize the Signal-to-Noise ratio, making your process less sensitive to variation.</p><ul>`; 
-        html += Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><strong>${name}:</strong> ${setting.level} (Avg S/N: ${setting.snr_avg.toFixed(2)} dB)</li>`).join(''); 
-        html += '</ul>'; 
-        optimalDiv.innerHTML = html; 
-    }
-    
-    function createParetoChart(runId) {
-        const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
-        const labels = sortedFactors.map(f => f[0]);
-        const data = sortedFactors.map(f => f[1].range);
-        const paretoChart = new Chart(document.getElementById(`pareto-chart-${runId}`).getContext('2d'), {
-            type: 'bar',
-            data: { labels, datasets: [{ label: 'Factor Effect (Range)', data, backgroundColor: 'rgba(52, 152, 219, 0.7)' }] },
-            options: {
-                responsive: true, maintainAspectRatio: false, indexAxis: 'x',
-                plugins: { title: { display: true, text: `Impact of Factors on ${experimentData.responseVariable}` } },
-                layout: { padding: { top: 45 } }
+        function displayFactorEffectsTables(runId) {
+            const container = document.getElementById(`factor-effects-content-${runId}`);
+            let html = '';
+            const sortedFactors = Object.keys(experimentData.factorEffects).sort((a, b) => experimentData.factorEffects[b].range - experimentData.factorEffects[a].range);
+            sortedFactors.forEach(factorName => {
+                const factor = experimentData.factorEffects[factorName];
+                html += `<div class="factor-table"><table><thead><tr><th colspan="2">${factorName} (Effect Range: ${factor.range.toFixed(3)})</th></tr>`;
+                html += '<tr><th>Level</th><th>Average Response</th></tr></thead><tbody>';
+                Object.entries(factor.levels).forEach(([level, avg]) => {
+                    const isOptimal = level === experimentData.optimalSettings[factorName].level;
+                    html += `<tr class="${isOptimal ? 'highlight' : ''}"><td>${level}</td><td>${avg.toFixed(3)}</td></tr>`;
+                });
+                html += '</tbody></table></div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function displayAnovaTable(runId) {
+            const container = document.getElementById(`anova-table-container-${runId}`);
+            let html = `<table class="anova-table"><thead><tr><th>Source</th><th>Sum of Squares (SS)</th><th>DF</th><th>Mean Square (MS)</th><th>F-Value</th><th>Significant?</th></tr></thead><tbody>`;
+            Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
+                const d = experimentData.anova[factorName];
+                const sigText = typeof d.isSignificant === 'boolean' ? (d.isSignificant ? 'Yes' : 'No') : d.isSignificant;
+                const sigClass = d.isSignificant === true ? 'significant' : '';
+                html += `<tr class="${sigClass}"><td class="${sigClass}">${factorName}</td><td>${d.ss.toFixed(3)}</td><td>${d.df}</td><td>${(d.ms || 0).toFixed(3)}</td><td>${(d.f === Infinity ? '∞' : (d.f || 0).toFixed(3))}</td><td>${sigText}</td></tr>`;
+            });
+            const e = experimentData.anova.error;
+            html += `<tr><td>Error</td><td>${(e.ss || 0).toFixed(3)}</td><td>${e.df}</td><td>${(e.ms || 0).toFixed(3)}</td><td></td><td></td></tr>`;
+            const t = experimentData.anova.total;
+            html += `<tr><td><strong>Total</strong></td><td><strong>${(t.ss || 0).toFixed(3)}</strong></td><td><strong>${t.df}</strong></td><td></td><td></td><td></td></tr>`;
+            html += '</tbody></table>';
+            if (e.df <= 0) {
+                html += `<p class="interpretation">Note: ANOVA could not be fully calculated because there are no degrees of freedom for the error term (the design is "saturated"). F-values and significance cannot be determined.</p>`;
             }
-        });
-        allCharts.push(paretoChart);
-    }
-    
-    function createMainEffectsCharts(runId) {
-        const container = document.getElementById(`charts-parent-container-${runId}`);
-        container.innerHTML = '';
-        Object.keys(experimentData.factorEffects).forEach(factorName => {
-            const factorData = experimentData.factorEffects[factorName];
-            const chartWrapper = document.createElement('div');
-            chartWrapper.className = 'chart-wrapper';
-            const canvas = document.createElement('canvas');
-            chartWrapper.appendChild(canvas);
-            container.appendChild(chartWrapper);
-            const chart = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: { labels: Object.keys(factorData.levels), datasets: [{ label: 'Average Response', data: Object.values(factorData.levels), borderColor: getRandomColor(), tension: 0.1 }] },
+            container.innerHTML = html;
+        }
+
+        function displaySnrResults(runId) {
+            const overallSnr = experimentData.snrEffects.perRun.reduce((a, b) => a + b, 0) / experimentData.snrEffects.perRun.length;
+            // Use getSnrTypeName to include the target value in the report
+            document.getElementById(`snr-results-content-${runId}`).innerHTML = `<p><strong>Overall S/N Ratio (${getSnrTypeName(experimentData.snrType)}):</strong> <span class="snr-value" style="font-weight: bold; color: var(--primary-color);">${(overallSnr || 0).toFixed(2)} dB</span></p>`;
+            const optimalDiv = document.getElementById(`optimal-levels-${runId}`);
+            let html = `<h4>Optimal Levels for Robustness</h4><p>These are the settings that maximize the Signal-to-Noise ratio, making your process less sensitive to variation.</p><ul>`;
+            html += Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><strong>${name}:</strong> ${setting.level} (Avg S/N: ${setting.snr_avg.toFixed(2)} dB)</li>`).join('');
+            html += '</ul>';
+            optimalDiv.innerHTML = html;
+        }
+
+        function createParetoChart(runId) {
+            const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
+            const labels = sortedFactors.map(f => f[0]);
+            const data = sortedFactors.map(f => f[1].range);
+            const paretoChart = new Chart(document.getElementById(`pareto-chart-${runId}`).getContext('2d'), {
+                type: 'bar',
+                data: { labels, datasets: [{ label: 'Factor Effect (Range)', data, backgroundColor: 'rgba(52, 152, 219, 0.7)' }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { title: { display: true, text: `Main Effect: ${factorName}` } }
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'x',
+                    plugins: { title: { display: true, text: `Impact of Factors on ${experimentData.responseVariable}` } },
+                    layout: { padding: { top: 45 } }
                 }
             });
-            allCharts.push(chart);
-        });
-    }
-    
-    function getSnrTypeName(type) { 
-        const names = { 'smaller': 'Smaller is Better', 'larger': 'Larger is Better', 'nominal': 'Nominal is Best' }; 
-        let name = names[type] || type;
-        if (type === 'nominal' && experimentData.nominalTarget !== null) {
-            name += ` (Target: ${experimentData.nominalTarget})`;
+            allCharts.push(paretoChart);
         }
-        return name; 
-    }
-    
-    function getRandomColor() { 
-        const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e']; 
-        return colors[Math.floor(Math.random() * colors.length)]; 
-    }
-    
-    function exportToExcel() { 
-        if (!experimentData.predictedResult) { 
-            alert("Please run at least one analysis before exporting."); 
-            return; 
-        } 
-        
-        const wb = XLSX.utils.book_new(); 
-        
-        // Summary Sheet
-        const summaryData = [ 
-            ['Taguchi Analysis Report (Last Run)'], 
-            ['Calculation Date', new Date().toLocaleString()], 
-            ['Experiment Name', experimentData.name], 
-            ['Objective', experimentData.objective], 
-            [], 
-            ['Executive Summary'], 
-            ['Most Influential Factor', Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range)[0][0]], 
-            ['Predicted Result', experimentData.predictedResult.toFixed(4)], 
-            [''], 
-            ['Optimal Settings (for Robustness):'], 
-            ['Factor', 'Optimal Level', 'Avg. S/N (dB)'], 
-            ...Object.entries(experimentData.optimalSettings).map(([name, setting]) => [name, setting.level, setting.snr_avg.toFixed(2)]) 
-        ]; 
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary'); 
-        
-        // Design Data Sheet
-        const designData = [ 
-            ['Experiment Design & Data'], 
-            ['Run', ...experimentData.factors.map(f => f.name), experimentData.responseVariable, `S/N Ratio (${getSnrTypeName(experimentData.snrType)})`], 
-            ...experimentData.selectedArray.array.map((run, index) => { 
-                const row = [index + 1]; 
-                for (let i = 0; i < experimentData.factors.length; i++) { 
-                    const factor = experimentData.factors[i]; 
-                    row.push(factor.levels[Math.min(run[i] - 1, factor.levels.length - 1)]); 
-                } 
-                row.push(experimentData.results[index] || ''); 
-                row.push(experimentData.snrEffects.perRun[index].toFixed(2)); 
-                return row; 
-            }) 
-        ]; 
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(designData), 'Design Data'); 
-        
-        // ANOVA Sheet
-        const anovaData = [ 
-            ['ANOVA Table'], 
-            ['Source', 'SS', 'DF', 'MS', 'F-Value', 'Significant?'], 
-            ...Object.keys(experimentData.anova).filter(k => k !== 'total' && k !== 'error').map(key => { 
-                const val = experimentData.anova[key]; 
-                const sigText = typeof val.isSignificant === 'boolean' ? (val.isSignificant ? 'Yes' : 'No') : val.isSignificant; 
-                return [key, val.ss, val.df, val.ms, val.f === Infinity ? 'N/A' : val.f, sigText]; 
-            }), 
-            ['Error', experimentData.anova.error.ss, experimentData.anova.error.df, experimentData.anova.error.ms, '', ''], 
-            ['Total', experimentData.anova.total.ss, experimentData.anova.total.df, '', '', ''] 
-        ]; 
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(anovaData), 'ANOVA'); 
-        
-        const fileName = `Taguchi_Analysis_${experimentData.name.replace(/[^a-z0-9]/gi, '_')}.xlsx`; 
-        XLSX.writeFile(wb, fileName); 
-        DOM.successMessage.style.display = 'block'; 
-        setTimeout(() => { DOM.successMessage.style.display = 'none'; }, 3000); 
-    }
-</script>
+
+        function createMainEffectsCharts(runId) {
+            const container = document.getElementById(`charts-parent-container-${runId}`);
+            container.innerHTML = '';
+            Object.keys(experimentData.factorEffects).forEach(factorName => {
+                const factorData = experimentData.factorEffects[factorName];
+                const chartWrapper = document.createElement('div');
+                chartWrapper.className = 'chart-wrapper';
+                const canvas = document.createElement('canvas');
+                chartWrapper.appendChild(canvas);
+                container.appendChild(chartWrapper);
+                const chart = new Chart(canvas.getContext('2d'), {
+                    type: 'line',
+                    data: { labels: Object.keys(factorData.levels), datasets: [{ label: 'Average Response', data: Object.values(factorData.levels), borderColor: getRandomColor(), tension: 0.1 }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { title: { display: true, text: `Main Effect: ${factorName}` } }
+                    }
+                });
+                allCharts.push(chart);
+            });
+        }
+
+        function getSnrTypeName(type) {
+            const names = { 'smaller': 'Smaller is Better', 'larger': 'Larger is Better', 'nominal': 'Nominal is Best' };
+            let name = names[type] || type;
+            if (type === 'nominal' && experimentData.nominalTarget !== null) {
+                name += ` (Target: ${experimentData.nominalTarget})`;
+            }
+            return name;
+        }
+
+        function getRandomColor() {
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function exportToExcel() {
+            if (!experimentData.predictedResult) {
+                alert("Please run at least one analysis before exporting.");
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            // Summary Sheet
+            const summaryData = [
+                ['Taguchi Analysis Report (Last Run)'],
+                ['Calculation Date', new Date().toLocaleString()],
+                ['Experiment Name', experimentData.name],
+                ['Objective', experimentData.objective],
+                [],
+                ['Executive Summary'],
+                ['Most Influential Factor', Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range)[0][0]],
+                ['Predicted Result', experimentData.predictedResult.toFixed(4)],
+                [''],
+                ['Optimal Settings (for Robustness):'],
+                ['Factor', 'Optimal Level', 'Avg. S/N (dB)'],
+                ...Object.entries(experimentData.optimalSettings).map(([name, setting]) => [name, setting.level, setting.snr_avg.toFixed(2)])
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
+
+            // Design Data Sheet
+            const designData = [
+                ['Experiment Design & Data'],
+                ['Run', ...experimentData.factors.map(f => f.name), experimentData.responseVariable, `S/N Ratio (${getSnrTypeName(experimentData.snrType)})`],
+                ...experimentData.selectedArray.array.map((run, index) => {
+                    const row = [index + 1];
+                    for (let i = 0; i < experimentData.factors.length; i++) {
+                        const factor = experimentData.factors[i];
+                        row.push(factor.levels[Math.min(run[i] - 1, factor.levels.length - 1)]);
+                    }
+                    row.push(experimentData.results[index] || '');
+                    row.push(experimentData.snrEffects.perRun[index].toFixed(2));
+                    return row;
+                })
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(designData), 'Design Data');
+
+            // ANOVA Sheet
+            const anovaData = [
+                ['ANOVA Table'],
+                ['Source', 'SS', 'DF', 'MS', 'F-Value', 'Significant?'],
+                ...Object.keys(experimentData.anova).filter(k => k !== 'total' && k !== 'error').map(key => {
+                    const val = experimentData.anova[key];
+                    const sigText = typeof val.isSignificant === 'boolean' ? (val.isSignificant ? 'Yes' : 'No') : val.isSignificant;
+                    return [key, val.ss, val.df, val.ms, val.f === Infinity ? 'N/A' : val.f, sigText];
+                }),
+                ['Error', experimentData.anova.error.ss, experimentData.anova.error.df, experimentData.anova.error.ms, '', ''],
+                ['Total', experimentData.anova.total.ss, experimentData.anova.total.df, '', '', '']
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(anovaData), 'ANOVA');
+
+            const fileName = `Taguchi_Analysis_${experimentData.name.replace(/[^a-z0-9]/gi, '_')}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            DOM.successMessage.style.display = 'block';
+            setTimeout(() => { DOM.successMessage.style.display = 'none'; }, 3000);
+        }
+    </script>
 </body>
+
 </html>

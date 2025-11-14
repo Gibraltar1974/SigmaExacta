@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Design Thinking Facilitator Tool | Sigma Exacta</title>
     <link rel="canonical" href="https://sigmaexacta.com/design_thinking" />
-    <meta name="description" content="Free online Design Thinking tool to facilitate human-centered innovation workshops. Follow the 5 stages: Empathize, Define, Ideate, Prototype, and Test for human-centered solutions.">
-    <meta name="keywords" content="Open Source, Free Software, SigmaExacta, Design Thinking, human-centered design, innovation, problem-solving, empathize, define, ideate, prototype, test, workshop tool, IDEO, Stanford d.school">
+    <meta name="description"
+        content="Free online Design Thinking tool to facilitate human-centered innovation workshops. Follow the 5 stages: Empathize, Define, Ideate, Prototype, and Test for human-centered solutions.">
+    <meta name="keywords"
+        content="Open Source, Free Software, SigmaExacta, Design Thinking, human-centered design, innovation, problem-solving, empathize, define, ideate, prototype, test, workshop tool, IDEO, Stanford d.school">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,157 +21,6 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
-        /* --- Estilos base para la barra de navegación --- */
-        .top-bar {
-            /* === MODIFICACIÓN: Header fijo al hacer scroll === */
-            position: sticky; /* Cambiado de 'relative' para que la barra se fije en la parte superior */
-            top: 0;           /* Se posiciona en el borde superior de la ventana */
-            z-index: 1001;    /* Se asegura que esté por encima de otro contenido al hacer scroll */
-            /* === FIN DE LA MODIFICACIÓN === */
-            
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #222; /* Un negro suave, puedes cambiarlo por #000 */
-        }
-        .logo-text, .navigation .nav-link, .nav-toggle {
-            color: #fff; /* Color blanco para el texto y el icono */
-        }
-
-        .nav-toggle {
-            display: none; 
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .navigation .nav-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-        }
-
-        .navigation .nav-link {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-        }
-        
-        .navigation .nav-link i {
-            margin-left: 5px;
-            transition: transform 0.3s ease;
-        }
-        
-        /* --- Estilos para el menú desplegable (escritorio) --- */
-        .nav-item-dropdown {
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: #fff; /* Fondo blanco para el desplegable */
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            border-radius: 5px;
-            z-index: 1000;
-            min-width: 600px;
-            padding: 20px;
-        }
-        
-        /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
-        .dropdown-menu a, .dropdown-menu h4 {
-            color: #333;
-        }
-        .dropdown-link:hover {
-            background-color: #f1f1f1;
-        }
-
-
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-
-        .nav-item-dropdown:hover > .dropdown-menu {
-            display: block;
-        }
-
-        /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
-        @media (max-width: 992px) {
-            .nav-toggle {
-                display: block;
-            }
-
-            .navigation .nav-menu {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: #fff; /* Fondo blanco para el menú desplegado */
-                border-top: 1px solid #eee;
-            }
-            
-            /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
-            .navigation .nav-menu .nav-link {
-                color: #333; 
-            }
-
-            .navigation .nav-menu.show-menu {
-                display: flex;
-            }
-            
-            .navigation .nav-item {
-                width: 100%;
-                text-align: left;
-            }
-
-            .nav-item-dropdown > .nav-link {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .dropdown-menu {
-                display: none; 
-                position: static; 
-                width: 100%;
-                box-shadow: none;
-                border-top: 1px solid #f0f0f0;
-                padding: 10px 0 10px 30px;
-                min-width: unset;
-                background-color: #f9f9f9;
-            }
-
-            .dropdown-menu.show-submenu {
-                display: block;
-            }
-            
-            .dropdown-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-item-dropdown:hover > .dropdown-menu {
-                display: none;
-            }
-            .nav-item-dropdown.active:hover > .dropdown-menu {
-                display: block;
-            }
-            
-            .nav-item-dropdown.active > .nav-link i {
-                transform: rotate(180deg);
-            }
-        }
-        
         /* ===== Page Specific Styles ===== */
         :root {
             --primary-color: #2c3e50;
@@ -180,47 +32,69 @@
             --warning-color: #f39c12;
             font-size: 16px;
         }
-        
+
         body {
             background-color: #f5f7fa;
         }
-        
+
         /* === MODIFICACIÓN: Contenedor principal ocupa todo el ancho === */
-        .main-content-wrapper { 
-            max-width: none; /* Eliminamos la limitación de ancho */
-            margin: 0 auto; 
-            padding: 1.25rem; 
-            width: 100%; /* Ocupa todo el ancho disponible */
-            box-sizing: border-box; /* Incluye padding en el cálculo del ancho */
+        .main-content-wrapper {
+            max-width: none;
+            /* Eliminamos la limitación de ancho */
+            margin: 0 auto;
+            padding: 1.25rem;
+            width: 100%;
+            /* Ocupa todo el ancho disponible */
+            box-sizing: border-box;
+            /* Incluye padding en el cálculo del ancho */
         }
 
-        .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
-        .header h1 { 
-            color: var(--primary-color); 
-            font-size: clamp(1.5rem, 4vw, 1.8rem); 
-            margin: 0.5rem 0; 
-            font-weight: 800; 
-            display: flex; /* Añadido para alinear el icono y el texto */
-            align-items: center; /* Centrado vertical */
-            justify-content: center; /* Centrado horizontal */
+        .header {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
         }
-        .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: 0.5rem 0;
+            font-weight: 800;
+            display: flex;
+            /* Añadido para alinear el icono y el texto */
+            align-items: center;
+            /* Centrado vertical */
+            justify-content: center;
+            /* Centrado horizontal */
+        }
+
+        .header .header-subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 400;
+        }
 
         /* Estilo para el ícono H1 (basado en stack_up_analysis) */
         .header-icon-container {
-            width: 42px; 
-            height: 42px; 
-            border-radius: 8px; 
-            background-color: #af52de; /* Color de fondo del icono */
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background-color: #af52de;
+            /* Color de fondo del icono */
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-right: 10px;
         }
+
         .header-icon-container .fas {
-            font-size: 22px; /* Tamaño del icono */
+            font-size: 22px;
+            /* Tamaño del icono */
             color: #fff;
         }
+
         /* Fin de los estilos del ícono H1 */
 
         /* === MODIFICACIÓN: Bloques de contenido aprovechan mejor el espacio === */
@@ -230,87 +104,255 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             background-color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            max-width: 1400px; /* Límite máximo para mantener legibilidad */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            max-width: 1400px;
+            /* Límite máximo para mantener legibilidad */
             margin-left: auto;
             margin-right: auto;
         }
-        
+
         .content-block h2 {
-            font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
-            color: var(--primary-color); border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.6rem; font-weight: 800;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.6rem;
+            font-weight: 800;
         }
-        .content-block h2 .fas { margin-right: 0.75rem; }
-        
-        .infographic-flow { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: stretch; 
-            margin-top: 1.5rem; 
-            text-align: center; 
-            flex-wrap: wrap; 
+
+        .content-block h2 .fas {
+            margin-right: 0.75rem;
+        }
+
+        .infographic-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-top: 1.5rem;
+            text-align: center;
+            flex-wrap: wrap;
             gap: 0.6rem;
         }
-        .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-        .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
-        .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
-        .flow-step span { font-size: 0.9em; color: #555; }
-        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto 0.6rem; flex-grow: 0; }
 
-        .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
-        .instructions-box li { margin-bottom: 0.5rem; line-height: 1.6; }
-        
-        .workshop-step { border: 1px solid #eee; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; background-color: #fdfdfd; }
-        .workshop-step h3 { font-size: 1.2em; margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 0.6rem; font-weight: 800; }
-        .workshop-step h3 .fas { margin-right: 0.5rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        
-        label { color: var(--primary-color); font-weight: 600; display: block; margin-bottom: 0.5rem; }
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-step .fas {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.6rem;
+        }
+
+        .flow-step strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .flow-step span {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: auto 0.6rem;
+            flex-grow: 0;
+        }
+
+        .instructions-box ul {
+            margin: 0.6rem 0 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .instructions-box li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .workshop-step {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            background-color: #fdfdfd;
+        }
+
+        .workshop-step h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.6rem;
+            font-weight: 800;
+        }
+
+        .workshop-step h3 .fas {
+            margin-right: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
         textarea {
-            width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
-            transition: border 0.3s, box-shadow 0.3s; font-size: 1rem; font-family: 'Nunito', sans-serif;
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border 0.3s, box-shadow 0.3s;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
             min-height: 45px;
             resize: none;
             overflow-y: hidden;
         }
-        textarea:focus, button:focus-visible {
-            outline: none; border-color: var(--secondary-color);
+
+        textarea:focus,
+        button:focus-visible {
+            outline: none;
+            border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
 
         button {
-            background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem;
-            border: none; border-radius: 4px; cursor: pointer; margin: 5px;
-            font-size: 1rem; transition: background-color 0.3s;
-            font-family: 'Nunito', sans-serif; font-weight: 600;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
         }
-        .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #219653; }
-        .btn-warning { background-color: var(--warning-color); }
-        .btn-warning:hover { background-color: #d4ac0d; }
-        #generate-report-button { width: 100%; padding: 1rem; font-size: 1.2em; font-weight: bold; margin-top: 1.25rem; }
-        #generate-report-button:hover { background-color: #2980b9; }
 
-        .hidden { display: none; }
-        
-        #results-container { border: 2px solid var(--success-color); background-color: #f8fef8; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; }
-        #results-container h3 { color: var(--success-color); font-weight: 800; }
-        .results-summary { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 1.5rem; }
-        .results-summary h4 { margin: 0 0 0.5rem 0; color: var(--dark-color); }
-        .results-summary p { white-space: pre-wrap; margin: 0; background: #fff; padding: 0.5rem; border-radius: 4px; border: 1px solid #eee; }
-        
-        .results-actions { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #eee; }
+        .btn-success {
+            background-color: var(--success-color);
+        }
 
-        footer { padding: 2rem 1.25rem; text-align: center; }
-        .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
-        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #d4ac0d;
+        }
+
+        #generate-report-button {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 1.25rem;
+        }
+
+        #generate-report-button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #results-container {
+            border: 2px solid var(--success-color);
+            background-color: #f8fef8;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        #results-container h3 {
+            color: var(--success-color);
+            font-weight: 800;
+        }
+
+        .results-summary {
+            border-left: 3px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-summary h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark-color);
+        }
+
+        .results-summary p {
+            white-space: pre-wrap;
+            margin: 0;
+            background: #fff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .results-actions {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        footer {
+            padding: 2rem 1.25rem;
+            text-align: center;
+        }
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         @media (max-width: 992px) {
-            .infographic-flow { flex-direction: column; align-items: center; }
-            .flow-arrow { display: none; }
+            .infographic-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .flow-arrow {
+                display: none;
+            }
         }
-        
+
         /* === MODIFICACIÓN: Para pantallas muy grandes, añadimos márgenes laterales === */
         @media (min-width: 1400px) {
             .content-block {
@@ -320,797 +362,832 @@
         }
     </style>
 </head>
+
 <body>
 
-<header role="banner" class="top-bar">
-    <a href="index.html" class="logo-container-link">
-        <div class="logo-container">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-            <span class="logo-text">SigmaExacta</span>
-        </div>
-    </a>
+    <!-- Contenedor para el header que se cargará dinámicamente -->
+    <div id="header-container"></div>
 
-    <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <ul class="nav-menu" id="nav-menu">
-            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-            
-            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-menu" id="tools-dropdown-menu">
-                    <div class="dropdown-grid">
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Process & Quality</h4>
-                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Design & Innovation</h4>
-                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                            <a href="fmea.html" class="dropdown-link">FMEA</a>
-                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                            <a href="kano.html" class="dropdown-link">Kano Model</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Problem Solving</h4>
-                            <a href="8d.html" class="dropdown-link">8D Report</a>
-                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                            <a href="triz.html" class="dropdown-link">TRIZ</a>
-                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                        </div>
-                         <div class="dropdown-column">
-                            <h4 class="dropdown-category">Strategy & Management</h4>
-                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                        </div>
+    <main class="main-content-wrapper">
+        <header class="header">
+            <h1>
+                <div class="header-icon-container">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                Free Online Design Thinking (Human-Centered) Facilitator Tool
+            </h1>
+            <p class="header-subtitle">A human-centered framework for innovation and creative problem-solving.</p>
+        </header>
+
+        <div class="content-block">
+            <h2><i class="fas fa-question-circle"></i> What is Design Thinking?</h2>
+            <p><strong>Design Thinking</strong> is an iterative and non-linear process that teams use to understand
+                users, challenge assumptions, redefine problems, and create innovative solutions to prototype and test.
+                It is a human-centered approach, meaning it starts with the people you're designing for and ends with
+                new solutions that are tailor-made to suit their needs.</p>
+            <p>The process is often broken down into five distinct phases, which guide teams from empathy to
+                implementation.</p>
+            <div class="infographic-flow">
+                <div class="flow-step"><i class="fas fa-heart"></i><strong>1. Empathize</strong><span>Understand user
+                        needs.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-bullseye"></i><strong>2. Define</strong><span>State the core
+                        problem.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-lightbulb"></i><strong>3. Ideate</strong><span>Brainstorm
+                        solutions.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-cube"></i><strong>4. Prototype</strong><span>Build the
+                        solution.</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-vial"></i><strong>5. Test</strong><span>Get user
+                        feedback.</span></div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2><i class="fas fa-history"></i> History & Origin</h2>
+            <p>While the term "Design Thinking" became popular in the 21st century, its roots go back decades. The
+                concept of design as a "way of thinking" can be traced to the 1969 book "The Sciences of the Artificial"
+                by Nobel laureate <strong>Herbert A. Simon</strong>. Further development occurred in design and
+                engineering fields throughout the 70s and 80s.</p>
+            <p>The methodology was popularized and adapted for business purposes by the design consultancy
+                <strong>IDEO</strong>. Figures like David Kelley and Tim Brown were instrumental in championing Design
+                Thinking as a way to solve complex problems in business and society. The <strong>Hasso Plattner
+                    Institute of Design at Stanford (d.school)</strong>, co-founded by Kelley, further solidified its
+                place as a formal and teachable innovation process.</p>
+        </div>
+
+        <div class="content-block">
+            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+            <div class="instructions-box">
+                <ul>
+                    <li><strong>Load Example:</strong> Click on any example button (Coffee Shop, Healthcare, or
+                        Education) to see a complete, detailed project documented through all five phases.</li>
+                    <li><strong>Follow the Steps:</strong> Fill in the details for each of the five Design Thinking
+                        phases for your own project. Each phase now includes comprehensive fields to guide your
+                        thinking.</li>
+                    <li><strong>Track Progress:</strong> Watch the progress bar as you complete each section to see how
+                        much of the workshop you've finished.</li>
+                    <li><strong>Generate Report:</strong> Click "Generate Design Thinking Report" to create a
+                        comprehensive summary of your entire process.</li>
+                    <li><strong>Export:</strong> Once the report is generated, you can export it to Excel, PDF, or copy
+                        to clipboard for your records or sharing with your team.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2><i class="fas fa-pencil-ruler"></i> Design Thinking Workshop</h2>
+
+            <!-- Progress Bar -->
+            <div style="margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-weight: 600; color: var(--primary-color);">Workshop Progress</span>
+                    <span id="progress-percentage" style="font-weight: 600; color: var(--secondary-color);">0%</span>
+                </div>
+                <div
+                    style="width: 100%; height: 20px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden;">
+                    <div id="progress-bar"
+                        style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary-color), var(--success-color)); transition: width 0.3s ease;">
                     </div>
                 </div>
-            </li>
-            
-            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-        </ul>
-    </nav>
-</header>
-
-<main class="main-content-wrapper">
-    <header class="header">
-        <h1>
-            <div class="header-icon-container">
-                <i class="fas fa-lightbulb"></i>
+                <div
+                    style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.85rem; color: #666;">
+                    <span id="step-1-indicator">① Empathize</span>
+                    <span id="step-2-indicator">② Define</span>
+                    <span id="step-3-indicator">③ Ideate</span>
+                    <span id="step-4-indicator">④ Prototype</span>
+                    <span id="step-5-indicator">⑤ Test</span>
+                </div>
             </div>
-            Free Online Design Thinking (Human-Centered) Facilitator Tool
-        </h1>
-        <p class="header-subtitle">A human-centered framework for innovation and creative problem-solving.</p>
-    </header>
 
-    <div class="content-block">
-        <h2><i class="fas fa-question-circle"></i> What is Design Thinking?</h2>
-        <p><strong>Design Thinking</strong> is an iterative and non-linear process that teams use to understand users, challenge assumptions, redefine problems, and create innovative solutions to prototype and test. It is a human-centered approach, meaning it starts with the people you're designing for and ends with new solutions that are tailor-made to suit their needs.</p>
-        <p>The process is often broken down into five distinct phases, which guide teams from empathy to implementation.</p>
-        <div class="infographic-flow">
-            <div class="flow-step"><i class="fas fa-heart"></i><strong>1. Empathize</strong><span>Understand user needs.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-bullseye"></i><strong>2. Define</strong><span>State the core problem.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-lightbulb"></i><strong>3. Ideate</strong><span>Brainstorm solutions.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-cube"></i><strong>4. Prototype</strong><span>Build the solution.</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-vial"></i><strong>5. Test</strong><span>Get user feedback.</span></div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn-success" onclick="loadExample('coffee')"><i class="fas fa-coffee"></i> Coffee Shop
+                    Example</button>
+                <button class="btn-success" onclick="loadExample('healthcare')"><i class="fas fa-heartbeat"></i>
+                    Healthcare Example</button>
+                <button class="btn-success" onclick="loadExample('education')"><i class="fas fa-graduation-cap"></i>
+                    Education Example</button>
+                <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
+            </div>
+
+            <div class="workshop-step" id="step-1">
+                <h3><i class="fas fa-heart"></i> Step 1: Empathize - Understand Your Users</h3>
+                <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Use interviews, observations,
+                    and immersion to deeply understand your users' context, behaviors, and emotions.</p>
+
+                <div class="form-group">
+                    <label for="empathize-users">Who are the users/stakeholders?</label>
+                    <textarea id="empathize-users"
+                        placeholder="e.g., Busy urban commuters, working parents, students."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="empathize-context">What is the context? (Environment, situation, constraints)</label>
+                    <textarea id="empathize-context"
+                        placeholder="e.g., Urban environment, morning rush hour, limited time, crowded spaces, need for mobility."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="empathize-needs">What are their needs, pains, and goals? (Observations,
+                        Interviews)</label>
+                    <textarea id="empathize-needs"
+                        placeholder="e.g., They need a quick way to get coffee. They hate long lines. They worry about spilling coffee on the go. They want a quality beverage."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="empathize-emotions">What emotions do they experience? (Frustrations, anxieties,
+                        joys)</label>
+                    <textarea id="empathize-emotions"
+                        placeholder="e.g., Stress from time pressure, frustration with unpredictable waits, anxiety about being late, joy from a good coffee experience."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="empathize-quotes">Key quotes or insights from users</label>
+                    <textarea id="empathize-quotes"
+                        placeholder="e.g., 'I wish I could just grab my coffee without waiting' - Maria, 34. 'The morning line makes me consider skipping coffee altogether' - John, 28."></textarea>
+                </div>
+            </div>
+
+            <div class="workshop-step" id="step-2">
+                <h3><i class="fas fa-bullseye"></i> Step 2: Define - State the Core Problem (Point of View)</h3>
+                <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: A good problem statement is
+                    human-centered, broad enough for creative freedom, but narrow enough to be manageable.</p>
+
+                <div class="form-group">
+                    <label for="define-pov">Problem Statement: [User] needs [User's Need] because [Insight].</label>
+                    <textarea id="define-pov"
+                        placeholder="e.g., A busy commuter needs a way to get their morning coffee without waiting because their morning schedule is extremely tight and stressful."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="define-insights">Key insights that led to this problem statement</label>
+                    <textarea id="define-insights"
+                        placeholder="e.g., Users value time over cost. Waiting creates anxiety that affects their whole day. Current solutions don't account for unpredictability."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="define-constraints">Known constraints or requirements</label>
+                    <textarea id="define-constraints"
+                        placeholder="e.g., Solution must work in existing coffee shop infrastructure. Users won't adopt solutions requiring new hardware. Cost must be under $5 per transaction."></textarea>
+                </div>
+            </div>
+
+            <div class="workshop-step" id="step-3">
+                <h3><i class="fas fa-lightbulb"></i> Step 3: Ideate - Brainstorm Solutions</h3>
+                <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Go for quantity over quality
+                    initially. Wild ideas are welcome! Build on others' ideas. Defer judgment.</p>
+
+                <div class="form-group">
+                    <label for="ideate-hwm">"How Might We..." questions (HMW)</label>
+                    <textarea id="ideate-hwm"
+                        placeholder="e.g., How might we eliminate the queue? How might we make ordering faster? How might we make waiting feel shorter?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ideate-ideas">Brainstormed ideas (Go wild! Aim for 20+ ideas)</label>
+                    <textarea id="ideate-ideas"
+                        placeholder="e.g., 1. Mobile app for pre-ordering&#10;2. Subscription service with dedicated counter&#10;3. Self-serve coffee station&#10;4. Coffee delivery drone&#10;5. AI-powered order prediction&#10;6. VIP express lane&#10;..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ideate-selected">Top 3 ideas selected for further development</label>
+                    <textarea id="ideate-selected"
+                        placeholder="e.g., 1. Mobile pre-order app with QR pickup - Most feasible, directly addresses wait time&#10;2. Subscription model with dedicated express counter - Creates loyalty, recurring revenue&#10;3. Smart notification system - Low cost to implement, enhances existing solutions"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ideate-criteria">Selection criteria used</label>
+                    <textarea id="ideate-criteria"
+                        placeholder="e.g., Feasibility (technical & financial), Desirability (user appeal), Viability (business model), Time to implement, Scalability potential."></textarea>
+                </div>
+            </div>
+
+            <div class="workshop-step" id="step-4">
+                <h3><i class="fas fa-cube"></i> Step 4: Prototype - Create a Tangible Representation</h3>
+                <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡Tip: Start with low-fidelity
+                    prototypes (paper, sketches). The goal is to think with your hands and fail fast.</p>
+
+                <div class="form-group">
+                    <label for="prototype-type">Type of prototype (Paper sketch, Digital mockup, Physical model,
+                        Roleplay, Storyboard, etc.)</label>
+                    <textarea id="prototype-type"
+                        placeholder="e.g., Digital clickable mockup using Figma, with paper backup for user testing sessions."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prototype-desc">Describe the prototype in detail</label>
+                    <textarea id="prototype-desc"
+                        placeholder="e.g., We will create a series of paper sketches (wireframes) for a mobile pre-order app. The prototype will show the 3 key screens: menu selection, customization, and payment confirmation with a QR code for pickup."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prototype-features">Key features/elements included</label>
+                    <textarea id="prototype-features"
+                        placeholder="e.g., 1. One-tap reorder from favorites&#10;2. Customization options (size, milk, extras)&#10;3. Payment integration&#10;4. Real-time ready notification&#10;5. QR code for pickup&#10;6. Store locator map"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prototype-assumptions">Key assumptions to test with this prototype</label>
+                    <textarea id="prototype-assumptions"
+                        placeholder="e.g., Users will trust mobile pre-payment. QR code pickup is intuitive. Notification timing (when coffee is ready) is critical. Users prefer customization over speed."></textarea>
+                </div>
+            </div>
+
+            <div class="workshop-step" id="step-5">
+                <h3><i class="fas fa-vial"></i> Step 5: Test - Get Feedback</h3>
+                <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Show, don't tell. Let users
+                    interact with the prototype. Observe more than you ask. Embrace failure as learning.</p>
+
+                <div class="form-group">
+                    <label for="test-plan">Testing plan: Who, where, when, how?</label>
+                    <textarea id="test-plan"
+                        placeholder="e.g., We will test with 5-8 commuters at the train station between 7-9 AM. Each session: 10 minutes. Method: Think-aloud protocol while interacting with prototype."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-questions">Key questions to answer through testing</label>
+                    <textarea id="test-questions"
+                        placeholder="e.g., Can users complete an order in under 60 seconds? Do they understand the QR code pickup process? What causes confusion? Would they use this daily?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-feedback">User feedback and observations</label>
+                    <textarea id="test-feedback"
+                        placeholder="e.g., 4/5 users completed order successfully. All users hesitated at payment screen. 3 users asked 'where do I pick this up?' 2 users suggested adding favorite locations."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-learnings">What did you learn? (What worked, what didn't)</label>
+                    <textarea id="test-learnings"
+                        placeholder="e.g., WORKED: One-tap reorder was intuitive and loved. DIDN'T WORK: Pickup location unclear, caused anxiety. Payment screen needs trust signals."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-iterations">Next iterations and improvements</label>
+                    <textarea id="test-iterations"
+                        placeholder="e.g., 1. Add clear pickup counter visualization&#10;2. Include 'notify when I'm close' feature&#10;3. Add security badges to payment screen&#10;4. Test with higher fidelity prototype&#10;5. Consider loyalty rewards integration"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-metrics">Success metrics defined</label>
+                    <textarea id="test-metrics"
+                        placeholder="e.g., Order completion rate >90%, Time to order <60 sec, User satisfaction score >4/5, Pickup confusion <10%, Daily active users >1000 in first month."></textarea>
+                </div>
+            </div>
+
+            <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate
+                Design Thinking Report</button>
+            <div id="results-container" class="hidden"></div>
         </div>
-    </div>
-    
-    <div class="content-block">
-        <h2><i class="fas fa-history"></i> History & Origin</h2>
-        <p>While the term "Design Thinking" became popular in the 21st century, its roots go back decades. The concept of design as a "way of thinking" can be traced to the 1969 book "The Sciences of the Artificial" by Nobel laureate <strong>Herbert A. Simon</strong>. Further development occurred in design and engineering fields throughout the 70s and 80s.</p>
-        <p>The methodology was popularized and adapted for business purposes by the design consultancy <strong>IDEO</strong>. Figures like David Kelley and Tim Brown were instrumental in championing Design Thinking as a way to solve complex problems in business and society. The <strong>Hasso Plattner Institute of Design at Stanford (d.school)</strong>, co-founded by Kelley, further solidified its place as a formal and teachable innovation process.</p>
-    </div>
-
-    <div class="content-block">
-        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-        <div class="instructions-box">
-          <ul>
-            <li><strong>Load Example:</strong> Click on any example button (Coffee Shop, Healthcare, or Education) to see a complete, detailed project documented through all five phases.</li>
-            <li><strong>Follow the Steps:</strong> Fill in the details for each of the five Design Thinking phases for your own project. Each phase now includes comprehensive fields to guide your thinking.</li>
-            <li><strong>Track Progress:</strong> Watch the progress bar as you complete each section to see how much of the workshop you've finished.</li>
-            <li><strong>Generate Report:</strong> Click "Generate Design Thinking Report" to create a comprehensive summary of your entire process.</li>
-            <li><strong>Export:</strong> Once the report is generated, you can export it to Excel, PDF, or copy to clipboard for your records or sharing with your team.</li>
-          </ul>
-      </div>
-    </div>
-
-    <div class="content-block">
-        <h2><i class="fas fa-pencil-ruler"></i> Design Thinking Workshop</h2>
-        
-        <!-- Progress Bar -->
-        <div style="margin-bottom: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-weight: 600; color: var(--primary-color);">Workshop Progress</span>
-                <span id="progress-percentage" style="font-weight: 600; color: var(--secondary-color);">0%</span>
-            </div>
-            <div style="width: 100%; height: 20px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden;">
-                <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary-color), var(--success-color)); transition: width 0.3s ease;"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.85rem; color: #666;">
-                <span id="step-1-indicator">① Empathize</span>
-                <span id="step-2-indicator">② Define</span>
-                <span id="step-3-indicator">③ Ideate</span>
-                <span id="step-4-indicator">④ Prototype</span>
-                <span id="step-5-indicator">⑤ Test</span>
-            </div>
+    </main>
+    <footer>
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> Design Thinking is a methodology with roots in the work of many pioneers and
+                popularized by organizations like IDEO and institutions like the Stanford d.school. This tool is an
+                independent implementation provided for educational and informational purposes only. It is not
+                affiliated with, sponsored by, or endorsed by IDEO, Stanford University, or any other key figures or
+                organizations associated with the development of Design Thinking. The quality of the outcome is
+                dependent on the depth of research, collaboration, and creativity of the team using it. Sigma Exacta and
+                its creators are not liable for any damages or losses resulting from its use.</p>
         </div>
-        
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button class="btn-success" onclick="loadExample('coffee')"><i class="fas fa-coffee"></i> Coffee Shop Example</button>
-            <button class="btn-success" onclick="loadExample('healthcare')"><i class="fas fa-heartbeat"></i> Healthcare Example</button>
-            <button class="btn-success" onclick="loadExample('education')"><i class="fas fa-graduation-cap"></i> Education Example</button>
-            <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
-        </div>
+    </footer>
 
-        <div class="workshop-step" id="step-1">
-            <h3><i class="fas fa-heart"></i> Step 1: Empathize - Understand Your Users</h3>
-            <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Use interviews, observations, and immersion to deeply understand your users' context, behaviors, and emotions.</p>
-            
-            <div class="form-group">
-                <label for="empathize-users">Who are the users/stakeholders?</label>
-                <textarea id="empathize-users" placeholder="e.g., Busy urban commuters, working parents, students."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="empathize-context">What is the context? (Environment, situation, constraints)</label>
-                <textarea id="empathize-context" placeholder="e.g., Urban environment, morning rush hour, limited time, crowded spaces, need for mobility."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="empathize-needs">What are their needs, pains, and goals? (Observations, Interviews)</label>
-                <textarea id="empathize-needs" placeholder="e.g., They need a quick way to get coffee. They hate long lines. They worry about spilling coffee on the go. They want a quality beverage."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="empathize-emotions">What emotions do they experience? (Frustrations, anxieties, joys)</label>
-                <textarea id="empathize-emotions" placeholder="e.g., Stress from time pressure, frustration with unpredictable waits, anxiety about being late, joy from a good coffee experience."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="empathize-quotes">Key quotes or insights from users</label>
-                <textarea id="empathize-quotes" placeholder="e.g., 'I wish I could just grab my coffee without waiting' - Maria, 34. 'The morning line makes me consider skipping coffee altogether' - John, 28."></textarea>
-            </div>
-        </div>
-        
-        <div class="workshop-step" id="step-2">
-            <h3><i class="fas fa-bullseye"></i> Step 2: Define - State the Core Problem (Point of View)</h3>
-            <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: A good problem statement is human-centered, broad enough for creative freedom, but narrow enough to be manageable.</p>
-            
-            <div class="form-group">
-                <label for="define-pov">Problem Statement: [User] needs [User's Need] because [Insight].</label>
-                <textarea id="define-pov" placeholder="e.g., A busy commuter needs a way to get their morning coffee without waiting because their morning schedule is extremely tight and stressful."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="define-insights">Key insights that led to this problem statement</label>
-                <textarea id="define-insights" placeholder="e.g., Users value time over cost. Waiting creates anxiety that affects their whole day. Current solutions don't account for unpredictability."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="define-constraints">Known constraints or requirements</label>
-                <textarea id="define-constraints" placeholder="e.g., Solution must work in existing coffee shop infrastructure. Users won't adopt solutions requiring new hardware. Cost must be under $5 per transaction."></textarea>
-            </div>
-        </div>
+    <script>
+        let workshopData = {};
 
-        <div class="workshop-step" id="step-3">
-            <h3><i class="fas fa-lightbulb"></i> Step 3: Ideate - Brainstorm Solutions</h3>
-            <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Go for quantity over quality initially. Wild ideas are welcome! Build on others' ideas. Defer judgment.</p>
-            
-            <div class="form-group">
-                <label for="ideate-hwm">"How Might We..." questions (HMW)</label>
-                <textarea id="ideate-hwm" placeholder="e.g., How might we eliminate the queue? How might we make ordering faster? How might we make waiting feel shorter?"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="ideate-ideas">Brainstormed ideas (Go wild! Aim for 20+ ideas)</label>
-                <textarea id="ideate-ideas" placeholder="e.g., 1. Mobile app for pre-ordering&#10;2. Subscription service with dedicated counter&#10;3. Self-serve coffee station&#10;4. Coffee delivery drone&#10;5. AI-powered order prediction&#10;6. VIP express lane&#10;..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="ideate-selected">Top 3 ideas selected for further development</label>
-                <textarea id="ideate-selected" placeholder="e.g., 1. Mobile pre-order app with QR pickup - Most feasible, directly addresses wait time&#10;2. Subscription model with dedicated express counter - Creates loyalty, recurring revenue&#10;3. Smart notification system - Low cost to implement, enhances existing solutions"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="ideate-criteria">Selection criteria used</label>
-                <textarea id="ideate-criteria" placeholder="e.g., Feasibility (technical & financial), Desirability (user appeal), Viability (business model), Time to implement, Scalability potential."></textarea>
-            </div>
-        </div>
+        // Cargar el header dinámicamente
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar el header desde el archivo externo
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    // Inicializar el menú después de cargar el header
+                    initializeNavigation();
 
-        <div class="workshop-step" id="step-4">
-            <h3><i class="fas fa-cube"></i> Step 4: Prototype - Create a Tangible Representation</h3>
-            <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡Tip: Start with low-fidelity prototypes (paper, sketches). The goal is to think with your hands and fail fast.</p>
-            
-            <div class="form-group">
-                <label for="prototype-type">Type of prototype (Paper sketch, Digital mockup, Physical model, Roleplay, Storyboard, etc.)</label>
-                <textarea id="prototype-type" placeholder="e.g., Digital clickable mockup using Figma, with paper backup for user testing sessions."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="prototype-desc">Describe the prototype in detail</label>
-                <textarea id="prototype-desc" placeholder="e.g., We will create a series of paper sketches (wireframes) for a mobile pre-order app. The prototype will show the 3 key screens: menu selection, customization, and payment confirmation with a QR code for pickup."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="prototype-features">Key features/elements included</label>
-                <textarea id="prototype-features" placeholder="e.g., 1. One-tap reorder from favorites&#10;2. Customization options (size, milk, extras)&#10;3. Payment integration&#10;4. Real-time ready notification&#10;5. QR code for pickup&#10;6. Store locator map"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="prototype-assumptions">Key assumptions to test with this prototype</label>
-                <textarea id="prototype-assumptions" placeholder="e.g., Users will trust mobile pre-payment. QR code pickup is intuitive. Notification timing (when coffee is ready) is critical. Users prefer customization over speed."></textarea>
-            </div>
-        </div>
-
-        <div class="workshop-step" id="step-5">
-            <h3><i class="fas fa-vial"></i> Step 5: Test - Get Feedback</h3>
-            <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Show, don't tell. Let users interact with the prototype. Observe more than you ask. Embrace failure as learning.</p>
-            
-            <div class="form-group">
-                <label for="test-plan">Testing plan: Who, where, when, how?</label>
-                <textarea id="test-plan" placeholder="e.g., We will test with 5-8 commuters at the train station between 7-9 AM. Each session: 10 minutes. Method: Think-aloud protocol while interacting with prototype."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="test-questions">Key questions to answer through testing</label>
-                <textarea id="test-questions" placeholder="e.g., Can users complete an order in under 60 seconds? Do they understand the QR code pickup process? What causes confusion? Would they use this daily?"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="test-feedback">User feedback and observations</label>
-                <textarea id="test-feedback" placeholder="e.g., 4/5 users completed order successfully. All users hesitated at payment screen. 3 users asked 'where do I pick this up?' 2 users suggested adding favorite locations."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="test-learnings">What did you learn? (What worked, what didn't)</label>
-                <textarea id="test-learnings" placeholder="e.g., WORKED: One-tap reorder was intuitive and loved. DIDN'T WORK: Pickup location unclear, caused anxiety. Payment screen needs trust signals."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="test-iterations">Next iterations and improvements</label>
-                <textarea id="test-iterations" placeholder="e.g., 1. Add clear pickup counter visualization&#10;2. Include 'notify when I'm close' feature&#10;3. Add security badges to payment screen&#10;4. Test with higher fidelity prototype&#10;5. Consider loyalty rewards integration"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="test-metrics">Success metrics defined</label>
-                <textarea id="test-metrics" placeholder="e.g., Order completion rate >90%, Time to order <60 sec, User satisfaction score >4/5, Pickup confusion <10%, Daily active users >1000 in first month."></textarea>
-            </div>
-        </div>
-
-        <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate Design Thinking Report</button>
-        <div id="results-container" class="hidden"></div>
-    </div>
-</main>
-<footer>
-    <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> Design Thinking is a methodology with roots in the work of many pioneers and popularized by organizations like IDEO and institutions like the Stanford d.school. This tool is an independent implementation provided for educational and informational purposes only. It is not affiliated with, sponsored by, or endorsed by IDEO, Stanford University, or any other key figures or organizations associated with the development of Design Thinking. The quality of the outcome is dependent on the depth of research, collaboration, and creativity of the team using it. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
-    </div>
-</footer>
-
-<script>
-    let workshopData = {};
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- JAVASCRIPT FOR NAVIGATION BAR (FROM INDEX.HTML) ---
-        const navToggle = document.getElementById('nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('show-menu');
-            const icon = navToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-            
-            if (!navMenu.classList.contains('show-menu')) {
-                toolsDropdownMenu.classList.remove('show-submenu');
-                toolsDropdownContainer.classList.remove('active');
-            }
-        });
-        
-        toolsDropdownToggle.addEventListener('click', (event) => {
-            if (window.innerWidth <= 992) {
-                event.preventDefault(); 
-                toolsDropdownMenu.classList.toggle('show-submenu');
-                toolsDropdownContainer.classList.toggle('active');
-            }
+                    // Inicializar funcionalidad específica de la página
+                    initializePageFunctionality();
+                })
+                .catch(error => {
+                    console.error('Error loading header:', error);
+                    document.getElementById('header-container').innerHTML = '<p>Error loading navigation</p>';
+                });
         });
 
-        // --- Page-specific logic for Design Thinking tool ---
-        document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', function() {
-                autoResizeTextarea(this);
-                updateProgress();
+        function initializeNavigation() {
+            // --- JAVASCRIPT FOR NAVIGATION BAR (FROM INDEX.HTML) ---
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+
+                    if (!navMenu.classList.contains('show-menu')) {
+                        toolsDropdownMenu.classList.remove('show-submenu');
+                        toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
+        }
+
+        function initializePageFunctionality() {
+            // --- Page-specific logic for Design Thinking tool ---
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', function () {
+                    autoResizeTextarea(this);
+                    updateProgress();
+                });
+                autoResizeTextarea(textarea);
             });
-            autoResizeTextarea(textarea);
-        });
-        
-        updateProgress();
-    });
 
-    function autoResizeTextarea(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
-    }
-    
-    function updateProgress() {
-        const allFields = document.querySelectorAll('textarea');
-        const filledFields = Array.from(allFields).filter(field => field.value.trim().length > 0);
-        const percentage = Math.round((filledFields.length / allFields.length) * 100);
-        
-        document.getElementById('progress-bar').style.width = percentage + '%';
-        document.getElementById('progress-percentage').textContent = percentage + '%';
-        
-        // Update step indicators
-        const steps = {
-            1: ['empathize-users', 'empathize-context', 'empathize-needs', 'empathize-emotions', 'empathize-quotes'],
-            2: ['define-pov', 'define-insights', 'define-constraints'],
-            3: ['ideate-hwm', 'ideate-ideas', 'ideate-selected', 'ideate-criteria'],
-            4: ['prototype-type', 'prototype-desc', 'prototype-features', 'prototype-assumptions'],
-            5: ['test-plan', 'test-questions', 'test-feedback', 'test-learnings', 'test-iterations', 'test-metrics']
-        };
-        
-        Object.keys(steps).forEach(stepNum => {
-            const stepFields = steps[stepNum];
-            const completedInStep = stepFields.filter(id => {
-                const el = document.getElementById(id);
-                return el && el.value.trim().length > 0;
-            }).length;
-            
-            const indicator = document.getElementById(`step-${stepNum}-indicator`);
-            if (completedInStep === stepFields.length) {
-                indicator.style.color = 'var(--success-color)';
-                indicator.style.fontWeight = '800';
-            } else if (completedInStep > 0) {
-                indicator.style.color = 'var(--warning-color)';
-                indicator.style.fontWeight = '600';
-            } else {
-                indicator.style.color = '#666';
-                indicator.style.fontWeight = '400';
-            }
-        });
-    }
+            updateProgress();
+        }
 
-    function resetTool() {
-        workshopData = {};
-        document.querySelectorAll('textarea').forEach(el => {
-            el.value = '';
-            autoResizeTextarea(el);
-        });
-        document.getElementById('results-container').classList.add('hidden');
-        updateProgress();
-        document.getElementById('empathize-users').focus();
-    }
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
 
-    function loadExample(type = 'coffee') {
-        resetTool();
-        
-        const examples = {
-            coffee: {
-                'empathize-users': "Busy urban commuters aged 25-45 who rely on coffee to start their day.",
-                'empathize-context': "Urban environment during morning rush hour (7-9 AM). Users are time-constrained, often juggling multiple items, using public transportation. High-stress environment with unpredictable schedules.",
-                'empathize-needs': "Observations:\n- Long lines at coffee shops between 7:30 AM and 9:00 AM (avg 8-12 min wait)\n- People constantly checking watches and phones\n- Juggling phone, wallet, keys while trying to pay\n- Visible stress and anxiety about being late\n- Spills are common on crowded public transport\n- Many skip coffee entirely when line is too long\n\nGoals:\n- Get high-quality, customized coffee\n- Spend minimal time (under 2 minutes ideal)\n- Seamless, stress-free transaction\n- Predictable timing",
-                'empathize-emotions': "Primary emotions observed:\n- Stress and time pressure (95% of users)\n- Frustration with unpredictable wait times\n- Anxiety about missing train/being late to work\n- Decision fatigue (to wait or skip)\n- Relief when finally getting coffee\n- Occasional anger when service is slow",
-                'empathize-quotes': "'I wish I could just grab my coffee without waiting' - Maria, 34, Marketing Manager\n\n'The morning line makes me consider skipping coffee altogether, but then I'm useless at work' - John, 28, Software Developer\n\n'I've been late to meetings three times this month because of the coffee line' - Sarah, 31, Consultant\n\n'I just want my usual order, same thing every day, why does it take so long?' - David, 42, Teacher",
-                'define-pov': "A busy urban commuter needs a way to get their customized morning coffee instantly and predictably because any delay in their tight morning schedule causes significant stress, affects their productivity, and forces them to choose between caffeine and punctuality.",
-                'define-insights': "Key insights from research:\n1. Time unpredictability is worse than absolute time - users can handle a 5-min wait if they know it's 5 min\n2. The ordering and payment process feels redundant for daily regulars\n3. Users value their usual order over exploring new options during rush hour\n4. Mobile payment adoption is high in this demographic (89%)\n5. Trust in pre-payment requires clear pickup process",
-                'define-constraints': "Known constraints:\n- Solution must work in existing coffee shop infrastructure\n- Cannot require specialized hardware for users (must use smartphones)\n- Pickup process must be under 30 seconds\n- Coffee quality and temperature must not be compromised\n- Cost per transaction must stay under current levels\n- Must handle peak volume (200+ orders/hour)",
-                'ideate-hwm': "How Might We questions:\n- HMW eliminate the need to physically wait in line?\n- HMW make payment invisible and automatic?\n- HMW ensure coffee is ready at the exact moment of arrival?\n- HMW give users certainty about timing?\n- HMW make ordering take less than 10 seconds?\n- HMW reward loyalty without adding complexity?\n- HMW help coffee shops manage rush hour demand?",
-                'ideate-ideas': "Brainstormed ideas (23 total):\n\n1. Mobile app for pre-ordering and pre-payment\n2. Subscription service with dedicated express pickup counter\n3. Smart-cup technology with auto-billing on pickup\n4. Voice-activated ordering via smartphone\n5. Predictive AI that auto-orders based on schedule\n6. Coffee locker system (like Amazon lockers)\n7. Delivery to nearby office buildings\n8. Coffee drone delivery\n9. Smart vending machines at transit stations\n10. QR code instant reorder from receipts\n11. Wearable device (smartwatch) integration\n12. Partnership with transit apps for in-route ordering\n13. Geofencing to auto-prepare when user approaches\n14. VIP lane for subscribers\n15. Coffee on-demand subscription boxes\n16. Thermal storage cubbies for advance orders\n17. Drive-through style pickup lanes\n18. Facial recognition for automatic order recall\n19. NFC-enabled coffee cups for auto-checkout\n20. Social ordering (order for friends)\n21. Blockchain-based loyalty points\n22. Augmented reality menu in-app\n23. Machine learning taste profiling",
-                'ideate-selected': "Top 3 ideas selected:\n\n1. MOBILE PRE-ORDER APP WITH QR PICKUP\nReason: Most feasible, directly addresses wait time, leverages existing smartphone adoption, scalable\nRisk: Requires user adoption and shop staff training\n\n2. GEOFENCING + SMART NOTIFICATION SYSTEM\nReason: Eliminates timing uncertainty, ensures hot coffee, uses existing tech, enhances experience\nRisk: GPS accuracy, battery drain concerns\n\n3. SUBSCRIPTION MODEL WITH EXPRESS COUNTER\nReason: Creates loyalty, predictable revenue, dedicated service lane, premium positioning\nRisk: May alienate non-subscribers, requires space reconfiguration",
-                'ideate-criteria': "Selection criteria used (weighted):\n\n1. Feasibility (25%): Technical & financial viability, existing infrastructure\n2. Desirability (30%): Direct user appeal, solves core pain points\n3. Viability (20%): Business model sustainability, ROI potential\n4. Time to Implement (15%): Speed to market, development complexity\n5. Scalability (10%): Growth potential, replicability across locations\n\nScoring: 1-5 scale for each criterion, multiplied by weight",
-                'prototype-type': "Multi-level prototype approach:\n\nPRIMARY: Digital clickable mockup (Figma)\n- Medium fidelity\n- Interactive flows\n- Realistic content and imagery\n\nSECONDARY: Paper prototype backup\n- For rapid iteration during user tests\n- Hand-drawn screens on cards\n- Physical QR code samples\n\nTERTIARY: Service blueprint\n- Maps entire user journey and touchpoints\n- Includes backend staff experience",
-                'prototype-desc': "Prototype: \"QuickCoffee\" Mobile App\n\nCore User Flow (5 screens):\n\n1. HOME SCREEN: Shows 'Your Usual' with one-tap reorder button, nearby locations, estimated wait times\n\n2. MENU SCREEN: If customizing - visual menu with images, size selector, milk options, extras, favorites star\n\n3. PAYMENT SCREEN: Saved payment method, order summary, loyalty points display, confirm button\n\n4. CONFIRMATION SCREEN: Large QR code, order number, estimated ready time, map to pickup counter\n\n5. READY NOTIFICATION: Push notification when coffee is ready, navigate to store button, rate experience\n\nKey Design Decisions:\n- Minimalist interface, maximum 2 taps to order\n- Large touch targets for moving users\n- Progress indicators throughout\n- Clear visual hierarchy",
-                'prototype-features': "Key features included:\n\n1. ONE-TAP REORDER: Favorites/recent orders accessible immediately\n\n2. REAL-TIME WAIT ESTIMATES: Based on current queue, displayed per location\n\n3. CUSTOMIZATION INTERFACE: Visual selections for size, temperature, milk, extras\n\n4. PAYMENT INTEGRATION: Apple Pay, Google Pay, credit cards saved securely\n\n5. QR CODE PICKUP: Large, high-contrast code for quick scanning\n\n6. GEOFENCING NOTIFICATION: 'You're 2 minutes away - we'll start your order'\n\n7. STORE LOCATOR: Map view with real-time availability\n\n8. ORDER HISTORY: Past orders for easy reordering\n\n9. LOYALTY INTEGRATION: Points display, rewards redemption\n\n10. PICKUP INSTRUCTIONS: Visual guide to express counter location",
-                'prototype-assumptions': "Key assumptions to test:\n\n1. TRUST ASSUMPTION: Users will trust mobile pre-payment without seeing staff first\n- Test: Observe hesitation at payment screen, ask about security concerns\n\n2. PICKUP ASSUMPTION: QR code pickup process is intuitive and faster than verbal ordering\n- Test: Time to complete pickup, observe confusion points\n\n3. TIMING ASSUMPTION: 'Ready in 3 minutes' estimate is accurate and acceptable\n- Test: Compare estimated vs actual times, measure user satisfaction\n\n4. VALUE ASSUMPTION: Time savings justify potential learning curve\n- Test: Ask 'would you use this daily?' after demo\n\n5. CUSTOMIZATION ASSUMPTION: Users prefer speed over extensive customization during rush hour\n- Test: Track which users modify 'usual order' vs one-tap reorder",
-                'test-plan': "Testing Plan:\n\nPARTICIPANTS: 8 users total\n- 5 regular coffee shop customers (use competitor apps)\n- 3 non-app users (skeptics/cash users)\n- Mix of ages 25-50, equal gender distribution\n\nLOCATION: Coffee shop during morning rush (7:30-9:00 AM) and in controlled office setting\n\nTIMING: 2 days of testing, 4 users per day, 15-minute sessions each\n\nMETHOD:\n- Think-aloud protocol: Users verbalize thoughts while interacting\n- Task-based scenarios: 'Order your usual morning coffee as if you're running late'\n- Observation: Note hesitations, errors, confusion points\n- Post-test interview: 5 key questions about experience\n\nTOOLS: Video recording (with consent), note-taking template, stopwatch for timing",
-                'test-questions': "Key questions to answer:\n\n1. Can users complete an order in under 60 seconds?\n2. Do they understand the QR code pickup process without explanation?\n3. What causes confusion or hesitation?\n4. Would they trust pre-payment in this context?\n5. Would they use this daily? Why or why not?\n6. What's missing from their perspective?\n7. How does this compare to their current coffee routine?\n8. Do they understand when/where to pick up?\n9. Is the geofencing notification helpful or intrusive?\n10. What would make them NOT use this?",
-                'test-feedback': "User Feedback Summary (8 participants):\n\nSUCCESS METRICS:\n✓ 7/8 users completed order in under 60 seconds (avg 42 sec)\n✓ 6/8 said they would use this daily\n✓ 8/8 understood the one-tap reorder concept\n✓ 5/8 completed entire flow without asking questions\n\nOBSERVATIONS:\n- All users hesitated 2-5 seconds at payment screen\n- 6/8 asked 'where exactly do I pick this up?' before seeing map\n- 3/8 tried to add extra customization, found it 'too many steps'\n- 2/8 worried about coffee getting cold if delayed\n- 4/8 wanted to see estimated queue position, not just time\n- 7/8 loved the favorites/reorder feature\n\nQUOTES:\n'This would save me so much time!' - User 3\n'I'm nervous about paying before I see it' - User 5\n'Where's the pickup counter at [store name]?' - Multiple users\n'Can I change my order if I'm running really late?' - User 7",
-                'test-learnings': "What WORKED:\n✓ One-tap reorder was universally praised - this is the killer feature\n✓ Visual menu with images made selection easy\n✓ Order history helps users remember what they liked\n✓ Push notification concept tested very well\n✓ Overall flow is intuitive for app-savvy users\n\nWhat DIDN'T WORK:\n✗ Pickup location is unclear - caused anxiety for 6/8 users\n✗ Payment screen lacks trust signals (security badges, testimonials)\n✗ No clear way to communicate arrival/delays\n✗ Customization interface has too many steps (3 screens for simple changes)\n✗ Non-app users struggled more than expected - need onboarding\n✗ Coffee temperature concern not addressed\n\nSURPRISE FINDINGS:\n! Users want to see their position in queue, not just time estimate\n! Several asked about ordering for colleagues/groups\n! Interest in subscription/unlimited model higher than expected\n! Users want to rate their coffee quality post-pickup",
-                'test-iterations': "Next Iterations & Improvements:\n\nITERATION 1 (High Priority):\n1. Add in-store pickup map/photo showing exact counter location\n2. Include security badges and trust signals on payment screen\n3. Add 'I'm here' or 'I'm 2 minutes away' notification button\n4. Simplify customization to single screen\n5. Create first-time user onboarding flow (3 screens max)\n\nITERATION 2 (Medium Priority):\n6. Show queue position (#3 of 7) alongside time estimate\n7. Add 'keep hot' smart timing feature\n8. Implement group ordering capability\n9. Post-pickup rating system\n10. Add subscription/unlimited plan option\n\nITERATION 3 (Future Features):\n11. Voice ordering integration\n12. Apple Watch/wearable support\n13. Favorite locations with auto-detect\n14. Social sharing/gift a coffee feature\n15. Integration with calendar for automatic scheduling\n\nNEXT TESTING PHASE:\nBuild higher-fidelity clickable prototype with Iteration 1 fixes, test with 15 users in live coffee shop environment for 1 week pilot",
-                'test-metrics': "Success Metrics Defined:\n\nUSER EXPERIENCE:\n- Order completion rate: >90% (currently 87.5%)\n- Time to complete order: <60 seconds (achieved: avg 42 sec ✓)\n- User satisfaction score: >4.2/5 (currently 4.1)\n- Pickup confusion rate: <10% (currently 75% - needs work ✗)\n- Daily active user rate: >60% of downloads\n\nBUSINESS:\n- Conversion rate (download to first order): >40%\n- Retention rate (30-day): >50%\n- Average orders per user per week: >3\n- Customer acquisition cost: <$8\n- Average order value vs in-store: +15%\n\nOPERATIONAL:\n- Order accuracy: >98%\n- Average wait time reduction: >5 minutes\n- Peak hour throughput increase: +30%\n- Staff training time: <2 hours\n- System uptime: >99.5%\n\nPILOT SUCCESS CRITERIA:\n- 1000+ downloads in first month\n- 100+ daily active users by week 4\n- Net Promoter Score (NPS): >50\n- 80% of pilot users prefer app vs in-store ordering"
-            },
-            healthcare: {
-                'empathize-users': "Elderly patients (65+) with chronic conditions requiring regular medication, their adult children caregivers, and overworked primary care physicians.",
-                'empathize-context': "Home environment for elderly, often living alone or with spouse. Multiple daily medications (avg 4-7 prescriptions). Memory challenges, vision problems, limited tech literacy. Caregivers often remote, managing elderly parent's health while working full-time. Doctors seeing 30+ patients per day with limited time per appointment.",
-                'empathize-needs': "ELDERLY PATIENTS:\n- Remember which pills to take when\n- Understand medication purposes and side effects\n- Refill prescriptions without complex phone calls\n- Feel independent in managing health\n- Alert family if something's wrong\n\nCAREGIVERS:\n- Know if parent took medication\n- Manage refills remotely\n- Track health trends\n- Coordinate doctor appointments\n- Peace of mind about safety\n\nDOCTORS:\n- Verify medication adherence\n- Quick access to patient data\n- Reduce unnecessary appointments\n- Better chronic disease management",
-                'empathize-emotions': "ELDERLY PATIENTS:\n- Frustration with complex medication schedules\n- Fear of making mistakes\n- Loss of independence and dignity\n- Anxiety about running out of medication\n- Confusion about which pill is which\n\nCAREGIVERS:\n- Constant worry and guilt\n- Overwhelm from responsibilities\n- Helplessness when not physically present\n- Frustration with healthcare system complexity\n\nDOCTORS:\n- Burnout from administrative work\n- Concern about non-adherence\n- Frustration with lack of real-time data",
-                'empathize-quotes': "'I just can't remember if I took my blood pressure pill this morning' - Robert, 72\n\n'I worry every day about Mom taking the wrong dose' - Jennifer, 45, daughter\n\n'Half my patients don't take medications as prescribed, but I don't know who' - Dr. Chen, Primary Care\n\n'The pill bottles all look the same to me now' - Margaret, 78\n\n'I feel like a burden asking my son to manage my pills' - William, 81",
-                'define-pov': "Elderly patients with chronic conditions need an intuitive, dignity-preserving way to manage their medications independently while keeping their families informed, because medication non-adherence leads to preventable hospitalizations, loss of independence, and decreased quality of life.",
-                'define-insights': "1. Non-adherence is often unintentional, not willful - it's a system design problem\n2. Elderly value independence more than convenience\n3. Complex technology creates barriers, not solutions\n4. Family involvement is desired but must preserve patient autonomy\n5. Visual and auditory impairments are universal design requirements\n6. Trust in healthcare professionals is high; trust in technology is low\n7. Current pill organizers fail because they don't remind or verify",
-                'define-constraints': "- Solution must work without smartphone for elderly users\n- Interface must accommodate vision/hearing/dexterity challenges\n- Must respect HIPAA privacy requirements\n- Cost must be covered by Medicare/insurance to ensure adoption\n- Cannot require internet connectivity for core functions\n- Must be extremely reliable (>99.9% uptime)\n- Setup must be doable by non-technical family members",
-                'ideate-hwm': "How Might We...\n- Make taking medication as natural as a morning routine?\n- Give elderly independence while keeping family informed?\n- Make medication adherence visible without being intrusive?\n- Eliminate the cognitive load of remembering schedules?\n- Make pill bottles impossible to confuse?\n- Turn medication management into a positive experience?\n- Connect patients, families, and doctors seamlessly?",
-                'ideate-ideas': "1. Smart pill dispenser with voice reminders\n2. Medication tracking app for caregivers\n3. Wearable reminder device (bracelet/pendant)\n4. AI phone calling system for reminders\n5. Connected pill bottles with sensors\n6. Medication organizer with built-in alarms\n7. Pharmacist-managed delivery and setup service\n8. Gamified medication adherence app\n9. Voice-activated medication assistant\n10. Smart home integration (Alexa/Google)\n11. Visual light-based reminder system\n12. Automatic prescription refill service\n13. Telemedicine integration for check-ins\n14. Peer support group for medication management\n15. Simplified calendar system with pictures\n16. Emergency alert system for missed doses\n17. Biometric verification for medication taking\n18. Blockchain-based medication history\n19. Social robot medication companion\n20. Pre-filled disposable medication packs",
-                'ideate-selected': "1. SMART MEDICATION DISPENSER\nCombines physical device (large buttons, audio/visual alerts) with caregiver app. Dispenses one dose at a time, confirms taking, alerts if missed.\n\n2. VOICE-ACTIVATED MEDICATION ASSISTANT\nLeverages existing smart speakers (Alexa/Google) for reminders and family updates. Low-tech for elderly, high-tech backend.\n\n3. PHARMACIST-LED SETUP & SUPPORT SERVICE\nHuman-centered approach where local pharmacist visits home, sets up system, provides ongoing support. Technology enables but doesn't replace human touch.",
-                'ideate-criteria': "1. Usability for elderly (40%): Large buttons, clear audio, simple interface\n2. Family peace of mind (25%): Real-time updates, alerts, data access\n3. Clinical effectiveness (20%): Improved adherence, health outcomes\n4. Affordability (10%): Insurance coverage, reasonable co-pay\n5. Setup simplicity (5%): Minimal technical knowledge required",
-                'prototype-type': "Physical prototype: 3D-printed smart dispenser mockup\nDigital prototype: Clickable Figma caregiver app\nService blueprint: End-to-end patient/family/pharmacist journey map",
-                'prototype-desc': "MEDASSIST SYSTEM\n\nPHYSICAL DEVICE (for elderly patient):\n- Countertop dispenser, size of coffee maker\n- Large LCD display shows time, medication name, image\n- Big green 'Dispense' button\n- Speaker for voice reminders\n- Simple 'Taken' confirmation button\n- Emergency 'Call Family' red button\n\nCAREGIVER APP:\n- Dashboard showing medication schedule\n- Real-time adherence tracking\n- Missed dose alerts\n- Refill reminders\n- Video call feature\n- Doctor report generation\n\nSETUP SERVICE:\n- Pharmacist home visit included\n- Loads medications into device\n- Trains patient and family\n- Monthly check-in calls",
-                'prototype-features': "1. Large 5-inch touchscreen with high contrast\n2. Adjustable volume audio reminders (up to 90dB)\n3. Vibration alerts for hearing impaired\n4. Automatic medication dispensing (locked compartment)\n5. Confirmation sensor (detects cup placement)\n6. Cellular connectivity (no WiFi setup needed)\n7. 24-hour battery backup\n8. Medication images on screen\n9. Emergency call button to family\n10. Refill alerts 7 days before empty",
-                'prototype-assumptions': "1. Elderly will trust a physical device more than an app\n2. Voice reminders are more effective than visual-only\n3. Families will pay $30-50/month for peace of mind\n4. Pharmacist involvement increases adoption and proper use\n5. Locked medication storage addresses safety concerns\n6. One-button simplicity is key to daily use\n7. Device on kitchen counter ensures visibility",
-                'test-plan': "PARTICIPANTS: 12 elderly patients + their family caregivers\n- 4 with mild cognitive impairment\n- 4 with vision challenges\n- 4 with dexterity issues\n- All currently taking 4+ medications daily\n\nLOCATION: Participants' homes\n\nDURATION: 2-week in-home pilot with prototype devices\n\nMETHOD:\n- Day 1: Pharmacist setup visit, training\n- Days 2-14: Daily use with remote monitoring\n- Day 7: Phone check-in\n- Day 14: In-home interview\n- Continuous data collection on adherence, alerts, usage",
-                'test-questions': "1. Can users operate device without assistance after training?\n2. Do reminders effectively prompt medication taking?\n3. What obstacles prevent use (physical, cognitive, emotional)?\n4. Do families feel more informed and less anxious?\n5. Does adherence improve vs baseline?\n6. What causes frustration or confusion?\n7. Is the device stigmatizing or empowering?\n8. Would users continue after pilot?\n9. Is pharmacist setup visit necessary?\n10. What's missing from the experience?",
-                'test-feedback': "ELDERLY PATIENTS (12 participants):\n✓ 11/12 able to use device independently by day 3\n✓ 10/12 reported feeling 'more confident' about medications\n✓ 9/12 said device made them feel 'more independent, not less'\n✗ 3/12 found audio reminders 'annoying' after first week\n✗ 2/12 struggled with touchscreen despite large buttons\n\nFAMILY CAREGIVERS:\n✓ 12/12 reported 'significant reduction in worry'\n✓ 11/12 checked app daily\n✓ 10/12 'would definitely pay for this service'\n✗ 4/12 wanted more detailed health data integration\n\nCLINICAL OUTCOMES:\n✓ 87% medication adherence (up from 61% baseline)\n✓ Zero emergency room visits during pilot (vs 3 in prior 2 weeks)\n✓ 2 medication conflicts identified and resolved",
-                'test-learnings': "WORKED WELL:\n✓ Physical device model worked better than app-only solutions\n✓ Pharmacist setup was crucial - all participants needed human support\n✓ Large buttons and voice worked for most users\n✓ Family app gave peace of mind and reduced phone calls\n✓ Emergency button was never used but highly valued\n\nCHALLENGES:\n✗ Reminder frequency needs personalization (some want fewer)\n✗ Touchscreen still problematic for 2 users with tremors\n✗ Device is large - space constraint in small apartments\n✗ Cellular connectivity had dead zones in 1 home\n✗ Loading medications into device is complex for some families\n\nSURPRISE INSIGHTS:\n! Patients want to see their 'adherence score' - gamification interest\n! Several asked for integration with blood pressure/glucose monitors\n! Social aspect: 3 patients wanted to connect with other users\n! Families want prediction: 'will Mom need a doctor visit soon?'",
-                'test-iterations': "IMMEDIATE IMPROVEMENTS:\n1. Add physical buttons as alternative to touchscreen\n2. Personalize reminder frequency settings\n3. Compact design - reduce footprint by 30%\n4. WiFi + Cellular for connectivity redundancy\n5. Simplified medication loading with color-coded slots\n\nNEXT VERSION FEATURES:\n6. Integration with BP monitors, glucose meters\n7. Adherence score dashboard with positive reinforcement\n8. Optional peer support community\n9. Predictive health alerts for caregivers\n10. Voice command capability ('pause reminders for 1 hour')\n\nSERVICE IMPROVEMENTS:\n11. Monthly pharmacist video check-ins (not just phone)\n12. Automatic prescription refill coordination\n13. Doctor portal for adherence data\n14. Insurance partnership for coverage\n15. 24/7 tech support hotline for families\n\nPILOT EXPANSION:\n100-patient, 3-month clinical study with hospital partner",
-                'test-metrics': "PRIMARY OUTCOMES:\n- Medication adherence rate: Target >85% (achieved 87% ✓)\n- User independence: >80% operate without help (achieved 92% ✓)\n- Family anxiety reduction: >50% decrease (achieved 73% ✓)\n- Device usage rate: >90% days used (achieved 94% ✓)\n\nCLINICAL:\n- Hospital readmission reduction: Target -30%\n- Emergency room visits: Target -40%\n- Medication errors: Target <2%\n- Patient satisfaction: Target >4/5 (achieved 4.3 ✓)\n\nBUSINESS:\n- Monthly retention: Target >85%\n- Customer acquisition cost: <$200\n- Net Promoter Score: >60 (achieved 68 ✓)\n- Insurance reimbursement approval: Yes/No (pending)\n\nOPERATIONAL:\n- Setup time: <60 minutes (achieved 45 min ✓)\n- Technical support calls: <1 per user per month\n- Device reliability: >99% uptime (achieved 99.7% ✓)\n- Pharmacist satisfaction: >4/5"
-            },
-            education: {
-                'empathize-users': "High school students (14-18) in underserved communities, their teachers managing large class sizes, and parents with limited time/resources to support homework.",
-                'empathize-context': "Urban public high schools with 30-40 students per class, limited technology access, diverse learning needs. Students juggle school, part-time jobs, family responsibilities. Teachers grading hundreds of assignments weekly. Parents working multiple jobs with limited English proficiency in some cases.",
-                'empathize-needs': "STUDENTS:\n- Understand difficult concepts when teacher is unavailable\n- Get homework help without judgment\n- Stay motivated despite challenges\n- Access learning resources without expensive tutors\n- Prepare effectively for tests\n- Track progress and improvement\n\nTEACHERS:\n- Identify which students need extra help\n- Differentiate instruction for diverse learners\n- Save time on repetitive explanations\n- Provide feedback faster\n- Engage unmotivated students\n\nPARENTS:\n- Support child's learning despite own education gaps\n- Know how child is progressing\n- Communicate with teachers easily\n- Help with homework in unfamiliar subjects",
-                'empathize-emotions': "STUDENTS:\n- Frustration when stuck on problems\n- Shame asking for help repeatedly\n- Anxiety about falling behind\n- Defeat when grades don't improve\n- Excitement when concepts finally click\n- Pride in accomplishment\n\nTEACHERS:\n- Overwhelm from workload\n- Guilt about not reaching every student\n- Frustration with one-size-fits-all curriculum\n- Joy when students have breakthroughs\n- Burnout from administrative tasks\n\nPARENTS:\n- Helplessness when can't assist with homework\n- Worry about child's future\n- Disconnect from education system",
-                'empathize-quotes': "'I give up asking questions because I feel stupid' - Marcus, 15\n\n'I have 180 students - I can't give everyone individual attention' - Ms. Rodriguez, Math Teacher\n\n'My son's homework is in subjects I never studied' - Parent at school meeting\n\n'I work until 9 PM, then try to do homework - I'm too tired' - Jasmine, 17\n\n'I know some students are struggling but I don't know who until it's too late' - Mr. Thompson, Science Teacher",
-                'define-pov': "High school students in underserved communities need personalized, judgment-free academic support available 24/7 because they lack access to expensive tutors and often can't get help when they need it most - during homework time at home - leading to frustration, disengagement, and achievement gaps.",
-                'define-insights': "1. Students hesitate to ask for help due to social stigma and peer perception\n2. Most learning struggles happen during homework, not in class\n3. One-on-one attention is most effective but least scalable\n4. Students need immediate feedback, not next-day answers\n5. Motivation is tied to seeing progress and achievement\n6. Teachers want to help more but are constrained by time\n7. Parents want to be involved but lack knowledge/language/time\n8. Technology access via smartphones is higher than laptop/tablet",
-                'define-constraints': "- Must work on smartphones (many students lack computers)\n- Must be free or very low-cost for students\n- Cannot require high-speed internet (many have limited data plans)\n- Must work in English and Spanish initially\n- Privacy: cannot share grades/performance publicly\n- Must integrate with existing school systems\n- Teachers already overloaded - cannot add to their workload\n- Content must align with state standards",
-                'ideate-hwm': "How Might We...\n- Make asking for help feel safe and judgment-free?\n- Provide personal tutor experience without the cost?\n- Help teachers identify struggling students before they fail?\n- Turn frustration into motivation?\n- Make learning feel like success, not failure?\n- Connect students who can help each other?\n- Give parents insight without requiring expertise?\n- Make practice problems feel like games?",
-                'ideate-ideas': "1. AI-powered homework help chatbot\n2. Peer-to-peer tutoring marketplace\n3. Video library of concept explanations\n4. Gamified practice problem platform\n5. Teacher dashboard with student struggle alerts\n6. Parent app with progress translations\n7. SMS-based homework help (no app needed)\n8. Study group matching algorithm\n9. Adaptive learning paths\n10. Voice-to-text homework submission\n11. Step-by-step problem solver\n12. Virtual study hall with scheduled tutors\n13. Collaborative problem-solving platform\n14. Achievement badge system with rewards\n15. AI grading assistant for teachers\n16. Parent-teacher communication portal\n17. Concept prerequisite mapping\n18. Spaced repetition study system\n19. Real-world application examples\n20. Student question prediction AI",
-                'ideate-selected': "1. AI HOMEWORK HELPER\nChatbot that guides students through problems step-by-step without giving answers. Available 24/7 via SMS or app. Uses Socratic method.\n\n2. TEACHER INSIGHT DASHBOARD\nAutomatically identifies students struggling with specific concepts based on homework patterns. Suggests interventions and groups students for targeted help.\n\n3. PEER TUTORING NETWORK\nConnects students who excel in subjects with those who need help. Gamifies helping others. Supervised by teachers.",
-                'ideate-criteria': "1. Student impact (35%): Measurable learning improvement, usage frequency\n2. Accessibility (25%): Works on all devices, free/low-cost, language support\n3. Teacher efficiency (20%): Saves time, provides actionable insights\n4. Scalability (15%): Can serve thousands of students\n5. Engagement (5%): Students actually want to use it",
-                'prototype-type': "Three parallel prototypes:\n1. Clickable mobile app (Figma) - Student experience\n2. Web dashboard mockup - Teacher experience\n3. SMS conversation script - Low-tech fallback",
-                'prototype-desc': "STUDYBUDDY SYSTEM\n\nSTUDENT APP/SMS:\n- Take photo of homework problem\n- AI analyzes and starts conversation\n- Asks guiding questions rather than giving answers\n- Shows similar solved examples\n- Tracks progress and awards points\n- Connects to peer helpers if AI can't help\n\nTEACHER DASHBOARD:\n- Real-time view of class struggles\n- 'Concept confusion' heatmap\n- Individual student alerts (struggling)\n- Recommended intervention groups\n- Progress tracking over time\n- One-click resource sharing\n\nPARENT VIEW:\n- Weekly progress summary\n- Specific areas of struggle/strength\n- How to help tips (in parent's language)\n- Quick teacher messaging",
-                'prototype-features': "STUDENT FEATURES:\n1. Photo-based problem input\n2. Step-by-step guided solving (not direct answers)\n3. 'Hint' vs 'Explain' vs 'Show Similar' options\n4. Progress tracker with visual growth\n5. Streak counter for daily practice\n6. Subject-specific AI models (math, science, English)\n7. Offline mode for limited connectivity\n8. Peer tutor connection (optional)\n9. Test preparation mode\n10. Concept prerequisite learning path\n\nTEACHER FEATURES:\n11. Automated struggle detection\n12. Class-wide performance visualization\n13. Individual student drill-down\n14. Intervention suggestions\n15. Resource library auto-recommendations\n16. Parent communication templates\n\nTECHNICAL:\n17. SMS fallback (no app needed)\n18. Low-data mode\n19. Spanish language support\n20. Privacy-first design (encrypted)",
-                'prototype-assumptions': "ASSUMPTIONS TO TEST:\n\n1. ENGAGEMENT: Students will use academic help tool voluntarily\n- Test: Track daily active usage over 2 weeks\n\n2. LEARNING: Step-by-step guidance is better than direct answers\n- Test: Compare learning outcomes vs traditional answer keys\n\n3. PRIDE: Students feel accomplished, not ashamed, when using AI help\n- Test: Survey emotional response, repeat usage\n\n4. TEACHER VALUE: Dashboard insights lead to better interventions\n- Test: Teacher satisfaction, changed teaching behavior\n\n5. AI ACCURACY: AI can accurately understand and respond to diverse problems\n- Test: Accuracy rate across subjects, error tracking\n\n6. ACCESSIBILITY: SMS/low-tech option is sufficient for students without smartphones\n- Test: SMS-only user outcomes vs app users",
-                'test-plan': "PILOT STUDY: 2 high schools, 6 classrooms, 180 students total\n\nPARTICIPANTS:\n- 3 Math classes (Algebra 1, Geometry, Algebra 2)\n- 2 Science classes (Biology, Chemistry)\n- 1 English class (9th grade)\n- Mix of grade levels 9-11\n- Treatment group (with StudyBuddy) vs Control group\n\nDURATION: 8-week pilot during regular school year\n\nPHASE 1 (Week 1): Teacher training, student onboarding\nPHASE 2 (Weeks 2-7): Active use with monitoring\nPHASE 3 (Week 8): Assessment and interviews\n\nDATA COLLECTION:\n- Pre/post concept assessments\n- Daily usage analytics\n- Weekly student surveys\n- Teacher weekly logs\n- Parent feedback surveys\n- Focus groups (students, teachers, parents)",
-                'test-questions': "KEY RESEARCH QUESTIONS:\n\n1. Does StudyBuddy improve learning outcomes vs control?\n2. Which students benefit most (struggling vs average vs advanced)?\n3. What homework completion rates with vs without tool?\n4. Do students use it regularly or only when desperate?\n5. Which features are used most/least?\n6. Does AI guidance method work or do students just want answers?\n7. Do teachers actually use the dashboard?\n8. Does dashboard change teaching practice?\n9. Do struggling students get identified earlier?\n10. What barriers prevent students from using it?\n11. Does it work equally well across subjects?\n12. Is SMS option sufficient or app necessary?\n13. Do parents engage with progress updates?\n14. What's the optimal frequency of teacher alerts?\n15. Does peer tutoring component add value?",
-                'test-feedback': "QUANTITATIVE RESULTS (180 students, 8 weeks):\n✓ 78% of students used StudyBuddy at least 3x/week\n✓ Average usage: 4.2 sessions per week, 12 mins per session\n✓ Homework completion rate: 85% (vs 67% in control group)\n✓ Test score improvement: +11% on average (vs +3% in control)\n✓ Struggling students (bottom quartile) improved +18%\n\nQUALITATIVE FEEDBACK:\n\nSTUDENTS (52 surveyed):\n'I actually understand now instead of just copying answers' - 15 students mentioned\n'I use it every night for math homework' - 31 students\n'Sometimes it doesn't understand my question' - 18 students\n'I like that it doesn't just give me the answer' - 23 students\n'Wish it worked for history and social studies too' - 12 students\n'The streak counter motivates me to practice daily' - 27 students\n\nTEACHERS (6 interviewed):\n✓ 5/6 checked dashboard at least twice per week\n✓ 4/6 changed their teaching based on struggle data\n✓ All 6 identified at-risk students earlier than usual\n'I can see exactly where my class is confused - game changer' - Ms. Rodriguez\n'Saved me hours of grading and identifying struggling students' - Mr. Lee\n'Some students over-rely on it instead of thinking first' - Ms. Johnson\n\nPARENTS (28 surveyed):\n✓ 24/28 appreciated weekly progress updates\n✓ 19/28 felt 'more connected to child's learning'\n'I can finally help even though I don't know the subjects' - Multiple parents",
-                'test-learnings': "WHAT WORKED EXCEPTIONALLY WELL:\n✓ Step-by-step guidance model - students learned rather than just getting answers\n✓ Immediate feedback loop - students stayed engaged\n✓ Teacher dashboard - early identification of struggles was transformative\n✓ Gamification elements - streaks and progress tracking drove daily usage\n✓ Low-tech SMS option worked surprisingly well (22% of users preferred it)\n✓ Homework completion rates improved dramatically\n\nWHAT DIDN'T WORK AS EXPECTED:\n✗ AI sometimes misunderstood complex word problems (78% accuracy)\n✗ Peer tutoring feature underutilized (only 12% engaged with it)\n✗ Some students tried to 'game' the system to get direct answers\n✗ Spanish language version had translation quality issues\n✗ Parent app adoption lower than expected (only 45% of parents used it)\n✗ Requires strong initial onboarding - 15% of students never started\n\nSURPRISE DISCOVERIES:\n! Students used it MORE for practice, not just homework help\n! Teachers wanted 'intervention success tracking' - did their help work?\n! Students requested voice input option (especially for word problems)\n! Strongest predictor of success: frequency of use, not duration\n! Students shared accounts with siblings/friends (unexpected viral growth)\n! Several teachers started creating their own problems in the system\n! Parents used progress summaries to have specific conversations with kids\n! Struggling students became MORE willing to ask teacher questions after using tool",
-                'test-iterations': "ITERATION 1 - IMMEDIATE FIXES (4 weeks):\n1. Improve AI natural language understanding (target 90% accuracy)\n2. Add voice input for problem submission\n3. Strengthen 'gaming prevention' - detect answer-seeking behavior\n4. Enhanced onboarding with interactive tutorial\n5. Improve Spanish translation quality with native speakers\n\nITERATION 2 - FEATURE ENHANCEMENTS (8 weeks):\n6. Add History and Social Studies subject support\n7. Intervention tracking for teachers (what worked?)\n8. Study group formation tool (virtual study sessions)\n9. More granular progress visualizations for students\n10. Parent engagement nudges (low engagement alerts)\n11. Offline mode improvements for low-connectivity areas\n\nITERATION 3 - EXPANSION (12 weeks):\n12. Video explanation library (supplement to text guidance)\n13. Integration with Google Classroom and Canvas\n14. Teacher collaboration space (share strategies)\n15. Advanced analytics: learning path optimization\n16. College prep mode (SAT/ACT practice)\n17. Achievement sharing (social proof, optional)\n18. AI-generated practice problems customized to struggles\n19. Parent-teacher messaging integration\n20. School district dashboard for administrators\n\nPILOT EXPANSION PLAN:\n- Scale from 2 schools to 10 schools (1,500 students)\n- Add middle school grades (6-8)\n- 6-month longitudinal study\n- Partner with university research team\n- Seek district-wide adoption funding",
-                'test-metrics': "PRIMARY SUCCESS METRICS:\n\nSTUDENT LEARNING:\n- Test score improvement: >10% vs control (achieved 11% ✓)\n- Homework completion rate: >80% (achieved 85% ✓)\n- Concept mastery (pre/post assessment): >15% improvement\n- Student engagement score: >4/5 (achieved 4.3 ✓)\n- Time to problem solving: Reduce by 25%\n\nUSAGE & RETENTION:\n- Weekly active users: >70% (achieved 78% ✓)\n- Average sessions per week: >3 (achieved 4.2 ✓)\n- Retention rate (8 weeks): >65%\n- Daily streak users: >30% (achieved 41% ✓)\n- Feature adoption (teacher dashboard): >80% (achieved 83% ✓)\n\nTEACHER IMPACT:\n- Time saved on identifying struggles: >3 hours/week\n- Early intervention rate: +50% (identifying students earlier)\n- Teacher satisfaction: >4/5\n- Likelihood to recommend: >80%\n- Changed teaching practice: >60% (achieved 67% ✓)\n\nEQUITY & ACCESS:\n- Low-income student usage: Equal to average (achieved ✓)\n- English language learner usage: >60%\n- SMS-only user outcomes: Within 10% of app users\n- Parent engagement (non-English speaking): >40%\n\nSCALABILITY:\n- Cost per student per month: <$5\n- AI response time: <3 seconds (achieved 2.1 sec ✓)\n- System uptime: >99%\n- Support tickets per 100 users: <5\n- Net Promoter Score: >50 (achieved 62 ✓)"
-            }
-        };
-        
-        const example = examples[type];
-        if (example) {
-            Object.keys(example).forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    field.value = example[fieldId];
-                    autoResizeTextarea(field);
+        function updateProgress() {
+            const allFields = document.querySelectorAll('textarea');
+            const filledFields = Array.from(allFields).filter(field => field.value.trim().length > 0);
+            const percentage = Math.round((filledFields.length / allFields.length) * 100);
+
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+
+            // Update step indicators
+            const steps = {
+                1: ['empathize-users', 'empathize-context', 'empathize-needs', 'empathize-emotions', 'empathize-quotes'],
+                2: ['define-pov', 'define-insights', 'define-constraints'],
+                3: ['ideate-hwm', 'ideate-ideas', 'ideate-selected', 'ideate-criteria'],
+                4: ['prototype-type', 'prototype-desc', 'prototype-features', 'prototype-assumptions'],
+                5: ['test-plan', 'test-questions', 'test-feedback', 'test-learnings', 'test-iterations', 'test-metrics']
+            };
+
+            Object.keys(steps).forEach(stepNum => {
+                const stepFields = steps[stepNum];
+                const completedInStep = stepFields.filter(id => {
+                    const el = document.getElementById(id);
+                    return el && el.value.trim().length > 0;
+                }).length;
+
+                const indicator = document.getElementById(`step-${stepNum}-indicator`);
+                if (completedInStep === stepFields.length) {
+                    indicator.style.color = 'var(--success-color)';
+                    indicator.style.fontWeight = '800';
+                } else if (completedInStep > 0) {
+                    indicator.style.color = 'var(--warning-color)';
+                    indicator.style.fontWeight = '600';
+                } else {
+                    indicator.style.color = '#666';
+                    indicator.style.fontWeight = '400';
                 }
             });
         }
-        
-        updateProgress();
-        // Eliminé el scroll automático para que la página no se mueva
-    }
 
-    function generateReport() {
-        const fields = {
-            empathize: {
-                users: 'empathize-users',
-                context: 'empathize-context',
-                needs: 'empathize-needs',
-                emotions: 'empathize-emotions',
-                quotes: 'empathize-quotes'
-            },
-            define: {
-                pov: 'define-pov',
-                insights: 'define-insights',
-                constraints: 'define-constraints'
-            },
-            ideate: {
-                hwm: 'ideate-hwm',
-                ideas: 'ideate-ideas',
-                selected: 'ideate-selected',
-                criteria: 'ideate-criteria'
-            },
-            prototype: {
-                type: 'prototype-type',
-                desc: 'prototype-desc',
-                features: 'prototype-features',
-                assumptions: 'prototype-assumptions'
-            },
-            test: {
-                plan: 'test-plan',
-                questions: 'test-questions',
-                feedback: 'test-feedback',
-                learnings: 'test-learnings',
-                iterations: 'test-iterations',
-                metrics: 'test-metrics'
-            }
-        };
-
-        workshopData = {};
-        let hasContent = false;
-
-        Object.keys(fields).forEach(phase => {
-            workshopData[phase] = {};
-            Object.keys(fields[phase]).forEach(field => {
-                const el = document.getElementById(fields[phase][field]);
-                workshopData[phase][field] = el ? el.value : '';
-                if (el && el.value.trim()) hasContent = true;
+        function resetTool() {
+            workshopData = {};
+            document.querySelectorAll('textarea').forEach(el => {
+                el.value = '';
+                autoResizeTextarea(el);
             });
-        });
-
-        if (!hasContent) {
-            alert('Please fill in at least some fields before generating a report.');
-            return;
+            document.getElementById('results-container').classList.add('hidden');
+            updateProgress();
+            document.getElementById('empathize-users').focus();
         }
 
-        if (!workshopData.empathize.users || !workshopData.define.pov) {
-            alert('Please complete at least the "Empathize" (users) and "Define" (problem statement) steps to generate a meaningful report.');
-            return;
+        function loadExample(type = 'coffee') {
+            resetTool();
+
+            const examples = {
+                coffee: {
+                    'empathize-users': "Busy urban commuters aged 25-45 who rely on coffee to start their day.",
+                    'empathize-context': "Urban environment during morning rush hour (7-9 AM). Users are time-constrained, often juggling multiple items, using public transportation. High-stress environment with unpredictable schedules.",
+                    'empathize-needs': "Observations:\n- Long lines at coffee shops between 7:30 AM and 9:00 AM (avg 8-12 min wait)\n- People constantly checking watches and phones\n- Juggling phone, wallet, keys while trying to pay\n- Visible stress and anxiety about being late\n- Spills are common on crowded public transport\n- Many skip coffee entirely when line is too long\n\nGoals:\n- Get high-quality, customized coffee\n- Spend minimal time (under 2 minutes ideal)\n- Seamless, stress-free transaction\n- Predictable timing",
+                    'empathize-emotions': "Primary emotions observed:\n- Stress and time pressure (95% of users)\n- Frustration with unpredictable wait times\n- Anxiety about missing train/being late to work\n- Decision fatigue (to wait or skip)\n- Relief when finally getting coffee\n- Occasional anger when service is slow",
+                    'empathize-quotes': "'I wish I could just grab my coffee without waiting' - Maria, 34, Marketing Manager\n\n'The morning line makes me consider skipping coffee altogether, but then I'm useless at work' - John, 28, Software Developer\n\n'I've been late to meetings three times this month because of the coffee line' - Sarah, 31, Consultant\n\n'I just want my usual order, same thing every day, why does it take so long?' - David, 42, Teacher",
+                    'define-pov': "A busy urban commuter needs a way to get their customized morning coffee instantly and predictably because any delay in their tight morning schedule causes significant stress, affects their productivity, and forces them to choose between caffeine and punctuality.",
+                    'define-insights': "Key insights from research:\n1. Time unpredictability is worse than absolute time - users can handle a 5-min wait if they know it's 5 min\n2. The ordering and payment process feels redundant for daily regulars\n3. Users value their usual order over exploring new options during rush hour\n4. Mobile payment adoption is high in this demographic (89%)\n5. Trust in pre-payment requires clear pickup process",
+                    'define-constraints': "Known constraints:\n- Solution must work in existing coffee shop infrastructure\n- Cannot require specialized hardware for users (must use smartphones)\n- Pickup process must be under 30 seconds\n- Coffee quality and temperature must not be compromised\n- Cost per transaction must stay under current levels\n- Must handle peak volume (200+ orders/hour)",
+                    'ideate-hwm': "How Might We questions:\n- HMW eliminate the need to physically wait in line?\n- HMW make payment invisible and automatic?\n- HMW ensure coffee is ready at the exact moment of arrival?\n- HMW give users certainty about timing?\n- HMW make ordering take less than 10 seconds?\n- HMW reward loyalty without adding complexity?\n- HMW help coffee shops manage rush hour demand?",
+                    'ideate-ideas': "Brainstormed ideas (23 total):\n\n1. Mobile app for pre-ordering and pre-payment\n2. Subscription service with dedicated express pickup counter\n3. Smart-cup technology with auto-billing on pickup\n4. Voice-activated ordering via smartphone\n5. Predictive AI that auto-orders based on schedule\n6. Coffee locker system (like Amazon lockers)\n7. Delivery to nearby office buildings\n8. Coffee drone delivery\n9. Smart vending machines at transit stations\n10. QR code instant reorder from receipts\n11. Wearable device (smartwatch) integration\n12. Partnership with transit apps for in-route ordering\n13. Geofencing to auto-prepare when user approaches\n14. VIP lane for subscribers\n15. Coffee on-demand subscription boxes\n16. Thermal storage cubbies for advance orders\n17. Drive-through style pickup lanes\n18. Facial recognition for automatic order recall\n19. NFC-enabled coffee cups for auto-checkout\n20. Social ordering (order for friends)\n21. Blockchain-based loyalty points\n22. Augmented reality menu in-app\n23. Machine learning taste profiling",
+                    'ideate-selected': "Top 3 ideas selected:\n\n1. MOBILE PRE-ORDER APP WITH QR PICKUP\nReason: Most feasible, directly addresses wait time, leverages existing smartphone adoption, scalable\nRisk: Requires user adoption and shop staff training\n\n2. GEOFENCING + SMART NOTIFICATION SYSTEM\nReason: Eliminates timing uncertainty, ensures hot coffee, uses existing tech, enhances experience\nRisk: GPS accuracy, battery drain concerns\n\n3. SUBSCRIPTION MODEL WITH EXPRESS COUNTER\nReason: Creates loyalty, predictable revenue, dedicated service lane, premium positioning\nRisk: May alienate non-subscribers, requires space reconfiguration",
+                    'ideate-criteria': "Selection criteria used (weighted):\n\n1. Feasibility (25%): Technical & financial viability, existing infrastructure\n2. Desirability (30%): Direct user appeal, solves core pain points\n3. Viability (20%): Business model sustainability, ROI potential\n4. Time to Implement (15%): Speed to market, development complexity\n5. Scalability (10%): Growth potential, replicability across locations\n\nScoring: 1-5 scale for each criterion, multiplied by weight",
+                    'prototype-type': "Multi-level prototype approach:\n\nPRIMARY: Digital clickable mockup (Figma)\n- Medium fidelity\n- Interactive flows\n- Realistic content and imagery\n\nSECONDARY: Paper prototype backup\n- For rapid iteration during user tests\n- Hand-drawn screens on cards\n- Physical QR code samples\n\nTERTIARY: Service blueprint\n- Maps entire user journey and touchpoints\n- Includes backend staff experience",
+                    'prototype-desc': "Prototype: \"QuickCoffee\" Mobile App\n\nCore User Flow (5 screens):\n\n1. HOME SCREEN: Shows 'Your Usual' with one-tap reorder button, nearby locations, estimated wait times\n\n2. MENU SCREEN: If customizing - visual menu with images, size selector, milk options, extras, favorites star\n\n3. PAYMENT SCREEN: Saved payment method, order summary, loyalty points display, confirm button\n\n4. CONFIRMATION SCREEN: Large QR code, order number, estimated ready time, map to pickup counter\n\n5. READY NOTIFICATION: Push notification when coffee is ready, navigate to store button, rate experience\n\nKey Design Decisions:\n- Minimalist interface, maximum 2 taps to order\n- Large touch targets for moving users\n- Progress indicators throughout\n- Clear visual hierarchy",
+                    'prototype-features': "Key features included:\n\n1. ONE-TAP REORDER: Favorites/recent orders accessible immediately\n\n2. REAL-TIME WAIT ESTIMATES: Based on current queue, displayed per location\n\n3. CUSTOMIZATION INTERFACE: Visual selections for size, temperature, milk, extras\n\n4. PAYMENT INTEGRATION: Apple Pay, Google Pay, credit cards saved securely\n\n5. QR CODE PICKUP: Large, high-contrast code for quick scanning\n\n6. GEOFENCING NOTIFICATION: 'You're 2 minutes away - we'll start your order'\n\n7. STORE LOCATOR: Map view with real-time availability\n\n8. ORDER HISTORY: Past orders for easy reordering\n\n9. LOYALTY INTEGRATION: Points display, rewards redemption\n\n10. PICKUP INSTRUCTIONS: Visual guide to express counter location",
+                    'prototype-assumptions': "Key assumptions to test:\n\n1. TRUST ASSUMPTION: Users will trust mobile pre-payment without seeing staff first\n- Test: Observe hesitation at payment screen, ask about security concerns\n\n2. PICKUP ASSUMPTION: QR code pickup process is intuitive and faster than verbal ordering\n- Test: Time to complete pickup, observe confusion points\n\n3. TIMING ASSUMPTION: 'Ready in 3 minutes' estimate is accurate and acceptable\n- Test: Compare estimated vs actual times, measure user satisfaction\n\n4. VALUE ASSUMPTION: Time savings justify potential learning curve\n- Test: Ask 'would you use this daily?' after demo\n\n5. CUSTOMIZATION ASSUMPTION: Users prefer speed over extensive customization during rush hour\n- Test: Track which users modify 'usual order' vs one-tap reorder",
+                    'test-plan': "Testing Plan:\n\nPARTICIPANTS: 8 users total\n- 5 regular coffee shop customers (use competitor apps)\n- 3 non-app users (skeptics/cash users)\n- Mix of ages 25-50, equal gender distribution\n\nLOCATION: Coffee shop during morning rush (7:30-9:00 AM) and in controlled office setting\n\nTIMING: 2 days of testing, 4 users per day, 15-minute sessions each\n\nMETHOD:\n- Think-aloud protocol: Users verbalize thoughts while interacting\n- Task-based scenarios: 'Order your usual morning coffee as if you're running late'\n- Observation: Note hesitations, errors, confusion points\n- Post-test interview: 5 key questions about experience\n\nTOOLS: Video recording (with consent), note-taking template, stopwatch for timing",
+                    'test-questions': "Key questions to answer:\n\n1. Can users complete an order in under 60 seconds?\n2. Do they understand the QR code pickup process without explanation?\n3. What causes confusion or hesitation?\n4. Would they trust pre-payment in this context?\n5. Would they use this daily? Why or why not?\n6. What's missing from their perspective?\n7. How does this compare to their current coffee routine?\n8. Do they understand when/where to pick up?\n9. Is the geofencing notification helpful or intrusive?\n10. What would make them NOT use this?",
+                    'test-feedback': "User Feedback Summary (8 participants):\n\nSUCCESS METRICS:\n✓ 7/8 users completed order in under 60 seconds (avg 42 sec)\n✓ 6/8 said they would use this daily\n✓ 8/8 understood the one-tap reorder concept\n✓ 5/8 completed entire flow without asking questions\n\nOBSERVATIONS:\n- All users hesitated 2-5 seconds at payment screen\n- 6/8 asked 'where exactly do I pick this up?' before seeing map\n- 3/8 tried to add extra customization, found it 'too many steps'\n- 2/8 worried about coffee getting cold if delayed\n- 4/8 wanted to see estimated queue position, not just time\n- 7/8 loved the favorites/reorder feature\n\nQUOTES:\n'This would save me so much time!' - User 3\n'I'm nervous about paying before I see it' - User 5\n'Where's the pickup counter at [store name]?' - Multiple users\n'Can I change my order if I'm running really late?' - User 7",
+                    'test-learnings': "What WORKED:\n✓ One-tap reorder was universally praised - this is the killer feature\n✓ Visual menu with images made selection easy\n✓ Order history helps users remember what they liked\n✓ Push notification concept tested very well\n✓ Overall flow is intuitive for app-savvy users\n\nWhat DIDN'T WORK:\n✗ Pickup location is unclear - caused anxiety for 6/8 users\n✗ Payment screen lacks trust signals (security badges, testimonials)\n✗ No clear way to communicate arrival/delays\n✗ Customization interface has too many steps (3 screens for simple changes)\n✗ Non-app users struggled more than expected - need onboarding\n✗ Coffee temperature concern not addressed\n\nSURPRISE FINDINGS:\n! Users want to see their position in queue, not just time estimate\n! Several asked about ordering for colleagues/groups\n! Interest in subscription/unlimited model higher than expected\n! Users want to rate their coffee quality post-pickup",
+                    'test-iterations': "Next Iterations & Improvements:\n\nITERATION 1 (High Priority):\n1. Add in-store pickup map/photo showing exact counter location\n2. Include security badges and trust signals on payment screen\n3. Add 'I'm here' or 'I'm 2 minutes away' notification button\n4. Simplify customization to single screen\n5. Create first-time user onboarding flow (3 screens max)\n\nITERATION 2 (Medium Priority):\n6. Show queue position (#3 of 7) alongside time estimate\n7. Add 'keep hot' smart timing feature\n8. Implement group ordering capability\n9. Post-pickup rating system\n10. Add subscription/unlimited plan option\n\nITERATION 3 (Future Features):\n11. Voice ordering integration\n12. Apple Watch/wearable support\n13. Favorite locations with auto-detect\n14. Social sharing/gift a coffee feature\n15. Integration with calendar for automatic scheduling\n\nNEXT TESTING PHASE:\nBuild higher-fidelity clickable prototype with Iteration 1 fixes, test with 15 users in live coffee shop environment for 1 week pilot",
+                    'test-metrics': "Success Metrics Defined:\n\nUSER EXPERIENCE:\n- Order completion rate: >90% (currently 87.5%)\n- Time to complete order: <60 seconds (achieved: avg 42 sec ✓)\n- User satisfaction score: >4.2/5 (currently 4.1)\n- Pickup confusion rate: <10% (currently 75% - needs work ✗)\n- Daily active user rate: >60% of downloads\n\nBUSINESS:\n- Conversion rate (download to first order): >40%\n- Retention rate (30-day): >50%\n- Average orders per user per week: >3\n- Customer acquisition cost: <$8\n- Average order value vs in-store: +15%\n\nOPERATIONAL:\n- Order accuracy: >98%\n- Average wait time reduction: >5 minutes\n- Peak hour throughput increase: +30%\n- Staff training time: <2 hours\n- System uptime: >99.5%\n\nPILOT SUCCESS CRITERIA:\n- 1000+ downloads in first month\n- 100+ daily active users by week 4\n- Net Promoter Score (NPS): >50\n- 80% of pilot users prefer app vs in-store ordering"
+                },
+                healthcare: {
+                    'empathize-users': "Elderly patients (65+) with chronic conditions requiring regular medication, their adult children caregivers, and overworked primary care physicians.",
+                    'empathize-context': "Home environment for elderly, often living alone or with spouse. Multiple daily medications (avg 4-7 prescriptions). Memory challenges, vision problems, limited tech literacy. Caregivers often remote, managing elderly parent's health while working full-time. Doctors seeing 30+ patients per day with limited time per appointment.",
+                    'empathize-needs': "ELDERLY PATIENTS:\n- Remember which pills to take when\n- Understand medication purposes and side effects\n- Refill prescriptions without complex phone calls\n- Feel independent in managing health\n- Alert family if something's wrong\n\nCAREGIVERS:\n- Know if parent took medication\n- Manage refills remotely\n- Track health trends\n- Coordinate doctor appointments\n- Peace of mind about safety\n\nDOCTORS:\n- Verify medication adherence\n- Quick access to patient data\n- Reduce unnecessary appointments\n- Better chronic disease management",
+                    'empathize-emotions': "ELDERLY PATIENTS:\n- Frustration with complex medication schedules\n- Fear of making mistakes\n- Loss of independence and dignity\n- Anxiety about running out of medication\n- Confusion about which pill is which\n\nCAREGIVERS:\n- Constant worry and guilt\n- Overwhelm from responsibilities\n- Helplessness when not physically present\n- Frustration with healthcare system complexity\n\nDOCTORS:\n- Burnout from administrative work\n- Concern about non-adherence\n- Frustration with lack of real-time data",
+                    'empathize-quotes': "'I just can't remember if I took my blood pressure pill this morning' - Robert, 72\n\n'I worry every day about Mom taking the wrong dose' - Jennifer, 45, daughter\n\n'Half my patients don't take medications as prescribed, but I don't know who' - Dr. Chen, Primary Care\n\n'The pill bottles all look the same to me now' - Margaret, 78\n\n'I feel like a burden asking my son to manage my pills' - William, 81",
+                    'define-pov': "Elderly patients with chronic conditions need an intuitive, dignity-preserving way to manage their medications independently while keeping their families informed, because medication non-adherence leads to preventable hospitalizations, loss of independence, and decreased quality of life.",
+                    'define-insights': "1. Non-adherence is often unintentional, not willful - it's a system design problem\n2. Elderly value independence more than convenience\n3. Complex technology creates barriers, not solutions\n4. Family involvement is desired but must preserve patient autonomy\n5. Visual and auditory impairments are universal design requirements\n6. Trust in healthcare professionals is high; trust in technology is low\n7. Current pill organizers fail because they don't remind or verify",
+                    'define-constraints': "- Solution must work without smartphone for elderly users\n- Interface must accommodate vision/hearing/dexterity challenges\n- Must respect HIPAA privacy requirements\n- Cost must be covered by Medicare/insurance to ensure adoption\n- Cannot require internet connectivity for core functions\n- Must be extremely reliable (>99.9% uptime)\n- Setup must be doable by non-technical family members",
+                    'ideate-hwm': "How Might We...\n- Make taking medication as natural as a morning routine?\n- Give elderly independence while keeping family informed?\n- Make medication adherence visible without being intrusive?\n- Eliminate the cognitive load of remembering schedules?\n- Make pill bottles impossible to confuse?\n- Turn medication management into a positive experience?\n- Connect patients, families, and doctors seamlessly?",
+                    'ideate-ideas': "1. Smart pill dispenser with voice reminders\n2. Medication tracking app for caregivers\n3. Wearable reminder device (bracelet/pendant)\n4. AI phone calling system for reminders\n5. Connected pill bottles with sensors\n6. Medication organizer with built-in alarms\n7. Pharmacist-managed delivery and setup service\n8. Gamified medication adherence app\n9. Voice-activated medication assistant\n10. Smart home integration (Alexa/Google)\n11. Visual light-based reminder system\n12. Automatic prescription refill service\n13. Telemedicine integration for check-ins\n14. Peer support group for medication management\n15. Simplified calendar system with pictures\n16. Emergency alert system for missed doses\n17. Biometric verification for medication taking\n18. Blockchain-based medication history\n19. Social robot medication companion\n20. Pre-filled disposable medication packs",
+                    'ideate-selected': "1. SMART MEDICATION DISPENSER\nCombines physical device (large buttons, audio/visual alerts) with caregiver app. Dispenses one dose at a time, confirms taking, alerts if missed.\n\n2. VOICE-ACTIVATED MEDICATION ASSISTANT\nLeverages existing smart speakers (Alexa/Google) for reminders and family updates. Low-tech for elderly, high-tech backend.\n\n3. PHARMACIST-LED SETUP & SUPPORT SERVICE\nHuman-centered approach where local pharmacist visits home, sets up system, provides ongoing support. Technology enables but doesn't replace human touch.",
+                    'ideate-criteria': "1. Usability for elderly (40%): Large buttons, clear audio, simple interface\n2. Family peace of mind (25%): Real-time updates, alerts, data access\n3. Clinical effectiveness (20%): Improved adherence, health outcomes\n4. Affordability (10%): Insurance coverage, reasonable co-pay\n5. Setup simplicity (5%): Minimal technical knowledge required",
+                    'prototype-type': "Physical prototype: 3D-printed smart dispenser mockup\nDigital prototype: Clickable Figma caregiver app\nService blueprint: End-to-end patient/family/pharmacist journey map",
+                    'prototype-desc': "MEDASSIST SYSTEM\n\nPHYSICAL DEVICE (for elderly patient):\n- Countertop dispenser, size of coffee maker\n- Large LCD display shows time, medication name, image\n- Big green 'Dispense' button\n- Speaker for voice reminders\n- Simple 'Taken' confirmation button\n- Emergency 'Call Family' red button\n\nCAREGIVER APP:\n- Dashboard showing medication schedule\n- Real-time adherence tracking\n- Missed dose alerts\n- Refill reminders\n- Video call feature\n- Doctor report generation\n\nSETUP SERVICE:\n- Pharmacist home visit included\n- Loads medications into device\n- Trains patient and family\n- Monthly check-in calls",
+                    'prototype-features': "1. Large 5-inch touchscreen with high contrast\n2. Adjustable volume audio reminders (up to 90dB)\n3. Vibration alerts for hearing impaired\n4. Automatic medication dispensing (locked compartment)\n5. Confirmation sensor (detects cup placement)\n6. Cellular connectivity (no WiFi setup needed)\n7. 24-hour battery backup\n8. Medication images on screen\n9. Emergency call button to family\n10. Refill alerts 7 days before empty",
+                    'prototype-assumptions': "1. Elderly will trust a physical device more than an app\n2. Voice reminders are more effective than visual-only\n3. Families will pay $30-50/month for peace of mind\n4. Pharmacist involvement increases adoption and proper use\n5. Locked medication storage addresses safety concerns\n6. One-button simplicity is key to daily use\n7. Device on kitchen counter ensures visibility",
+                    'test-plan': "PARTICIPANTS: 12 elderly patients + their family caregivers\n- 4 with mild cognitive impairment\n- 4 with vision challenges\n- 4 with dexterity issues\n- All currently taking 4+ medications daily\n\nLOCATION: Participants' homes\n\nDURATION: 2-week in-home pilot with prototype devices\n\nMETHOD:\n- Day 1: Pharmacist setup visit, training\n- Days 2-14: Daily use with remote monitoring\n- Day 7: Phone check-in\n- Day 14: In-home interview\n- Continuous data collection on adherence, alerts, usage",
+                    'test-questions': "1. Can users operate device without assistance after training?\n2. Do reminders effectively prompt medication taking?\n3. What obstacles prevent use (physical, cognitive, emotional)?\n4. Do families feel more informed and less anxious?\n5. Does adherence improve vs baseline?\n6. What causes frustration or confusion?\n7. Is the device stigmatizing or empowering?\n8. Would users continue after pilot?\n9. Is pharmacist setup visit necessary?\n10. What's missing from the experience?",
+                    'test-feedback': "ELDERLY PATIENTS (12 participants):\n✓ 11/12 able to use device independently by day 3\n✓ 10/12 reported feeling 'more confident' about medications\n✓ 9/12 said device made them feel 'more independent, not less'\n✗ 3/12 found audio reminders 'annoying' after first week\n✗ 2/12 struggled with touchscreen despite large buttons\n\nFAMILY CAREGIVERS:\n✓ 12/12 reported 'significant reduction in worry'\n✓ 11/12 checked app daily\n✓ 10/12 'would definitely pay for this service'\n✗ 4/12 wanted more detailed health data integration\n\nCLINICAL OUTCOMES:\n✓ 87% medication adherence (up from 61% baseline)\n✓ Zero emergency room visits during pilot (vs 3 in prior 2 weeks)\n✓ 2 medication conflicts identified and resolved",
+                    'test-learnings': "WORKED WELL:\n✓ Physical device model worked better than app-only solutions\n✓ Pharmacist setup was crucial - all participants needed human support\n✓ Large buttons and voice worked for most users\n✓ Family app gave peace of mind and reduced phone calls\n✓ Emergency button was never used but highly valued\n\nCHALLENGES:\n✗ Reminder frequency needs personalization (some want fewer)\n✗ Touchscreen still problematic for 2 users with tremors\n✗ Device is large - space constraint in small apartments\n✗ Cellular connectivity had dead zones in 1 home\n✗ Loading medications into device is complex for some families\n\nSURPRISE INSIGHTS:\n! Patients want to see their 'adherence score' - gamification interest\n! Several asked for integration with blood pressure/glucose monitors\n! Social aspect: 3 patients wanted to connect with other users\n! Families want prediction: 'will Mom need a doctor visit soon?'",
+                    'test-iterations': "IMMEDIATE IMPROVEMENTS:\n1. Add physical buttons as alternative to touchscreen\n2. Personalize reminder frequency settings\n3. Compact design - reduce footprint by 30%\n4. WiFi + Cellular for connectivity redundancy\n5. Simplified medication loading with color-coded slots\n\nNEXT VERSION FEATURES:\n6. Integration with BP monitors, glucose meters\n7. Adherence score dashboard with positive reinforcement\n8. Optional peer support community\n9. Predictive health alerts for caregivers\n10. Voice command capability ('pause reminders for 1 hour')\n\nSERVICE IMPROVEMENTS:\n11. Monthly pharmacist video check-ins (not just phone)\n12. Automatic prescription refill coordination\n13. Doctor portal for adherence data\n14. Insurance partnership for coverage\n15. 24/7 tech support hotline for families\n\nPILOT EXPANSION:\n100-patient, 3-month clinical study with hospital partner",
+                    'test-metrics': "PRIMARY OUTCOMES:\n- Medication adherence rate: Target >85% (achieved 87% ✓)\n- User independence: >80% operate without help (achieved 92% ✓)\n- Family anxiety reduction: >50% decrease (achieved 73% ✓)\n- Device usage rate: >90% days used (achieved 94% ✓)\n\nCLINICAL:\n- Hospital readmission reduction: Target -30%\n- Emergency room visits: Target -40%\n- Medication errors: Target <2%\n- Patient satisfaction: Target >4/5 (achieved 4.3 ✓)\n\nBUSINESS:\n- Monthly retention: Target >85%\n- Customer acquisition cost: <$200\n- Net Promoter Score: >60 (achieved 68 ✓)\n- Insurance reimbursement approval: Yes/No (pending)\n\nOPERATIONAL:\n- Setup time: <60 minutes (achieved 45 min ✓)\n- Technical support calls: <1 per user per month\n- Device reliability: >99% uptime (achieved 99.7% ✓)\n- Pharmacist satisfaction: >4/5"
+                },
+                education: {
+                    'empathize-users': "High school students (14-18) in underserved communities, their teachers managing large class sizes, and parents with limited time/resources to support homework.",
+                    'empathize-context': "Urban public high schools with 30-40 students per class, limited technology access, diverse learning needs. Students juggle school, part-time jobs, family responsibilities. Teachers grading hundreds of assignments weekly. Parents working multiple jobs with limited English proficiency in some cases.",
+                    'empathize-needs': "STUDENTS:\n- Understand difficult concepts when teacher is unavailable\n- Get homework help without judgment\n- Stay motivated despite challenges\n- Access learning resources without expensive tutors\n- Prepare effectively for tests\n- Track progress and improvement\n\nTEACHERS:\n- Identify which students need extra help\n- Differentiate instruction for diverse learners\n- Save time on repetitive explanations\n- Provide feedback faster\n- Engage unmotivated students\n\nPARENTS:\n- Support child's learning despite own education gaps\n- Know how child is progressing\n- Communicate with teachers easily\n- Help with homework in unfamiliar subjects",
+                    'empathize-emotions': "STUDENTS:\n- Frustration when stuck on problems\n- Shame asking for help repeatedly\n- Anxiety about falling behind\n- Defeat when grades don't improve\n- Excitement when concepts finally click\n- Pride in accomplishment\n\nTEACHERS:\n- Overwhelm from workload\n- Guilt about not reaching every student\n- Frustration with one-size-fits-all curriculum\n- Joy when students have breakthroughs\n- Burnout from administrative tasks\n\nPARENTS:\n- Helplessness when can't assist with homework\n- Worry about child's future\n- Disconnect from education system",
+                    'empathize-quotes': "'I give up asking questions because I feel stupid' - Marcus, 15\n\n'I have 180 students - I can't give everyone individual attention' - Ms. Rodriguez, Math Teacher\n\n'My son's homework is in subjects I never studied' - Parent at school meeting\n\n'I work until 9 PM, then try to do homework - I'm too tired' - Jasmine, 17\n\n'I know some students are struggling but I don't know who until it's too late' - Mr. Thompson, Science Teacher",
+                    'define-pov': "High school students in underserved communities need personalized, judgment-free academic support available 24/7 because they lack access to expensive tutors and often can't get help when they need it most - during homework time at home - leading to frustration, disengagement, and achievement gaps.",
+                    'define-insights': "1. Students hesitate to ask for help due to social stigma and peer perception\n2. Most learning struggles happen during homework, not in class\n3. One-on-one attention is most effective but least scalable\n4. Students need immediate feedback, not next-day answers\n5. Motivation is tied to seeing progress and achievement\n6. Teachers want to help more but are constrained by time\n7. Parents want to be involved but lack knowledge/language/time\n8. Technology access via smartphones is higher than laptop/tablet",
+                    'define-constraints': "- Must work on smartphones (many students lack computers)\n- Must be free or very low-cost for students\n- Cannot require high-speed internet (many have limited data plans)\n- Must work in English and Spanish initially\n- Privacy: cannot share grades/performance publicly\n- Must integrate with existing school systems\n- Teachers already overloaded - cannot add to their workload\n- Content must align with state standards",
+                    'ideate-hwm': "How Might We...\n- Make asking for help feel safe and judgment-free?\n- Provide personal tutor experience without the cost?\n- Help teachers identify struggling students before they fail?\n- Turn frustration into motivation?\n- Make learning feel like success, not failure?\n- Connect students who can help each other?\n- Give parents insight without requiring expertise?\n- Make practice problems feel like games?",
+                    'ideate-ideas': "1. AI-powered homework help chatbot\n2. Peer-to-peer tutoring marketplace\n3. Video library of concept explanations\n4. Gamified practice problem platform\n5. Teacher dashboard with student struggle alerts\n6. Parent app with progress translations\n7. SMS-based homework help (no app needed)\n8. Study group matching algorithm\n9. Adaptive learning paths\n10. Voice-to-text homework submission\n11. Step-by-step problem solver\n12. Virtual study hall with scheduled tutors\n13. Collaborative problem-solving platform\n14. Achievement badge system with rewards\n15. AI grading assistant for teachers\n16. Parent-teacher communication portal\n17. Concept prerequisite mapping\n18. Spaced repetition study system\n19. Real-world application examples\n20. Student question prediction AI",
+                    'ideate-selected': "1. AI HOMEWORK HELPER\nChatbot that guides students through problems step-by-step without giving answers. Available 24/7 via SMS or app. Uses Socratic method.\n\n2. TEACHER INSIGHT DASHBOARD\nAutomatically identifies students struggling with specific concepts based on homework patterns. Suggests interventions and groups students for targeted help.\n\n3. PEER TUTORING NETWORK\nConnects students who excel in subjects with those who need help. Gamifies helping others. Supervised by teachers.",
+                    'ideate-criteria': "1. Student impact (35%): Measurable learning improvement, usage frequency\n2. Accessibility (25%): Works on all devices, free/low-cost, language support\n3. Teacher efficiency (20%): Saves time, provides actionable insights\n4. Scalability (15%): Can serve thousands of students\n5. Engagement (5%): Students actually want to use it",
+                    'prototype-type': "Three parallel prototypes:\n1. Clickable mobile app (Figma) - Student experience\n2. Web dashboard mockup - Teacher experience\n3. SMS conversation script - Low-tech fallback",
+                    'prototype-desc': "STUDYBUDDY SYSTEM\n\nSTUDENT APP/SMS:\n- Take photo of homework problem\n- AI analyzes and starts conversation\n- Asks guiding questions rather than giving answers\n- Shows similar solved examples\n- Tracks progress and awards points\n- Connects to peer helpers if AI can't help\n\nTEACHER DASHBOARD:\n- Real-time view of class struggles\n- 'Concept confusion' heatmap\n- Individual student alerts (struggling)\n- Recommended intervention groups\n- Progress tracking over time\n- One-click resource sharing\n\nPARENT VIEW:\n- Weekly progress summary\n- Specific areas of struggle/strength\n- How to help tips (in parent's language)\n- Quick teacher messaging",
+                    'prototype-features': "STUDENT FEATURES:\n1. Photo-based problem input\n2. Step-by-step guided solving (not direct answers)\n3. 'Hint' vs 'Explain' vs 'Show Similar' options\n4. Progress tracker with visual growth\n5. Streak counter for daily practice\n6. Subject-specific AI models (math, science, English)\n7. Offline mode for limited connectivity\n8. Peer tutor connection (optional)\n9. Test preparation mode\n10. Concept prerequisite learning path\n\nTEACHER FEATURES:\n11. Automated struggle detection\n12. Class-wide performance visualization\n13. Individual student drill-down\n14. Intervention suggestions\n15. Resource library auto-recommendations\n16. Parent communication templates\n\nTECHNICAL:\n17. SMS fallback (no app needed)\n18. Low-data mode\n19. Spanish language support\n20. Privacy-first design (encrypted)",
+                    'prototype-assumptions': "ASSUMPTIONS TO TEST:\n\n1. ENGAGEMENT: Students will use academic help tool voluntarily\n- Test: Track daily active usage over 2 weeks\n\n2. LEARNING: Step-by-step guidance is better than direct answers\n- Test: Compare learning outcomes vs traditional answer keys\n\n3. PRIDE: Students feel accomplished, not ashamed, when using AI help\n- Test: Survey emotional response, repeat usage\n\n4. TEACHER VALUE: Dashboard insights lead to better interventions\n- Test: Teacher satisfaction, changed teaching behavior\n\n5. AI ACCURACY: AI can accurately understand and respond to diverse problems\n- Test: Accuracy rate across subjects, error tracking\n\n6. ACCESSIBILITY: SMS/low-tech option is sufficient for students without smartphones\n- Test: SMS-only user outcomes vs app users",
+                    'test-plan': "PILOT STUDY: 2 high schools, 6 classrooms, 180 students total\n\nPARTICIPANTS:\n- 3 Math classes (Algebra 1, Geometry, Algebra 2)\n- 2 Science classes (Biology, Chemistry)\n- 1 English class (9th grade)\n- Mix of grade levels 9-11\n- Treatment group (with StudyBuddy) vs Control group\n\nDURATION: 8-week pilot during regular school year\n\nPHASE 1 (Week 1): Teacher training, student onboarding\nPHASE 2 (Weeks 2-7): Active use with monitoring\nPHASE 3 (Week 8): Assessment and interviews\n\nDATA COLLECTION:\n- Pre/post concept assessments\n- Daily usage analytics\n- Weekly student surveys\n- Teacher weekly logs\n- Parent feedback surveys\n- Focus groups (students, teachers, parents)",
+                    'test-questions': "KEY RESEARCH QUESTIONS:\n\n1. Does StudyBuddy improve learning outcomes vs control?\n2. Which students benefit most (struggling vs average vs advanced)?\n3. What homework completion rates with vs without tool?\n4. Do students use it regularly or only when desperate?\n5. Which features are used most/least?\n6. Does AI guidance method work or do students just want answers?\n7. Do teachers actually use the dashboard?\n8. Does dashboard change teaching practice?\n9. Do struggling students get identified earlier?\n10. What barriers prevent students from using it?\n11. Does it work equally well across subjects?\n12. Is SMS option sufficient or app necessary?\n13. Do parents engage with progress updates?\n14. What's the optimal frequency of teacher alerts?\n15. Does peer tutoring component add value?",
+                    'test-feedback': "QUANTITATIVE RESULTS (180 students, 8 weeks):\n✓ 78% of students used StudyBuddy at least 3x/week\n✓ Average usage: 4.2 sessions per week, 12 mins per session\n✓ Homework completion rate: 85% (vs 67% in control group)\n✓ Test score improvement: +11% on average (vs +3% in control)\n✓ Struggling students (bottom quartile) improved +18%\n\nQUALITATIVE FEEDBACK:\n\nSTUDENTS (52 surveyed):\n'I actually understand now instead of just copying answers' - 15 students mentioned\n'I use it every night for math homework' - 31 students\n'Sometimes it doesn't understand my question' - 18 students\n'I like that it doesn't just give me the answer' - 23 students\n'Wish it worked for history and social studies too' - 12 students\n'The streak counter motivates me to practice daily' - 27 students\n\nTEACHERS (6 interviewed):\n✓ 5/6 checked dashboard at least twice per week\n✓ 4/6 changed their teaching based on struggle data\n✓ All 6 identified at-risk students earlier than usual\n'I can see exactly where my class is confused - game changer' - Ms. Rodriguez\n'Saved me hours of grading and identifying struggling students' - Mr. Lee\n'Some students over-rely on it instead of thinking first' - Ms. Johnson\n\nPARENTS (28 surveyed):\n✓ 24/28 appreciated weekly progress updates\n✓ 19/28 felt 'more connected to child's learning'\n'I can finally help even though I don't know the subjects' - Multiple parents",
+                    'test-learnings': "WHAT WORKED EXCEPTIONALLY WELL:\n✓ Step-by-step guidance model - students learned rather than just getting answers\n✓ Immediate feedback loop - students stayed engaged\n✓ Teacher dashboard - early identification of struggles was transformative\n✓ Gamification elements - streaks and progress tracking drove daily usage\n✓ Low-tech SMS option worked surprisingly well (22% of users preferred it)\n✓ Homework completion rates improved dramatically\n\nWHAT DIDN'T WORK AS EXPECTED:\n✗ AI sometimes misunderstood complex word problems (78% accuracy)\n✗ Peer tutoring feature underutilized (only 12% engaged with it)\n✗ Some students tried to 'game' the system to get direct answers\n✗ Spanish language version had translation quality issues\n✗ Parent app adoption lower than expected (only 45% of parents used it)\n✗ Requires strong initial onboarding - 15% of students never started\n\nSURPRISE DISCOVERIES:\n! Students used it MORE for practice, not just homework help\n! Teachers wanted 'intervention success tracking' - did their help work?\n! Students requested voice input option (especially for word problems)\n! Strongest predictor of success: frequency of use, not duration\n! Students shared accounts with siblings/friends (unexpected viral growth)\n! Several teachers started creating their own problems in the system\n! Parents used progress summaries to have specific conversations with kids\n! Struggling students became MORE willing to ask teacher questions after using tool",
+                    'test-iterations': "ITERATION 1 - IMMEDIATE FIXES (4 weeks):\n1. Improve AI natural language understanding (target 90% accuracy)\n2. Add voice input for problem submission\n3. Strengthen 'gaming prevention' - detect answer-seeking behavior\n4. Enhanced onboarding with interactive tutorial\n5. Improve Spanish translation quality with native speakers\n\nITERATION 2 - FEATURE ENHANCEMENTS (8 weeks):\n6. Add History and Social Studies subject support\n7. Intervention tracking for teachers (what worked?)\n8. Study group formation tool (virtual study sessions)\n9. More granular progress visualizations for students\n10. Parent engagement nudges (low engagement alerts)\n11. Offline mode improvements for low-connectivity areas\n\nITERATION 3 - EXPANSION (12 weeks):\n12. Video explanation library (supplement to text guidance)\n13. Integration with Google Classroom and Canvas\n14. Teacher collaboration space (share strategies)\n15. Advanced analytics: learning path optimization\n16. College prep mode (SAT/ACT practice)\n17. Achievement sharing (social proof, optional)\n18. AI-generated practice problems customized to struggles\n19. Parent-teacher messaging integration\n20. School district dashboard for administrators\n\nPILOT EXPANSION PLAN:\n- Scale from 2 schools to 10 schools (1,500 students)\n- Add middle school grades (6-8)\n- 6-month longitudinal study\n- Partner with university research team\n- Seek district-wide adoption funding",
+                    'test-metrics': "PRIMARY SUCCESS METRICS:\n\nSTUDENT LEARNING:\n- Test score improvement: >10% vs control (achieved 11% ✓)\n- Homework completion rate: >80% (achieved 85% ✓)\n- Concept mastery (pre/post assessment): >15% improvement\n- Student engagement score: >4/5 (achieved 4.3 ✓)\n- Time to problem solving: Reduce by 25%\n\nUSAGE & RETENTION:\n- Weekly active users: >70% (achieved 78% ✓)\n- Average sessions per week: >3 (achieved 4.2 ✓)\n- Retention rate (8 weeks): >65%\n- Daily streak users: >30% (achieved 41% ✓)\n- Feature adoption (teacher dashboard): >80% (achieved 83% ✓)\n\nTEACHER IMPACT:\n- Time saved on identifying struggles: >3 hours/week\n- Early intervention rate: +50% (identifying students earlier)\n- Teacher satisfaction: >4/5\n- Likelihood to recommend: >80%\n- Changed teaching practice: >60% (achieved 67% ✓)\n\nEQUITY & ACCESS:\n- Low-income student usage: Equal to average (achieved ✓)\n- English language learner usage: >60%\n- SMS-only user outcomes: Within 10% of app users\n- Parent engagement (non-English speaking): >40%\n\nSCALABILITY:\n- Cost per student per month: <$5\n- AI response time: <3 seconds (achieved 2.1 sec ✓)\n- System uptime: >99%\n- Support tickets per 100 users: <5\n- Net Promoter Score: >50 (achieved 62 ✓)"
+                }
+            };
+
+            const example = examples[type];
+            if (example) {
+                Object.keys(example).forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.value = example[fieldId];
+                        autoResizeTextarea(field);
+                    }
+                });
+            }
+
+            updateProgress();
+            // Eliminé el scroll automático para que la página no se mueva
         }
 
-        displayResults();
-    }
+        function generateReport() {
+            const fields = {
+                empathize: {
+                    users: 'empathize-users',
+                    context: 'empathize-context',
+                    needs: 'empathize-needs',
+                    emotions: 'empathize-emotions',
+                    quotes: 'empathize-quotes'
+                },
+                define: {
+                    pov: 'define-pov',
+                    insights: 'define-insights',
+                    constraints: 'define-constraints'
+                },
+                ideate: {
+                    hwm: 'ideate-hwm',
+                    ideas: 'ideate-ideas',
+                    selected: 'ideate-selected',
+                    criteria: 'ideate-criteria'
+                },
+                prototype: {
+                    type: 'prototype-type',
+                    desc: 'prototype-desc',
+                    features: 'prototype-features',
+                    assumptions: 'prototype-assumptions'
+                },
+                test: {
+                    plan: 'test-plan',
+                    questions: 'test-questions',
+                    feedback: 'test-feedback',
+                    learnings: 'test-learnings',
+                    iterations: 'test-iterations',
+                    metrics: 'test-metrics'
+                }
+            };
 
-    function displayResults() {
-        const resultsDiv = document.getElementById('results-container');
-        let html = `<h3><i class="fas fa-check-circle"></i> Design Thinking Report Summary</h3>`;
+            workshopData = {};
+            let hasContent = false;
 
-        // Empathize Phase
-        html += `<div class="results-summary"><h4><i class="fas fa-heart"></i> Phase 1: Empathize</h4>`;
-        if (workshopData.empathize.users) html += `<p><strong>Users:</strong><br>${workshopData.empathize.users}</p>`;
-        if (workshopData.empathize.context) html += `<p><strong>Context:</strong><br>${workshopData.empathize.context}</p>`;
-        if (workshopData.empathize.needs) html += `<p><strong>Needs & Pains:</strong><br>${workshopData.empathize.needs}</p>`;
-        if (workshopData.empathize.emotions) html += `<p><strong>Emotions:</strong><br>${workshopData.empathize.emotions}</p>`;
-        if (workshopData.empathize.quotes) html += `<p><strong>Key Quotes:</strong><br>${workshopData.empathize.quotes}</p>`;
-        html += `</div>`;
+            Object.keys(fields).forEach(phase => {
+                workshopData[phase] = {};
+                Object.keys(fields[phase]).forEach(field => {
+                    const el = document.getElementById(fields[phase][field]);
+                    workshopData[phase][field] = el ? el.value : '';
+                    if (el && el.value.trim()) hasContent = true;
+                });
+            });
 
-        // Define Phase
-        html += `<div class="results-summary"><h4><i class="fas fa-bullseye"></i> Phase 2: Define</h4>`;
-        if (workshopData.define.pov) html += `<p><strong>Problem Statement:</strong><br>${workshopData.define.pov}</p>`;
-        if (workshopData.define.insights) html += `<p><strong>Key Insights:</strong><br>${workshopData.define.insights}</p>`;
-        if (workshopData.define.constraints) html += `<p><strong>Constraints:</strong><br>${workshopData.define.constraints}</p>`;
-        html += `</div>`;
+            if (!hasContent) {
+                alert('Please fill in at least some fields before generating a report.');
+                return;
+            }
 
-        // Ideate Phase
-        html += `<div class="results-summary"><h4><i class="fas fa-lightbulb"></i> Phase 3: Ideate</h4>`;
-        if (workshopData.ideate.hwm) html += `<p><strong>How Might We Questions:</strong><br>${workshopData.ideate.hwm}</p>`;
-        if (workshopData.ideate.ideas) html += `<p><strong>Brainstormed Ideas:</strong><br>${workshopData.ideate.ideas}</p>`;
-        if (workshopData.ideate.selected) html += `<p><strong>Selected Ideas:</strong><br>${workshopData.ideate.selected}</p>`;
-        if (workshopData.ideate.criteria) html += `<p><strong>Selection Criteria:</strong><br>${workshopData.ideate.criteria}</p>`;
-        html += `</div>`;
+            if (!workshopData.empathize.users || !workshopData.define.pov) {
+                alert('Please complete at least the "Empathize" (users) and "Define" (problem statement) steps to generate a meaningful report.');
+                return;
+            }
 
-        // Prototype Phase
-        html += `<div class="results-summary"><h4><i class="fas fa-cube"></i> Phase 4: Prototype</h4>`;
-        if (workshopData.prototype.type) html += `<p><strong>Prototype Type:</strong><br>${workshopData.prototype.type}</p>`;
-        if (workshopData.prototype.desc) html += `<p><strong>Description:</strong><br>${workshopData.prototype.desc}</p>`;
-        if (workshopData.prototype.features) html += `<p><strong>Key Features:</strong><br>${workshopData.prototype.features}</p>`;
-        if (workshopData.prototype.assumptions) html += `<p><strong>Assumptions to Test:</strong><br>${workshopData.prototype.assumptions}</p>`;
-        html += `</div>`;
+            displayResults();
+        }
 
-        // Test Phase
-        html += `<div class="results-summary"><h4><i class="fas fa-vial"></i> Phase 5: Test</h4>`;
-        if (workshopData.test.plan) html += `<p><strong>Testing Plan:</strong><br>${workshopData.test.plan}</p>`;
-        if (workshopData.test.questions) html += `<p><strong>Key Questions:</strong><br>${workshopData.test.questions}</p>`;
-        if (workshopData.test.feedback) html += `<p><strong>User Feedback:</strong><br>${workshopData.test.feedback}</p>`;
-        if (workshopData.test.learnings) html += `<p><strong>Learnings:</strong><br>${workshopData.test.learnings}</p>`;
-        if (workshopData.test.iterations) html += `<p><strong>Next Iterations:</strong><br>${workshopData.test.iterations}</p>`;
-        if (workshopData.test.metrics) html += `<p><strong>Success Metrics:</strong><br>${workshopData.test.metrics}</p>`;
-        html += `</div>`;
+        function displayResults() {
+            const resultsDiv = document.getElementById('results-container');
+            let html = `<h3><i class="fas fa-check-circle"></i> Design Thinking Report Summary</h3>`;
 
-        html += `<div class="results-actions">
+            // Empathize Phase
+            html += `<div class="results-summary"><h4><i class="fas fa-heart"></i> Phase 1: Empathize</h4>`;
+            if (workshopData.empathize.users) html += `<p><strong>Users:</strong><br>${workshopData.empathize.users}</p>`;
+            if (workshopData.empathize.context) html += `<p><strong>Context:</strong><br>${workshopData.empathize.context}</p>`;
+            if (workshopData.empathize.needs) html += `<p><strong>Needs & Pains:</strong><br>${workshopData.empathize.needs}</p>`;
+            if (workshopData.empathize.emotions) html += `<p><strong>Emotions:</strong><br>${workshopData.empathize.emotions}</p>`;
+            if (workshopData.empathize.quotes) html += `<p><strong>Key Quotes:</strong><br>${workshopData.empathize.quotes}</p>`;
+            html += `</div>`;
+
+            // Define Phase
+            html += `<div class="results-summary"><h4><i class="fas fa-bullseye"></i> Phase 2: Define</h4>`;
+            if (workshopData.define.pov) html += `<p><strong>Problem Statement:</strong><br>${workshopData.define.pov}</p>`;
+            if (workshopData.define.insights) html += `<p><strong>Key Insights:</strong><br>${workshopData.define.insights}</p>`;
+            if (workshopData.define.constraints) html += `<p><strong>Constraints:</strong><br>${workshopData.define.constraints}</p>`;
+            html += `</div>`;
+
+            // Ideate Phase
+            html += `<div class="results-summary"><h4><i class="fas fa-lightbulb"></i> Phase 3: Ideate</h4>`;
+            if (workshopData.ideate.hwm) html += `<p><strong>How Might We Questions:</strong><br>${workshopData.ideate.hwm}</p>`;
+            if (workshopData.ideate.ideas) html += `<p><strong>Brainstormed Ideas:</strong><br>${workshopData.ideate.ideas}</p>`;
+            if (workshopData.ideate.selected) html += `<p><strong>Selected Ideas:</strong><br>${workshopData.ideate.selected}</p>`;
+            if (workshopData.ideate.criteria) html += `<p><strong>Selection Criteria:</strong><br>${workshopData.ideate.criteria}</p>`;
+            html += `</div>`;
+
+            // Prototype Phase
+            html += `<div class="results-summary"><h4><i class="fas fa-cube"></i> Phase 4: Prototype</h4>`;
+            if (workshopData.prototype.type) html += `<p><strong>Prototype Type:</strong><br>${workshopData.prototype.type}</p>`;
+            if (workshopData.prototype.desc) html += `<p><strong>Description:</strong><br>${workshopData.prototype.desc}</p>`;
+            if (workshopData.prototype.features) html += `<p><strong>Key Features:</strong><br>${workshopData.prototype.features}</p>`;
+            if (workshopData.prototype.assumptions) html += `<p><strong>Assumptions to Test:</strong><br>${workshopData.prototype.assumptions}</p>`;
+            html += `</div>`;
+
+            // Test Phase
+            html += `<div class="results-summary"><h4><i class="fas fa-vial"></i> Phase 5: Test</h4>`;
+            if (workshopData.test.plan) html += `<p><strong>Testing Plan:</strong><br>${workshopData.test.plan}</p>`;
+            if (workshopData.test.questions) html += `<p><strong>Key Questions:</strong><br>${workshopData.test.questions}</p>`;
+            if (workshopData.test.feedback) html += `<p><strong>User Feedback:</strong><br>${workshopData.test.feedback}</p>`;
+            if (workshopData.test.learnings) html += `<p><strong>Learnings:</strong><br>${workshopData.test.learnings}</p>`;
+            if (workshopData.test.iterations) html += `<p><strong>Next Iterations:</strong><br>${workshopData.test.iterations}</p>`;
+            if (workshopData.test.metrics) html += `<p><strong>Success Metrics:</strong><br>${workshopData.test.metrics}</p>`;
+            html += `</div>`;
+
+            html += `<div class="results-actions">
             <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
             <button class="btn-success" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Export to PDF</button>
             <button onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy to Clipboard</button>
         </div>`;
-        
-        resultsDiv.innerHTML = html;
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.scrollIntoView({ behavior: 'smooth' });
-    }
 
-    function exportToExcel() {
-        if (Object.keys(workshopData).length === 0) {
-            alert("No data to export. Please generate a report first.");
-            return;
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
-        const wb = XLSX.utils.book_new();
-        const ws_data = [];
+        function exportToExcel() {
+            if (Object.keys(workshopData).length === 0) {
+                alert("No data to export. Please generate a report first.");
+                return;
+            }
 
-        ws_data.push(["DESIGN THINKING WORKSHOP REPORT"]);
-        ws_data.push(["Sigma Exacta - Human-Centered Design Framework"]);
-        ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
-        ws_data.push([]);
+            const wb = XLSX.utils.book_new();
+            const ws_data = [];
 
-        // Phase 1: Empathize
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push(["PHASE 1: EMPATHIZE - UNDERSTAND YOUR USERS"]);
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push([]);
-        if (workshopData.empathize.users) {
-            ws_data.push(["Users/Stakeholders:", workshopData.empathize.users]);
+            ws_data.push(["DESIGN THINKING WORKSHOP REPORT"]);
+            ws_data.push(["Sigma Exacta - Human-Centered Design Framework"]);
+            ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
             ws_data.push([]);
-        }
-        if (workshopData.empathize.context) {
-            ws_data.push(["Context & Environment:", workshopData.empathize.context]);
+
+            // Phase 1: Empathize
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push(["PHASE 1: EMPATHIZE - UNDERSTAND YOUR USERS"]);
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
             ws_data.push([]);
-        }
-        if (workshopData.empathize.needs) {
-            ws_data.push(["Needs, Pains & Goals:", workshopData.empathize.needs]);
+            if (workshopData.empathize.users) {
+                ws_data.push(["Users/Stakeholders:", workshopData.empathize.users]);
+                ws_data.push([]);
+            }
+            if (workshopData.empathize.context) {
+                ws_data.push(["Context & Environment:", workshopData.empathize.context]);
+                ws_data.push([]);
+            }
+            if (workshopData.empathize.needs) {
+                ws_data.push(["Needs, Pains & Goals:", workshopData.empathize.needs]);
+                ws_data.push([]);
+            }
+            if (workshopData.empathize.emotions) {
+                ws_data.push(["Emotions Experienced:", workshopData.empathize.emotions]);
+                ws_data.push([]);
+            }
+            if (workshopData.empathize.quotes) {
+                ws_data.push(["Key User Quotes:", workshopData.empathize.quotes]);
+                ws_data.push([]);
+            }
+
+            // Phase 2: Define
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push(["PHASE 2: DEFINE - STATE THE CORE PROBLEM"]);
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
             ws_data.push([]);
-        }
-        if (workshopData.empathize.emotions) {
-            ws_data.push(["Emotions Experienced:", workshopData.empathize.emotions]);
+            if (workshopData.define.pov) {
+                ws_data.push(["Problem Statement (POV):", workshopData.define.pov]);
+                ws_data.push([]);
+            }
+            if (workshopData.define.insights) {
+                ws_data.push(["Key Insights:", workshopData.define.insights]);
+                ws_data.push([]);
+            }
+            if (workshopData.define.constraints) {
+                ws_data.push(["Known Constraints:", workshopData.define.constraints]);
+                ws_data.push([]);
+            }
+
+            // Phase 3: Ideate
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push(["PHASE 3: IDEATE - BRAINSTORM SOLUTIONS"]);
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
             ws_data.push([]);
-        }
-        if (workshopData.empathize.quotes) {
-            ws_data.push(["Key User Quotes:", workshopData.empathize.quotes]);
+            if (workshopData.ideate.hwm) {
+                ws_data.push(["How Might We Questions:", workshopData.ideate.hwm]);
+                ws_data.push([]);
+            }
+            if (workshopData.ideate.ideas) {
+                ws_data.push(["Brainstormed Ideas:", workshopData.ideate.ideas]);
+                ws_data.push([]);
+            }
+            if (workshopData.ideate.selected) {
+                ws_data.push(["Top Selected Ideas:", workshopData.ideate.selected]);
+                ws_data.push([]);
+            }
+            if (workshopData.ideate.criteria) {
+                ws_data.push(["Selection Criteria:", workshopData.ideate.criteria]);
+                ws_data.push([]);
+            }
+
+            // Phase 4: Prototype
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push(["PHASE 4: PROTOTYPE - CREATE TANGIBLE REPRESENTATION"]);
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
             ws_data.push([]);
+            if (workshopData.prototype.type) {
+                ws_data.push(["Prototype Type:", workshopData.prototype.type]);
+                ws_data.push([]);
+            }
+            if (workshopData.prototype.desc) {
+                ws_data.push(["Prototype Description:", workshopData.prototype.desc]);
+                ws_data.push([]);
+            }
+            if (workshopData.prototype.features) {
+                ws_data.push(["Key Features/Elements:", workshopData.prototype.features]);
+                ws_data.push([]);
+            }
+            if (workshopData.prototype.assumptions) {
+                ws_data.push(["Assumptions to Test:", workshopData.prototype.assumptions]);
+                ws_data.push([]);
+            }
+
+            // Phase 5: Test
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push(["PHASE 5: TEST - GET FEEDBACK & ITERATE"]);
+            ws_data.push(["═══════════════════════════════════════════════════════"]);
+            ws_data.push([]);
+            if (workshopData.test.plan) {
+                ws_data.push(["Testing Plan:", workshopData.test.plan]);
+                ws_data.push([]);
+            }
+            if (workshopData.test.questions) {
+                ws_data.push(["Key Questions to Answer:", workshopData.test.questions]);
+                ws_data.push([]);
+            }
+            if (workshopData.test.feedback) {
+                ws_data.push(["User Feedback & Observations:", workshopData.test.feedback]);
+                ws_data.push([]);
+            }
+            if (workshopData.test.learnings) {
+                ws_data.push(["Key Learnings:", workshopData.test.learnings]);
+                ws_data.push([]);
+            }
+            if (workshopData.test.iterations) {
+                ws_data.push(["Next Iterations & Improvements:", workshopData.test.iterations]);
+                ws_data.push([]);
+            }
+            if (workshopData.test.metrics) {
+                ws_data.push(["Success Metrics:", workshopData.test.metrics]);
+                ws_data.push([]);
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            ws['!cols'] = [{ wch: 35 }, { wch: 100 }];
+
+            XLSX.utils.book_append_sheet(wb, ws, "Design Thinking Report");
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `Design_Thinking_Report_${dateStr}.xlsx`);
         }
 
-        // Phase 2: Define
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push(["PHASE 2: DEFINE - STATE THE CORE PROBLEM"]);
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push([]);
-        if (workshopData.define.pov) {
-            ws_data.push(["Problem Statement (POV):", workshopData.define.pov]);
-            ws_data.push([]);
-        }
-        if (workshopData.define.insights) {
-            ws_data.push(["Key Insights:", workshopData.define.insights]);
-            ws_data.push([]);
-        }
-        if (workshopData.define.constraints) {
-            ws_data.push(["Known Constraints:", workshopData.define.constraints]);
-            ws_data.push([]);}
-
-        // Phase 3: Ideate
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push(["PHASE 3: IDEATE - BRAINSTORM SOLUTIONS"]);
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push([]);
-        if (workshopData.ideate.hwm) {
-            ws_data.push(["How Might We Questions:", workshopData.ideate.hwm]);
-            ws_data.push([]);
-        }
-        if (workshopData.ideate.ideas) {
-            ws_data.push(["Brainstormed Ideas:", workshopData.ideate.ideas]);
-            ws_data.push([]);
-        }
-        if (workshopData.ideate.selected) {
-            ws_data.push(["Top Selected Ideas:", workshopData.ideate.selected]);
-            ws_data.push([]);
-        }
-        if (workshopData.ideate.criteria) {
-            ws_data.push(["Selection Criteria:", workshopData.ideate.criteria]);
-            ws_data.push([]);
+        function exportToPDF() {
+            alert('PDF export functionality: For best results, use your browser\'s Print function (Ctrl+P / Cmd+P) and select "Save as PDF". This preserves all formatting and content.');
+            window.print();
         }
 
-        // Phase 4: Prototype
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push(["PHASE 4: PROTOTYPE - CREATE TANGIBLE REPRESENTATION"]);
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push([]);
-        if (workshopData.prototype.type) {
-            ws_data.push(["Prototype Type:", workshopData.prototype.type]);
-            ws_data.push([]);
-        }
-        if (workshopData.prototype.desc) {
-            ws_data.push(["Prototype Description:", workshopData.prototype.desc]);
-            ws_data.push([]);
-        }
-        if (workshopData.prototype.features) {
-            ws_data.push(["Key Features/Elements:", workshopData.prototype.features]);
-            ws_data.push([]);
-        }
-        if (workshopData.prototype.assumptions) {
-            ws_data.push(["Assumptions to Test:", workshopData.prototype.assumptions]);
-            ws_data.push([]);
+        function copyToClipboard() {
+            let text = "DESIGN THINKING WORKSHOP REPORT\n";
+            text += "Sigma Exacta - Human-Centered Design Framework\n";
+            text += `Date: ${new Date().toLocaleDateString()}\n\n`;
+
+            text += "═══════════════════════════════════════\n";
+            text += "PHASE 1: EMPATHIZE\n";
+            text += "═══════════════════════════════════════\n\n";
+            if (workshopData.empathize.users) text += `Users: ${workshopData.empathize.users}\n\n`;
+            if (workshopData.empathize.context) text += `Context: ${workshopData.empathize.context}\n\n`;
+            if (workshopData.empathize.needs) text += `Needs: ${workshopData.empathize.needs}\n\n`;
+            if (workshopData.empathize.emotions) text += `Emotions: ${workshopData.empathize.emotions}\n\n`;
+            if (workshopData.empathize.quotes) text += `Quotes: ${workshopData.empathize.quotes}\n\n`;
+
+            text += "═══════════════════════════════════════\n";
+            text += "PHASE 2: DEFINE\n";
+            text += "═══════════════════════════════════════\n\n";
+            if (workshopData.define.pov) text += `Problem Statement: ${workshopData.define.pov}\n\n`;
+            if (workshopData.define.insights) text += `Insights: ${workshopData.define.insights}\n\n`;
+            if (workshopData.define.constraints) text += `Constraints: ${workshopData.define.constraints}\n\n`;
+
+            text += "═══════════════════════════════════════\n";
+            text += "PHASE 3: IDEATE\n";
+            text += "═══════════════════════════════════════\n\n";
+            if (workshopData.ideate.hwm) text += `How Might We: ${workshopData.ideate.hwm}\n\n`;
+            if (workshopData.ideate.ideas) text += `Ideas: ${workshopData.ideate.ideas}\n\n`;
+            if (workshopData.ideate.selected) text += `Selected: ${workshopData.ideate.selected}\n\n`;
+            if (workshopData.ideate.criteria) text += `Criteria: ${workshopData.ideate.criteria}\n\n`;
+
+            text += "═══════════════════════════════════════\n";
+            text += "PHASE 4: PROTOTYPE\n";
+            text += "═══════════════════════════════════════\n\n";
+            if (workshopData.prototype.type) text += `Type: ${workshopData.prototype.type}\n\n`;
+            if (workshopData.prototype.desc) text += `Description: ${workshopData.prototype.desc}\n\n`;
+            if (workshopData.prototype.features) text += `Features: ${workshopData.prototype.features}\n\n`;
+            if (workshopData.prototype.assumptions) text += `Assumptions: ${workshopData.prototype.assumptions}\n\n`;
+
+            text += "═══════════════════════════════════════\n";
+            text += "PHASE 5: TEST\n";
+            text += "═══════════════════════════════════════\n\n";
+            if (workshopData.test.plan) text += `Plan: ${workshopData.test.plan}\n\n`;
+            if (workshopData.test.questions) text += `Questions: ${workshopData.test.questions}\n\n`;
+            if (workshopData.test.feedback) text += `Feedback: ${workshopData.test.feedback}\n\n`;
+            if (workshopData.test.learnings) text += `Learnings: ${workshopData.test.learnings}\n\n`;
+            if (workshopData.test.iterations) text += `Iterations: ${workshopData.test.iterations}\n\n`;
+            if (workshopData.test.metrics) text += `Metrics: ${workshopData.test.metrics}\n\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✓ Report copied to clipboard! You can now paste it into any document.');
+            }).catch(() => {
+                alert('Unable to copy to clipboard. Please use the Export to Excel option instead.');
+            });
         }
 
-        // Phase 5: Test
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push(["PHASE 5: TEST - GET FEEDBACK & ITERATE"]);
-        ws_data.push(["═══════════════════════════════════════════════════════"]);
-        ws_data.push([]);
-        if (workshopData.test.plan) {
-            ws_data.push(["Testing Plan:", workshopData.test.plan]);
-            ws_data.push([]);
-        }
-        if (workshopData.test.questions) {
-            ws_data.push(["Key Questions to Answer:", workshopData.test.questions]);
-            ws_data.push([]);
-        }
-        if (workshopData.test.feedback) {
-            ws_data.push(["User Feedback & Observations:", workshopData.test.feedback]);
-            ws_data.push([]);
-        }
-        if (workshopData.test.learnings) {
-            ws_data.push(["Key Learnings:", workshopData.test.learnings]);
-            ws_data.push([]);
-        }
-        if (workshopData.test.iterations) {
-            ws_data.push(["Next Iterations & Improvements:", workshopData.test.iterations]);
-            ws_data.push([]);
-        }
-        if (workshopData.test.metrics) {
-            ws_data.push(["Success Metrics:", workshopData.test.metrics]);
-            ws_data.push([]);
-        }
-
-        const ws = XLSX.utils.aoa_to_sheet(ws_data);
-        ws['!cols'] = [{wch: 35}, {wch: 100}];
-
-        XLSX.utils.book_append_sheet(wb, ws, "Design Thinking Report");
-
-        const dateStr = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `Design_Thinking_Report_${dateStr}.xlsx`);
-    }
-
-    function exportToPDF() {
-        alert('PDF export functionality: For best results, use your browser\'s Print function (Ctrl+P / Cmd+P) and select "Save as PDF". This preserves all formatting and content.');
-        window.print();
-    }
-
-    function copyToClipboard() {
-        let text = "DESIGN THINKING WORKSHOP REPORT\n";
-        text += "Sigma Exacta - Human-Centered Design Framework\n";
-        text += `Date: ${new Date().toLocaleDateString()}\n\n`;
-        
-        text += "═══════════════════════════════════════\n";
-        text += "PHASE 1: EMPATHIZE\n";
-        text += "═══════════════════════════════════════\n\n";
-        if (workshopData.empathize.users) text += `Users: ${workshopData.empathize.users}\n\n`;
-        if (workshopData.empathize.context) text += `Context: ${workshopData.empathize.context}\n\n`;
-        if (workshopData.empathize.needs) text += `Needs: ${workshopData.empathize.needs}\n\n`;
-        if (workshopData.empathize.emotions) text += `Emotions: ${workshopData.empathize.emotions}\n\n`;
-        if (workshopData.empathize.quotes) text += `Quotes: ${workshopData.empathize.quotes}\n\n`;
-        
-        text += "═══════════════════════════════════════\n";
-        text += "PHASE 2: DEFINE\n";
-        text += "═══════════════════════════════════════\n\n";
-        if (workshopData.define.pov) text += `Problem Statement: ${workshopData.define.pov}\n\n`;
-        if (workshopData.define.insights) text += `Insights: ${workshopData.define.insights}\n\n`;
-        if (workshopData.define.constraints) text += `Constraints: ${workshopData.define.constraints}\n\n`;
-        
-        text += "═══════════════════════════════════════\n";
-        text += "PHASE 3: IDEATE\n";
-        text += "═══════════════════════════════════════\n\n";
-        if (workshopData.ideate.hwm) text += `How Might We: ${workshopData.ideate.hwm}\n\n`;
-        if (workshopData.ideate.ideas) text += `Ideas: ${workshopData.ideate.ideas}\n\n`;
-        if (workshopData.ideate.selected) text += `Selected: ${workshopData.ideate.selected}\n\n`;
-        if (workshopData.ideate.criteria) text += `Criteria: ${workshopData.ideate.criteria}\n\n`;
-        
-        text += "═══════════════════════════════════════\n";
-        text += "PHASE 4: PROTOTYPE\n";
-        text += "═══════════════════════════════════════\n\n";
-        if (workshopData.prototype.type) text += `Type: ${workshopData.prototype.type}\n\n`;
-        if (workshopData.prototype.desc) text += `Description: ${workshopData.prototype.desc}\n\n`;
-        if (workshopData.prototype.features) text += `Features: ${workshopData.prototype.features}\n\n`;
-        if (workshopData.prototype.assumptions) text += `Assumptions: ${workshopData.prototype.assumptions}\n\n`;
-        
-        text += "═══════════════════════════════════════\n";
-        text += "PHASE 5: TEST\n";
-        text += "═══════════════════════════════════════\n\n";
-        if (workshopData.test.plan) text += `Plan: ${workshopData.test.plan}\n\n`;
-        if (workshopData.test.questions) text += `Questions: ${workshopData.test.questions}\n\n`;
-        if (workshopData.test.feedback) text += `Feedback: ${workshopData.test.feedback}\n\n`;
-        if (workshopData.test.learnings) text += `Learnings: ${workshopData.test.learnings}\n\n`;
-        if (workshopData.test.iterations) text += `Iterations: ${workshopData.test.iterations}\n\n`;
-        if (workshopData.test.metrics) text += `Metrics: ${workshopData.test.metrics}\n\n`;
-
-        navigator.clipboard.writeText(text).then(() => {
-            alert('✓ Report copied to clipboard! You can now paste it into any document.');
-        }).catch(() => {
-            alert('Unable to copy to clipboard. Please use the Export to Excel option instead.');
-        });
-    }
-
-</script>
+    </script>
 </body>
+
 </html>

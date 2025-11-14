@@ -1,712 +1,845 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <link rel="canonical" href="https://sigmaexacta.com/vave" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VAVE Analysis Tool - Value Analysis & Value Engineering | Sigma Exacta</title>
-  <meta name="description" content="Free Online Value Analysis (VAVE) analysis tool to optimize product value by analyzing functions and costs. Improve value index with our interactive Value Analysis and Value Engineering calculator. Export to Excel.">
-  <meta name="keywords" content="Open source, Free Software, SigmaExacta, VAVE, Value Analysis, Value Engineering, function analysis, cost reduction, value index, product design, engineering tool, free VAVE tool, VA-VE">
+    <link rel="canonical" href="https://sigmaexacta.com/vave" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAVE Analysis Tool - Value Analysis & Value Engineering | Sigma Exacta</title>
+    <meta name="description"
+        content="Free Online Value Analysis (VAVE) analysis tool to optimize product value by analyzing functions and costs. Improve value index with our interactive Value Analysis and Value Engineering calculator. Export to Excel.">
+    <meta name="keywords"
+        content="Open source, Free Software, SigmaExacta, VAVE, Value Analysis, Value Engineering, function analysis, cost reduction, value index, product design, engineering tool, free VAVE tool, VA-VE">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="styles.css">
-  
-  <style>
-      /* --- Estilos base para la barra de navegación --- */
-      .top-bar {
-          /* === MODIFICACIÓN: Header fijo al hacer scroll === */
-          position: sticky; /* Cambiado de 'relative' para que la barra se fije en la parte superior */
-          top: 0;           /* Se posiciona en el borde superior de la ventana */
-          z-index: 1001;    /* Se asegura que esté por encima de otro contenido al hacer scroll */
-          /* === FIN DE LA MODIFICACIÓN === */
-          
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px 20px;
-          background-color: #222; /* Un negro suave, puedes cambiarlo por #000 */
-      }
-      .logo-text, .navigation .nav-link, .nav-toggle {
-          color: #fff; /* Color blanco para el texto y el icono */
-      }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 
-      .nav-toggle {
-          display: none; 
-          font-size: 1.5rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-      }
+    <link rel="stylesheet" href="styles.css">
 
-      .navigation .nav-menu {
-          display: flex;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          align-items: center;
-      }
+    <style>
+        /* Estilos específicos de la página VAVE */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            font-size: 16px;
+        }
 
-      .navigation .nav-link {
-          padding: 10px 15px;
-          text-decoration: none;
-          font-weight: 600;
-          display: block;
-      }
-      
-      .navigation .nav-link i {
-          margin-left: 5px;
-          transition: transform 0.3s ease;
-      }
-      
-      /* --- Estilos para el menú desplegable (escritorio) --- */
-      .nav-item-dropdown {
-          position: relative;
-      }
-      
-      .dropdown-menu {
-          display: none;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          background-color: #fff; /* Fondo blanco para el desplegable */
-          box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-          border-radius: 5px;
-          z-index: 1000;
-          min-width: 600px;
-          padding: 20px;
-      }
-      
-      /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
-      .dropdown-menu a, .dropdown-menu h4 {
-          color: #333;
-      }
-      .dropdown-link:hover {
-          background-color: #f1f1f1;
-      }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
 
+        html {
+            scroll-behavior: smooth;
+        }
 
-      .dropdown-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 20px;
-      }
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
 
-      .nav-item-dropdown:hover > .dropdown-menu {
-          display: block;
-      }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
 
-      /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
-      @media (max-width: 992px) {
-          .nav-toggle {
-              display: block;
-          }
+        /* --- MODIFICACIONES PARA ANCHO RESPONSIVE --- */
 
-          .navigation .nav-menu {
-              display: none;
-              flex-direction: column;
-              position: absolute;
-              top: 100%;
-              left: 0;
-              width: 100%;
-              background-color: #fff; /* Fondo blanco para el menú desplegado */
-              border-top: 1px solid #eee;
-          }
-          
-          /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
-          .navigation .nav-menu .nav-link {
-              color: #333; 
-          }
-
-          .navigation .nav-menu.show-menu {
-              display: flex;
-          }
-          
-          .navigation .nav-item {
-              width: 100%;
-              text-align: left;
-          }
-
-          .nav-item-dropdown > .nav-link {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-          }
-
-          .dropdown-menu {
-              display: none; 
-              position: static; 
-              width: 100%;
-              box-shadow: none;
-              border-top: 1px solid #f0f0f0;
-              padding: 10px 0 10px 30px;
-              min-width: unset;
-              background-color: #f9f9f9;
-          }
-
-          .dropdown-menu.show-submenu {
-              display: block;
-          }
-          
-          .dropdown-grid {
-              grid-template-columns: 1fr;
-          }
-
-          .nav-item-dropdown:hover > .dropdown-menu {
-              display: none;
-          }
-          .nav-item-dropdown.active:hover > .dropdown-menu {
-              display: block;
-          }
-          
-          .nav-item-dropdown.active > .nav-link i {
-              transform: rotate(180deg);
-          }
-      }
-  </style>
-  <style>
-    /* Estilos específicos de la página VAVE */
-    :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --accent-color: #e74c3c;
-      --light-color: #ecf0f1;
-      --dark-color: #2c3e50;
-      --success-color: #27ae60;
-      font-size: 16px;
-    }
-    
-    *, *::before, *::after { box-sizing: border-box; }
-    
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #333;
-      background-color: #f5f7fa;
-      line-height: 1.6;
-    }
-
-    img { max-width: 100%; height: auto; }
-    
-    /* --- MODIFICACIONES PARA ANCHO RESPONSIVE --- */
-    
-    /* Contenedor principal más ancho en pantallas grandes */
-    .main-content-wrapper { 
-        margin: 0 auto;
-        padding: 1.25rem;
-        max-width: 1400px; /* Aumentado de 1000px a 1400px */
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    /* Header también más ancho para coincidir */
-    .header { 
-        max-width: 1400px; /* Aumentado de 1000px a 1400px */
-        margin: 0 auto 1.25rem; 
-        padding-bottom: 1rem; 
-        border-bottom: 1px solid #ddd; 
-        text-align: center; 
-    }
-    
-    /* Content blocks más anchos */
-    .content-block {
-        max-width: 1400px; /* Aumentado de 1000px a 1400px */
-        margin: 0 auto 1.5rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 1.5rem;
-        background-color: white;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-    
-    /* Footer más ancho */
-    footer { 
-        padding: 2rem 1.25rem;
-        max-width: 1400px; /* Nuevo: límite máximo para footer */
-        margin: 0 auto; /* Centrado */
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    /* Ajuste para el disclaimer dentro del footer */
-    .disclaimer-note { 
-        margin-top: 2rem; 
-        padding: 0 1rem; 
-        font-size: 0.8rem; 
-        color: #777; 
-        max-width: 1400px; /* Aumentado de 800px a 1400px */
-        margin-left: auto; 
-        margin-right: auto; 
-        text-align: left;
-        line-height: 1.6;
-    }
-    
-    /* --- MANTENER COMPORTAMIENTO RESPONSIVE EXISTENTE --- */
-    
-    /* En móviles, los contenedores ocuparán casi todo el ancho disponible */
-    @media (max-width: 768px) {
+        /* Contenedor principal más ancho en pantallas grandes */
         .main-content-wrapper {
-            padding: 1rem; /* Un poco menos de padding en móviles */
+            margin: 0 auto;
+            padding: 1.25rem;
+            max-width: 1400px;
+            /* Aumentado de 1000px a 1400px */
+            width: 100%;
+            box-sizing: border-box;
         }
-        
+
+        /* Header también más ancho para coincidir */
+        .header {
+            max-width: 1400px;
+            /* Aumentado de 1000px a 1400px */
+            margin: 0 auto 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Content blocks más anchos */
         .content-block {
-            padding: 1rem; /* Menos padding en móviles */
-            margin: 0 auto 1rem; /* Menos margen inferior */
+            max-width: 1400px;
+            /* Aumentado de 1000px a 1400px */
+            margin: 0 auto 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-        
+
+        /* Footer más ancho */
         footer {
-            padding: 1.5rem 1rem; /* Menos padding en móviles */
+            padding: 2rem 1.25rem;
+            max-width: 1400px;
+            /* Nuevo: límite máximo para footer */
+            margin: 0 auto;
+            /* Centrado */
+            width: 100%;
+            box-sizing: border-box;
         }
-    }
-    
-    /* En pantallas muy pequeñas, ocupar casi todo el ancho */
-    @media (max-width: 480px) {
-        .main-content-wrapper {
+
+        /* Ajuste para el disclaimer dentro del footer */
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            max-width: 1400px;
+            /* Aumentado de 800px a 1400px */
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        /* --- MANTENER COMPORTAMIENTO RESPONSIVE EXISTENTE --- */
+
+        /* En móviles, los contenedores ocuparán casi todo el ancho disponible */
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                padding: 1rem;
+                /* Un poco menos de padding en móviles */
+            }
+
+            .content-block {
+                padding: 1rem;
+                /* Menos padding en móviles */
+                margin: 0 auto 1rem;
+                /* Menos margen inferior */
+            }
+
+            footer {
+                padding: 1.5rem 1rem;
+                /* Menos padding en móviles */
+            }
+        }
+
+        /* En pantallas muy pequeñas, ocupar casi todo el ancho */
+        @media (max-width: 480px) {
+            .main-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .content-block {
+                padding: 0.75rem;
+                border-radius: 6px;
+                /* Bordes ligeramente más pequeños */
+            }
+
+            footer {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: 0.5rem 0;
+            font-weight: 800;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* ESTILO AÑADIDO PARA EL ICONO EN EL H1 */
+        .header-icon-vave {
+            background-color: #9013fe;
+            /* Color violeta de data-color="14" en index.html */
+            color: white;
+            padding: 5px 8px;
+            /* Ajuste para que se vea como un "badge" */
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 1.2em;
+            /* Hace que el icono sea un poco más grande que el texto del h1 */
+        }
+
+        .content-block h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.6rem;
+            font-weight: 800;
+        }
+
+        .content-block h2 .fas {
+            margin-right: 0.75rem;
+        }
+
+        .infographic-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-step .fas {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.6rem;
+        }
+
+        .flow-step strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: 0 0.6rem;
+        }
+
+        .instructions-box ul {
+            margin: 0.6rem 0 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .instructions-box li {
+            margin-bottom: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border 0.3s, box-shadow 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        input:focus,
+        textarea:focus,
+        button:focus-visible {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .remove-btn {
+            background-color: var(--accent-color);
+            padding: 5px 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #results {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.25rem;
+        }
+
+        #results p {
+            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+        }
+
+        #resultsTable,
+        #functionListTable {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1.25rem;
+            background: white;
+            border: 1px solid #ddd;
+            /* CLAVE PARA EVITAR DESBORDAMIENTO HORIZONTAL EN MÓVILES */
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        #resultsTable th,
+        #resultsTable td,
+        #functionListTable th,
+        #functionListTable td {
+            border: 1px solid #ddd;
             padding: 0.75rem;
+            text-align: center;
+            white-space: normal;
         }
-        
-        .content-block {
-            padding: 0.75rem;
-            border-radius: 6px; /* Bordes ligeramente más pequeños */
+
+        #resultsTable th,
+        #functionListTable th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
         }
-        
-        footer {
-            padding: 1rem 0.75rem;
+
+        #resultsTable tr:nth-child(even),
+        #functionListTable tr:nth-child(even) {
+            background-color: #f8f9fa;
         }
-    }
 
-    .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: 0.5rem 0; font-weight: 800; }
-    .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+        .result-value {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
 
-    /* ESTILO AÑADIDO PARA EL ICONO EN EL H1 */
-    .header-icon-vave {
-        background-color: #9013fe; /* Color violeta de data-color="14" en index.html */
-        color: white;
-        padding: 5px 8px; /* Ajuste para que se vea como un "badge" */
-        border-radius: 6px;
-        margin-right: 10px;
-        font-size: 1.2em; /* Hace que el icono sea un poco más grande que el texto del h1 */
-    }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
 
-    .content-block h2 {
-      font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
-      color: var(--primary-color); border-bottom: 2px solid var(--secondary-color);
-      padding-bottom: 0.6rem; font-weight: 800;
-    }
-    .content-block h2 .fas { margin-right: 0.75rem; }
+        .badge-success {
+            background-color: #27ae60;
+        }
 
-    .infographic-flow { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; text-align: center; flex-wrap: wrap; gap: 1rem; }
-    .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa; margin: 5px; transition: transform 0.2s, box-shadow 0.2s; }
-    .flow-step:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-    .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.6rem; }
-    .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
-    .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: 0 0.6rem; }
+        .badge-warning {
+            background-color: #f39c12;
+        }
 
-    .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
-    .instructions-box li { margin-bottom: 5px; }
-    
-    label { display: block; margin-bottom: 0.6rem; color: var(--primary-color); font-weight: 600; }
-    input[type="text"], textarea { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; margin-bottom: 1rem; transition: border 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif; }
-    input:focus, textarea:focus, button:focus-visible { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); }
-    
-    button { background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px; cursor: pointer; margin: 5px; font-size: 1rem; transition: background-color 0.3s; font-family: 'Nunito', sans-serif; font-weight: 600; }
-    button:hover { background-color: #2980b9; }
-    button:disabled { background-color: #95a5a6; cursor: not-allowed; }
-    .remove-btn { background-color: var(--accent-color); padding: 5px 10px; }
-    .remove-btn:hover { background-color: #c0392b; }
-    
-    #results { background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid #ddd; width: 100%; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 1.25rem; }
-    #results p { margin-bottom: 0.75rem; color: var(--primary-color); }
-    
-    #resultsTable, #functionListTable {
-      border-collapse: collapse; width: 100%; margin-top: 1.25rem; background: white; border: 1px solid #ddd;
-      /* CLAVE PARA EVITAR DESBORDAMIENTO HORIZONTAL EN MÓVILES */
-      display: block; overflow-x: auto; white-space: nowrap;
-    }
-    #resultsTable th, #resultsTable td, #functionListTable th, #functionListTable td { border: 1px solid #ddd; padding: 0.75rem; text-align: center; white-space: normal; }
-    #resultsTable th, #functionListTable th { background-color: var(--primary-color); color: white; font-weight: 600; }
-    #resultsTable tr:nth-child(even), #functionListTable tr:nth-child(even) { background-color: #f8f9fa; }
-    
-    .result-value { font-weight: bold; color: var(--dark-color); }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: white; }
-    .badge-success { background-color: #27ae60; }
-    .badge-warning { background-color: #f39c12; }
-    .badge-danger { background-color: #e74c3c; }
+        .badge-danger {
+            background-color: #e74c3c;
+        }
 
-    #loadExampleBtn { background-color: var(--success-color); }
-    #resetBtn { background-color: #f39c12; }
+        #loadExampleBtn {
+            background-color: var(--success-color);
+        }
 
-    #function-input-grid { display: grid; grid-template-columns: 3fr 2fr 2fr auto; gap: 1.25rem; align-items: flex-end; margin-bottom: 1.25rem; }
-    .slider-container { display: flex; flex-direction: column; }
-    .slider-value { font-weight: bold; color: var(--secondary-color); text-align: center; margin-top: -0.6rem; margin-bottom: 0.6rem; }
-    input[type="range"] { width: 100%; cursor: pointer; }
-    #addFunctionBtn { background-color: var(--success-color); width: 100%; padding: 0.6rem; }
-    #addFunctionBtn:hover { background-color: #219653; }
-    
-    @media (max-width: 992px) {
-        #function-input-grid { grid-template-columns: 1fr; gap: 1rem; }
-    }
-    @media (max-width: 768px) {
-      .infographic-flow { flex-direction: column; align-items: stretch; }
-      .flow-arrow { transform: rotate(90deg); margin: 1rem 0; }
-    }
-  </style>
+        #resetBtn {
+            background-color: #f39c12;
+        }
+
+        #function-input-grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr 2fr auto;
+            gap: 1.25rem;
+            align-items: flex-end;
+            margin-bottom: 1.25rem;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-value {
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-top: -0.6rem;
+            margin-bottom: 0.6rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #addFunctionBtn {
+            background-color: var(--success-color);
+            width: 100%;
+            padding: 0.6rem;
+        }
+
+        #addFunctionBtn:hover {
+            background-color: #219653;
+        }
+
+        @media (max-width: 992px) {
+            #function-input-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .infographic-flow {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<header role="banner" class="top-bar">
-    <a href="index.html" class="logo-container-link">
-        <div class="logo-container">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-            <span class="logo-text">SigmaExacta</span>
-        </div>
-    </a>
+    <!-- Contenedor donde se cargará el header dinámicamente -->
+    <div id="header-container"></div>
 
-    <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <ul class="nav-menu" id="nav-menu">
-            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-            
-            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-menu" id="tools-dropdown-menu">
-                    <div class="dropdown-grid">
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Process & Quality</h4>
-                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Design & Innovation</h4>
-                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                            <a href="fmea.html" class="dropdown-link">FMEA</a>
-                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                            <a href="kano.html" class="dropdown-link">Kano Model</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Problem Solving</h4>
-                            <a href="8d.html" class="dropdown-link">8D Report</a>
-                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                            <a href="triz.html" class="dropdown-link">TRIZ</a>
-                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                        </div>
-                         <div class="dropdown-column">
-                            <h4 class="dropdown-category">Strategy & Management</h4>
-                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-        </ul>
-    </nav>
-</header>
-<main class="main-content-wrapper">
-  <header class="header">
-    <h1><i class="fas fa-cogs header-icon-vave"></i> Free Online Value Analysis / Value Engineering (VAVE) Tool</h1>
-    <p class="header-subtitle">A Systematic Method for Improving Product Value</p>
-  </header>
+    <main class="main-content-wrapper">
+        <header class="header">
+            <h1><i class="fas fa-cogs header-icon-vave"></i> Free Online Value Analysis / Value Engineering (VAVE) Tool
+            </h1>
+            <p class="header-subtitle">A Systematic Method for Improving Product Value</p>
+        </header>
 
-    <div class="content-block">
-        <h2><i class="fas fa-question-circle"></i> What is VAVE?</h2>
-        <p><strong>Value Analysis and Value Engineering (VAVE)</strong> is a powerful, systematic methodology used to analyze and improve the value of products, projects, or services. "Value" is defined by the ratio of function to cost. The goal is to achieve the required functions at the lowest possible lifecycle cost without compromising quality, reliability, or customer satisfaction.</p>
-        <p>The core principle is expressed in the value equation: <strong>Value = Function / Cost</strong></p>
-        <ul>
-            <li><strong>Value Analysis (VA):</strong> Typically applied to <em>existing</em> products to reduce their cost or improve their function. It's a reactive approach to enhance value.</li>
-            <li><strong>Value Engineering (VE):</strong> Applied during the <em>design and development phase</em> of a new product. It's a proactive approach to build value in from the start.</li>
-        </ul>
-        <p>VAVE combines both approaches into a unified process for continuous value improvement.</p>
-        <div class="infographic-flow">
-            <div class="flow-step"><i class="fas fa-list-ul"></i><strong>1. Identify Functions</strong><span>What does it do?</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-dollar-sign"></i><strong>2. Assign Costs</strong><span>What does it cost?</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-star"></i><strong>3. Assign Value</strong><span>How important is it?</span></div>
-            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-            <div class="flow-step"><i class="fas fa-balance-scale"></i><strong>4. Analyze & Improve</strong><span>Where is the opportunity?</span></div>
+        <div class="content-block">
+            <h2><i class="fas fa-question-circle"></i> What is VAVE?</h2>
+            <p><strong>Value Analysis and Value Engineering (VAVE)</strong> is a powerful, systematic methodology used
+                to analyze and improve the value of products, projects, or services. "Value" is defined by the ratio of
+                function to cost. The goal is to achieve the required functions at the lowest possible lifecycle cost
+                without compromising quality, reliability, or customer satisfaction.</p>
+            <p>The core principle is expressed in the value equation: <strong>Value = Function / Cost</strong></p>
+            <ul>
+                <li><strong>Value Analysis (VA):</strong> Typically applied to <em>existing</em> products to reduce
+                    their cost or improve their function. It's a reactive approach to enhance value.</li>
+                <li><strong>Value Engineering (VE):</strong> Applied during the <em>design and development phase</em> of
+                    a new product. It's a proactive approach to build value in from the start.</li>
+            </ul>
+            <p>VAVE combines both approaches into a unified process for continuous value improvement.</p>
+            <div class="infographic-flow">
+                <div class="flow-step"><i class="fas fa-list-ul"></i><strong>1. Identify Functions</strong><span>What
+                        does it do?</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-dollar-sign"></i><strong>2. Assign Costs</strong><span>What does
+                        it cost?</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-star"></i><strong>3. Assign Value</strong><span>How important is
+                        it?</span></div>
+                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                <div class="flow-step"><i class="fas fa-balance-scale"></i><strong>4. Analyze &
+                        Improve</strong><span>Where is the opportunity?</span></div>
+            </div>
         </div>
-    </div>
-    <div class="content-block">
-        <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
-        <p>The concept of Value Analysis was pioneered by <strong>Lawrence D. Miles</strong> at General Electric (GE) during World War II. Faced with material shortages, Miles developed a systematic approach to find less expensive substitute materials and designs without sacrificing the function of a product. The success of this method led to its formalization and widespread adoption after the war. Value Engineering evolved from this, applying the same principles proactively during the design phase.</p>
-        <p>The primary purpose of VAVE is to eliminate unnecessary costs while ensuring or improving function and quality, thereby maximizing the value delivered to the customer and the organization.</p>
-    </div>
-    <div class="content-block">
-        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-        <div class="instructions-box">
-          <ul>
-            <li>Enter the overall <strong>Product Name</strong>.</li>
-            <li>In the "Add New Function" section:
+        <div class="content-block">
+            <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
+            <p>The concept of Value Analysis was pioneered by <strong>Lawrence D. Miles</strong> at General Electric
+                (GE) during World War II. Faced with material shortages, Miles developed a systematic approach to find
+                less expensive substitute materials and designs without sacrificing the function of a product. The
+                success of this method led to its formalization and widespread adoption after the war. Value Engineering
+                evolved from this, applying the same principles proactively during the design phase.</p>
+            <p>The primary purpose of VAVE is to eliminate unnecessary costs while ensuring or improving function and
+                quality, thereby maximizing the value delivered to the customer and the organization.</p>
+        </div>
+        <div class="content-block">
+            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+            <div class="instructions-box">
                 <ul>
-                    <li>Type a clear <strong>Function Description</strong>.</li>
-                    <li>Use the <strong>Cost Slider</strong> to set the cost for that function.</li>
-                    <li>Use the <strong>Value Score Slider</strong> to rate its importance (1-10).</li>
-                    <li>Click the <strong><i class="fas fa-plus"></i> Add</strong> button to add the function to the list below.</li>
+                    <li>Enter the overall <strong>Product Name</strong>.</li>
+                    <li>In the "Add New Function" section:
+                        <ul>
+                            <li>Type a clear <strong>Function Description</strong>.</li>
+                            <li>Use the <strong>Cost Slider</strong> to set the cost for that function.</li>
+                            <li>Use the <strong>Value Score Slider</strong> to rate its importance (1-10).</li>
+                            <li>Click the <strong><i class="fas fa-plus"></i> Add</strong> button to add the function to
+                                the list below.</li>
+                        </ul>
+                    </li>
+                    <li>Continue adding all relevant functions for your product. You can remove any function using the
+                        <strong><i class="fas fa-minus-circle"></i></strong> button in its row.</li>
+                    <li>Click <strong><i class="fas fa-calculator"></i> Analyze Value</strong> to perform the
+                        calculation on the current list of functions.</li>
+                    <li>Use <strong><i class="fas fa-plus"></i> Add to History</strong> to save the result for
+                        comparison.</li>
                 </ul>
-            </li>
-            <li>Continue adding all relevant functions for your product. You can remove any function using the <strong><i class="fas fa-minus-circle"></i></strong> button in its row.</li>
-            <li>Click <strong><i class="fas fa-calculator"></i> Analyze Value</strong> to perform the calculation on the current list of functions.</li>
-            <li>Use <strong><i class="fas fa-plus"></i> Add to History</strong> to save the result for comparison.</li>
-          </ul>
-      </div>
-    </div>
-  
-    <div class="content-block">
-        <h2><i class="fas fa-drafting-compass"></i> VAVE Analysis Tool</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button id="loadExampleBtn"><i class="fas fa-file-alt"></i> Load Example</button>
-            <button id="resetBtn"><i class="fas fa-sync-alt"></i> Reset Data</button>
+            </div>
         </div>
 
-        <form id="vaveForm">
-            <label for="itemName"><i class="fas fa-tag"></i> Item/Product Name:</label>
-            <input type="text" id="itemName" placeholder="e.g., Product X" required />
-            
-            <hr style="margin: 30px 0; border: 1px solid #eee;">
-
-            <h3><i class="fas fa-tasks"></i> Product Functions</h3>
-            
-            <div id="function-input-grid">
-                <div>
-                    <label for="functionDescription">Function Description</label>
-                    <input type="text" id="functionDescription" placeholder="e.g., Provide structural support">
-                </div>
-                <div class="slider-container">
-                    <label for="functionCost">Cost ($)</label>
-                    <span id="costValueDisplay" class="slider-value">100</span>
-                    <input type="range" id="functionCost" min="0" max="500" value="100" step="1">
-                </div>
-                <div class="slider-container">
-                    <label for="functionValue">Value Score (1-10)</label>
-                    <span id="valueScoreDisplay" class="slider-value">5</span>
-                    <input type="range" id="functionValue" min="1" max="10" value="5" step="1">
-                </div>
-                <div>
-                    <label>&nbsp;</label>
-                    <button type="button" id="addFunctionBtn" title="Add Function"><i class="fas fa-plus"></i> Add</button>
-                </div>
+        <div class="content-block">
+            <h2><i class="fas fa-drafting-compass"></i> VAVE Analysis Tool</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button id="loadExampleBtn"><i class="fas fa-file-alt"></i> Load Example</button>
+                <button id="resetBtn"><i class="fas fa-sync-alt"></i> Reset Data</button>
             </div>
 
-            <table id="functionListTable">
+            <form id="vaveForm">
+                <label for="itemName"><i class="fas fa-tag"></i> Item/Product Name:</label>
+                <input type="text" id="itemName" placeholder="e.g., Product X" required />
+
+                <hr style="margin: 30px 0; border: 1px solid #eee;">
+
+                <h3><i class="fas fa-tasks"></i> Product Functions</h3>
+
+                <div id="function-input-grid">
+                    <div>
+                        <label for="functionDescription">Function Description</label>
+                        <input type="text" id="functionDescription" placeholder="e.g., Provide structural support">
+                    </div>
+                    <div class="slider-container">
+                        <label for="functionCost">Cost ($)</label>
+                        <span id="costValueDisplay" class="slider-value">100</span>
+                        <input type="range" id="functionCost" min="0" max="500" value="100" step="1">
+                    </div>
+                    <div class="slider-container">
+                        <label for="functionValue">Value Score (1-10)</label>
+                        <span id="valueScoreDisplay" class="slider-value">5</span>
+                        <input type="range" id="functionValue" min="1" max="10" value="5" step="1">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button type="button" id="addFunctionBtn" title="Add Function"><i class="fas fa-plus"></i>
+                            Add</button>
+                    </div>
+                </div>
+
+                <table id="functionListTable">
+                    <thead>
+                        <tr>
+                            <th>Function Description</th>
+                            <th>Cost</th>
+                            <th>Value Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    <button type="submit"><i class="fas fa-calculator"></i> Analyze Value</button>
+                </div>
+            </form>
+
+            <div id="results" style="display:none; margin-top: 25px;">
+                <h3>Analysis Results</h3>
+                <p><i class="fas fa-money-bill-wave"></i> Total Current Cost: <span id="totalCost"
+                        class="result-value">-</span></p>
+                <p><i class="fas fa-star"></i> Total Value Score: <span id="totalValue" class="result-value">-</span>
+                </p>
+                <p><i class="fas fa-balance-scale"></i> Value Index (Total Value / Total Cost): <span id="valueIndex"
+                        class="result-value">-</span></p>
+
+                <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to History</button>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2><i class="fas fa-chart-bar"></i> Analysis History</h2>
+            <table id="resultsTable">
                 <thead>
                     <tr>
-                        <th>Function Description</th>
-                        <th>Cost</th>
-                        <th>Value Score</th>
-                        <th>Action</th>
+                        <th><i class="fas fa-tag"></i> Item/Product</th>
+                        <th><i class="fas fa-list"></i> Functions Analyzed</th>
+                        <th><i class="fas fa-money-bill-wave"></i> Total Cost</th>
+                        <th><i class="fas fa-star"></i> Total Value</th>
+                        <th><i class="fas fa-balance-scale"></i> Value Index</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
 
-            <div style="text-align: center; margin-top: 25px;">
-                <button type="submit"><i class="fas fa-calculator"></i> Analyze Value</button>
-            </div>
-        </form>
-
-        <div id="results" style="display:none; margin-top: 25px;">
-            <h3>Analysis Results</h3>
-            <p><i class="fas fa-money-bill-wave"></i> Total Current Cost: <span id="totalCost" class="result-value">-</span></p>
-            <p><i class="fas fa-star"></i> Total Value Score: <span id="totalValue" class="result-value">-</span></p>
-            <p><i class="fas fa-balance-scale"></i> Value Index (Total Value / Total Cost): <span id="valueIndex" class="result-value">-</span></p>
-            
-            <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to History</button>
+            <button id="exportBtn" style="margin-top: 20px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
         </div>
-    </div>
+    </main>
+    <footer>
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
+                educational purposes only. This tool is based on the Value Analysis / Value Engineering (VAVE)
+                methodology, pioneered by Lawrence D. Miles. The tools on this site are independent implementations and
+                are not affiliated with, sponsored by, or endorsed by the original creators or any specific institution.
+                While we strive for accuracy, we make no warranty or guarantee regarding the results. All decisions
+                related to product design, cost reduction, or value improvement based on the output of this tool are the
+                sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses
+                resulting from the use of this website.</p>
+        </div>
+    </footer>
 
-    <div class="content-block">
-        <h2><i class="fas fa-chart-bar"></i> Analysis History</h2>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th><i class="fas fa-tag"></i> Item/Product</th>
-                    <th><i class="fas fa-list"></i> Functions Analyzed</th>
-                    <th><i class="fas fa-money-bill-wave"></i> Total Cost</th>
-                    <th><i class="fas fa-star"></i> Total Value</th>
-                    <th><i class="fas fa-balance-scale"></i> Value Index</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        
-        <button id="exportBtn" style="margin-top: 20px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
-    </div>
-</main>
-<footer>
-    <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is based on the Value Analysis / Value Engineering (VAVE) methodology, pioneered by Lawrence D. Miles. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators or any specific institution. While we strive for accuracy, we make no warranty or guarantee regarding the results. All decisions related to product design, cost reduction, or value improvement based on the output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
-    </div>
-</footer>
+    <script>
+        // Cargar header dinámicamente
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cargar el header desde header.html
+            fetch('header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    // Inicializar el menú después de cargar el header
+                    initMenu();
+                })
+                .catch(error => {
+                    console.error('Error loading header:', error);
+                });
+        });
 
-<script>
-  let lastResult = null;
-  let functionsList = [];
-  const costSlider = document.getElementById("functionCost");
-  const valueSlider = document.getElementById("functionValue");
-  const costDisplay = document.getElementById("costValueDisplay");
-  const valueDisplay = document.getElementById("valueScoreDisplay");
-  costSlider.addEventListener('input', () => costDisplay.textContent = costSlider.value);
-  valueSlider.addEventListener('input', () => valueDisplay.textContent = valueSlider.value);
-  document.getElementById("addFunctionBtn").addEventListener('click', () => {
-    const description = document.getElementById("functionDescription").value.trim();
-    if (!description) { alert("Please enter a function description."); return; }
-    functionsList.push({ id: Date.now(), description: description, cost: parseFloat(costSlider.value), value: parseInt(valueSlider.value) });
-    renderFunctionList();
-    document.getElementById("functionDescription").value = "";
-    document.getElementById("functionDescription").focus();
-  });
-  function renderFunctionList() {
-    const tbody = document.querySelector("#functionListTable tbody");
-    tbody.innerHTML = "";
-    functionsList.forEach(func => {
-        const row = document.createElement("tr");
-        row.innerHTML = ` <td style="text-align: left;">${func.description}</td> <td>$${func.cost.toFixed(2)}</td> <td>${func.value}</td> <td><button type="button" class="remove-btn" onclick="removeFunction(${func.id})"><i class="fas fa-minus-circle"></i></button></td> `;
-        tbody.appendChild(row);
-    });
-  }
-  function removeFunction(id) { functionsList = functionsList.filter(func => func.id !== id); renderFunctionList(); }
-  document.getElementById("vaveForm").addEventListener("submit", function(event) { event.preventDefault(); analyzeVAVE(); });
-  document.getElementById("loadExampleBtn").addEventListener("click", function() {
-    document.getElementById("itemName").value = "Gizmo 5000";
-    functionsList = [ { id: 1, description: 'Provide power', cost: 120.00, value: 9 }, { id: 2, description: 'Control user input', cost: 75.50, value: 8 }, { id: 3, description: 'Display information', cost: 60.00, value: 7 }, { id: 4, description: 'House components', cost: 40.00, value: 6 }, { id: 5, description: 'Ensure safety', cost: 30.00, value: 9 } ];
-    renderFunctionList();
-  });
-  document.getElementById("resetBtn").addEventListener("click", function() {
-    document.getElementById("itemName").value = "";
-    functionsList = [];
-    renderFunctionList();
-    document.getElementById("totalCost").textContent = "-";
-    document.getElementById("totalValue").textContent = "-";
-    document.getElementById("valueIndex").textContent = "-";
-    document.getElementById("results").style.display = "none";
-    document.getElementById("addBtn").disabled = true;
-    document.querySelector("#resultsTable tbody").innerHTML = "";
-    lastResult = null;
-  });
-  function analyzeVAVE() {
-    const itemName = document.getElementById("itemName").value;
-    if (functionsList.length === 0) { alert("Please add at least one function to the list before analyzing."); return; }
-    let totalCost = 0;
-    let totalValue = 0;
-    functionsList.forEach(func => { totalCost += func.cost; totalValue += func.value; });
-    const valueIndex = totalCost > 0 ? (totalValue / totalCost) : 0;
-    document.getElementById("totalCost").textContent = '$' + totalCost.toFixed(2);
-    document.getElementById("totalValue").textContent = totalValue.toFixed(0);
-    document.getElementById("valueIndex").textContent = valueIndex.toFixed(4);
-    document.getElementById("results").style.display = "block";
-    document.getElementById("addBtn").disabled = false;
-    lastResult = { itemName, functionsAnalyzed: functionsList.map(f => f.description).join('; '), totalCost, totalValue, valueIndex: valueIndex.toFixed(4) };
-  }
-  document.getElementById("addBtn").addEventListener("click", addToTable);
-  function addToTable() {
-    if (!lastResult) return;
-    const tbody = document.querySelector("#resultsTable tbody");
-    const row = document.createElement("tr");
-    let badgeClass = 'badge-warning';
-    if(lastResult.valueIndex !== "N/A"){ if (parseFloat(lastResult.valueIndex) >= 0.25) badgeClass = 'badge-success'; else if (parseFloat(lastResult.valueIndex) < 0.1) badgeClass = 'badge-danger'; }
-    row.innerHTML = ` <td>${lastResult.itemName}</td> <td style="text-align: left;">${lastResult.functionsAnalyzed}</td> <td>$${lastResult.totalCost.toFixed(2)}</td> <td>${lastResult.totalValue.toFixed(0)}</td> <td><span class="badge ${badgeClass}">${lastResult.valueIndex}</span></td> `;
-    tbody.appendChild(row);
-    document.getElementById("addBtn").disabled = true;
-    lastResult = null;
-  }
-  document.getElementById("exportBtn").addEventListener("click", exportExcel);
-  function exportExcel() {
-    const wb = XLSX.utils.book_new();
-    const historyTable = document.getElementById("resultsTable");
-    const historySheet = XLSX.utils.table_to_sheet(historyTable, {sheet:"History"});
-    XLSX.utils.book_append_sheet(wb, historySheet, "Analysis History");
-    if (functionsList.length > 0) {
-        const functionsData = functionsList.map(f => ({ Item: document.getElementById("itemName").value, Function: f.description, Cost: f.cost, 'Value Score': f.value }));
-        const functionsSheet = XLSX.utils.json_to_sheet(functionsData);
-        XLSX.utils.book_append_sheet(wb, functionsSheet, "Current Functions");
-    }
-    XLSX.writeFile(wb, "VAVE_Analysis_Sigma_Exacta.xlsx");
-  }
-</script>
+        // Función para inicializar el menú
+        function initMenu() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-<script defer>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- CÓDIGO DEL SONIDO DE HOVER (SIN CAMBIOS) ---
-        const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/wAADf8AAA1/AAANfwAADX8AAA1/AAANfwAADf8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA');
-        hoverSound.preload = 'auto';
-        let audioUnlocked = false;
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('fa-bars');
+                        icon.classList.toggle('fa-times');
+                    }
 
-        function unlockAudio() {
-            if (audioUnlocked) return;
-            hoverSound.volume = 0;
-            hoverSound.play().then(() => {
-                hoverSound.pause();
-                hoverSound.currentTime = 0;
-                hoverSound.volume = 1;
-                audioUnlocked = true;
-                document.removeEventListener('click', unlockAudio);
-                document.removeEventListener('touchstart', unlockAudio);
-            }).catch(e => {});
+                    if (!navMenu.classList.contains('show-menu')) {
+                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        if (toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
         }
 
-        document.addEventListener('click', unlockAudio);
-        document.addEventListener('touchstart', unlockAudio);
+        // Resto del código de la aplicación VAVE
+        let lastResult = null;
+        let functionsList = [];
+        const costSlider = document.getElementById("functionCost");
+        const valueSlider = document.getElementById("functionValue");
+        const costDisplay = document.getElementById("costValueDisplay");
+        const valueDisplay = document.getElementById("valueScoreDisplay");
 
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                if (audioUnlocked) {
-                    hoverSound.currentTime = 0;
-                    hoverSound.play().catch(e => {}); 
-                }
+        if (costSlider && costDisplay) {
+            costSlider.addEventListener('input', () => costDisplay.textContent = costSlider.value);
+        }
+
+        if (valueSlider && valueDisplay) {
+            valueSlider.addEventListener('input', () => valueDisplay.textContent = valueSlider.value);
+        }
+
+        const addFunctionBtn = document.getElementById("addFunctionBtn");
+        if (addFunctionBtn) {
+            addFunctionBtn.addEventListener('click', () => {
+                const description = document.getElementById("functionDescription").value.trim();
+                if (!description) { alert("Please enter a function description."); return; }
+                functionsList.push({ id: Date.now(), description: description, cost: parseFloat(costSlider.value), value: parseInt(valueSlider.value) });
+                renderFunctionList();
+                document.getElementById("functionDescription").value = "";
+                document.getElementById("functionDescription").focus();
             });
-        });
+        }
 
-        // --- JAVASCRIPT NUEVO Y MEJORADO PARA LA NAVEGACIÓN (SIN CAMBIOS) ---
-        const navToggle = document.getElementById('nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+        function renderFunctionList() {
+            const tbody = document.querySelector("#functionListTable tbody");
+            if (tbody) {
+                tbody.innerHTML = "";
+                functionsList.forEach(func => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = ` <td style="text-align: left;">${func.description}</td> <td>$${func.cost.toFixed(2)}</td> <td>${func.value}</td> <td><button type="button" class="remove-btn" onclick="removeFunction(${func.id})"><i class="fas fa-minus-circle"></i></button></td> `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
 
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('show-menu');
-            const icon = navToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-            
-            if (!navMenu.classList.contains('show-menu')) {
-                toolsDropdownMenu.classList.remove('show-submenu');
-                toolsDropdownContainer.classList.remove('active');
+        function removeFunction(id) {
+            functionsList = functionsList.filter(func => func.id !== id);
+            renderFunctionList();
+        }
+
+        const vaveForm = document.getElementById("vaveForm");
+        if (vaveForm) {
+            vaveForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                analyzeVAVE();
+            });
+        }
+
+        const loadExampleBtn = document.getElementById("loadExampleBtn");
+        if (loadExampleBtn) {
+            loadExampleBtn.addEventListener("click", function () {
+                document.getElementById("itemName").value = "Gizmo 5000";
+                functionsList = [
+                    { id: 1, description: 'Provide power', cost: 120.00, value: 9 },
+                    { id: 2, description: 'Control user input', cost: 75.50, value: 8 },
+                    { id: 3, description: 'Display information', cost: 60.00, value: 7 },
+                    { id: 4, description: 'House components', cost: 40.00, value: 6 },
+                    { id: 5, description: 'Ensure safety', cost: 30.00, value: 9 }
+                ];
+                renderFunctionList();
+            });
+        }
+
+        const resetBtn = document.getElementById("resetBtn");
+        if (resetBtn) {
+            resetBtn.addEventListener("click", function () {
+                document.getElementById("itemName").value = "";
+                functionsList = [];
+                renderFunctionList();
+                document.getElementById("totalCost").textContent = "-";
+                document.getElementById("totalValue").textContent = "-";
+                document.getElementById("valueIndex").textContent = "-";
+                document.getElementById("results").style.display = "none";
+                document.getElementById("addBtn").disabled = true;
+                document.querySelector("#resultsTable tbody").innerHTML = "";
+                lastResult = null;
+            });
+        }
+
+        function analyzeVAVE() {
+            const itemName = document.getElementById("itemName").value;
+            if (functionsList.length === 0) {
+                alert("Please add at least one function to the list before analyzing.");
+                return;
             }
-        });
-        
-        toolsDropdownToggle.addEventListener('click', (event) => {
-            if (window.innerWidth <= 992) {
-                event.preventDefault(); 
-                toolsDropdownMenu.classList.toggle('show-submenu');
-                toolsDropdownContainer.classList.toggle('active');
+            let totalCost = 0;
+            let totalValue = 0;
+            functionsList.forEach(func => {
+                totalCost += func.cost;
+                totalValue += func.value;
+            });
+            const valueIndex = totalCost > 0 ? (totalValue / totalCost) : 0;
+            document.getElementById("totalCost").textContent = '$' + totalCost.toFixed(2);
+            document.getElementById("totalValue").textContent = totalValue.toFixed(0);
+            document.getElementById("valueIndex").textContent = valueIndex.toFixed(4);
+            document.getElementById("results").style.display = "block";
+            document.getElementById("addBtn").disabled = false;
+            lastResult = {
+                itemName,
+                functionsAnalyzed: functionsList.map(f => f.description).join('; '),
+                totalCost,
+                totalValue,
+                valueIndex: valueIndex.toFixed(4)
+            };
+        }
+
+        const addBtn = document.getElementById("addBtn");
+        if (addBtn) {
+            addBtn.addEventListener("click", addToTable);
+        }
+
+        function addToTable() {
+            if (!lastResult) return;
+            const tbody = document.querySelector("#resultsTable tbody");
+            if (tbody) {
+                const row = document.createElement("tr");
+                let badgeClass = 'badge-warning';
+                if (lastResult.valueIndex !== "N/A") {
+                    if (parseFloat(lastResult.valueIndex) >= 0.25) badgeClass = 'badge-success';
+                    else if (parseFloat(lastResult.valueIndex) < 0.1) badgeClass = 'badge-danger';
+                }
+                row.innerHTML = ` 
+        <td>${lastResult.itemName}</td> 
+        <td style="text-align: left;">${lastResult.functionsAnalyzed}</td> 
+        <td>$${lastResult.totalCost.toFixed(2)}</td> 
+        <td>${lastResult.totalValue.toFixed(0)}</td> 
+        <td><span class="badge ${badgeClass}">${lastResult.valueIndex}</span></td> 
+      `;
+                tbody.appendChild(row);
+                document.getElementById("addBtn").disabled = true;
+                lastResult = null;
             }
-        });
-    });
-</script>
+        }
+
+        const exportBtn = document.getElementById("exportBtn");
+        if (exportBtn) {
+            exportBtn.addEventListener("click", exportExcel);
+        }
+
+        function exportExcel() {
+            const wb = XLSX.utils.book_new();
+            const historyTable = document.getElementById("resultsTable");
+            const historySheet = XLSX.utils.table_to_sheet(historyTable, { sheet: "History" });
+            XLSX.utils.book_append_sheet(wb, historySheet, "Analysis History");
+            if (functionsList.length > 0) {
+                const functionsData = functionsList.map(f => ({
+                    Item: document.getElementById("itemName").value,
+                    Function: f.description,
+                    Cost: f.cost,
+                    'Value Score': f.value
+                }));
+                const functionsSheet = XLSX.utils.json_to_sheet(functionsData);
+                XLSX.utils.book_append_sheet(wb, functionsSheet, "Current Functions");
+            }
+            XLSX.writeFile(wb, "VAVE_Analysis_Sigma_Exacta.xlsx");
+        }
+    </script>
 
 </body>
+
 </html>

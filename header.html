@@ -2,109 +2,181 @@
     <style>
         /* ===== ESTILOS DE LA BARRA DE NAVEGACIÓN ===== */
         .top-bar {
-            position: sticky; top: 0; z-index: 1001;    
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 20px; background-color: #222; 
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222;
             flex-wrap: wrap;
         }
-        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
-        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
-        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
-        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
-        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
-        .nav-item-dropdown { position: relative; }
-        .dropdown-menu {
-            display: none; position: absolute; top: 100%; left: 0;
-            background-color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-radius: 5px;
-            z-index: 1000; min-width: 600px; padding: 20px;
-        }
-        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
-        .dropdown-link:hover { background-color: #f1f1f1; }
-        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
-        .nav-item-dropdown:hover > .dropdown-menu { display: block; }
-        
-        /* ESTILOS PARA EL TRADUCTOR */
-        #google-translate-container {
-            margin-left: auto;
-            margin-right: 20px; 
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-        .goog-logo-link {
-            display: none !important;
-        }
-        .goog-te-gadget {
-            font-size: 0px !important;
-        }
-        .goog-te-combo {
-            border: 1px solid #444;
-            padding: 5px;
-            border-radius: 4px;
-            font-size: 0.9rem !important;
-            background-color: #333;
+
+        .logo-text,
+        .navigation .nav-link,
+        .nav-toggle {
             color: #fff;
         }
-        .goog-te-banner-frame.skiptranslate {
-            display: none !important;
+
+        .nav-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
-        body {
-            top: 0px !important;
+
+        .navigation .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
         }
-        
+
+        .navigation .nav-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+
+        .navigation .nav-link i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 5px;
+            z-index: 1000;
+            min-width: 600px;
+            padding: 20px;
+        }
+
+        .dropdown-menu a,
+        .dropdown-menu h4 {
+            color: #333;
+        }
+
+        .dropdown-link:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-item-dropdown:hover>.dropdown-menu {
+            display: block;
+        }
+
         @media (max-width: 992px) {
-            .nav-toggle { display: block; }
-            .navigation .nav-menu {
-                display: none; flex-direction: column; position: absolute; top: 100%;
-                left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
+            .top-bar {
+                flex-wrap: nowrap;
+                /* Cambio importante: evitar que se envuelva */
             }
-            .navigation .nav-menu .nav-link { color: #333; }
-            .navigation .nav-menu.show-menu { display: flex; }
-            .navigation .nav-item { width: 100%; text-align: left; }
-            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
-            .dropdown-menu {
-                display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
-                padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
+
+            .logo-container-link {
+                flex: 1;
+                /* Ocupa el espacio disponible */
             }
-            .dropdown-menu.show-submenu { display: block; }
-            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
-            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
-            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
-            
-             #google-translate-container {
+
+            .nav-toggle {
+                display: block;
                 order: 2;
-                width: 100%;
-                text-align: center;
-                margin-left: 0;
-                margin-right: 0;
-                padding: 10px 0;
-                border-top: 1px solid #333;
+                /* Mantener el botón a la derecha */
             }
-            .top-bar .navigation {
+
+            .navigation {
                 order: 3;
+                /* El menú completo va después */
                 width: 100%;
             }
-             .goog-te-combo {
+
+            .navigation .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
                 background-color: #fff;
+                border-top: 1px solid #eee;
+            }
+
+            .navigation .nav-menu .nav-link {
                 color: #333;
+            }
+
+            .navigation .nav-menu.show-menu {
+                display: flex;
+            }
+
+            .navigation .nav-item {
+                width: 100%;
+                text-align: left;
+            }
+
+            .nav-item-dropdown>.nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown-menu {
+                display: none;
+                position: static;
+                width: 100%;
+                box-shadow: none;
+                border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px;
+                min-width: unset;
+                background-color: #f9f9f9;
+            }
+
+            .dropdown-menu.show-submenu {
+                display: block;
+            }
+
+            .nav-item-dropdown:hover>.dropdown-menu {
+                display: none;
+            }
+
+            .nav-item-dropdown.active:hover>.dropdown-menu {
+                display: block;
+            }
+
+            .nav-item-dropdown.active>.nav-link i {
+                transform: rotate(180deg);
             }
         }
     </style>
-    
+
     <a href="index.html" class="logo-container-link">
         <div class="logo-container">
             <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
             <span class="logo-text">SigmaExacta</span>
         </div>
     </a>
-    
-    <div id="google-translate-container">
-        <div id="google_translate_element"></div>
-    </div>
-    
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-            <i class="fas fa-bars"></i>
-        </button>
         <ul class="nav-menu" id="nav-menu">
             <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
             <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
@@ -136,7 +208,7 @@
                             <a href="triz.html" class="dropdown-link">TRIZ</a>
                             <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
                         </div>
-                         <div class="dropdown-column">
+                        <div class="dropdown-column">
                             <h4 class="dropdown-category">Strategy & Management</h4>
                             <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
                             <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
@@ -146,7 +218,7 @@
                     </div>
                 </div>
             </li>
-            
+
             <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
             <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
         </ul>

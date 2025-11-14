@@ -1,650 +1,864 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="canonical" href="https://sigmaexacta.com/balancedcard" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Online Strategic Performance Scorecard Tool | Sigma Exacta</title>
-  <meta name="description" content="Free Online Tool to create, manage, and monitor your Strategic Performance Scorecard. Define your strategic objectives and KPIs across the financial, customer, internal processes, and learning perspectives.">
-  <meta name="keywords" content="Open source, Free software, strategy scorecard, balanced scoreboard, scoreboard, strategic management, kpi, performance dashboard, strategic planning, objective tracking, balanced scorecard, SigmaExacta">
-  <meta name="author" content="Sigma Exacta">
-  <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="styles.css">
+<head>
+    <link rel="canonical" href="https://sigmaexacta.com/balancedcard" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Online Strategic Performance Scorecard Tool | Sigma Exacta</title>
+    <meta name="description"
+        content="Free Online Tool to create, manage, and monitor your Strategic Performance Scorecard. Define your strategic objectives and KPIs across the financial, customer, internal processes, and learning perspectives.">
+    <meta name="keywords"
+        content="Open source, Free software, strategy scorecard, balanced scoreboard, scoreboard, strategic management, kpi, performance dashboard, strategic planning, objective tracking, balanced scorecard, SigmaExacta">
+    <meta name="author" content="Sigma Exacta">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
 
     <style>
-        /* --- Estilos base para la barra de navegación --- */
-        .top-bar {
-            position: sticky; 
-            top: 0;
-            z-index: 1001;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #222; 
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --financial-bg: #16a085;
+            --customer-bg: #2980b9;
+            --internal-bg: #8e44ad;
+            --learning-bg: #d35400;
+            font-size: 16px;
         }
-        .logo-text, .navigation .nav-link, .nav-toggle {
-            color: #fff; 
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
         }
-        .nav-toggle {
-            display: none; 
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
+
+        html {
+            scroll-behavior: smooth;
         }
-        .navigation .nav-menu {
-            display: flex;
-            list-style: none;
+
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            color: #333;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            padding: 1.25rem;
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #666;
+            max-width: 700px;
+            margin: 10px auto 0;
+            line-height: 1.6;
+        }
+
+        /* ===== ESTILOS PARA EL ICONO Y TÍTULO DEL HEADER (MODIFICADOS) ===== */
+        .header-title-container {
+            display: flex;
+            justify-content: center;
             align-items: center;
+            gap: 15px;
+            /* Espacio entre el ícono y el texto */
+            margin-bottom: 10px;
         }
-        .navigation .nav-link {
-            padding: 10px 15px;
+
+        .header-icon {
+            width: 50px;
+            /* Tamaño reducido */
+            height: 50px;
+            /* Tamaño reducido */
+            border-radius: 12px;
+            /* Borde más pequeño */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.8rem;
+            /* Tamaño de ícono reducido */
             text-decoration: none;
-            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #064098;
+            flex-shrink: 0;
+            /* Evita que el ícono se encoja */
+        }
+
+        .header-icon-link:hover .header-icon {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ======================================================================== */
+
+        .block {
+            max-width: 1200px;
+            margin: 0 auto 1.25rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .block h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+        }
+
+        .block-title {
+            font-weight: 800;
+            font-size: 1.2em;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.6rem;
+        }
+
+        .block ul {
+            padding-left: 1.25rem;
+        }
+
+        .block ul li {
+            margin-bottom: 0.6rem;
+            line-height: 1.6;
+        }
+
+        label {
             display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
         }
-        .navigation .nav-link i {
-            margin-left: 5px;
-            transition: transform 0.3s ease;
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-family: 'Nunito', sans-serif;
         }
-        .nav-item-dropdown {
-            position: relative;
+
+        input:focus,
+        textarea:focus,
+        select:focus,
+        button:focus-visible {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
         }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: #fff;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            border-radius: 5px;
-            z-index: 1000;
-            min-width: 600px;
-            padding: 20px;
+
+        button {
+            color: white;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
         }
-        .dropdown-menu a, .dropdown-menu h4 {
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #229954;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
             color: #333;
         }
-        .dropdown-link:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-        .nav-item-dropdown:hover > .dropdown-menu {
-            display: block;
+
+        .btn-warning:hover {
+            background-color: #d4ac0d;
         }
 
-        /* --- ESTILOS PARA MÓVIL (IDÉNTICOS A INDEX.HTML) --- */
-        @media (max-width: 992px) {
-            .nav-toggle { display: block; }
-            .navigation .nav-menu {
-                display: none; flex-direction: column; position: absolute; top: 100%;
-                left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee;
-            }
-            .navigation .nav-menu .nav-link { color: #333; }
-            .navigation .nav-menu.show-menu { display: flex; }
-            .navigation .nav-item { width: 100%; text-align: left; }
-            .nav-item-dropdown > .nav-link { display: flex; justify-content: space-between; align-items: center; }
-            .dropdown-menu {
-                display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0;
-                padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9;
-            }
-            .dropdown-menu.show-submenu { display: block; }
-            .dropdown-grid { grid-template-columns: 1fr; }
-            .nav-item-dropdown:hover > .dropdown-menu { display: none; }
-            .nav-item-dropdown.active:hover > .dropdown-menu { display: block; }
-            .nav-item-dropdown.active > .nav-link i { transform: rotate(180deg); }
+        .btn-delete {
+            background-color: var(--danger-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0 1.25rem;
+        }
+
+        .custom-input-container {
+            display: none;
+            margin-top: -0.6rem;
+        }
+
+        .scorecard-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .scorecard-grid>.block {
+            flex: 1 1 450px;
+            min-width: 320px;
+            max-width: none;
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1rem;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        th {
+            color: white;
+            font-weight: 600;
+        }
+
+        th.actions-col {
+            width: 70px;
+            text-align: center;
+        }
+
+        td.actions-col {
+            text-align: center;
+        }
+
+        .th-financial {
+            background-color: var(--financial-bg);
+        }
+
+        .th-customer {
+            background-color: var(--customer-bg);
+        }
+
+        .th-internal {
+            background-color: var(--internal-bg);
+        }
+
+        .th-learning {
+            background-color: var(--learning-bg);
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+
+        .badge-good {
+            background-color: var(--success-color);
+        }
+
+        .badge-average {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+
+        .badge-poor {
+            background-color: var(--danger-color);
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            height: 22px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 22px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: width 0.5s ease-in-out;
+            background-color: var(--primary-color);
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        #toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            transform: translateY(-20px);
+        }
+
+        #toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        #toast-notification.success {
+            background-color: var(--success-color);
+        }
+
+        #toast-notification.info {
+            background-color: var(--secondary-color);
+        }
+
+        footer {
+            padding: 2rem 1.25rem;
+            text-align: center;
+        }
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
-    <style>
-    :root {
-      --primary-color: #2c3e50; --secondary-color: #3498db; --success-color: #27ae60;
-      --warning-color: #f1c40f; --danger-color: #e74c3c; --light-color: #ecf0f1;
-      --financial-bg: #16a085; --customer-bg: #2980b9; --internal-bg: #8e44ad;
-      --learning-bg: #d35400; font-size: 16px;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 0; color: #333; background-color: #f5f7fa; line-height: 1.6;
-    }
-    .main-container { padding: 1.25rem; }
-    .header {
-        max-width: 1200px; margin: 0 auto 1.25rem; padding-bottom: 1rem;
-        border-bottom: 1px solid #ddd; text-align: center;
-    }
-    .header h1 {
-        color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem);
-        margin: 0; font-weight: 800;
-    }
-    .header p { color: #666; max-width: 700px; margin: 10px auto 0; line-height: 1.6; }
-    
-    /* ===== ESTILOS PARA EL ICONO Y TÍTULO DEL HEADER (MODIFICADOS) ===== */
-    .header-title-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 15px; /* Espacio entre el ícono y el texto */
-        margin-bottom: 10px;
-    }
-    .header-icon {
-        width: 50px; /* Tamaño reducido */
-        height: 50px; /* Tamaño reducido */
-        border-radius: 12px; /* Borde más pequeño */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #fff;
-        font-size: 1.8rem; /* Tamaño de ícono reducido */
-        text-decoration: none;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        background-color: #064098;
-        flex-shrink: 0; /* Evita que el ícono se encoja */
-    }
-    .header-icon-link:hover .header-icon {
-        transform: scale(1.05);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    }
-    /* ======================================================================== */
-
-    .block {
-      max-width: 1200px; margin: 0 auto 1.25rem; border: 1px solid #ddd;
-      border-radius: 8px; padding: 1.5rem; background-color: white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-    .block h2 {
-      font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
-      color: var(--primary-color); border-bottom: 2px solid var(--secondary-color);
-      padding-bottom: 0.6rem; display: flex; align-items: center;
-      gap: 0.75rem; font-weight: 800;
-    }
-    .block-title {
-      font-weight: 800; font-size: 1.2em; margin-bottom: 1rem;
-      color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 0.6rem;
-    }
-    .block ul { padding-left: 1.25rem; }
-    .block ul li { margin-bottom: 0.6rem; line-height: 1.6; }
-
-    label { display: block; margin-bottom: 0.5rem; color: var(--primary-color); font-weight: 600; }
-    input, textarea, select {
-        width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
-        font-size: 1rem; margin-bottom: 1rem; box-sizing: border-box;
-        transition: border-color 0.3s, box-shadow 0.3s; font-family: 'Nunito', sans-serif;
-    }
-    input:focus, textarea:focus, select:focus, button:focus-visible {
-        outline: none; border-color: var(--secondary-color);
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
-    }
-    button {
-        color: white; padding: 0.7rem 1.25rem; border: none; border-radius: 4px;
-        cursor: pointer; margin: 5px 5px 5px 0; font-size: 1rem;
-        transition: background-color 0.3s; font-family: 'Nunito', sans-serif; font-weight: 600;
-    }
-    .btn-primary { background-color: var(--secondary-color); }
-    .btn-primary:hover:not(:disabled) { background-color: #2980b9; }
-    .btn-success { background-color: var(--success-color); }
-    .btn-success:hover { background-color: #229954; }
-    .btn-warning { background-color: var(--warning-color); color: #333; }
-    .btn-warning:hover { background-color: #d4ac0d; }
-    .btn-delete {
-        background-color: var(--danger-color); width: 32px; height: 32px;
-        border-radius: 50%; padding: 0; display: flex;
-        align-items: center; justify-content: center; margin: auto;
-    }
-    .btn-delete:hover { background-color: #c0392b; }
-    button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-    
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0 1.25rem; }
-    .custom-input-container { display: none; margin-top: -0.6rem; }
-    
-    .scorecard-grid { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1.25rem; }
-    .scorecard-grid > .block { 
-        flex: 1 1 450px; min-width: 320px; max-width: none; margin: 0; 
-    }
-    table {
-        border-collapse: collapse; width: 100%; margin-top: 1rem;
-        font-size: 1rem; display: block; overflow-x: auto; white-space: nowrap;
-    }
-    th, td { border: 1px solid #ddd; padding: 0.75rem; text-align: left; word-wrap: break-word; white-space: normal; }
-    th { color: white; font-weight: 600; }
-    th.actions-col { width: 70px; text-align: center; }
-    td.actions-col { text-align: center; }
-
-    .th-financial { background-color: var(--financial-bg); }
-    .th-customer { background-color: var(--customer-bg); }
-    .th-internal { background-color: var(--internal-bg); }
-    .th-learning { background-color: var(--learning-bg); }
-    
-    .badge { padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: white; text-align: center; }
-    .badge-good { background-color: var(--success-color); }
-    .badge-average { background-color: var(--warning-color); color: #333;}
-    .badge-poor { background-color: var(--danger-color); }
-
-    .progress-container { width: 100%; background-color: #ecf0f1; border-radius: 5px; }
-    .progress-bar { height: 22px; border-radius: 5px; text-align: center; line-height: 22px; color: white; font-weight: bold; font-size: 0.8rem; transition: width 0.5s ease-in-out; background-color: var(--primary-color); }
-    .progress-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-
-    #toast-notification { position: fixed; top: 20px; right: 20px; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; transform: translateY(-20px); }
-    #toast-notification.show { opacity: 1; visibility: visible; transform: translateY(0); }
-    #toast-notification.success { background-color: var(--success-color); }
-    #toast-notification.info { background-color: var(--secondary-color); }
-    
-    footer { padding: 2rem 1.25rem; text-align: center; }
-    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
-  </style>
 </head>
+
 <body>
-<header role="banner" class="top-bar">
-    <a href="index.html" class="logo-container-link">
-        <div class="logo-container">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-            <span class="logo-text">SigmaExacta</span>
+    <!-- Contenedor para el header cargado dinámicamente -->
+    <div id="header-container"></div>
+
+    <main class="main-container">
+        <div id="toast-notification"></div>
+
+        <header class="header">
+            <div class="header-title-container">
+                <a href="balancedcard.html" class="header-icon-link" title="Strategic Scorecard">
+                    <div class="header-icon"><i class="fas fa-balance-scale"></i></div>
+                </a>
+                <h1>Free Online Strategic Performance Scorecard Tool</h1>
+            </div>
+            <p>A simple and effective tool to create, track, and manage your strategic objectives.</p>
+        </header>
+
+        <div class="block">
+            <h2><i class="fas fa-question-circle"></i> What is a Strategic Performance Scorecard?</h2>
+            <p>This tool is a <strong>Strategic Performance Scorecard</strong>, a management system that helps
+                organizations track the performance of their strategic goals. Its design is inspired by performance
+                management concepts that aim to go beyond purely financial metrics.</p>
+            <p>The goal is to provide a holistic view of the business. To achieve this, the tool organizes indicators
+                into four key, interrelated areas or perspectives:</p>
+            <ul>
+                <li><i class="fas fa-dollar-sign fa-fw" style="color: var(--financial-bg);"></i>
+                    <strong>Financial:</strong> Measures the financial health and performance of the organization.</li>
+                <li><i class="fas fa-users fa-fw" style="color: var(--customer-bg);"></i> <strong>Customer:</strong>
+                    Evaluates customer satisfaction and perception of our products or services.</li>
+                <li><i class="fas fa-cogs fa-fw" style="color: var(--internal-bg);"></i> <strong>Internal
+                        Processes:</strong> Analyzes the efficiency and quality of key business processes.</li>
+                <li><i class="fas fa-brain fa-fw" style="color: var(--learning-bg);"></i> <strong>Learning &
+                        Growth:</strong> Focuses on the human capital, technology, and organizational culture needed for
+                    improvement.</li>
+            </ul>
         </div>
-    </a>
-    <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu"><i class="fas fa-bars"></i></button>
-        <ul class="nav-menu" id="nav-menu">
-            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-menu" id="tools-dropdown-menu">
-                    <div class="dropdown-grid">
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Process & Quality</h4>
-                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Design & Innovation</h4>
-                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                            <a href="fmea.html" class="dropdown-link">FMEA</a>
-                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                            <a href="kano.html" class="dropdown-link">Kano Model</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Problem Solving</h4>
-                            <a href="8d.html" class="dropdown-link">8D Report</a>
-                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                            <a href="triz.html" class="dropdown-link">TRIZ</a>
-                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                        </div>
-                         <div class="dropdown-column">
-                            <h4 class="dropdown-category">Strategy & Management</h4>
-                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                        </div>
+
+        <div class="block">
+            <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
+            <p>This concept, popularized as the <strong>Balanced Scorecard</strong>, was developed in the early 1990s by
+                Robert S. Kaplan and David P. Norton. It arose from the idea that purely financial metrics were
+                insufficient for managing a company in the information age.</p>
+            <p>By providing a "balanced" view across the four perspectives, the framework helps organizations clarify
+                their strategy and translate it into actionable objectives and measures, ensuring that day-to-day
+                operations are aligned with long-term goals.</p>
+        </div>
+
+        <div class="block">
+            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+            <ul style="list-style-type: decimal;">
+                <li><strong>Load an Example:</strong> If it's your first time, click the <i class="fas fa-magic"></i>
+                    <strong>Load Example</strong> button to populate the form with sample data and see how it works.
+                </li>
+                <li><strong>Add a Metric:</strong>
+                    <ul>
+                        <li>Use the dropdown menus to select a <i>Perspective</i>, <i>Objective</i>, and <i>Measure
+                                (KPI)</i>. If you can't find what you need, select "Other..." to type your own.</li>
+                        <li>Enter the numeric values for the <i>Target</i> and <i>Actual Value</i>.</li>
+                        <li>Describe the associated <i>Strategic Initiative</i>, which is the action being taken to
+                            achieve the objective.</li>
+                        <li>Click <i class="fas fa-plus-circle"></i> <strong>Add to Scorecard</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>Monitor Progress:</strong> Watch as the tables populate with your data. Performance is
+                    calculated automatically and displayed with a percentage and a status badge (Good, Average, Poor).
+                </li>
+                <li><strong>Export to Excel:</strong> When you're done, click <i class="fas fa-file-excel"></i>
+                    <strong>Export to Excel</strong> to download a report with your data.</li>
+            </ul>
+        </div>
+
+        <div class="block">
+            <div class="block-title">Controls</div>
+            <form id="bscForm">
+                <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load
+                    Example</button>
+                <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset
+                    Scorecard</button>
+                <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid #eee;">
+                <div class="form-grid">
+                    <div>
+                        <label for="perspective"><i class="fas fa-sitemap"></i> Perspective</label>
+                        <select id="perspective" required>
+                            <option value="" disabled selected>-- Select a Perspective --</option>
+                            <option value="financial">Financial</option>
+                            <option value="customer">Customer</option>
+                            <option value="internal">Internal Processes</option>
+                            <option value="learning">Learning & Growth</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="objective"><i class="fas fa-bullseye"></i> Objective</label>
+                        <select id="objective" required></select>
+                        <div id="customObjectiveContainer" class="custom-input-container"><input type="text"
+                                id="customObjective" placeholder="Enter custom objective"></div>
+                    </div>
+                    <div>
+                        <label for="measure"><i class="fas fa-ruler-combined"></i> Measure (KPI)</label>
+                        <select id="measure" required></select>
+                        <div id="customMeasureContainer" class="custom-input-container"><input type="text"
+                                id="customMeasure" placeholder="Enter custom measure"></div>
+                    </div>
+                    <div>
+                        <label for="target"><i class="fas fa-flag-checkered"></i> Numeric Target</label>
+                        <input type="number" id="target" step="any" placeholder="E.g., 15.5" required>
+                    </div>
+                    <div>
+                        <label for="actual"><i class="fas fa-chart-line"></i> Actual Value</label>
+                        <input type="number" id="actual" step="any" placeholder="E.g., 12.5" required>
                     </div>
                 </div>
-            </li>
-            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-        </ul>
-    </nav>
-</header>
-<main class="main-container">
-  <div id="toast-notification"></div>
+                <label for="initiative"><i class="fas fa-lightbulb"></i> Strategic Initiative</label>
+                <textarea id="initiative" rows="2"
+                    placeholder="E.g., Optimize production costs and renegotiate with suppliers." required></textarea>
+                <button type="submit" id="addBtn" class="btn-primary" disabled><i class="fas fa-plus-circle"></i> Add to
+                    Scorecard</button>
+            </form>
+        </div>
 
-  <header class="header">
-    <div class="header-title-container">
-        <a href="balancedcard.html" class="header-icon-link" title="Strategic Scorecard">
-            <div class="header-icon"><i class="fas fa-balance-scale"></i></div>
-        </a>
-        <h1>Free Online Strategic Performance Scorecard Tool</h1>
-    </div>
-    <p>A simple and effective tool to create, track, and manage your strategic objectives.</p>
-  </header>
-
-  <div class="block">
-    <h2><i class="fas fa-question-circle"></i> What is a Strategic Performance Scorecard?</h2>
-    <p>This tool is a <strong>Strategic Performance Scorecard</strong>, a management system that helps organizations track the performance of their strategic goals. Its design is inspired by performance management concepts that aim to go beyond purely financial metrics.</p>
-    <p>The goal is to provide a holistic view of the business. To achieve this, the tool organizes indicators into four key, interrelated areas or perspectives:</p>
-    <ul>
-        <li><i class="fas fa-dollar-sign fa-fw" style="color: var(--financial-bg);"></i> <strong>Financial:</strong> Measures the financial health and performance of the organization.</li>
-        <li><i class="fas fa-users fa-fw" style="color: var(--customer-bg);"></i> <strong>Customer:</strong> Evaluates customer satisfaction and perception of our products or services.</li>
-        <li><i class="fas fa-cogs fa-fw" style="color: var(--internal-bg);"></i> <strong>Internal Processes:</strong> Analyzes the efficiency and quality of key business processes.</li>
-        <li><i class="fas fa-brain fa-fw" style="color: var(--learning-bg);"></i> <strong>Learning & Growth:</strong> Focuses on the human capital, technology, and organizational culture needed for improvement.</li>
-    </ul>
-  </div>
-
-  <div class="block">
-      <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
-      <p>This concept, popularized as the <strong>Balanced Scorecard</strong>, was developed in the early 1990s by Robert S. Kaplan and David P. Norton. It arose from the idea that purely financial metrics were insufficient for managing a company in the information age.</p>
-      <p>By providing a "balanced" view across the four perspectives, the framework helps organizations clarify their strategy and translate it into actionable objectives and measures, ensuring that day-to-day operations are aligned with long-term goals.</p>
-  </div>
-
-  <div class="block">
-    <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-    <ul style="list-style-type: decimal;">
-        <li><strong>Load an Example:</strong> If it's your first time, click the <i class="fas fa-magic"></i> <strong>Load Example</strong> button to populate the form with sample data and see how it works.</li>
-        <li><strong>Add a Metric:</strong>
-            <ul>
-                <li>Use the dropdown menus to select a <i>Perspective</i>, <i>Objective</i>, and <i>Measure (KPI)</i>. If you can't find what you need, select "Other..." to type your own.</li>
-                <li>Enter the numeric values for the <i>Target</i> and <i>Actual Value</i>.</li>
-                <li>Describe the associated <i>Strategic Initiative</i>, which is the action being taken to achieve the objective.</li>
-                <li>Click <i class="fas fa-plus-circle"></i> <strong>Add to Scorecard</strong>.</li>
-            </ul>
-        </li>
-        <li><strong>Monitor Progress:</strong> Watch as the tables populate with your data. Performance is calculated automatically and displayed with a percentage and a status badge (Good, Average, Poor).</li>
-        <li><strong>Export to Excel:</strong> When you're done, click <i class="fas fa-file-excel"></i> <strong>Export to Excel</strong> to download a report with your data.</li>
-    </ul>
-  </div>
-
-  <div class="block">
-    <div class="block-title">Controls</div>
-    <form id="bscForm">
-        <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
-        <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset Scorecard</button>
-        <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid #eee;">
-        <div class="form-grid">
-            <div>
-                <label for="perspective"><i class="fas fa-sitemap"></i> Perspective</label>
-                <select id="perspective" required>
-                    <option value="" disabled selected>-- Select a Perspective --</option>
-                    <option value="financial">Financial</option>
-                    <option value="customer">Customer</option>
-                    <option value="internal">Internal Processes</option>
-                    <option value="learning">Learning & Growth</option>
-                </select>
-            </div>
-            <div>
-                <label for="objective"><i class="fas fa-bullseye"></i> Objective</label>
-                <select id="objective" required></select>
-                <div id="customObjectiveContainer" class="custom-input-container"><input type="text" id="customObjective" placeholder="Enter custom objective"></div>
-            </div>
-             <div>
-                <label for="measure"><i class="fas fa-ruler-combined"></i> Measure (KPI)</label>
-                <select id="measure" required></select>
-                 <div id="customMeasureContainer" class="custom-input-container"><input type="text" id="customMeasure" placeholder="Enter custom measure"></div>
-            </div>
-            <div>
-                <label for="target"><i class="fas fa-flag-checkered"></i> Numeric Target</label>
-                <input type="number" id="target" step="any" placeholder="E.g., 15.5" required>
-            </div>
-            <div>
-                <label for="actual"><i class="fas fa-chart-line"></i> Actual Value</label>
-                <input type="number" id="actual" step="any" placeholder="E.g., 12.5" required>
+        <div class="block">
+            <div class="block-title">Performance Summary</div>
+            <div class="progress-grid">
+                <div><strong><i class="fas fa-dollar-sign"></i> Financial</strong>
+                    <div class="progress-container">
+                        <div id="summary-financial" class="progress-bar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                <div><strong><i class="fas fa-users"></i> Customer</strong>
+                    <div class="progress-container">
+                        <div id="summary-customer" class="progress-bar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                <div><strong><i class="fas fa-cogs"></i> Internal Processes</strong>
+                    <div class="progress-container">
+                        <div id="summary-internal" class="progress-bar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                <div><strong><i class="fas fa-brain"></i> Learning & Growth</strong>
+                    <div class="progress-container">
+                        <div id="summary-learning" class="progress-bar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
             </div>
         </div>
-      <label for="initiative"><i class="fas fa-lightbulb"></i> Strategic Initiative</label>
-      <textarea id="initiative" rows="2" placeholder="E.g., Optimize production costs and renegotiate with suppliers." required></textarea>
-      <button type="submit" id="addBtn" class="btn-primary" disabled><i class="fas fa-plus-circle"></i> Add to Scorecard</button>
-    </form>
-  </div>
 
-  <div class="block">
-    <div class="block-title">Performance Summary</div>
-    <div class="progress-grid">
-        <div><strong><i class="fas fa-dollar-sign"></i> Financial</strong><div class="progress-container"><div id="summary-financial" class="progress-bar" style="width: 0%;">0%</div></div></div>
-        <div><strong><i class="fas fa-users"></i> Customer</strong><div class="progress-container"><div id="summary-customer" class="progress-bar" style="width: 0%;">0%</div></div></div>
-        <div><strong><i class="fas fa-cogs"></i> Internal Processes</strong><div class="progress-container"><div id="summary-internal" class="progress-bar" style="width: 0%;">0%</div></div></div>
-        <div><strong><i class="fas fa-brain"></i> Learning & Growth</strong><div class="progress-container"><div id="summary-learning" class="progress-bar" style="width: 0%;">0%</div></div></div>
-    </div>
-  </div>
+        <div class="scorecard-grid">
+            <div class="block">
+                <div class="block-title"><i class="fas fa-dollar-sign"></i> Financial Perspective</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-financial">Objective</th>
+                            <th class="th-financial">KPI</th>
+                            <th class="th-financial">Target</th>
+                            <th class="th-financial">Actual</th>
+                            <th class="th-financial">%</th>
+                            <th class="th-financial">Status</th>
+                            <th class="th-financial actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="financialTableBody"></tbody>
+                </table>
+            </div>
+            <div class="block">
+                <div class="block-title"><i class="fas fa-users"></i> Customer Perspective</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-customer">Objective</th>
+                            <th class="th-customer">KPI</th>
+                            <th class="th-customer">Target</th>
+                            <th class="th-customer">Actual</th>
+                            <th class="th-customer">%</th>
+                            <th class="th-customer">Status</th>
+                            <th class="th-customer actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody"></tbody>
+                </table>
+            </div>
+            <div class="block">
+                <div class="block-title"><i class="fas fa-cogs"></i> Internal Processes Perspective</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-internal">Objective</th>
+                            <th class="th-internal">KPI</th>
+                            <th class="th-internal">Target</th>
+                            <th class="th-internal">Actual</th>
+                            <th class="th-internal">%</th>
+                            <th class="th-internal">Status</th>
+                            <th class="th-internal actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="internalTableBody"></tbody>
+                </table>
+            </div>
+            <div class="block">
+                <div class="block-title"><i class="fas fa-brain"></i> Learning & Growth Perspective</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-learning">Objective</th>
+                            <th class="th-learning">KPI</th>
+                            <th class="th-learning">Target</th>
+                            <th class="th-learning">Actual</th>
+                            <th class="th-learning">%</th>
+                            <th class="th-learning">Status</th>
+                            <th class="th-learning actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="learningTableBody"></tbody>
+                </table>
+            </div>
+        </div>
 
-  <div class="scorecard-grid">
-    <div class="block">
-        <div class="block-title"><i class="fas fa-dollar-sign"></i> Financial Perspective</div>
-        <table><thead><tr><th class="th-financial">Objective</th><th class="th-financial">KPI</th><th class="th-financial">Target</th><th class="th-financial">Actual</th><th class="th-financial">%</th><th class="th-financial">Status</th><th class="th-financial actions-col">Actions</th></tr></thead><tbody id="financialTableBody"></tbody></table>
-    </div>
-    <div class="block">
-        <div class="block-title"><i class="fas fa-users"></i> Customer Perspective</div>
-        <table><thead><tr><th class="th-customer">Objective</th><th class="th-customer">KPI</th><th class="th-customer">Target</th><th class="th-customer">Actual</th><th class="th-customer">%</th><th class="th-customer">Status</th><th class="th-customer actions-col">Actions</th></tr></thead><tbody id="customerTableBody"></tbody></table>
-    </div>
-    <div class="block">
-        <div class="block-title"><i class="fas fa-cogs"></i> Internal Processes Perspective</div>
-        <table><thead><tr><th class="th-internal">Objective</th><th class="th-internal">KPI</th><th class="th-internal">Target</th><th class="th-internal">Actual</th><th class="th-internal">%</th><th class="th-internal">Status</th><th class="th-internal actions-col">Actions</th></tr></thead><tbody id="internalTableBody"></tbody></table>
-    </div>
-    <div class="block">
-        <div class="block-title"><i class="fas fa-brain"></i> Learning & Growth Perspective</div>
-        <table><thead><tr><th class="th-learning">Objective</th><th class="th-learning">KPI</th><th class="th-learning">Target</th><th class="th-learning">Actual</th><th class="th-learning">%</th><th class="th-learning">Status</th><th class="th-learning actions-col">Actions</th></tr></thead><tbody id="learningTableBody"></tbody></table>
-    </div>
-  </div>
-  
-  <div class="block"><button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to Excel</button></div>
-</main>
-<footer>
-    <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> The "Balanced Scorecard" concept was originally developed by Robert S. Kaplan and David P. Norton. This tool is an independent implementation inspired by its principles and is not affiliated with, sponsored by, or endorsed by Kaplan, Norton, or their organizations. The tools and information provided on Sigma Exacta are for informational and educational purposes only. While we strive for accuracy, we make no warranty or guarantee regarding the results. All decisions based on the output of these tools are the sole responsibility of the user.</p>
-    </div>
-</footer>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const bscForm = document.getElementById('bscForm');
-    const addBtn = document.getElementById('addBtn');
-    const exampleBtn = document.getElementById('exampleBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const perspectiveSelect = document.getElementById('perspective');
-    const objectiveSelect = document.getElementById('objective');
-    const measureSelect = document.getElementById('measure');
-    const customObjectiveContainer = document.getElementById('customObjectiveContainer');
-    const customMeasureContainer = document.getElementById('customMeasureContainer');
-    const customObjectiveInput = document.getElementById('customObjective');
-    const customMeasureInput = document.getElementById('customMeasure');
-    const allInputs = Array.from(bscForm.querySelectorAll('input, select, textarea'));
-    const kpiData = {
-        financial: {'Increase Revenue': ['Total Sales Revenue', 'Revenue Growth Rate (%)', 'Revenue per Customer'],'Improve Profitability': ['Net Profit Margin (%)', 'Gross Profit Margin (%)', 'Return on Investment (ROI)'],'Optimize Costs': ['Operating Cost Ratio', 'Cost of Goods Sold (COGS)', 'Budget Variance'],},
-        customer: {'Enhance Customer Satisfaction': ['Net Promoter Score (NPS)', 'Customer Satisfaction Score (CSAT)', 'Number of Complaints'],'Increase Market Share': ['Market Share Percentage', 'New Customer Acquisition Rate', 'Brand Recognition'],'Improve Customer Loyalty': ['Customer Retention Rate', 'Customer Lifetime Value (CLV)', 'Repeat Purchase Rate'],},
-        internal: {'Optimize Operational Processes': ['Process Cycle Time', 'Production Defect Rate', 'On-time Delivery Rate'],'Foster Innovation': ['Number of New Products Launched', 'R&D Investment as % of Sales', 'Time to Market for New Products'],'Improve Supply Chain': ['Inventory Turnover Rate', 'Supplier Lead Time', 'Order Fulfillment Accuracy'],},
-        learning: {'Develop Employee Skills': ['Employee Training Hours', 'Skill Competency Rate', 'Internal Promotion Rate'],'Improve Information Systems': ['System Downtime Percentage', 'Data Accessibility Score', 'IT Project Completion Rate'],'Enhance Corporate Culture': ['Employee Engagement Score', 'Staff Turnover Rate', 'Number of Employee Suggestions'],}
-    };
-    const exampleData = [
-        { perspective: 'financial', objective: 'Improve Profitability', measure: 'Net Profit Margin (%)', target: '15', actual: '16.5', initiative: 'Implement cost-saving measures across all departments.' },
-        { perspective: 'customer', objective: 'Enhance Customer Satisfaction', measure: 'Net Promoter Score (NPS)', target: '50', actual: '45', initiative: 'Launch a new customer feedback program and act on insights.' },
-        { perspective: 'internal', objective: 'Optimize Operational Processes', measure: 'On-time Delivery Rate', target: '95', actual: '97', initiative: 'Automate the logistics and dispatch system.' },
-        { perspective: 'learning', objective: 'Develop Employee Skills', measure: 'Employee Training Hours', target: '40', actual: '42', initiative: 'Subscribe to an online learning platform for all staff.' }
-    ];
-    let currentExampleIndex = 0;
-    const updateObjectiveDropdown = () => {
-        const perspective = perspectiveSelect.value;
-        objectiveSelect.innerHTML = '<option value="" disabled selected>-- Select an Objective --</option>';
-        if (perspective && kpiData[perspective]) {
-            Object.keys(kpiData[perspective]).forEach(obj => objectiveSelect.add(new Option(obj, obj)));
+        <div class="block"><button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to
+                Excel</button></div>
+    </main>
+    <footer>
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> The "Balanced Scorecard" concept was originally developed by Robert S.
+                Kaplan and David P. Norton. This tool is an independent implementation inspired by its principles and is
+                not affiliated with, sponsored by, or endorsed by Kaplan, Norton, or their organizations. The tools and
+                information provided on Sigma Exacta are for informational and educational purposes only. While we
+                strive for accuracy, we make no warranty or guarantee regarding the results. All decisions based on the
+                output of these tools are the sole responsibility of the user.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cargar el header dinámicamente
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                // Inicializar el menú después de cargar el header
+                initializeMenu();
+            })
+            .catch(error => console.error('Error loading header:', error));
+
+        // Función para inicializar el menú
+        function initializeMenu() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                    if (!navMenu.classList.contains('show-menu')) {
+                        toolsDropdownMenu.classList.remove('show-submenu');
+                        toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
         }
-        objectiveSelect.add(new Option('Other...', 'other'));
-        updateMeasureDropdown();
-        toggleCustomInput(objectiveSelect, customObjectiveContainer, customObjectiveInput);
-    };
-    const updateMeasureDropdown = () => {
-        const perspective = perspectiveSelect.value;
-        const objective = objectiveSelect.value;
-        measureSelect.innerHTML = '<option value="" disabled selected>-- Select a Measure --</option>';
-        if (perspective && objective && kpiData[perspective]?.[objective]) {
-            kpiData[perspective][objective].forEach(m => measureSelect.add(new Option(m, m)));
-        }
-        measureSelect.add(new Option('Other...', 'other'));
-        toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput);
-    };
-    const toggleCustomInput = (selectEl, containerEl, inputEl) => {
-        const isOther = selectEl.value === 'other';
-        containerEl.style.display = isOther ? 'block' : 'none';
-        inputEl.required = isOther;
-        if (!isOther) inputEl.value = '';
-        validateForm();
-    };
-    const validateForm = () => {
-        addBtn.disabled = !allInputs.every(input => !input.required || (input.value?.trim() !== ''));
-    };
-    const addEntryToTable = () => {
-        const perspective = perspectiveSelect.value;
-        const objective = objectiveSelect.value === 'other' ? customObjectiveInput.value.trim() : objectiveSelect.value;
-        const measure = measureSelect.value === 'other' ? customMeasureInput.value.trim() : measureSelect.value;
-        const targetNum = parseFloat(document.getElementById('target').value);
-        const actualNum = parseFloat(document.getElementById('actual').value);
-        const achievement = (targetNum === 0 && actualNum > 0) ? 100 : (targetNum !== 0 ? (actualNum / targetNum) * 100 : 0);
-        let statusClass = 'badge-poor', statusText = 'Poor';
-        if (achievement >= 100) { statusClass = 'badge-good'; statusText = 'Good'; } 
-        else if (achievement >= 80) { statusClass = 'badge-average'; statusText = 'Average'; }
-        const tableBody = document.getElementById(`${perspective}TableBody`);
-        const newRow = tableBody.insertRow();
-        newRow.dataset.initiative = document.getElementById('initiative').value;
-        newRow.innerHTML = `
+
+        // Resto del código de la aplicación...
+        document.addEventListener('DOMContentLoaded', () => {
+            const bscForm = document.getElementById('bscForm');
+            const addBtn = document.getElementById('addBtn');
+            const exampleBtn = document.getElementById('exampleBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const perspectiveSelect = document.getElementById('perspective');
+            const objectiveSelect = document.getElementById('objective');
+            const measureSelect = document.getElementById('measure');
+            const customObjectiveContainer = document.getElementById('customObjectiveContainer');
+            const customMeasureContainer = document.getElementById('customMeasureContainer');
+            const customObjectiveInput = document.getElementById('customObjective');
+            const customMeasureInput = document.getElementById('customMeasure');
+            const allInputs = Array.from(bscForm.querySelectorAll('input, select, textarea'));
+            const kpiData = {
+                financial: { 'Increase Revenue': ['Total Sales Revenue', 'Revenue Growth Rate (%)', 'Revenue per Customer'], 'Improve Profitability': ['Net Profit Margin (%)', 'Gross Profit Margin (%)', 'Return on Investment (ROI)'], 'Optimize Costs': ['Operating Cost Ratio', 'Cost of Goods Sold (COGS)', 'Budget Variance'], },
+                customer: { 'Enhance Customer Satisfaction': ['Net Promoter Score (NPS)', 'Customer Satisfaction Score (CSAT)', 'Number of Complaints'], 'Increase Market Share': ['Market Share Percentage', 'New Customer Acquisition Rate', 'Brand Recognition'], 'Improve Customer Loyalty': ['Customer Retention Rate', 'Customer Lifetime Value (CLV)', 'Repeat Purchase Rate'], },
+                internal: { 'Optimize Operational Processes': ['Process Cycle Time', 'Production Defect Rate', 'On-time Delivery Rate'], 'Foster Innovation': ['Number of New Products Launched', 'R&D Investment as % of Sales', 'Time to Market for New Products'], 'Improve Supply Chain': ['Inventory Turnover Rate', 'Supplier Lead Time', 'Order Fulfillment Accuracy'], },
+                learning: { 'Develop Employee Skills': ['Employee Training Hours', 'Skill Competency Rate', 'Internal Promotion Rate'], 'Improve Information Systems': ['System Downtime Percentage', 'Data Accessibility Score', 'IT Project Completion Rate'], 'Enhance Corporate Culture': ['Employee Engagement Score', 'Staff Turnover Rate', 'Number of Employee Suggestions'], }
+            };
+            const exampleData = [
+                { perspective: 'financial', objective: 'Improve Profitability', measure: 'Net Profit Margin (%)', target: '15', actual: '16.5', initiative: 'Implement cost-saving measures across all departments.' },
+                { perspective: 'customer', objective: 'Enhance Customer Satisfaction', measure: 'Net Promoter Score (NPS)', target: '50', actual: '45', initiative: 'Launch a new customer feedback program and act on insights.' },
+                { perspective: 'internal', objective: 'Optimize Operational Processes', measure: 'On-time Delivery Rate', target: '95', actual: '97', initiative: 'Automate the logistics and dispatch system.' },
+                { perspective: 'learning', objective: 'Develop Employee Skills', measure: 'Employee Training Hours', target: '40', actual: '42', initiative: 'Subscribe to an online learning platform for all staff.' }
+            ];
+            let currentExampleIndex = 0;
+            const updateObjectiveDropdown = () => {
+                const perspective = perspectiveSelect.value;
+                objectiveSelect.innerHTML = '<option value="" disabled selected>-- Select an Objective --</option>';
+                if (perspective && kpiData[perspective]) {
+                    Object.keys(kpiData[perspective]).forEach(obj => objectiveSelect.add(new Option(obj, obj)));
+                }
+                objectiveSelect.add(new Option('Other...', 'other'));
+                updateMeasureDropdown();
+                toggleCustomInput(objectiveSelect, customObjectiveContainer, customObjectiveInput);
+            };
+            const updateMeasureDropdown = () => {
+                const perspective = perspectiveSelect.value;
+                const objective = objectiveSelect.value;
+                measureSelect.innerHTML = '<option value="" disabled selected>-- Select a Measure --</option>';
+                if (perspective && objective && kpiData[perspective]?.[objective]) {
+                    kpiData[perspective][objective].forEach(m => measureSelect.add(new Option(m, m)));
+                }
+                measureSelect.add(new Option('Other...', 'other'));
+                toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput);
+            };
+            const toggleCustomInput = (selectEl, containerEl, inputEl) => {
+                const isOther = selectEl.value === 'other';
+                containerEl.style.display = isOther ? 'block' : 'none';
+                inputEl.required = isOther;
+                if (!isOther) inputEl.value = '';
+                validateForm();
+            };
+            const validateForm = () => {
+                addBtn.disabled = !allInputs.every(input => !input.required || (input.value?.trim() !== ''));
+            };
+            const addEntryToTable = () => {
+                const perspective = perspectiveSelect.value;
+                const objective = objectiveSelect.value === 'other' ? customObjectiveInput.value.trim() : objectiveSelect.value;
+                const measure = measureSelect.value === 'other' ? customMeasureInput.value.trim() : measureSelect.value;
+                const targetNum = parseFloat(document.getElementById('target').value);
+                const actualNum = parseFloat(document.getElementById('actual').value);
+                const achievement = (targetNum === 0 && actualNum > 0) ? 100 : (targetNum !== 0 ? (actualNum / targetNum) * 100 : 0);
+                let statusClass = 'badge-poor', statusText = 'Poor';
+                if (achievement >= 100) { statusClass = 'badge-good'; statusText = 'Good'; }
+                else if (achievement >= 80) { statusClass = 'badge-average'; statusText = 'Average'; }
+                const tableBody = document.getElementById(`${perspective}TableBody`);
+                const newRow = tableBody.insertRow();
+                newRow.dataset.initiative = document.getElementById('initiative').value;
+                newRow.innerHTML = `
             <td>${objective}</td><td>${measure}</td><td>${targetNum}</td><td>${actualNum}</td>
             <td data-achievement="${achievement.toFixed(2)}">${achievement.toFixed(0)}%</td>
             <td><span class="badge ${statusClass}">${statusText}</span></td>
             <td class="actions-col"><button class="btn-delete" title="Delete Metric"><i class="fas fa-trash-alt"></i></button></td>
         `;
-        updateSummaries();
-        showToast('Metric added successfully!', 'success');
-    };
-    const updateSummaries = () => {
-        ['financial', 'customer', 'internal', 'learning'].forEach(p => {
-            const cells = document.querySelectorAll(`#${p}TableBody td[data-achievement]`);
-            const progressBar = document.getElementById(`summary-${p}`);
-            if (cells.length > 0) {
-                const total = Array.from(cells).reduce((sum, cell) => sum + parseFloat(cell.dataset.achievement), 0);
-                const avg = total / cells.length;
-                progressBar.style.width = `${Math.min(avg, 100)}%`;
-                progressBar.textContent = `${avg.toFixed(1)}%`;
-            } else {
-                progressBar.style.width = '0%';
-                progressBar.textContent = '0%';
-            }
-        });
-    };
-    const loadExample = () => {
-        const ex = exampleData[currentExampleIndex];
-        perspectiveSelect.value = ex.perspective;
-        perspectiveSelect.dispatchEvent(new Event('change'));
-        objectiveSelect.value = ex.objective;
-        objectiveSelect.dispatchEvent(new Event('change'));
-        measureSelect.value = ex.measure;
-        measureSelect.dispatchEvent(new Event('change'));
-        document.getElementById('target').value = ex.target;
-        document.getElementById('actual').value = ex.actual;
-        document.getElementById('initiative').value = ex.initiative;
-        currentExampleIndex = (currentExampleIndex + 1) % exampleData.length;
-        validateForm();
-    };
-    const resetAll = () => {
-        if (confirm('Are you sure you want to reset the entire scorecard? This action cannot be undone.')) {
-            ['financial', 'customer', 'internal', 'learning'].forEach(p => {
-                document.getElementById(`${p}TableBody`).innerHTML = '';
-            });
-            bscForm.reset();
+                updateSummaries();
+                showToast('Metric added successfully!', 'success');
+            };
+            const updateSummaries = () => {
+                ['financial', 'customer', 'internal', 'learning'].forEach(p => {
+                    const cells = document.querySelectorAll(`#${p}TableBody td[data-achievement]`);
+                    const progressBar = document.getElementById(`summary-${p}`);
+                    if (cells.length > 0) {
+                        const total = Array.from(cells).reduce((sum, cell) => sum + parseFloat(cell.dataset.achievement), 0);
+                        const avg = total / cells.length;
+                        progressBar.style.width = `${Math.min(avg, 100)}%`;
+                        progressBar.textContent = `${avg.toFixed(1)}%`;
+                    } else {
+                        progressBar.style.width = '0%';
+                        progressBar.textContent = '0%';
+                    }
+                });
+            };
+            const loadExample = () => {
+                const ex = exampleData[currentExampleIndex];
+                perspectiveSelect.value = ex.perspective;
+                perspectiveSelect.dispatchEvent(new Event('change'));
+                objectiveSelect.value = ex.objective;
+                objectiveSelect.dispatchEvent(new Event('change'));
+                measureSelect.value = ex.measure;
+                measureSelect.dispatchEvent(new Event('change'));
+                document.getElementById('target').value = ex.target;
+                document.getElementById('actual').value = ex.actual;
+                document.getElementById('initiative').value = ex.initiative;
+                currentExampleIndex = (currentExampleIndex + 1) % exampleData.length;
+                validateForm();
+            };
+            const resetAll = () => {
+                if (confirm('Are you sure you want to reset the entire scorecard? This action cannot be undone.')) {
+                    ['financial', 'customer', 'internal', 'learning'].forEach(p => {
+                        document.getElementById(`${p}TableBody`).innerHTML = '';
+                    });
+                    bscForm.reset();
+                    updateObjectiveDropdown();
+                    validateForm();
+                    updateSummaries();
+                    showToast('Scorecard has been reset.', 'info');
+                }
+            };
+            const showToast = (message, type = 'success') => {
+                const toast = document.getElementById('toast-notification');
+                toast.textContent = message;
+                toast.className = 'show';
+                toast.classList.add(type);
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            };
+            const handleActionClick = (event) => {
+                const deleteBtn = event.target.closest('.btn-delete');
+                if (deleteBtn) {
+                    if (confirm('Are you sure you want to delete this metric?')) {
+                        deleteBtn.closest('tr').remove();
+                        updateSummaries();
+                        showToast('Metric deleted.', 'info');
+                    }
+                }
+            };
+            const exportToExcel = () => {
+                const wb = XLSX.utils.book_new();
+                ['financial', 'customer', 'internal', 'learning'].forEach(p => {
+                    const table = document.getElementById(`${p}TableBody`).parentNode;
+                    const perspectiveName = document.querySelector(`.block-title i.fa-${p === 'financial' ? 'dollar-sign' : p === 'customer' ? 'users' : p === 'internal' ? 'cogs' : 'brain'}`).parentNode.innerText.trim();
+                    const rows = table.querySelectorAll('tbody tr');
+                    if (rows.length === 0) return;
+                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText).slice(0, -1);
+                    headers.push('Initiative');
+                    const data = Array.from(rows).map(row => {
+                        const rowData = Array.from(row.querySelectorAll('td')).map(td => td.innerText).slice(0, -1);
+                        rowData.push(row.dataset.initiative);
+                        return rowData;
+                    });
+                    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+                    XLSX.utils.book_append_sheet(wb, ws, perspectiveName.substring(0, 30));
+                });
+                if (wb.SheetNames.length > 0) { XLSX.writeFile(wb, 'Strategy_Scorecard_Sigma_Exacta.xlsx'); }
+                else { alert("There is no data to export."); }
+            };
+            bscForm.addEventListener('submit', (e) => { e.preventDefault(); addEntryToTable(); bscForm.reset(); updateObjectiveDropdown(); validateForm(); });
+            allInputs.forEach(input => input.addEventListener('input', validateForm));
+            perspectiveSelect.addEventListener('change', updateObjectiveDropdown);
+            objectiveSelect.addEventListener('change', updateMeasureDropdown);
+            measureSelect.addEventListener('change', () => toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput));
+            exampleBtn.addEventListener('click', loadExample);
+            resetBtn.addEventListener('click', resetAll);
+            document.addEventListener('click', handleActionClick);
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
             updateObjectiveDropdown();
             validateForm();
-            updateSummaries();
-            showToast('Scorecard has been reset.', 'info');
-        }
-    };
-    const showToast = (message, type = 'success') => {
-        const toast = document.getElementById('toast-notification');
-        toast.textContent = message;
-        toast.className = 'show';
-        toast.classList.add(type);
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    };
-    const handleActionClick = (event) => {
-        const deleteBtn = event.target.closest('.btn-delete');
-        if (deleteBtn) {
-            if (confirm('Are you sure you want to delete this metric?')) {
-                deleteBtn.closest('tr').remove();
-                updateSummaries();
-                showToast('Metric deleted.', 'info');
-            }
-        }
-    };
-    const exportToExcel = () => {
-        const wb = XLSX.utils.book_new();
-        ['financial', 'customer', 'internal', 'learning'].forEach(p => {
-            const table = document.getElementById(`${p}TableBody`).parentNode;
-            const perspectiveName = document.querySelector(`.block-title i.fa-${p === 'financial' ? 'dollar-sign' : p === 'customer' ? 'users' : p === 'internal' ? 'cogs' : 'brain'}`).parentNode.innerText.trim();
-            const rows = table.querySelectorAll('tbody tr');
-            if (rows.length === 0) return;
-            const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText).slice(0, -1);
-            headers.push('Initiative');
-            const data = Array.from(rows).map(row => {
-                const rowData = Array.from(row.querySelectorAll('td')).map(td => td.innerText).slice(0, -1);
-                rowData.push(row.dataset.initiative);
-                return rowData;
-            });
-            const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
-            XLSX.utils.book_append_sheet(wb, ws, perspectiveName.substring(0, 30));
         });
-        if (wb.SheetNames.length > 0) { XLSX.writeFile(wb, 'Strategy_Scorecard_Sigma_Exacta.xlsx'); }
-        else { alert("There is no data to export."); }
-    };
-    bscForm.addEventListener('submit', (e) => { e.preventDefault(); addEntryToTable(); bscForm.reset(); updateObjectiveDropdown(); validateForm(); });
-    allInputs.forEach(input => input.addEventListener('input', validateForm));
-    perspectiveSelect.addEventListener('change', updateObjectiveDropdown);
-    objectiveSelect.addEventListener('change', updateMeasureDropdown);
-    measureSelect.addEventListener('change', () => toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput));
-    exampleBtn.addEventListener('click', loadExample);
-    resetBtn.addEventListener('click', resetAll);
-    document.addEventListener('click', handleActionClick); 
-    document.getElementById('exportBtn').addEventListener('click', exportToExcel);
-    updateObjectiveDropdown();
-    validateForm();
-});
-</script>
-<script defer>
-    document.addEventListener('DOMContentLoaded', () => {
-        const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/wAADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
-        hoverSound.preload = 'auto';
-        let audioUnlocked = false;
-        function unlockAudio() {
-            if (audioUnlocked) return;
-            hoverSound.volume = 0;
-            hoverSound.play().then(() => {
-                hoverSound.pause(); hoverSound.currentTime = 0; hoverSound.volume = 1; audioUnlocked = true;
-                document.removeEventListener('click', unlockAudio);
-                document.removeEventListener('touchstart', unlockAudio);
-            }).catch(e => {});
-        }
-        document.addEventListener('click', unlockAudio);
-        document.addEventListener('touchstart', unlockAudio);
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                if (audioUnlocked) { hoverSound.currentTime = 0; hoverSound.play().catch(e => {}); }
-            });
-        });
-        const navToggle = document.getElementById('nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('show-menu');
-            const icon = navToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-            if (!navMenu.classList.contains('show-menu')) {
-                toolsDropdownMenu.classList.remove('show-submenu');
-                toolsDropdownContainer.classList.remove('active');
-            }
-        });
-        toolsDropdownToggle.addEventListener('click', (event) => {
-            if (window.innerWidth <= 992) {
-                event.preventDefault(); 
-                toolsDropdownMenu.classList.toggle('show-submenu');
-                toolsDropdownContainer.classList.toggle('active');
-            }
-        });
-    });
-</script>
+    </script>
 </body>
+
 </html>

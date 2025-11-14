@@ -1,190 +1,46 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>PDCA Cycle (Plan-Do-Check-Act) | Deming Wheel | Sigma Exacta</title>
-    <link rel="canonical" href="https://sigmaexacta.com/pdca" />
-    <meta name="description" content="Free online interactive PDCA (Plan-Do-Check-Act) tool to implement continuous improvement. Follow the Deming Wheel methodology for structured problem-solving and process optimization.">
-    <meta name="keywords" content="SigmaExacta, Opensource, Free software, PDCA, Plan-Do-Check-Act, Deming Wheel, Deming Cycle, Shewhart Cycle, continuous improvement, quality management, free tool, W. Edwards Deming">
-
+    <link href="https://sigmaexacta.com/pdca" rel="canonical" />
+    <meta
+        content="Free online interactive PDCA (Plan-Do-Check-Act) tool to implement continuous improvement. Follow the Deming Wheel methodology for structured problem-solving and process optimization."
+        name="description" />
+    <meta
+        content="SigmaExacta, Opensource, Free software, PDCA, Plan-Do-Check-Act, Deming Wheel, Deming Cycle, Shewhart Cycle, continuous improvement, quality management, free tool, W. Edwards Deming"
+        name="keywords" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="styles.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="sigma-exacta-icon.jpg" rel="icon" type="image/jpeg" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&amp;display=swap" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
     <style>
-        /* --- Estilos base para la barra de navegación --- */
-        .top-bar {
-            position: sticky; 
-            top: 0;           
-            z-index: 1001;    
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #222; 
-        }
-        .logo-text, .navigation .nav-link, .nav-toggle {
-            color: #fff; 
-        }
-
-        .nav-toggle {
-            display: none; 
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .navigation .nav-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-        }
-
-        .navigation .nav-link {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-        }
-        
-        .navigation .nav-link i {
-            margin-left: 5px;
-            transition: transform 0.3s ease;
-        }
-        
-        /* --- Estilos para el menú desplegable (escritorio) --- */
-        .nav-item-dropdown {
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: #fff; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            border-radius: 5px;
-            z-index: 1000;
-            min-width: 600px;
-            padding: 20px;
-        }
-        
-        .dropdown-menu a, .dropdown-menu h4 {
-            color: #333;
-        }
-        .dropdown-link:hover {
-            background-color: #f1f1f1;
-        }
-
-
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-
-        .nav-item-dropdown:hover > .dropdown-menu {
-            display: block;
-        }
-
-        /* --- ESTILOS PARA MÓVIL --- */
-        @media (max-width: 992px) {
-            .nav-toggle {
-                display: block;
-            }
-
-            .navigation .nav-menu {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: #fff; 
-                border-top: 1px solid #eee;
-            }
-            
-            .navigation .nav-menu .nav-link {
-                color: #333; 
-            }
-
-            .navigation .nav-menu.show-menu {
-                display: flex;
-            }
-            
-            .navigation .nav-item {
-                width: 100%;
-                text-align: left;
-            }
-
-            .nav-item-dropdown > .nav-link {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .dropdown-menu {
-                display: none; 
-                position: static; 
-                width: 100%;
-                box-shadow: none;
-                border-top: 1px solid #f0f0f0;
-                padding: 10px 0 10px 30px;
-                min-width: unset;
-                background-color: #f9f9f9;
-            }
-
-            .dropdown-menu.show-submenu {
-                display: block;
-            }
-            
-            .dropdown-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-item-dropdown:hover > .dropdown-menu {
-                display: none;
-            }
-            .nav-item-dropdown.active:hover > .dropdown-menu {
-                display: block;
-            }
-            
-            .nav-item-dropdown.active > .nav-link i {
-                transform: rotate(180deg);
-            }
-        }
-        /* --- FIN CSS DEL HEADER --- */
-
         /* --- Estilos para la RUEDA ESTÁTICA (que es solo ilustrativa) --- */
         .pdca-wheel-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 2rem auto;
-            max-width: 600px; 
+            max-width: 600px;
         }
-        
+
         .pdca-wheel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            width: 100%; 
-            padding-top: 100%; 
+            width: 100%;
+            padding-top: 100%;
             border-radius: 50%;
             overflow: hidden;
             position: relative;
             border: 5px solid #555;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .pdca-quadrant {
@@ -197,54 +53,58 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #333; /* Cambiado de blanco a oscuro para mejor contraste */
+            color: #333;
+            /* Cambiado de blanco a oscuro para mejor contraste */
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
             /* Efectos 3D iniciales */
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
             transform: translateZ(0);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
+
         /* Efectos hover para cada cuadrante con sombreados, brillos y efecto 3D */
         .pdca-quadrant:hover {
             transform: translateZ(10px) scale(1.03);
-            box-shadow: 
-                inset 0 0 30px rgba(255,255,255,0.3),
-                0 5px 15px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 0 30px rgba(255, 255, 255, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 5;
             filter: brightness(1.1);
         }
-        
+
         /* Colocación de cuadrantes con colores actualizados para coincidir con la tabla */
-        .quadrant-plan { 
-            top: 0; 
-            left: 0; 
-            background-color: #eaf4ff; 
-            color: #333; 
+        .quadrant-plan {
+            top: 0;
+            left: 0;
+            background-color: #eaf4ff;
+            color: #333;
             /* Gradiente para efecto 3D */
             background: linear-gradient(135deg, #eaf4ff 0%, #c2e0ff 100%);
         }
-        .quadrant-do { 
-            top: 0; 
-            right: 0; 
-            background-color: #ffe6cc; 
-            color: #333; 
+
+        .quadrant-do {
+            top: 0;
+            right: 0;
+            background-color: #ffe6cc;
+            color: #333;
             background: linear-gradient(135deg, #ffe6cc 0%, #ffcc99 100%);
         }
-        .quadrant-act { 
-            bottom: 0; 
-            left: 0; 
-            background-color: #f7e6ff; 
-            color: #333; 
+
+        .quadrant-act {
+            bottom: 0;
+            left: 0;
+            background-color: #f7e6ff;
+            color: #333;
             background: linear-gradient(135deg, #f7e6ff 0%, #e6ccff 100%);
         }
-        .quadrant-check { 
-            bottom: 0; 
-            right: 0; 
-            background-color: #eafbe7; 
-            color: #333; 
+
+        .quadrant-check {
+            bottom: 0;
+            right: 0;
+            background-color: #eafbe7;
+            color: #333;
             background: linear-gradient(135deg, #eafbe7 0%, #ccffcc 100%);
         }
 
@@ -254,63 +114,68 @@
             font-size: 1.5rem;
             font-weight: 800;
             border: none;
-            color: inherit; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Reducida intensidad para mejor legibilidad */
+            color: inherit;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            /* Reducida intensidad para mejor legibilidad */
             transition: all 0.3s ease;
         }
 
         .pdca-quadrant:hover h3 {
             transform: translateY(-3px);
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
         }
 
         .pdca-quadrant .fas {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            color: #333; /* Iconos en color oscuro para mejor contraste */
+            color: #333;
+            /* Iconos en color oscuro para mejor contraste */
             transition: all 0.3s ease;
         }
 
         .pdca-quadrant:hover .fas {
             transform: scale(1.2);
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
         }
-        
-         .pdca-quadrant span {
+
+        .pdca-quadrant span {
             font-size: 0.9em;
             transition: all 0.3s ease;
-         }
+        }
 
         .pdca-quadrant:hover span {
             transform: translateY(2px);
         }
-        
-        .pdca-wheel::after, .pdca-wheel::before {
+
+        .pdca-wheel::after,
+        .pdca-wheel::before {
             content: '';
             position: absolute;
             background: #555;
             z-index: 10;
         }
-        .pdca-wheel::after { 
+
+        .pdca-wheel::after {
             width: 5px;
             height: 100%;
             left: 50%;
             transform: translateX(-50%);
         }
-        .pdca-wheel::before { 
+
+        .pdca-wheel::before {
             height: 5px;
             width: 100%;
             top: 50%;
             transform: translateY(-50%);
         }
-        
+
         .pdca-center-circle {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 20%; 
-            height: 20%; 
+            width: 20%;
+            height: 20%;
             min-width: 80px;
             min-height: 80px;
             background: white;
@@ -322,7 +187,7 @@
             align-items: center;
             font-size: 1.8rem;
             color: #555;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
 
@@ -337,112 +202,137 @@
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .pdca-center-circle:hover {
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
         .pdca-center-circle:hover i {
-            animation-duration: 5s; /* Acelera la rotación al hacer hover */
+            animation-duration: 5s;
+            /* Acelera la rotación al hacer hover */
         }
 
         @media (max-width: 600px) {
             .pdca-quadrant {
                 padding: 10px;
             }
+
             .pdca-quadrant h3 {
                 font-size: 1.1rem;
             }
+
             .pdca-quadrant .fas {
                 font-size: 1.5rem;
             }
+
             .pdca-center-circle {
                 font-size: 1.2rem;
                 min-width: 60px;
                 min-height: 60px;
             }
         }
+
         /* --- Fin Estilos Rueda Estática --- */
 
         /* --- Estilos para el contenedor de resultados (Tabla de resumen) --- */
-        #results-container { 
-            border: 2px solid var(--success-color); 
-            background-color: #f8fef8; 
-            border-radius: 8px; 
-            padding: 1.25rem; 
-            margin-top: 1.5rem; 
-            overflow-x: auto; /* Permite scroll en móvil si la tabla es grande */
+        #results-container {
+            border: 2px solid var(--success-color);
+            background-color: #f8fef8;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            /* Permite scroll en móvil si la tabla es grande */
         }
-        #results-container h3 { 
-            color: var(--success-color); 
-            font-weight: 800; 
-            text-align: center; 
-            margin-bottom: 1rem; 
+
+        #results-container h3 {
+            color: var(--success-color);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
         }
-        
+
         /* Nuevo: Estilos para la tabla de resumen */
         .pdca-summary-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 1.5rem;
-            table-layout: fixed; /* Ayuda a controlar el ancho de las columnas */
+            table-layout: fixed;
+            /* Ayuda a controlar el ancho de las columnas */
         }
-        .pdca-summary-table th, .pdca-summary-table td {
+
+        .pdca-summary-table th,
+        .pdca-summary-table td {
             padding: 12px;
             text-align: left;
             border: 1px solid #ddd;
             word-wrap: break-word;
         }
+
         .pdca-summary-table th {
             background-color: var(--primary-color);
             color: white;
             font-weight: 800;
             vertical-align: top;
-            width: 15%; /* Ancho de la columna de la fase */
+            width: 15%;
+            /* Ancho de la columna de la fase */
         }
+
         .pdca-summary-table td:nth-child(2) {
-             font-weight: 600;
-             width: 25%; /* Ancho de la columna de la categoría */
-             background-color: #f1f1f1;
+            font-weight: 600;
+            width: 25%;
+            /* Ancho de la columna de la categoría */
+            background-color: #f1f1f1;
         }
+
         .pdca-summary-table td:nth-child(3) {
-             width: 60%; /* Ancho de la columna de detalles */
-             white-space: pre-wrap; /* Mantiene saltos de línea y formato del textarea */
-             vertical-align: top;
+            width: 60%;
+            /* Ancho de la columna de detalles */
+            white-space: pre-wrap;
+            /* Mantiene saltos de línea y formato del textarea */
+            vertical-align: top;
         }
-        
+
         .phase-row {
-            background-color: #eaf4ff; /* Fondo claro para distinguir la fase principal */
+            background-color: #eaf4ff;
+            /* Fondo claro para distinguir la fase principal */
             border-bottom: 3px solid var(--secondary-color);
         }
-        
-        .results-actions { 
-            margin-top: 1.25rem; 
-            padding-top: 1.25rem; 
-            border-top: 1px solid #eee; 
-            text-align: center; 
+
+        .results-actions {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+            text-align: center;
         }
+
         /* --- FIN Estilos Resultados --- */
 
         /* Estilo AÑADIDO para el icono PDCA: tamaño y forma definidos */
         .main-tool-logo {
-            width: 50px; 
-            height: 50px; 
-            border-radius: 18px; 
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #fff; 
-            font-size: 1.8rem; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            flex-shrink: 0; 
-            margin-right: 15px; 
+            color: #fff;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+            margin-right: 15px;
         }
-        .main-tool-logo[data-color='9'] { 
-            background-color: #7ed321; 
+
+        .main-tool-logo[data-color='9'] {
+            background-color: #7ed321;
         }
 
         /* Estilos generales de la página */
@@ -456,33 +346,45 @@
             --warning-color: #f39c12;
             font-size: 16px;
         }
-        
+
         body {
             background-color: #f5f7fa;
             font-family: 'Nunito', sans-serif;
             color: #333;
             margin: 0;
         }
-        
-        .main-content-wrapper { 
-            max-width: 100%; 
-            margin: 20px auto; 
-            padding: 1.25rem; 
-            box-sizing: border-box; 
+
+        .main-content-wrapper {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 1.25rem;
+            box-sizing: border-box;
         }
 
-        .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; text-align: center; }
-        .header h1 { 
-            color: var(--primary-color); 
-            font-size: clamp(1.5rem, 4vw, 1.8rem); 
-            margin: 0.5rem 0; 
+        .header {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: 0.5rem 0;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap; 
+            flex-wrap: wrap;
         }
-        .header .header-subtitle { font-size: 1.1rem; color: #7f8c8d; margin: 0; font-weight: 400; }
+
+        .header .header-subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 400;
+        }
 
         .content-block {
             border: 1px solid #ddd;
@@ -490,351 +392,425 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             background-color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-        
+
         .content-block h2 {
-            font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem;
-            color: var(--primary-color); border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.6rem; font-weight: 800;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.6rem;
+            font-weight: 800;
         }
-        .content-block h2 .fas { margin-right: 0.75rem; }
-        
-        .instructions-box ul { margin: 0.6rem 0 0 0; padding-left: 1.25rem; }
-        .instructions-box li { margin-bottom: 0.5rem; line-height: 1.6; }
-        
-        .cycle-step { border: 1px solid #eee; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; background-color: #fdfdfd; }
-        .cycle-step h3 { font-size: 1.2em; margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 0.6rem; font-weight: 800; }
-        .cycle-step h3 .fas { margin-right: 0.5rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        
-        label { color: var(--primary-color); font-weight: 600; display: block; margin-bottom: 0.5rem; }
+
+        .content-block h2 .fas {
+            margin-right: 0.75rem;
+        }
+
+        .instructions-box ul {
+            margin: 0.6rem 0 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .instructions-box li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .cycle-step {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            background-color: #fdfdfd;
+        }
+
+        .cycle-step h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.6rem;
+            font-weight: 800;
+        }
+
+        .cycle-step h3 .fas {
+            margin-right: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
         textarea {
-            width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;
-            transition: border 0.3s, box-shadow 0.3s; font-size: 1rem; font-family: 'Nunito', sans-serif;
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border 0.3s, box-shadow 0.3s;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
             min-height: 45px;
             resize: none;
             overflow-y: hidden;
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
-        textarea:focus, button:focus-visible {
-            outline: none; border-color: var(--secondary-color);
+
+        textarea:focus,
+        button:focus-visible {
+            outline: none;
+            border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
 
         button {
-            background-color: var(--secondary-color); color: white; padding: 0.7rem 1.25rem;
-            border: none; border-radius: 4px; cursor: pointer; margin: 5px;
-            font-size: 1rem; transition: background-color 0.3s;
-            font-family: 'Nunito', sans-serif; font-weight: 600;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
         }
-        .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #219653; }
-        .btn-warning { background-color: var(--warning-color); }
-        .btn-warning:hover { background-color: #d4ac0d; }
-        #generate-report-button { width: 100%; padding: 1rem; font-size: 1.2em; font-weight: bold; margin-top: 1.25rem; box-sizing: border-box; }
-        #generate-report-button:hover { background-color: #2980b9; }
 
-        .hidden { display: none; }
-        
-        footer[role="contentinfo"] { 
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #d4ac0d;
+        }
+
+        #generate-report-button {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 1.25rem;
+            box-sizing: border-box;
+        }
+
+        #generate-report-button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer[role="contentinfo"] {
             /* MODIFIED: Matched vave.html styles */
             padding: 2rem 1.25rem;
-            max-width: 1400px; 
-            margin: 0 auto; 
+            max-width: 1400px;
+            margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
             /* REMOVED: background-color, color, text-align */
         }
-        .disclaimer-note { 
-            margin-top: 2rem; 
-            padding: 0 1rem; 
-            font-size: 0.8rem; 
-            color: #777; /* MODIFIED: Matched vave.html text color */
-            max-width: 1400px; /* MODIFIED: Matched vave.html max-width */
-            margin-left: auto; 
-            margin-right: auto; 
-            line-height: 1.6; /* MODIFIED: Matched vave.html line-height */
-            text-align: left; /* ADDED: Matched vave.html justification */
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            /* MODIFIED: Matched vave.html text color */
+            max-width: 1400px;
+            /* MODIFIED: Matched vave.html max-width */
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            /* MODIFIED: Matched vave.html line-height */
+            text-align: left;
+            /* ADDED: Matched vave.html justification */
         }
-        
     </style>
 </head>
+
 <body>
 
-<header role="banner" class="top-bar">
-    <a href="index.html" class="logo-container-link">
-        <div class="logo-container">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-            <span class="logo-text">SigmaExacta</span>
-        </div>
-    </a>
-    <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        <ul class="nav-menu" id="nav-menu">
-            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-menu" id="tools-dropdown-menu">
-                    <div class="dropdown-grid">
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Process & Quality</h4>
-                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Design & Innovation</h4>
-                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                            <a href="fmea.html" class="dropdown-link">FMEA</a>
-                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                            <a href="kano.html" class="dropdown-link">Kano Model</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Problem Solving</h4>
-                            <a href="8d.html" class="dropdown-link">8D Report</a>
-                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                            <a href="triz.html" class="dropdown-link">TRIZ</a>
-                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                        </div>
-                         <div class="dropdown-column">
-                            <h4 class="dropdown-category">Strategy & Management</h4>
-                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                        </div>
+    <div id="header-placeholder"></div>
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+    <main class="main-content-wrapper">
+        <header class="header">
+            <h1>
+                <div class="main-tool-logo" data-color="9"><i class="fas fa-sync-alt"></i></div>
+                Free Online Plan-Do-Check-Act (PDCA) Cycle Tool (Deming Wheel)
+            </h1>
+            <p class="header-subtitle">A structured four-phase model for continuous improvement and quality management.
+            </p>
+        </header>
+        <div class="content-block">
+            <h2><i class="fas fa-question-circle"></i> What is the PDCA Cycle?</h2>
+            <p>The <strong>PDCA Cycle</strong> (Plan-Do-Check-Act), also known as the Deming Wheel or Shewhart Cycle, is
+                a systematic, iterative four-stage approach for continuous improvement in processes and products. It
+                provides a simple but powerful framework for solving problems, managing change, and implementing quality
+                control.</p>
+            <p>By repeatedly cycling through the four phases, organizations can refine their processes, identify root
+                causes of problems, and create a culture of continuous learning and improvement.</p>
+            <div class="pdca-wheel-container">
+                <div class="pdca-wheel">
+                    <div class="pdca-quadrant quadrant-plan">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>1. Plan</h3>
+                        <span>Identify goal &amp; plan action.</span>
                     </div>
-                </div>
-            </li>
-            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-        </ul>
-    </nav>
-</header>
-<main class="main-content-wrapper">
-    <header class="header">
-        <h1>
-            <div class="main-tool-logo" data-color="9"><i class="fas fa-sync-alt"></i></div>
-            Free Online Plan-Do-Check-Act (PDCA) Cycle Tool (Deming Wheel)
-        </h1>
-        <p class="header-subtitle">A structured four-phase model for continuous improvement and quality management.</p>
-    </header>
-
-    <div class="content-block">
-        <h2><i class="fas fa-question-circle"></i> What is the PDCA Cycle?</h2>
-        <p>The <strong>PDCA Cycle</strong> (Plan-Do-Check-Act), also known as the Deming Wheel or Shewhart Cycle, is a systematic, iterative four-stage approach for continuous improvement in processes and products. It provides a simple but powerful framework for solving problems, managing change, and implementing quality control.</p>
-        <p>By repeatedly cycling through the four phases, organizations can refine their processes, identify root causes of problems, and create a culture of continuous learning and improvement.</p>
-        
-        <div class="pdca-wheel-container">
-            <div class="pdca-wheel">
-                <div class="pdca-quadrant quadrant-plan">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h3>1. Plan</h3>
-                    <span>Identify goal & plan action.</span>
-                </div>
-                <div class="pdca-quadrant quadrant-do">
-                    <i class="fas fa-cogs"></i>
-                    <h3>2. Do</h3>
-                    <span>Implement the plan.</span>
-                </div>
-                <div class="pdca-quadrant quadrant-act">
-                    <i class="fas fa-bullhorn"></i>
-                    <h3>4. Act</h3>
-                    <span>Standardize or adjust.</span>
-                </div>
-                <div class="pdca-quadrant quadrant-check">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>3. Check</h3>
-                    <span>Analyze the results.</span>
-                </div>
-                <div class="pdca-center-circle">
-                    <i class="fas fa-sync-alt"></i>
+                    <div class="pdca-quadrant quadrant-do">
+                        <i class="fas fa-cogs"></i>
+                        <h3>2. Do</h3>
+                        <span>Implement the plan.</span>
+                    </div>
+                    <div class="pdca-quadrant quadrant-act">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>4. Act</h3>
+                        <span>Standardize or adjust.</span>
+                    </div>
+                    <div class="pdca-quadrant quadrant-check">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>3. Check</h3>
+                        <span>Analyze the results.</span>
+                    </div>
+                    <div class="pdca-center-circle">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="content-block">
+            <h2><i class="fas fa-history"></i> History &amp; Origin</h2>
+            <p>The concept was originally developed by American physicist and statistician <strong>Walter A.
+                    Shewhart</strong> in the 1920s, who is often called the "father of statistical quality control."
+                Shewhart framed it as a three-step process of specification, production, and inspection for scientific
+                learning.</p>
+            <p>His mentee, <strong>Dr. W. Edwards Deming</strong>, modified and popularized the cycle in the 1950s,
+                evolving it into the four-step "Plan-Do-Check-Act" model we know today. Deming strongly advocated for
+                its use in Japan, where it became a cornerstone of the country's post-war industrial and manufacturing
+                success, known as "Kaizen" (continuous improvement).</p>
         </div>
-    
-    <div class="content-block">
-        <h2><i class="fas fa-history"></i> History & Origin</h2>
-        <p>The concept was originally developed by American physicist and statistician <strong>Walter A. Shewhart</strong> in the 1920s, who is often called the "father of statistical quality control." Shewhart framed it as a three-step process of specification, production, and inspection for scientific learning.</p>
-        <p>His mentee, <strong>Dr. W. Edwards Deming</strong>, modified and popularized the cycle in the 1950s, evolving it into the four-step "Plan-Do-Check-Act" model we know today. Deming strongly advocated for its use in Japan, where it became a cornerstone of the country's post-war industrial and manufacturing success, known as "Kaizen" (continuous improvement).</p>
-    </div>
-
-    <div class="content-block">
-        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-        <div class="instructions-box">
-          <ul>
-            <li><strong>Load Example:</strong> Click "Load Example" to see a pre-filled PDCA cycle for a common business problem.</li>
-            <li><strong>Follow the Steps:</strong> Document your own improvement project by filling in the details for each of the four phases (Plan, Do, Check, Act).</li>
-            <li><strong>Generate Report:</strong> Click "Generate PDCA Report" to create a consolidated summary of your cycle, displayed as a Deming Wheel.</li>
-            <li><strong>Export:</strong> Once the report is generated, you can export it to an Excel file for documentation or to share with your team.</li>
-          </ul>
-      </div>
-    </div>
-
-    <div class="content-block">
-        <h2><i class="fas fa-sync-alt"></i> PDCA Cycle Worksheet</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button class="btn-success" onclick="loadExample()"><i class="fas fa-magic"></i> Load Example</button>
-            <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
+        <div class="content-block">
+            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+            <div class="instructions-box">
+                <ul>
+                    <li><strong>Load Example:</strong> Click "Load Example" to see a pre-filled PDCA cycle for a common
+                        business problem.</li>
+                    <li><strong>Follow the Steps:</strong> Document your own improvement project by filling in the
+                        details for each of the four phases (Plan, Do, Check, Act).</li>
+                    <li><strong>Generate Report:</strong> Click "Generate PDCA Report" to create a consolidated summary
+                        of your cycle, displayed as a Deming Wheel.</li>
+                    <li><strong>Export:</strong> Once the report is generated, you can export it to an Excel file for
+                        documentation or to share with your team.</li>
+                </ul>
+            </div>
         </div>
-
-        <div class="cycle-step" id="step-1">
-            <h3><i class="fas fa-clipboard-list"></i> Phase 1: Plan</h3>
-            <div class="form-group"><label for="plan-problem">Problem/Opportunity Statement:</label><textarea id="plan-problem" placeholder="e.g., Customer support call times are too long, averaging 12 minutes."></textarea></div>
-            <div class="form-group"><label for="plan-goal">Goal/Hypothesis (What do you expect to happen?):</label><textarea id="plan-goal" placeholder="e.g., By implementing a new call script, we will reduce the average call time by 15% to 10 minutes or less within one month."></textarea></div>
-            <div class="form-group"><label for="plan-actions">Action Plan (What steps will you take?):</label><textarea id="plan-actions" placeholder="e.g., 1. Develop new script. 2. Train a pilot group of 5 agents. 3. Monitor their call times for 1 week."></textarea></div>
+        <div class="content-block">
+            <h2><i class="fas fa-sync-alt"></i> PDCA Cycle Worksheet</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn-success" onclick="loadExample()"><i class="fas fa-magic"></i> Load Example</button>
+                <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
+            </div>
+            <div class="cycle-step" id="step-1">
+                <h3><i class="fas fa-clipboard-list"></i> Phase 1: Plan</h3>
+                <div class="form-group"><label for="plan-problem">Problem/Opportunity Statement:</label><textarea
+                        id="plan-problem"
+                        placeholder="e.g., Customer support call times are too long, averaging 12 minutes."></textarea>
+                </div>
+                <div class="form-group"><label for="plan-goal">Goal/Hypothesis (What do you expect to
+                        happen?):</label><textarea id="plan-goal"
+                        placeholder="e.g., By implementing a new call script, we will reduce the average call time by 15% to 10 minutes or less within one month."></textarea>
+                </div>
+                <div class="form-group"><label for="plan-actions">Action Plan (What steps will you
+                        take?):</label><textarea id="plan-actions"
+                        placeholder="e.g., 1. Develop new script. 2. Train a pilot group of 5 agents. 3. Monitor their call times for 1 week."></textarea>
+                </div>
+            </div>
+            <div class="cycle-step" id="step-2">
+                <h3><i class="fas fa-cogs"></i> Phase 2: Do</h3>
+                <div class="form-group"><label for="do-execution">What was executed? (Record actions
+                        taken):</label><textarea id="do-execution"
+                        placeholder="e.g., The new script was developed and deployed. Five agents from Team B were trained on the new script on Monday. They used the script for all calls from Tuesday to Friday."></textarea>
+                </div>
+                <div class="form-group"><label for="do-problems">What problems or unexpected observations
+                        occurred?:</label><textarea id="do-problems"
+                        placeholder="e.g., Some veteran agents initially resisted the change, finding the script too rigid. One part of the script for 'billing issues' was found to be confusing for customers."></textarea>
+                </div>
+            </div>
+            <div class="cycle-step" id="step-3">
+                <h3><i class="fas fa-chart-line"></i> Phase 3: Check</h3>
+                <div class="form-group"><label for="check-data">Data &amp; Results (What did the metrics
+                        show?):</label><textarea id="check-data"
+                        placeholder="e.g., Average call time for the pilot group was 9.5 minutes, an 18% reduction. Customer satisfaction scores for the pilot group remained stable (no change)."></textarea>
+                </div>
+                <div class="form-group"><label for="check-analysis">Analysis (Did the results match the
+                        hypothesis?):</label><textarea id="check-analysis"
+                        placeholder="e.g., The results exceeded the goal. The script was effective in reducing call time without negatively impacting customer satisfaction. The confusing 'billing' section needs to be addressed."></textarea>
+                </div>
+            </div>
+            <div class="cycle-step" id="step-4">
+                <h3><i class="fas fa-bullhorn"></i> Phase 4: Act</h3>
+                <div class="form-group"><label for="act-conclusions">Conclusions &amp; Learnings:</label><textarea
+                        id="act-conclusions"
+                        placeholder="e.g., The new script is a viable solution for reducing call times. Allowing for minor flexibility in the script could improve adoption among veteran agents."></textarea>
+                </div>
+                <div class="form-group"><label for="act-next">Next Steps (Standardize, Adjust, or begin a new
+                        cycle?):</label><textarea id="act-next"
+                        placeholder="e.g., 1. Adjust the 'billing issues' part of the script based on feedback. 2. Standardize the revised script and roll it out to all support agents. 3. Start a new PDCA cycle to improve the first-call resolution rate."></textarea>
+                </div>
+            </div>
+            <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate PDCA
+                Report</button>
+            <div class="hidden" id="results-container"></div>
         </div>
-        
-        <div class="cycle-step" id="step-2">
-            <h3><i class="fas fa-cogs"></i> Phase 2: Do</h3>
-            <div class="form-group"><label for="do-execution">What was executed? (Record actions taken):</label><textarea id="do-execution" placeholder="e.g., The new script was developed and deployed. Five agents from Team B were trained on the new script on Monday. They used the script for all calls from Tuesday to Friday."></textarea></div>
-            <div class="form-group"><label for="do-problems">What problems or unexpected observations occurred?:</label><textarea id="do-problems" placeholder="e.g., Some veteran agents initially resisted the change, finding the script too rigid. One part of the script for 'billing issues' was found to be confusing for customers."></textarea></div>
+    </main>
+    <footer role="contentinfo">
+        <div class="disclaimer-note">
+            <p><strong>Disclaimer:</strong> The PDCA Cycle was developed by Walter A. Shewhart and later popularized by
+                W. Edwards Deming. This tool is an independent implementation provided for educational and informational
+                purposes only. It is not affiliated with, sponsored by, or endorsed by the estates of Deming or
+                Shewhart, or their respective organizations. The effectiveness of the process depends on the user's
+                application. Sigma Exacta and its creators are not liable for any damages or losses resulting from its
+                use.</p>
         </div>
+    </footer>
+    <script>
+        let cycleData = {};
 
-        <div class="cycle-step" id="step-3">
-            <h3><i class="fas fa-chart-line"></i> Phase 3: Check</h3>
-            <div class="form-group"><label for="check-data">Data & Results (What did the metrics show?):</label><textarea id="check-data" placeholder="e.g., Average call time for the pilot group was 9.5 minutes, an 18% reduction. Customer satisfaction scores for the pilot group remained stable (no change)."></textarea></div>
-            <div class="form-group"><label for="check-analysis">Analysis (Did the results match the hypothesis?):</label><textarea id="check-analysis" placeholder="e.g., The results exceeded the goal. The script was effective in reducing call time without negatively impacting customer satisfaction. The confusing 'billing' section needs to be addressed."></textarea></div>
-        </div>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- START: Lógica del Header (idéntica a index.html) ---
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-        <div class="cycle-step" id="step-4">
-            <h3><i class="fas fa-bullhorn"></i> Phase 4: Act</h3>
-            <div class="form-group"><label for="act-conclusions">Conclusions & Learnings:</label><textarea id="act-conclusions" placeholder="e.g., The new script is a viable solution for reducing call times. Allowing for minor flexibility in the script could improve adoption among veteran agents."></textarea></div>
-            <div class="form-group"><label for="act-next">Next Steps (Standardize, Adjust, or begin a new cycle?):</label><textarea id="act-next" placeholder="e.g., 1. Adjust the 'billing issues' part of the script based on feedback. 2. Standardize the revised script and roll it out to all support agents. 3. Start a new PDCA cycle to improve the first-call resolution rate."></textarea></div>
-        </div>
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('show-menu');
+                const icon = navToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
 
-        <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate PDCA Report</button>
-        <div id="results-container" class="hidden"></div>
-    </div>
-</main>
+                if (!navMenu.classList.contains('show-menu')) {
+                    toolsDropdownMenu.classList.remove('show-submenu');
+                    toolsDropdownContainer.classList.remove('active');
+                }
+            });
 
-<footer role="contentinfo">
-    <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> The PDCA Cycle was developed by Walter A. Shewhart and later popularized by W. Edwards Deming. This tool is an independent implementation provided for educational and informational purposes only. It is not affiliated with, sponsored by, or endorsed by the estates of Deming or Shewhart, or their respective organizations. The effectiveness of the process depends on the user's application. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
-    </div>
-</footer>
-<script>
-    let cycleData = {};
+            toolsDropdownToggle.addEventListener('click', (event) => {
+                if (window.innerWidth <= 992) {
+                    event.preventDefault();
+                    toolsDropdownMenu.classList.toggle('show-submenu');
+                    toolsDropdownContainer.classList.toggle('active');
+                }
+            });
+            // --- END: Lógica del Header ---
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- START: Lógica del Header (idéntica a index.html) ---
-        const navToggle = document.getElementById('nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('show-menu');
-            const icon = navToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-            
-            if (!navMenu.classList.contains('show-menu')) {
-                toolsDropdownMenu.classList.remove('show-submenu');
-                toolsDropdownContainer.classList.remove('active');
-            }
+            // Lógica específica de la página PDCA
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', function () { autoResizeTextarea(this); });
+                autoResizeTextarea(textarea);
+            });
         });
-        
-        toolsDropdownToggle.addEventListener('click', (event) => {
-            if (window.innerWidth <= 992) {
-                event.preventDefault(); 
-                toolsDropdownMenu.classList.toggle('show-submenu');
-                toolsDropdownContainer.classList.toggle('active');
-            }
-        });
-        // --- END: Lógica del Header ---
-        
-        // Lógica específica de la página PDCA
-        document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', function() { autoResizeTextarea(this); });
-            autoResizeTextarea(textarea);
-        });
-    });
 
-    function autoResizeTextarea(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
-    }
-
-    function resetTool() {
-        cycleData = {};
-        document.querySelectorAll('textarea').forEach(el => {
-            el.value = '';
-            autoResizeTextarea(el);
-        });
-        document.getElementById('results-container').classList.add('hidden');
-        document.getElementById('plan-problem').focus();
-    }
-
-    function loadExample() {
-        resetTool();
-        document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes, which leads to lower customer satisfaction and higher costs.";
-        document.getElementById('plan-goal').value = "By implementing a new streamlined call script and providing targeted training, we will reduce the average call handling time by 15% (to 10.2 minutes or less) within one month, without decreasing the customer satisfaction score.";
-        document.getElementById('plan-actions').value = "1. Analyze top 5 call reasons to create a streamlined script (Week 1).\n2. Select a pilot group of 5 agents for training (Week 2).\n3. Train the pilot group on the new script (Week 2).\n4. Monitor the pilot group's call times and CSAT scores for two weeks (Weeks 3-4).";
-        document.getElementById('do-execution').value = "The script was developed and deployed. Five agents from Team B were trained on Monday of Week 3. They used the script for all their calls for the following two weeks. Call data was automatically logged by the CRM.";
-        document.getElementById('do-problems').value = "Initial feedback from the pilot agents was that the script felt too rigid for complex, multi-issue calls. We allowed for minor deviations after the first week based on their feedback.";
-        document.getElementById('check-data').value = "Results after two weeks:\n- Average call time for the pilot group was 9.5 minutes (an 18.75% reduction).\n- Average call time for the control group (rest of the team) was 11.8 minutes.\n- Customer Satisfaction (CSAT) scores for the pilot group increased by 2%.";
-        document.getElementById('check-analysis').value = "The hypothesis was confirmed: the new script significantly reduced call times. The slight increase in CSAT suggests the script did not harm the customer experience and may have improved it due to faster resolution.";
-        document.getElementById('act-conclusions').value = "The streamlined script is an effective method for reducing call handling time. The key learning is that while a script provides structure, a small degree of flexibility is necessary for experienced agents to handle complex cases effectively.";
-        document.getElementById('act-next').value = "1. (Standardize) Roll out the revised, slightly more flexible script to all customer support agents, with mandatory training.\n2. (Adjust) Update the standard operating procedure (SOP) to reflect the new process.\n3. (New Cycle) Begin a new PDCA cycle to tackle the 'first-call resolution rate', which was identified as the next key improvement area during analysis.";
-
-        document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
-        document.getElementById('plan-problem').focus();
-    }
-
-    function generateReport() {
-        cycleData = {
-            plan: {
-                problem: document.getElementById('plan-problem').value,
-                goal: document.getElementById('plan-goal').value,
-                actions: document.getElementById('plan-actions').value
-            },
-            do: {
-                execution: document.getElementById('do-execution').value,
-                problems: document.getElementById('do-problems').value
-            },
-            check: {
-                data: document.getElementById('check-data').value,
-                analysis: document.getElementById('check-analysis').value
-            },
-            act: {
-                conclusions: document.getElementById('act-conclusions').value,
-                next: document.getElementById('act-next').value
-            }
-        };
-
-        if (!cycleData.plan.problem && !cycleData.plan.goal) {
-            alert('Please fill in at least the "Plan" phase to generate a report.');
-            return;
-        }
-        displayResults();
-    }
-
-    // === FUNCIÓN CLAVE: displayResults actualizada para usar TABLA ===
-    function displayResults() {
-        const resultsDiv = document.getElementById('results-container');
-        
-        // Helper function to sanitize text
-        function escapeHTML(str) {
-            return str ? str.replace(/[&<>"']/g, function(m) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-            }) : 'N/A';
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
-        let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>`;
+        function resetTool() {
+            cycleData = {};
+            document.querySelectorAll('textarea').forEach(el => {
+                el.value = '';
+                autoResizeTextarea(el);
+            });
+            document.getElementById('results-container').classList.add('hidden');
+            document.getElementById('plan-problem').focus();
+        }
 
-        // Construir la tabla de resumen
-        html += `<table class="pdca-summary-table">
+        function loadExample() {
+            resetTool();
+            document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes, which leads to lower customer satisfaction and higher costs.";
+            document.getElementById('plan-goal').value = "By implementing a new streamlined call script and providing targeted training, we will reduce the average call handling time by 15% (to 10.2 minutes or less) within one month, without decreasing the customer satisfaction score.";
+            document.getElementById('plan-actions').value = "1. Analyze top 5 call reasons to create a streamlined script (Week 1).\n2. Select a pilot group of 5 agents for training (Week 2).\n3. Train the pilot group on the new script (Week 2).\n4. Monitor the pilot group's call times and CSAT scores for two weeks (Weeks 3-4).";
+            document.getElementById('do-execution').value = "The script was developed and deployed. Five agents from Team B were trained on Monday of Week 3. They used the script for all their calls for the following two weeks. Call data was automatically logged by the CRM.";
+            document.getElementById('do-problems').value = "Initial feedback from the pilot agents was that the script felt too rigid for complex, multi-issue calls. We allowed for minor deviations after the first week based on their feedback.";
+            document.getElementById('check-data').value = "Results after two weeks:\n- Average call time for the pilot group was 9.5 minutes (an 18.75% reduction).\n- Average call time for the control group (rest of the team) was 11.8 minutes.\n- Customer Satisfaction (CSAT) scores for the pilot group increased by 2%.";
+            document.getElementById('check-analysis').value = "The hypothesis was confirmed: the new script significantly reduced call times. The slight increase in CSAT suggests the script did not harm the customer experience and may have improved it due to faster resolution.";
+            document.getElementById('act-conclusions').value = "The streamlined script is an effective method for reducing call handling time. The key learning is that while a script provides structure, a small degree of flexibility is necessary for experienced agents to handle complex cases effectively.";
+            document.getElementById('act-next').value = "1. (Standardize) Roll out the revised, slightly more flexible script to all customer support agents, with mandatory training.\n2. (Adjust) Update the standard operating procedure (SOP) to reflect the new process.\n3. (New Cycle) Begin a new PDCA cycle to tackle the 'first-call resolution rate', which was identified as the next key improvement area during analysis.";
+
+            document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
+            document.getElementById('plan-problem').focus();
+        }
+
+        function generateReport() {
+            cycleData = {
+                plan: {
+                    problem: document.getElementById('plan-problem').value,
+                    goal: document.getElementById('plan-goal').value,
+                    actions: document.getElementById('plan-actions').value
+                },
+                do: {
+                    execution: document.getElementById('do-execution').value,
+                    problems: document.getElementById('do-problems').value
+                },
+                check: {
+                    data: document.getElementById('check-data').value,
+                    analysis: document.getElementById('check-analysis').value
+                },
+                act: {
+                    conclusions: document.getElementById('act-conclusions').value,
+                    next: document.getElementById('act-next').value
+                }
+            };
+
+            if (!cycleData.plan.problem && !cycleData.plan.goal) {
+                alert('Please fill in at least the "Plan" phase to generate a report.');
+                return;
+            }
+            displayResults();
+        }
+
+        // === FUNCIÓN CLAVE: displayResults actualizada para usar TABLA ===
+        function displayResults() {
+            const resultsDiv = document.getElementById('results-container');
+
+            // Helper function to sanitize text
+            function escapeHTML(str) {
+                return str ? str.replace(/[&<>"']/g, function (m) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+                }) : 'N/A';
+            }
+
+            let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>`;
+
+            // Construir la tabla de resumen
+            html += `<table class="pdca-summary-table">
             <thead>
                 <tr>
                     <th>Phase</th>
@@ -888,53 +864,54 @@
                 </tr>
             </tbody>
         </table>`;
-        
-        // Acciones
-        html += `<div class="results-actions">
+
+            // Acciones
+            html += `<div class="results-actions">
                     <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
                  </div>`;
-        
-        resultsDiv.innerHTML = html;
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.scrollIntoView({ behavior: 'smooth' });
-    }
-    // --- FIN FUNCIÓN CLAVE ---
 
-    function exportToExcel() {
-        if (Object.keys(cycleData).length === 0) {
-            alert("No data to export. Please generate a report first.");
-            return;
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        // --- FIN FUNCIÓN CLAVE ---
+
+        function exportToExcel() {
+            if (Object.keys(cycleData).length === 0) {
+                alert("No data to export. Please generate a report first.");
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const ws_data = [];
+            ws_data.push(["PDCA Cycle Report"]);
+            ws_data.push(["Company: Sigma Exacta"]);
+            ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
+            ws_data.push([]);
+
+            ws_data.push(["Phase", "Category", "Details"]);
+            ws_data.push(["PLAN", "Problem/Opportunity", cycleData.plan.problem]);
+            ws_data.push(["", "Goal/Hypothesis", cycleData.plan.goal]);
+            ws_data.push(["", "Action Plan", cycleData.plan.actions]);
+            ws_data.push([]);
+            ws_data.push(["DO", "Execution Record", cycleData.do.execution]);
+            ws_data.push(["", "Problems/Observations", cycleData.do.problems]);
+            ws_data.push([]);
+            ws_data.push(["CHECK", "Data & Results", cycleData.check.data]);
+            ws_data.push(["", "Analysis", cycleData.check.analysis]);
+            ws_data.push([]);
+            ws_data.push(["ACT", "Conclusions", cycleData.act.conclusions]);
+            ws_data.push(["", "Next Steps", cycleData.act.next]);
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            ws['!cols'] = [{ wch: 15 }, { wch: 25 }, { wch: 80 }];
+            XLSX.utils.book_append_sheet(wb, ws, "PDCA Report");
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `PDCA_Report_Sigma_Exacta_${dateStr}.xlsx`);
         }
 
-        const wb = XLSX.utils.book_new();
-        const ws_data = [];
-        ws_data.push(["PDCA Cycle Report"]);
-        ws_data.push(["Company: Sigma Exacta"]);
-        ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
-        ws_data.push([]);
-
-        ws_data.push(["Phase", "Category", "Details"]);
-        ws_data.push(["PLAN", "Problem/Opportunity", cycleData.plan.problem]);
-        ws_data.push(["", "Goal/Hypothesis", cycleData.plan.goal]);
-        ws_data.push(["", "Action Plan", cycleData.plan.actions]);
-        ws_data.push([]);
-        ws_data.push(["DO", "Execution Record", cycleData.do.execution]);
-        ws_data.push(["", "Problems/Observations", cycleData.do.problems]);
-        ws_data.push([]);
-        ws_data.push(["CHECK", "Data & Results", cycleData.check.data]);
-        ws_data.push(["", "Analysis", cycleData.check.analysis]);
-        ws_data.push([]);
-        ws_data.push(["ACT", "Conclusions", cycleData.act.conclusions]);
-        ws_data.push(["", "Next Steps", cycleData.act.next]);
-
-        const ws = XLSX.utils.aoa_to_sheet(ws_data);
-        ws['!cols'] = [{wch: 15}, {wch: 25}, {wch: 80}];
-        XLSX.utils.book_append_sheet(wb, ws, "PDCA Report");
-
-        const dateStr = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `PDCA_Report_Sigma_Exacta_${dateStr}.xlsx`);
-    }
-
-</script>
+    </script>
 </body>
+
 </html>

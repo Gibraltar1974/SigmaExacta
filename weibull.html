@@ -1,187 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="canonical" href="https://sigmaexacta.com/weibull" />
   <title>Weibull Analysis for Failure Prediction | Sigma Exacta</title>
-  <meta name="description" content="Free online Weibull analysis tool to predict failures. Enter your time-to-failure data to calculate Weibull parameters (Beta β, Eta η), Mean Time To Failure (MTTF), and visualize the results on a probability plot. An essential tool for reliability engineering and maintenance planning.">
-  <meta name="keywords" content="Open Source, free Solftware, SigmaExacta Weibull analysis, Weibull calculator, failure prediction, reliability engineering, mttf, beta, eta, probability plot, maintenance, life data analysis, Mean Time to Failure">
+  <meta name="description"
+    content="Free online Weibull analysis tool to predict failures. Enter your time-to-failure data to calculate Weibull parameters (Beta β, Eta η), Mean Time To Failure (MTTF), and visualize the results on a probability plot. An essential tool for reliability engineering and maintenance planning.">
+  <meta name="keywords"
+    content="Open Source, free Solftware, SigmaExacta Weibull analysis, Weibull calculator, failure prediction, reliability engineering, mttf, beta, eta, probability plot, maintenance, life data analysis, Mean Time to Failure">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  
+
   <!-- AÑADIDO: KaTeX para fórmulas matemáticas -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+    crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-  
+
   <link rel="stylesheet" href="styles.css">
-
-  <style>
-      /* --- Estilos base para la barra de navegación (Header original) --- */
-      .top-bar {
-          /* Header fijo al hacer scroll */
-          position: sticky; 
-          top: 0;           
-          z-index: 1001;    
-          
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px 20px;
-          background-color: #222; /* Fondo oscuro del header */
-      }
-      
-      /* REVERSIÓN: El texto del logo, enlaces y el ícono del menú hamburguesa son blancos en el fondo oscuro */
-      .logo-text, .navigation .nav-link, .nav-toggle { 
-          color: #fff; 
-      }
-
-      /* === MODIFICACIÓN MÍNIMA: Asegurar el icono del logo a color === */
-      .logo-container-link .main-logo {
-          filter: none; /* Asegura que el logo-imagen esté a color */
-      }
-      /* === FIN DE MODIFICACIÓN MÍNIMA === */
-
-      .nav-toggle {
-          display: none; 
-          font-size: 1.5rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-      }
-
-      .navigation .nav-menu {
-          display: flex;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          align-items: center;
-      }
-
-      .navigation .nav-link {
-          padding: 10px 15px;
-          text-decoration: none;
-          font-weight: 600;
-          display: block;
-      }
-      
-      .navigation .nav-link i {
-          margin-left: 5px;
-          transition: transform 0.3s ease;
-      }
-      
-      /* --- Estilos para el menú desplegable (escritorio) --- */
-      .nav-item-dropdown {
-          position: relative;
-      }
-      
-      .dropdown-menu {
-          display: none;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          background-color: #fff; /* Fondo blanco para el desplegable */
-          box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-          border-radius: 5px;
-          z-index: 1000;
-          min-width: 600px;
-          padding: 20px;
-      }
-      
-      /* === CORRECCIÓN: Asegura que el texto dentro del desplegable sea oscuro === */
-      .dropdown-menu a, .dropdown-menu h4 {
-          color: #333;
-      }
-      .dropdown-link:hover {
-          background-color: #f1f1f1;
-      }
-
-
-      .dropdown-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 20px;
-      }
-
-      .nav-item-dropdown:hover > .dropdown-menu {
-          display: block;
-      }
-
-      /* --- ESTILOS PARA MÓVIL (LA PARTE IMPORTANTE) --- */
-      @media (max-width: 992px) {
-          .nav-toggle {
-              display: block;
-          }
-
-          .navigation .nav-menu {
-              display: none;
-              flex-direction: column;
-              position: absolute;
-              top: 100%;
-              left: 0;
-              width: 100%;
-              background-color: #fff; /* Fondo blanco para el menú desplegado */
-              border-top: 1px solid #eee;
-          }
-          
-          /* === CORRECCIÓN: Asegura que los enlaces sean oscuros sobre el fondo blanco del menú móvil === */
-          .navigation .nav-menu .nav-link {
-              color: #333; 
-          }
-
-          .navigation .nav-menu.show-menu {
-              display: flex;
-          }
-          
-          .navigation .nav-item {
-              width: 100%;
-              text-align: left;
-          }
-
-          .nav-item-dropdown > .nav-link {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-          }
-
-          .dropdown-menu {
-              display: none; 
-              position: static; 
-              width: 100%;
-              box-shadow: none;
-              border-top: 1px solid #f0f0f0;
-              padding: 10px 0 10px 30px;
-              min-width: unset;
-              background-color: #f9f9f9;
-          }
-
-          .dropdown-menu.show-submenu {
-              display: block;
-          }
-          
-          .dropdown-grid {
-              grid-template-columns: 1fr;
-          }
-
-          .nav-item-dropdown:hover > .dropdown-menu {
-              display: none;
-          }
-          .nav-item-dropdown.active:hover > .dropdown-menu {
-              display: block;
-          }
-          
-          .nav-item-dropdown.active > .nav-link i {
-              transform: rotate(180deg);
-          }
-      }
-  </style>
   <style>
     /* Estilos específicos para la página de Weibull */
     :root {
@@ -194,14 +42,12 @@
       font-size: 16px;
     }
 
-    
-    /* BLOQUE CSS REMOVIDO: Ya no es necesario, el estilo de color está en el span del h1 */
-
-
-    *, *::before, *::after {
-        box-sizing: border-box;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
     }
-    
+
     html {
       scroll-behavior: smooth;
     }
@@ -215,15 +61,16 @@
       line-height: 1.6;
     }
 
-    img, canvas {
-        max-width: 100%;
-        height: auto;
+    img,
+    canvas {
+      max-width: 100%;
+      height: auto;
     }
-    
+
     .main-content-wrapper {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 1.25rem;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 1.25rem;
     }
 
     .main-header {
@@ -232,7 +79,7 @@
       margin-bottom: 1.25rem;
       border-bottom: 1px solid #ddd;
     }
-    
+
     .main-header h1 {
       color: var(--primary-color);
       font-size: clamp(1.5rem, 4vw, 1.8rem);
@@ -240,7 +87,7 @@
       margin-bottom: 0.5rem;
       font-weight: 800;
     }
-    
+
     .main-header p {
       color: #7f8c8d;
       font-weight: 400;
@@ -254,8 +101,9 @@
       border-radius: 8px;
       padding: 1.5rem;
       margin-top: 1.5rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     .container h2 {
       color: var(--primary-color);
       margin-top: 0;
@@ -263,17 +111,22 @@
       padding-bottom: 0.6rem;
       font-weight: 800;
     }
-    .container p, .container ol, .container ul {
+
+    .container p,
+    .container ol,
+    .container ul {
       line-height: 1.8;
     }
-    .container ol, .container ul {
+
+    .container ol,
+    .container ul {
       padding-left: 1.25rem;
     }
 
     .calculator-section {
-        margin-top: 2rem;
+      margin-top: 2rem;
     }
-    
+
     .calculation-block {
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -282,7 +135,7 @@
       background-color: white;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
-    
+
     .calculation-title {
       font-weight: 800;
       font-size: 1.2em;
@@ -291,15 +144,16 @@
       border-bottom: 1px solid #eee;
       padding-bottom: 0.6rem;
     }
-    
+
     label {
       display: block;
       margin-bottom: 0.6rem;
       color: var(--primary-color);
       font-weight: 600;
     }
-    
-    input[type="text"], textarea {
+
+    input[type="text"],
+    textarea {
       width: 100%;
       padding: 0.6rem;
       border: 1px solid #ddd;
@@ -310,18 +164,20 @@
       transition: border 0.3s, box-shadow 0.3s;
       font-family: 'Nunito', sans-serif;
     }
-    
-    input[type="text"]:focus, textarea:focus, button:focus-visible {
+
+    input[type="text"]:focus,
+    textarea:focus,
+    button:focus-visible {
       outline: none;
       border-color: var(--secondary-color);
       box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
     }
-    
+
     textarea {
       resize: vertical;
       overflow-y: hidden;
     }
-    
+
     button {
       background-color: var(--secondary-color);
       color: white;
@@ -335,11 +191,11 @@
       font-weight: 600;
       font-family: 'Nunito', sans-serif;
     }
-    
+
     button:hover {
       background-color: #2980b9;
     }
-    
+
     button:disabled {
       background-color: #95a5a6;
       cursor: not-allowed;
@@ -348,10 +204,11 @@
     .btn-success {
       background-color: var(--success-color);
     }
+
     .btn-success:hover {
       background-color: #27ae60;
     }
-    
+
     .results-container {
       display: flex;
       flex-wrap: wrap;
@@ -359,7 +216,7 @@
       align-items: flex-start;
       margin-top: 1.25rem;
     }
-    
+
     #weibullChartContainer {
       background: white;
       border: 1px solid #ddd;
@@ -374,19 +231,20 @@
     }
 
     .chart-watermark {
-        display: block;
-        filter: invert(1);
-        width: 85px;
-        height: auto;
-        flex-shrink: 0;
+      display: block;
+      filter: invert(1);
+      width: 85px;
+      height: auto;
+      flex-shrink: 0;
     }
+
     .canvas-wrapper {
-        flex-grow: 1;
-        position: relative;
-        height: 400px;
-        min-width: 0;
+      flex-grow: 1;
+      position: relative;
+      height: 400px;
+      min-width: 0;
     }
-    
+
     #results {
       background: white;
       padding: 1.25rem;
@@ -396,289 +254,307 @@
       min-width: 300px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
-    
+
     #results p {
       margin-bottom: 0.75rem;
       color: var(--primary-color);
     }
-    
+
     .result-value {
       font-weight: bold;
       color: var(--dark-color);
     }
-    
-    footer { padding: 2rem 1.25rem; text-align: center; }
-    .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: 0.8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
+
+    footer {
+      padding: 2rem 1.25rem;
+      text-align: center;
+    }
+
+    .disclaimer-note {
+      margin-top: 2rem;
+      padding: 0 1rem;
+      font-size: 0.8rem;
+      color: #777;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     #aggregatedResultsContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1rem;
     }
+
     .result-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1rem;
-        background-color: #fdfdfd;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: #fdfdfd;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
+
     .result-card-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding-bottom: 0.75rem;
-        margin-bottom: 0.75rem;
-        border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid #eee;
     }
+
     .result-card-icon {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        object-fit: cover;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
     }
+
     .result-card-title {
-        font-weight: 600;
-        color: var(--primary-color);
-        font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      font-size: 1.1rem;
     }
+
     .result-card-body {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
     }
+
     .result-card-item {
-        padding: 0.5rem;
-        background-color: #f5f7fa;
-        border-radius: 4px;
-        border: 1px solid #e9ecef;
+      padding: 0.5rem;
+      background-color: #f5f7fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
     }
+
     .result-card-item strong {
-        display: block;
-        font-size: 0.9rem;
-        color: #7f8c8d;
-        margin-bottom: 0.25rem;
+      display: block;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 0.25rem;
     }
+
     .result-card-item span {
-        font-weight: 600;
-        color: var(--dark-color);
+      font-weight: 600;
+      color: var(--dark-color);
     }
+
     .result-card-item .failure-data {
-        font-size: 0.9rem;
-        white-space: pre-wrap;
-        word-break: break-all;
-        max-height: 100px;
-        overflow-y: auto;
-        background: #e9ecef;
-        padding: 8px;
-        border-radius: 3px;
-        margin-top: 5px;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 100px;
+      overflow-y: auto;
+      background: #e9ecef;
+      padding: 8px;
+      border-radius: 3px;
+      margin-top: 5px;
     }
 
     /* AÑADIDO: Estilos para la sección de fórmulas matemáticas */
-    .formula-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-      gap: 1.5rem; 
-      text-align: center; 
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
       margin-top: 1.5rem;
     }
-    .formula-item { 
-      padding: 1.5rem 1rem; 
-      border: 1px solid #eee; 
-      border-radius: 8px; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: center; 
-      align-items: center; 
-      min-height: 120px; 
+
+    .formula-item {
+      padding: 1.5rem 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
       font-size: 1.1em;
     }
-    .formula-item h3 { 
-      margin-top: 0; 
-      margin-bottom: 1rem; 
-      color: var(--primary-color); 
+
+    .formula-item h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
     }
-    .legend { 
-      margin-top: 2rem; 
-      padding: 1rem; 
-      border: 1px solid #eee; 
-      border-radius: 8px; 
-      background-color: #fdfdfd; 
+
+    .legend {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fdfdfd;
     }
-    .legend h3 { 
-      margin-top: 0; 
-      color: var(--primary-color); 
+
+    .legend h3 {
+      margin-top: 0;
+      color: var(--primary-color);
     }
-    .legend ul { 
-      list-style: none; 
-      padding: 0; 
+
+    .legend ul {
+      list-style: none;
+      padding: 0;
     }
-    .legend li { 
-      margin-bottom: 0.5rem; 
+
+    .legend li {
+      margin-bottom: 0.5rem;
     }
-    .legend code { 
-      background-color: #eee; 
-      padding: 2px 6px; 
-      border-radius: 4px; 
-      font-weight: 600; 
+
+    .legend code {
+      background-color: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
     }
 
     @media (max-width: 768px) {
-      .results-container { flex-direction: column; }
-      #results, #weibullChartContainer { width: 100%; }
-      .main-content-wrapper { margin-top: 10px; }
-      .formula-grid { 
-        grid-template-columns: 1fr; 
+      .results-container {
+        flex-direction: column;
       }
-      .katex { 
-        font-size: 0.9rem !important; 
+
+      #results,
+      #weibullChartContainer {
+        width: 100%;
+      }
+
+      .main-content-wrapper {
+        margin-top: 10px;
+      }
+
+      .formula-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .katex {
+        font-size: 0.9rem !important;
       }
     }
+
     @media (max-width: 480px) {
-      body { line-height: 1.5; }
-      .container, .calculation-block { padding: 1rem; }
+      body {
+        line-height: 1.5;
+      }
+
+      .container,
+      .calculation-block {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<header role="banner" class="top-bar">
-    <a href="index.html" class="logo-container-link">
-        <div class="logo-container">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
-            <span class="logo-text">SigmaExacta</span>
-        </div>
-    </a>
+  <!-- Header incluido desde archivo externo -->
+  <div id="header-container"></div>
 
-    <nav class="navigation">
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <ul class="nav-menu" id="nav-menu">
-            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-            
-            <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
-                <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-menu" id="tools-dropdown-menu">
-                    <div class="dropdown-grid">
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Process & Quality</h4>
-                            <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
-                            <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
-                            <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
-                            <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Design & Innovation</h4>
-                            <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
-                            <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
-                            <a href="fmea.html" class="dropdown-link">FMEA</a>
-                            <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
-                            <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
-                            <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
-                            <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
-                            <a href="kano.html" class="dropdown-link">Kano Model</a>
-                        </div>
-                        <div class="dropdown-column">
-                            <h4 class="dropdown-category">Problem Solving</h4>
-                            <a href="8d.html" class="dropdown-link">8D Report</a>
-                            <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
-                            <a href="triz.html" class="dropdown-link">TRIZ</a>
-                            <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
-                        </div>
-                         <div class="dropdown-column">
-                            <h4 class="dropdown-category">Strategy & Management</h4>
-                            <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
-                            <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
-                            <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
-                            <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
-            <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
-        </ul>
-    </nav>
-</header>
+  <main class="main-content-wrapper">
+    <header class="main-header">
+      <h1><span
+          style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #ff2d55; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i
+            class="fas fa-chart-area" style="color: white; font-size: 22px;"></i></span> Free Online Weibull Analysis
+        for Failure Prediction</h1>
+      <p>Estimate reliability and predict failures using the Weibull distribution.</p>
+    </header>
 
-<main class="main-content-wrapper">
-  <header class="main-header">
-    <h1><span style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #ff2d55; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i class="fas fa-chart-area" style="color: white; font-size: 22px;"></i></span> Free Online Weibull Analysis for Failure Prediction</h1>
-    <p>Estimate reliability and predict failures using the Weibull distribution.</p>
-  </header>
-
-  <div class="container">
-    <h2><i class="fas fa-question-circle"></i> What is Weibull Analysis?</h2>
-    <p><strong>Weibull Analysis</strong> is a powerful statistical method used in reliability engineering to model time-to-failure data. It is highly versatile and can model the failure characteristics of complex systems, from infant mortality to wear-out failures.</p>
-    <p>The analysis yields two key parameters:</p>
-    <ul>
+    <div class="container">
+      <h2><i class="fas fa-question-circle"></i> What is Weibull Analysis?</h2>
+      <p><strong>Weibull Analysis</strong> is a powerful statistical method used in reliability engineering to model
+        time-to-failure data. It is highly versatile and can model the failure characteristics of complex systems, from
+        infant mortality to wear-out failures.</p>
+      <p>The analysis yields two key parameters:</p>
+      <ul>
         <li><strong>Beta (β) - The Shape Parameter:</strong> Describes the failure mode.
-            <ul>
-                <li><strong>β &lt; 1:</strong> Decreasing failure rate (infant mortality). Failures are more likely at the beginning.</li>
-                <li><strong>β = 1:</strong> Constant failure rate (random failures). The process follows an exponential distribution.</li>
-                <li><strong>β &gt; 1:</strong> Increasing failure rate (wear-out). Failures become more likely as the product ages.</li>
-            </ul>
-        </li>
-        <li><strong>Eta (η) - The Scale Parameter:</strong> Also known as the characteristic life. It's the time at which <strong>63.2%</strong> of the population is expected to have failed.</li>
-    </ul>
-  </div>
-
-  <div class="container">
-    <h2><i class="fas fa-tools"></i> Why is Weibull Analysis Useful?</h2>
-    <p>Originally developed by Waloddi Weibull to model material strength, this analysis is now a cornerstone of modern reliability engineering. It allows engineers and managers to make data-driven decisions about:</p>
-    <ul>
-      <li><strong>Maintenance Planning:</strong> Predict when parts are likely to fail to schedule preventive maintenance.</li>
-      <li><strong>Warranty Analysis:</strong> Forecast warranty claims and costs.</li>
-      <li><li><strong>Design Improvement:</strong> Identify failure modes (e.g., wear-out vs. early failures) to guide product improvements.</li>
-      <li><strong>Risk Assessment:</strong> Quantify the reliability of a component or system over its operational life.</li>
-    </ul>
-  </div>
-
-  <!-- AÑADIDO: Sección History & Origin -->
-  <div class="container">
-    <h2><i class="fas fa-history"></i> History & Origin</h2>
-    <p>The Weibull distribution was first described by Swedish engineer and mathematician <strong>Waloddi Weibull</strong> in 1937. Initially developed to model material strength and fatigue life, Weibull presented his distribution to the American Society of Mechanical Engineers in 1951 in a famous paper titled "A Statistical Distribution Function of Wide Applicability."</p>
-    <p>What made Weibull's approach revolutionary was its flexibility to model various failure patterns through its shape parameter (β). Unlike the normal distribution, which assumes symmetrical variation around a mean, the Weibull distribution can effectively model:</p>
-    <ul>
-      <li><strong>Infant Mortality</strong> (β < 1): Early failures due to manufacturing defects</li>
-      <li><strong>Random Failures</strong> (β = 1): Constant failure rate, equivalent to exponential distribution</li>
-      <li><strong>Wear-Out Failures</strong> (β > 1): Age-related failures that increase over time</li>
-    </ul>
-    <p>This versatility made Weibull analysis particularly valuable in reliability engineering, maintenance planning, and failure analysis across industries from aerospace to manufacturing.</p>
-  </div>
-
-  <div class="container">
-    <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-    <ol>
-      <li><strong>Enter Failure Data:</strong> In the first field, type the times at which failures occurred, separated by commas. These can be hours, cycles, kilometers, etc. You can also press "Load Example" to see a sample dataset.</li>
-      <li><strong>Analyze:</strong> Press the "Analyze Failures" button.</li>
-      <li><strong>Review Results:</strong>
-          <ul style="margin-top: 10px; list-style-type: circle;">
-              <li><strong>Numerical Results:</strong> Review the calculated Beta (β), Eta (η), and Mean Time To Failure (MTTF). Interpret the Beta value to understand the failure mode of your system.</li>
-              <li><strong>Weibull Probability Plot:</strong> This special chart visualizes your failure data. If the points form a reasonably straight line, it confirms that the Weibull distribution is a good fit for your data. The blue line is the best-fit regression line used to calculate the parameters.</li>
-              <li><strong>Make a Prediction (Optional):</strong> Enter a specific time (in the same units as your failure data) into the prediction field and press "Analyze Failures" again to see the cumulative probability of failure by that time.</li>
-              <li><strong>Add and Export:</strong> You can add multiple analyses to a list and then export all results to an Excel file for your reports.</li>
+          <ul>
+            <li><strong>β &lt; 1:</strong> Decreasing failure rate (infant mortality). Failures are more likely at the
+              beginning.</li>
+            <li><strong>β = 1:</strong> Constant failure rate (random failures). The process follows an exponential
+              distribution.</li>
+            <li><strong>β &gt; 1:</strong> Increasing failure rate (wear-out). Failures become more likely as the
+              product ages.</li>
           </ul>
-      </li>
-    </ol>
-  </div>
+        </li>
+        <li><strong>Eta (η) - The Scale Parameter:</strong> Also known as the characteristic life. It's the time at
+          which <strong>63.2%</strong> of the population is expected to have failed.</li>
+      </ul>
+    </div>
 
-  <div class="calculator-section">
+    <div class="container">
+      <h2><i class="fas fa-tools"></i> Why is Weibull Analysis Useful?</h2>
+      <p>Originally developed by Waloddi Weibull to model material strength, this analysis is now a cornerstone of
+        modern reliability engineering. It allows engineers and managers to make data-driven decisions about:</p>
+      <ul>
+        <li><strong>Maintenance Planning:</strong> Predict when parts are likely to fail to schedule preventive
+          maintenance.</li>
+        <li><strong>Warranty Analysis:</strong> Forecast warranty claims and costs.</li>
+        <li>
+        <li><strong>Design Improvement:</strong> Identify failure modes (e.g., wear-out vs. early failures) to guide
+          product improvements.</li>
+        <li><strong>Risk Assessment:</strong> Quantify the reliability of a component or system over its operational
+          life.</li>
+      </ul>
+    </div>
+
+    <!-- AÑADIDO: Sección History & Origin -->
+    <div class="container">
+      <h2><i class="fas fa-history"></i> History & Origin</h2>
+      <p>The Weibull distribution was first described by Swedish engineer and mathematician <strong>Waloddi
+          Weibull</strong> in 1937. Initially developed to model material strength and fatigue life, Weibull presented
+        his distribution to the American Society of Mechanical Engineers in 1951 in a famous paper titled "A Statistical
+        Distribution Function of Wide Applicability."</p>
+      <p>What made Weibull's approach revolutionary was its flexibility to model various failure patterns through its
+        shape parameter (β). Unlike the normal distribution, which assumes symmetrical variation around a mean, the
+        Weibull distribution can effectively model:</p>
+      <ul>
+        <li><strong>Infant Mortality</strong> (β < 1): Early failures due to manufacturing defects</li>
+        <li><strong>Random Failures</strong> (β = 1): Constant failure rate, equivalent to exponential distribution</li>
+        <li><strong>Wear-Out Failures</strong> (β > 1): Age-related failures that increase over time</li>
+      </ul>
+      <p>This versatility made Weibull analysis particularly valuable in reliability engineering, maintenance planning,
+        and failure analysis across industries from aerospace to manufacturing.</p>
+    </div>
+
+    <div class="container">
+      <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+      <ol>
+        <li><strong>Enter Failure Data:</strong> In the first field, type the times at which failures occurred,
+          separated by commas. These can be hours, cycles, kilometers, etc. You can also press "Load Example" to see a
+          sample dataset.</li>
+        <li><strong>Analyze:</strong> Press the "Analyze Failures" button.</li>
+        <li><strong>Review Results:</strong>
+          <ul style="margin-top: 10px; list-style-type: circle;">
+            <li><strong>Numerical Results:</strong> Review the calculated Beta (β), Eta (η), and Mean Time To Failure
+              (MTTF). Interpret the Beta value to understand the failure mode of your system.</li>
+            <li><strong>Weibull Probability Plot:</strong> This special chart visualizes your failure data. If the
+              points form a reasonably straight line, it confirms that the Weibull distribution is a good fit for your
+              data. The blue line is the best-fit regression line used to calculate the parameters.</li>
+            <li><strong>Make a Prediction (Optional):</strong> Enter a specific time (in the same units as your failure
+              data) into the prediction field and press "Analyze Failures" again to see the cumulative probability of
+              failure by that time.</li>
+            <li><strong>Add and Export:</strong> You can add multiple analyses to a list and then export all results to
+              an Excel file for your reports.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <div class="calculator-section">
       <div class="calculation-block">
         <div class="calculation-title">Weibull Analysis Calculator</div>
         <form id="weibullForm">
           <label for="failureTimes"><i class="fas fa-clock"></i> Times to Failure (comma-separated):</label>
           <textarea id="failureTimes" rows="1" placeholder="Example: 1500, 2350, 1820, 2100" required></textarea>
-          
-          <label for="predictTime"><i class="fas fa-bullseye"></i> Predict Probability of Failure by Time (Optional):</label>
+
+          <label for="predictTime"><i class="fas fa-bullseye"></i> Predict Probability of Failure by Time
+            (Optional):</label>
           <input type="text" id="predictTime" placeholder="e.g., 2000" />
-          
+
           <button type="submit"><i class="fas fa-calculator"></i> Analyze Failures</button>
-          <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
+          <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load
+            Example</button>
         </form>
       </div>
 
@@ -686,303 +562,323 @@
         <div id="results" style="display:none;">
           <div class="calculation-title">Results</div>
           <p><i class="fas fa-shapes"></i> Shape Parameter (β): <span id="beta" class="result-value">-</span></p>
-          <p><i class="fas fa-ruler-horizontal"></i> Scale Parameter / Characteristic Life (η): <span id="eta" class="result-value">-</span></p>
-          <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf" class="result-value">-</span></p>
+          <p><i class="fas fa-ruler-horizontal"></i> Scale Parameter / Characteristic Life (η): <span id="eta"
+              class="result-value">-</span></p>
+          <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf" class="result-value">-</span>
+          </p>
           <hr style="border: 1px solid #eee; margin: 1rem 0;">
           <p id="predictionResult" style="display:none;">
-            <i class="fas fa-chart-pie"></i> Probability of failure by time <span id="timeForPrediction" class="result-value">-</span>: <span id="failureProbability" class="result-value">-</span>%
+            <i class="fas fa-chart-pie"></i> Probability of failure by time <span id="timeForPrediction"
+              class="result-value">-</span>: <span id="failureProbability" class="result-value">-</span>%
           </p>
-          
+
           <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to List</button>
         </div>
 
         <div id="weibullChartContainer">
-            <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Watermark" class="chart-watermark">
-            <div class="canvas-wrapper">
-                <canvas id="weibullChartCanvas"></canvas>
-            </div>
+          <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Watermark" class="chart-watermark">
+          <div class="canvas-wrapper">
+            <canvas id="weibullChartCanvas"></canvas>
+          </div>
         </div>
       </div>
 
       <div class="calculation-block">
         <div class="calculation-title">Aggregated Results</div>
         <div id="aggregatedResultsContainer">
-          </div>
+        </div>
         <button id="exportBtn" style="margin-top: 10px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
       </div>
-  </div>
+    </div>
 
-  <!-- AÑADIDO: Sección Mathematical Formulas -->
-  <div class="container">
-    <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
-    <div class="formula-grid">
-      <div class="formula-item">
-        <h3>Weibull Probability Density Function (PDF)</h3>
-        <div style="font-size: 1rem;">$$ f(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
-        <p>Where $t$ is time, $\beta$ is the shape parameter, and $\eta$ is the scale parameter.</p>
+    <!-- AÑADIDO: Sección Mathematical Formulas -->
+    <div class="container">
+      <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+      <div class="formula-grid">
+        <div class="formula-item">
+          <h3>Weibull Probability Density Function (PDF)</h3>
+          <div style="font-size: 1rem;">$$ f(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} e^{-\left(
+            \frac{t}{\eta} \right)^{\beta}} $$</div>
+          <p>Where $t$ is time, $\beta$ is the shape parameter, and $\eta$ is the scale parameter.</p>
+        </div>
+        <div class="formula-item">
+          <h3>Cumulative Distribution Function (CDF)</h3>
+          <div style="font-size: 1rem;">$$ F(t) = 1 - e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+          <p>Probability of failure by time $t$.</p>
+        </div>
+        <div class="formula-item">
+          <h3>Reliability Function</h3>
+          <div style="font-size: 1rem;">$$ R(t) = e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+          <p>Probability of survival beyond time $t$.</p>
+        </div>
+        <div class="formula-item">
+          <h3>Mean Time To Failure (MTTF)</h3>
+          <div style="font-size: 1rem;">$$ MTTF = \eta \cdot \Gamma\left(1 + \frac{1}{\beta}\right) $$</div>
+          <p>Where $\Gamma$ is the Gamma function.</p>
+        </div>
+        <div class="formula-item">
+          <h3>Failure Rate (Hazard Function)</h3>
+          <div style="font-size: 1rem;">$$ h(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} $$</div>
+          <p>Instantaneous failure rate at time $t$.</p>
+        </div>
+        <div class="formula-item">
+          <h3>Median Life</h3>
+          <div style="font-size: 1rem;">$$ t_{0.5} = \eta (\ln 2)^{1/\beta} $$</div>
+          <p>Time when 50% of units have failed.</p>
+        </div>
       </div>
-      <div class="formula-item">
-        <h3>Cumulative Distribution Function (CDF)</h3>
-        <div style="font-size: 1rem;">$$ F(t) = 1 - e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
-        <p>Probability of failure by time $t$.</p>
-      </div>
-      <div class="formula-item">
-        <h3>Reliability Function</h3>
-        <div style="font-size: 1rem;">$$ R(t) = e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
-        <p>Probability of survival beyond time $t$.</p>
-      </div>
-      <div class="formula-item">
-        <h3>Mean Time To Failure (MTTF)</h3>
-        <div style="font-size: 1rem;">$$ MTTF = \eta \cdot \Gamma\left(1 + \frac{1}{\beta}\right) $$</div>
-        <p>Where $\Gamma$ is the Gamma function.</p>
-      </div>
-      <div class="formula-item">
-        <h3>Failure Rate (Hazard Function)</h3>
-        <div style="font-size: 1rem;">$$ h(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} $$</div>
-        <p>Instantaneous failure rate at time $t$.</p>
-      </div>
-      <div class="formula-item">
-        <h3>Median Life</h3>
-        <div style="font-size: 1rem;">$$ t_{0.5} = \eta (\ln 2)^{1/\beta} $$</div>
-        <p>Time when 50% of units have failed.</p>
+      <div class="legend">
+        <h3>Weibull Parameters Legend</h3>
+        <ul>
+          <li><code>β (Beta)</code>: Shape parameter - determines failure pattern</li>
+          <li><code>η (Eta)</code>: Scale parameter - characteristic life (63.2% failure point)</li>
+          <li><code>t</code>: Time or cycles</li>
+          <li><code>Γ</code>: Gamma function</li>
+          <li><code>f(t)</code>: Probability density at time t</li>
+          <li><code>F(t)</code>: Cumulative probability of failure by time t</li>
+          <li><code>R(t)</code>: Reliability (survival probability) at time t</li>
+          <li><code>h(t)</code>: Failure rate at time t</li>
+        </ul>
       </div>
     </div>
-    <div class="legend">
-      <h3>Weibull Parameters Legend</h3>
-      <ul>
-        <li><code>β (Beta)</code>: Shape parameter - determines failure pattern</li>
-        <li><code>η (Eta)</code>: Scale parameter - characteristic life (63.2% failure point)</li>
-        <li><code>t</code>: Time or cycles</li>
-        <li><code>Γ</code>: Gamma function</li>
-        <li><code>f(t)</code>: Probability density at time t</li>
-        <li><code>F(t)</code>: Cumulative probability of failure by time t</li>
-        <li><code>R(t)</code>: Reliability (survival probability) at time t</li>
-        <li><code>h(t)</code>: Failure rate at time t</li>
-      </ul>
-    </div>
-  </div>
-</main>
-<footer>
+  </main>
+  <footer>
     <div class="disclaimer-note">
-        <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and educational purposes only. This tool is based on established methodologies in reliability engineering. The tools on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee regarding the results. All engineering, maintenance, and business decisions based on the output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from the use of this website.</p>
+      <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
+        educational purposes only. This tool is based on established methodologies in reliability engineering. The tools
+        on this site are independent implementations and are not affiliated with, sponsored by, or endorsed by the
+        original creators of these methodologies. While we strive for accuracy, we make no warranty or guarantee
+        regarding the results. All engineering, maintenance, and business decisions based on the output of this tool are
+        the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or losses
+        resulting from the use of this website.</p>
     </div>
-</footer>
-<script>
-  // Lógica para el nuevo header de navegación (idéntica a index.html)
-  document.addEventListener('DOMContentLoaded', () => {
-      const navToggle = document.getElementById('nav-toggle');
-      const navMenu = document.getElementById('nav-menu');
-      const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-      const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-      const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+  </footer>
+  <script>
+    // Cargar el header desde el archivo externo
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
 
-      navToggle.addEventListener('click', () => {
-          navMenu.classList.toggle('show-menu');
-          const icon = navToggle.querySelector('i');
-          icon.classList.toggle('fa-bars');
-          icon.classList.toggle('fa-times');
-          
-          if (!navMenu.classList.contains('show-menu')) {
+        // Inicializar la funcionalidad del menú después de cargar el header
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+        const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+        const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+        if (navToggle && navMenu) {
+          navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            const icon = navToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+
+            if (!navMenu.classList.contains('show-menu')) {
               toolsDropdownMenu.classList.remove('show-submenu');
               toolsDropdownContainer.classList.remove('active');
-          }
-      });
-      
-      toolsDropdownToggle.addEventListener('click', (event) => {
-          if (window.innerWidth <= 992) {
-              event.preventDefault(); 
+            }
+          });
+        }
+
+        if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+          toolsDropdownToggle.addEventListener('click', (event) => {
+            if (window.innerWidth <= 992) {
+              event.preventDefault();
               toolsDropdownMenu.classList.toggle('show-submenu');
               toolsDropdownContainer.classList.toggle('active');
-          }
+            }
+          });
+        }
+      })
+      .catch(error => console.error('Error loading header:', error));
+
+    // --- CÓDIGO DE LA CALCULADORA WEIBULL ---
+
+    let chart;
+    let lastResult = null;
+    let aggregatedResultsData = [];
+    let calculationCounter = 1;
+
+    // Lanczos approximation for the Gamma function
+    function gamma(z) {
+      const g = 7;
+      const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+      if (z < 0.5) {
+        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+      }
+      z -= 1;
+      let x = p[0];
+      for (let i = 1; i < g + 2; i++) {
+        x += p[i] / (z + i);
+      }
+      const t = z + g + 0.5;
+      return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+    }
+
+    document.getElementById("weibullForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      calculateWeibull();
+    });
+
+    document.getElementById('loadExampleBtn').addEventListener('click', function () {
+      const exampleData = '1500, 2350, 1820, 2100, 2500, 1980, 2700';
+      const failureTimesTextarea = document.getElementById('failureTimes');
+      failureTimesTextarea.value = exampleData;
+      failureTimesTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    function calculateWeibull() {
+      const failureTimesInput = document.getElementById("failureTimes").value;
+      const failureTimes = failureTimesInput.split(",").map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0).sort((a, b) => a - b);
+
+      const n = failureTimes.length;
+
+      if (n < 2) {
+        alert("⚠️ You must enter at least 2 valid, positive failure times.");
+        return;
+      }
+
+      // Prepare data for linear regression
+      const points = failureTimes.map((time, index) => {
+        const rank = index + 1;
+        // FÓRMULA ORIGINAL DEL USUARIO (Hazen's Rank)
+        const medianRank = (rank - 0.5) / n;
+        const x = Math.log(time);
+        const y = Math.log(Math.log(1 / (1 - medianRank)));
+        return { x, y, time };
       });
-  });
 
-  // --- CÓDIGO DE LA CALCULADORA WEIBULL ---
+      // Linear regression: y = m*x + c
+      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+      points.forEach(p => {
+        sumX += p.x;
+        sumY += p.y;
+        sumX2 += p.x * p.x;
+      });
+      // Cálculo correcto de sum(x*y)
+      sumXY = points.reduce((acc, p) => acc + p.x * p.y, 0);
 
-  let chart;
-  let lastResult = null;
-  let aggregatedResultsData = [];
-  let calculationCounter = 1;
+      const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX); // Slope
+      const c = (sumY - m * sumX) / n; // Intercept
 
-  // Lanczos approximation for the Gamma function
-  function gamma(z) {
-    const g = 7;
-    const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
-    if (z < 0.5) {
-      return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
-    }
-    z -= 1;
-    let x = p[0];
-    for (let i = 1; i < g + 2; i++) {
-      x += p[i] / (z + i);
-    }
-    const t = z + g + 0.5;
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-  }
+      const beta = m;
+      const eta = Math.exp(-c / m);
 
-  document.getElementById("weibullForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    calculateWeibull();
-  });
+      // Calculate MTTF
+      const mttf = eta * gamma(1 + 1 / beta);
 
-  document.getElementById('loadExampleBtn').addEventListener('click', function() {
-    const exampleData = '1500, 2350, 1820, 2100, 2500, 1980, 2700';
-    const failureTimesTextarea = document.getElementById('failureTimes');
-    failureTimesTextarea.value = exampleData;
-    failureTimesTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-  
-  function calculateWeibull() {
-    const failureTimesInput = document.getElementById("failureTimes").value;
-    const failureTimes = failureTimesInput.split(",").map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0).sort((a, b) => a - b);
-    
-    const n = failureTimes.length;
+      document.getElementById("beta").textContent = beta.toFixed(4);
+      document.getElementById("eta").textContent = eta.toFixed(2);
+      document.getElementById("mttf").textContent = mttf.toFixed(2);
 
-    if (n < 2) {
-      alert("⚠️ You must enter at least 2 valid, positive failure times.");
-      return;
-    }
+      // Handle optional prediction
+      const predictTimeInput = document.getElementById("predictTime").value;
+      const predictTime = parseFloat(predictTimeInput);
+      const predictionResultEl = document.getElementById("predictionResult");
 
-    // Prepare data for linear regression
-    const points = failureTimes.map((time, index) => {
-      const rank = index + 1;
-      // FÓRMULA ORIGINAL DEL USUARIO (Hazen's Rank)
-      const medianRank = (rank - 0.5) / n; 
-      const x = Math.log(time);
-      const y = Math.log(Math.log(1 / (1 - medianRank)));
-      return { x, y, time };
-    });
-
-    // Linear regression: y = m*x + c
-    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    points.forEach(p => {
-      sumX += p.x;
-      sumY += p.y;
-      sumX2 += p.x * p.x;
-    });
-    // Cálculo correcto de sum(x*y)
-    sumXY = points.reduce((acc, p) => acc + p.x * p.y, 0); 
-    
-    const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX); // Slope
-    const c = (sumY - m * sumX) / n; // Intercept
-
-    const beta = m;
-    const eta = Math.exp(-c / m);
-
-    // Calculate MTTF
-    const mttf = eta * gamma(1 + 1 / beta);
-
-    document.getElementById("beta").textContent = beta.toFixed(4);
-    document.getElementById("eta").textContent = eta.toFixed(2);
-    document.getElementById("mttf").textContent = mttf.toFixed(2);
-    
-    // Handle optional prediction
-    const predictTimeInput = document.getElementById("predictTime").value;
-    const predictTime = parseFloat(predictTimeInput);
-    const predictionResultEl = document.getElementById("predictionResult");
-
-    if (!isNaN(predictTime) && predictTime > 0) {
+      if (!isNaN(predictTime) && predictTime > 0) {
         const prob = (1 - Math.exp(-Math.pow(predictTime / eta, beta))) * 100;
         document.getElementById("timeForPrediction").textContent = predictTime;
         document.getElementById("failureProbability").textContent = prob.toFixed(2);
         predictionResultEl.style.display = "block";
-    } else {
+      } else {
         predictionResultEl.style.display = "none";
+      }
+
+      document.getElementById("results").style.display = "block";
+      document.getElementById("addBtn").disabled = false;
+
+      lastResult = {
+        id: calculationCounter,
+        timestamp: new Date().toLocaleString(),
+        failureTimes: failureTimesInput,
+        beta: beta,
+        eta: eta,
+        mttf: mttf
+      };
+
+      plotChart(points, m, c);
     }
 
-    document.getElementById("results").style.display = "block";
-    document.getElementById("addBtn").disabled = false;
+    function plotChart(points, slope, intercept) {
+      const regressionLine = points.map(p => ({
+        x: p.x,
+        y: slope * p.x + intercept
+      }));
 
-    lastResult = {
-      id: calculationCounter,
-      timestamp: new Date().toLocaleString(),
-      failureTimes: failureTimesInput,
-      beta: beta,
-      eta: eta,
-      mttf: mttf
-    };
+      if (chart) chart.destroy();
 
-    plotChart(points, m, c);
-  }
-
-  function plotChart(points, slope, intercept) {
-    const regressionLine = points.map(p => ({
-      x: p.x,
-      y: slope * p.x + intercept
-    }));
-
-    if (chart) chart.destroy();
-
-    const ctx = document.getElementById("weibullChartCanvas").getContext("2d");
-    chart = new Chart(ctx, {
-      type: "scatter",
-      data: {
-        datasets: [
-          {
-            label: "Failure Data Points",
-            data: points.map(p => ({ x: p.time, y: p.y })),
-            backgroundColor: "#e74c3c",
-            pointRadius: 5,
-            pointHoverRadius: 7
-          },
-          {
-            label: "Weibull Fit Line",
-            data: regressionLine.map((p, i) => ({ x: points[i].time, y: p.y })),
-            borderColor: "#3498db",
-            backgroundColor: "transparent",
-            type: "line",
-            showLine: true,
-            pointRadius: 0,
-            borderWidth: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "logarithmic",
-            title: { display: true, text: "Time to Failure (Log Scale)" },
-            grid: { color: "rgba(0, 0, 0, 0.05)" }
-          },
-          y: {
-            type: "linear",
-            title: { display: true, text: "ln(ln(1/(1-F(t))))" },
-            grid: { color: "rgba(0, 0, 0, 0.05)" }
-          }
+      const ctx = document.getElementById("weibullChartCanvas").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "scatter",
+        data: {
+          datasets: [
+            {
+              label: "Failure Data Points",
+              data: points.map(p => ({ x: p.time, y: p.y })),
+              backgroundColor: "#e74c3c",
+              pointRadius: 5,
+              pointHoverRadius: 7
+            },
+            {
+              label: "Weibull Fit Line",
+              data: regressionLine.map((p, i) => ({ x: points[i].time, y: p.y })),
+              borderColor: "#3498db",
+              backgroundColor: "transparent",
+              type: "line",
+              showLine: true,
+              pointRadius: 0,
+              borderWidth: 2
+            }
+          ]
         },
-        plugins: {
-          legend: { position: "top" },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) {
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "logarithmic",
+              title: { display: true, text: "Time to Failure (Log Scale)" },
+              grid: { color: "rgba(0, 0, 0, 0.05)" }
+            },
+            y: {
+              type: "linear",
+              title: { display: true, text: "ln(ln(1/(1-F(t))))" },
+              grid: { color: "rgba(0, 0, 0, 0.05)" }
+            }
+          },
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
                     label += ': ';
-                }
-                if (context.parsed.x !== null) {
+                  }
+                  if (context.parsed.x !== null) {
                     label += `Time = ${context.parsed.x.toFixed(2)}`;
+                  }
+                  return label;
                 }
-                return label;
               }
             }
           }
         }
-      }
-    });
-  }
+      });
+    }
 
-  document.getElementById("addBtn").addEventListener("click", addResultToList);
-  function addResultToList() {
-    if (!lastResult) return;
-    
-    aggregatedResultsData.push(lastResult);
+    document.getElementById("addBtn").addEventListener("click", addResultToList);
+    function addResultToList() {
+      if (!lastResult) return;
 
-    const container = document.getElementById('aggregatedResultsContainer');
-    const card = document.createElement('div');
-    card.className = 'result-card';
+      aggregatedResultsData.push(lastResult);
 
-    card.innerHTML = `
+      const container = document.getElementById('aggregatedResultsContainer');
+      const card = document.createElement('div');
+      card.className = 'result-card';
+
+      card.innerHTML = `
         <div class="result-card-header">
             <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Icon" class="result-card-icon">
             <div class="result-card-title">Calculation #${lastResult.id} - ${lastResult.timestamp}</div>
@@ -1007,59 +903,60 @@
         </div>
     `;
 
-    container.prepend(card);
-    
-    calculationCounter++;
-    document.getElementById("addBtn").disabled = true;
-  }
+      container.prepend(card);
 
-  document.getElementById("exportBtn").addEventListener("click", exportExcel);
-  function exportExcel() {
-    if (aggregatedResultsData.length === 0) {
-        alert("No results to export. Please add results to the list first.");
-        return;
+      calculationCounter++;
+      document.getElementById("addBtn").disabled = true;
     }
 
-    const dataForSheet = aggregatedResultsData.map(res => ({
+    document.getElementById("exportBtn").addEventListener("click", exportExcel);
+    function exportExcel() {
+      if (aggregatedResultsData.length === 0) {
+        alert("No results to export. Please add results to the list first.");
+        return;
+      }
+
+      const dataForSheet = aggregatedResultsData.map(res => ({
         "Calculation #": res.id,
         "Timestamp": res.timestamp,
         "Times to Failure": res.failureTimes,
         "Shape (β)": res.beta,
         "Scale (η)": res.eta,
         "MTTF": res.mttf
-    }));
-    
-    const wb = XLSX.utils.book_new();
-    
-    // Create custom headers
-    const header = [
+      }));
+
+      const wb = XLSX.utils.book_new();
+
+      // Create custom headers
+      const header = [
         ["SigmaExacta Weibull Analysis"],
         ["Generated on:", new Date().toLocaleString()]
-    ];
-    
-    // Create worksheet from headers first
-    const ws = XLSX.utils.aoa_to_sheet(header);
+      ];
 
-    // Add JSON data to the worksheet, starting below the headers
-    // We use origin: 'A4' to leave a blank line (row 3) for spacing.
-    XLSX.utils.sheet_add_json(ws, dataForSheet, {
-        origin: "A4", 
+      // Create worksheet from headers first
+      const ws = XLSX.utils.aoa_to_sheet(header);
+
+      // Add JSON data to the worksheet, starting below the headers
+      // We use origin: 'A4' to leave a blank line (row 3) for spacing.
+      XLSX.utils.sheet_add_json(ws, dataForSheet, {
+        origin: "A4",
         skipHeader: false // We want the headers from the JSON object
+      });
+
+      XLSX.utils.book_append_sheet(wb, ws, "Weibull Results");
+      XLSX.writeFile(wb, "Weibull_Analysis_Sigma_Exacta.xlsx");
+    }
+
+    const failureTimesTextarea = document.getElementById('failureTimes');
+    failureTimesTextarea.addEventListener('input', () => {
+      failureTimesTextarea.style.height = 'auto';
+      failureTimesTextarea.style.height = (failureTimesTextarea.scrollHeight) + 'px';
     });
-    
-    XLSX.utils.book_append_sheet(wb, ws, "Weibull Results");
-    XLSX.writeFile(wb, "Weibull_Analysis_Sigma_Exacta.xlsx");
-  }
+    // Trigger on load in case there's pre-filled data (e.g., from browser cache)
+    failureTimesTextarea.dispatchEvent(new Event('input'));
 
-  const failureTimesTextarea = document.getElementById('failureTimes');
-  failureTimesTextarea.addEventListener('input', () => {
-    failureTimesTextarea.style.height = 'auto';
-    failureTimesTextarea.style.height = (failureTimesTextarea.scrollHeight) + 'px';
-  });
-  // Trigger on load in case there's pre-filled data (e.g., from browser cache)
-  failureTimesTextarea.dispatchEvent(new Event('input'));
-
-</script>
+  </script>
 
 </body>
+
 </html>
