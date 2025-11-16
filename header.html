@@ -10,7 +10,6 @@
             align-items: center;
             padding: 10px 20px;
             background-color: #222;
-            flex-wrap: wrap;
         }
 
         .logo-text,
@@ -84,26 +83,8 @@
         }
 
         @media (max-width: 992px) {
-            .top-bar {
-                flex-wrap: nowrap;
-                /* Cambio importante: evitar que se envuelva */
-            }
-
-            .logo-container-link {
-                flex: 1;
-                /* Ocupa el espacio disponible */
-            }
-
             .nav-toggle {
                 display: block;
-                order: 2;
-                /* Mantener el botón a la derecha */
-            }
-
-            .navigation {
-                order: 3;
-                /* El menú completo va después */
-                width: 100%;
             }
 
             .navigation .nav-menu {
@@ -172,11 +153,10 @@
         </div>
     </a>
 
-    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <nav class="navigation">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
         <ul class="nav-menu" id="nav-menu">
             <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
             <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
@@ -223,4 +203,37 @@
             <li class="nav-item"><a href="mailto:sigmaexacta@gmail.com" class="nav-link">Contact</a></li>
         </ul>
     </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                    if (!navMenu.classList.contains('show-menu')) {
+                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
+        });
+    </script>
 </header>

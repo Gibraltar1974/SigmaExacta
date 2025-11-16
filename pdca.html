@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -551,13 +550,6 @@
 <body>
 
     <div id="header-placeholder"></div>
-    <script>
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-            });
-    </script>
     <main class="main-content-wrapper">
         <header class="header">
             <h1>
@@ -701,7 +693,8 @@
     <script>
         let cycleData = {};
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Mover toda la lógica de inicialización aquí
+        function initializePage() {
             // --- START: Lógica del Header (idéntica a index.html) ---
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
@@ -709,25 +702,29 @@
             const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
             const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-            navToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('show-menu');
-                const icon = navToggle.querySelector('i');
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
 
-                if (!navMenu.classList.contains('show-menu')) {
-                    toolsDropdownMenu.classList.remove('show-submenu');
-                    toolsDropdownContainer.classList.remove('active');
-                }
-            });
+                    if (!navMenu.classList.contains('show-menu')) {
+                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
 
-            toolsDropdownToggle.addEventListener('click', (event) => {
-                if (window.innerWidth <= 992) {
-                    event.preventDefault();
-                    toolsDropdownMenu.classList.toggle('show-submenu');
-                    toolsDropdownContainer.classList.toggle('active');
-                }
-            });
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
             // --- END: Lógica del Header ---
 
             // Lógica específica de la página PDCA
@@ -735,7 +732,19 @@
                 textarea.addEventListener('input', function () { autoResizeTextarea(this); });
                 autoResizeTextarea(textarea);
             });
-        });
+        }
+
+        // Cargar el header y luego inicializar la página
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                // Esperar un breve momento para que el DOM se actualice
+                setTimeout(initializePage, 10);
+            })
+            .catch(error => {
+                console.error('Error loading header:', error);
+            });
 
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
@@ -874,7 +883,6 @@
             resultsDiv.classList.remove('hidden');
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
-        // --- FIN FUNCIÓN CLAVE ---
 
         function exportToExcel() {
             if (Object.keys(cycleData).length === 0) {
@@ -910,7 +918,6 @@
             const dateStr = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `PDCA_Report_Sigma_Exacta_${dateStr}.xlsx`);
         }
-
     </script>
 </body>
 
