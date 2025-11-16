@@ -15,7 +15,7 @@ const trizStandardSolutions = {
                 principles: [35] // Change parameters
             },
             "1.1.3": {
-                title: "External additive substance", 
+                title: "External additive substance",
                 description: "Introduce external additive S3 to change S1 or S2",
                 principles: [39] // Inert atmosphere
             },
@@ -81,7 +81,7 @@ const trizStandardSolutions = {
             },
             "2.1.2": {
                 title: "Develop Su-Field chain",
-                description: "Develop chain of connected Su-Field systems", 
+                description: "Develop chain of connected Su-Field systems",
                 principles: [5] // Merging
             },
             "2.1.3": {
@@ -90,7 +90,7 @@ const trizStandardSolutions = {
                 principles: [17] // Another dimension
             },
             "2.1.4": {
-                title: "Simplify Su-Field system", 
+                title: "Simplify Su-Field system",
                 description: "Simplify by removing unnecessary elements",
                 principles: [2, 5, 34] // Take out, Merging, Discard/recover
             },
@@ -409,16 +409,81 @@ const trizStandardSolutions = {
 };
 
 // ==========================================================
-// 🗺️ Mapeo de soluciones a tipos de problemas Su-Field (Existente)
+// 🗺️ Mapeo de soluciones a tipos de problemas Su-Field (TRIZ puro - Altshuller)
 // ==========================================================
 const solutionMap = {
-    // Soluciones recomendadas para cada tipo de problema Su-Field
-    insufficient: ["1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7", "1.1.8", "2.1.1", "2.1.2", "2.1.3", "2.1.6", "2.1.7", "2.2.2", "2.2.3", "2.3.1", "2.3.2", "2.3.4", "2.3.5", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3", "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.4", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1", "5.1.4", "5.2.1", "5.2.2"],
-    harmful: ["1.1.3", "1.1.7", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5", "2.1.4", "2.2.1", "2.4.8", "5.1.3.2", "5.1.3.3"],
-    difficult: ["1.1.6", "1.1.7", "2.1.4", "2.2.1", "2.3.3", "2.4.7", "3.2.3", "4.1.1", "4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.1.6", "4.3.1", "4.3.2", "4.4.1", "4.4.2", "4.4.3", "5.3.1", "5.3.2"],
-    missing: ["1.1.1", "2.1.1", "2.1.2", "2.1.3", "2.1.5", "2.1.6", "2.1.7", "2.2.2", "2.3.1", "2.3.4", "2.3.5", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3", "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.4", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1", "5.1.4"],
-    excessive: ["1.1.6", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5", "2.1.4", "2.2.1", "2.3.3", "2.4.8", "5.1.3.2", "5.1.3.3"],
-    inefficient: ["1.1.1", "1.1.4", "2.1.4", "2.1.7", "2.2.1", "2.3.2", "2.3.3", "3.2.3", "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.2.2", "5.1.3.1", "5.1.3.2", "5.1.3.3", "5.1.4", "5.2.1", "5.2.2", "5.3.1", "5.3.2"]
+    // Soluciones recomendadas para cada tipo de problema Su-Field (TRIZ ortodoxo)
+    // Basado en Altshuller: "The Innovation Algorithm" y seguimientos por Savransky/Royzen/Terninko.
+    insufficient: [
+        // Clase 1.1 (Completar o mejorar interacción)
+        "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7", "1.1.8",
+        // En caso mixto insufficient+harmful, Altshuller permite algunas 1.2
+        "1.2.1", "1.2.2", "1.2.3", "1.2.4",
+        // Clase 2 relevantes
+        "2.1.1", "2.1.2", "2.1.3", "2.1.6", "2.1.7",
+        "2.2.2", "2.2.3",
+        "2.3.1", "2.3.2", "2.3.4", "2.3.5",
+        "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
+        // Clase 3 (cuando corresponde por cambio de estado/campo)
+        "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3"
+    ],
+
+    harmful: [
+        // Clase 1.2 principal para eliminar/neutralizar efectos dañinos
+        "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
+        // Algunos 1.1 aplican en casos concretos
+        "1.1.3", "1.1.7",
+        // Clase 2 para modificar/eliminar estructuras problemáticas
+        "2.1.4", "2.2.1", "2.3.3", "2.4.8",
+        // Eliminaciones radicales (Clase 5)
+        "5.1.3.2", "5.1.3.3"
+    ],
+
+    difficult: [
+        // Toda la Clase 4 (detección/medición) es la ruta TRIZ para "difficult"
+        "4.1.1", "4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.1.6",
+        "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6",
+        "4.3.1", "4.3.2",
+        "4.4.1", "4.4.2", "4.4.3",
+        // Altshuller permite como soporte estas simplificaciones de medición
+        "5.3.1", "5.3.2"
+    ],
+
+    missing: [
+        // Añadir sustancia/campo: 1.1.x y luego Clase 2 que agrega recursos
+        "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7",
+        "2.1.1", "2.1.2", "2.1.3", "2.1.5", "2.1.6", "2.1.7",
+        "2.2.2",
+        "2.3.1", "2.3.4", "2.3.5",
+        "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
+        "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3",
+        // Casos en que se crea campo desde el entorno (Clase 5)
+        "5.1.1.1", "5.1.1.2", "5.1.1.3"
+    ],
+
+    excessive: [
+        // 1.2.x para eliminar/absorber exceso
+        "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
+        // Clase 2 para eliminar componentes/campos
+        "2.1.4", "2.2.1", "2.3.3", "2.4.8",
+        // Eliminaciones radicales (Clase 5)
+        "5.1.3.2", "5.1.3.3"
+    ],
+
+    inefficient: [
+        // Mejoras y optimizaciones (Clase 1 → Clase 2 → Clase 5)
+        "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7",
+        "2.1.1", "2.1.3", "2.1.7",
+        "2.2.1",
+        "2.3.2", "2.3.3",
+        "3.2.3",
+        "5.1.1.1", "5.1.1.2", "5.1.1.3",
+        "5.1.2.2",
+        "5.1.3.1", "5.1.3.2", "5.1.3.3",
+        "5.1.4",
+        "5.2.1", "5.2.2",
+        "5.3.1", "5.3.2"
+    ]
 };
 
 // ==========================================================
@@ -496,7 +561,7 @@ function verifySolutionCount() {
         console.error('❌ ERROR: Counts do not match the PDF specification.');
     }
 
-    return {counts, total, allMatch};
+    return { counts, total, allMatch };
 }
 
 // Verificación automática al cargar
