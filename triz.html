@@ -1568,15 +1568,8 @@
                     </select>
                 </div>
 
-                <div class="tese-info">
-                    <p><strong>Selected Law:</strong> <span id="current-law">Law 4: Ideality</span></p>
-                    <div id="recommended-principles-container">
-                        <p><strong>Related Principles:</strong> <span id="recommended-principles">Part elimination,
-                                Self-service, Multiple functions</span></p>
-                        <div id="ldst-examples">
-                        </div>
-                    </div>
-                </div>
+                <!-- ELIMINADO: La visualización automática de LDST -->
+                <!-- Se mantiene solo el botón para mostrar/ocultar la tabla de leyes -->
 
                 <div style="text-align: center; margin-top: 15px;">
                     <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide All
@@ -2158,17 +2151,6 @@
             const lawSelect = document.getElementById('ldst-law-select');
             currentLaw = lawSelect.value;
 
-            // Usar los datos de ldst.js
-            const ldstInfo = getLdstData(currentLaw);
-
-            document.getElementById('current-law').textContent = ldstInfo.name;
-            document.getElementById('recommended-principles').textContent = ldstInfo.principles.join(', ');
-            document.getElementById('ldst-examples').innerHTML = ldstInfo.examples;
-
-            // Generar iconos de principios usando la función de ldst.js
-            const principlesIconsHTML = generateLdstPrinciplesIcons(ldstInfo.principles);
-            document.getElementById('ldst-examples').insertAdjacentHTML('afterend', principlesIconsHTML);
-
             // Actualizar tabla de leyes
             updateLawsTable();
         }
@@ -2599,10 +2581,12 @@
             problemData.ifr = document.getElementById('ifr-formulation').value;
 
             // Agregar datos LDST
+            const ldstInfo = getLdstData(currentLaw);
             problemData.ldst = {
                 law: currentLaw,
-                lawName: document.getElementById('current-law').textContent,
-                principles: document.getElementById('recommended-principles').textContent
+                lawName: ldstInfo.name,
+                principles: ldstInfo.principles.join(', '),
+                examples: ldstInfo.examples
             };
 
             const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
@@ -2723,6 +2707,7 @@
             html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
         <p><strong>Selected Law:</strong> ${problemData.ldst.lawName}</p>
         <p><strong>Related Principles:</strong> ${problemData.ldst.principles}</p>
+        <div>${problemData.ldst.examples}</div>
         
         <div class="tese-trends-icons">`;
 
