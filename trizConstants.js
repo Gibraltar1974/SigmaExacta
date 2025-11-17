@@ -521,6 +521,7 @@ const standardSolutionClasses = {
 };
 
 // CORRECCIÓN: Ejemplos actualizados para usar combinaciones que existen en la matriz
+// CORRECCIÓN: Ejemplos actualizados para usar LDST en lugar de TESE
 const examples = [
     {
         system: "Bicycle Frame",
@@ -531,8 +532,8 @@ const examples = [
         improvingFeature: 12,  // 13: Stability of the object (índice 12)
         worseningFeature: 0,   // 1: Weight of moving object (índice 0)
         sufield: { systems: [{ object: "Rider's weight", tool: "Frame tubes", field: "Mechanical", type: "insufficient" }] },
-        teseStage: "infancy",
-        description: "Bicycle Frame - Infancy stage example"
+        ldstLaw: "law4", // Ley de Idealidad
+        description: "Bicycle Frame - Law 4 example"
     },
     {
         system: "Sunglasses",
@@ -545,8 +546,8 @@ const examples = [
         ozIntersection: "intersect",
         separationMethod: "separationInRelation",
         sufield: { systems: [{ object: "User's eyes", tool: "Dark lens", field: "Optical", type: "harmful" }] },
-        teseStage: "growth",
-        description: "Sunglasses - Growth stage example"
+        ldstLaw: "law5", // Ley de Desarrollo Desigual
+        description: "Sunglasses - Law 5 example"
     },
     {
         system: "Cooking Pot Handle",
@@ -557,8 +558,8 @@ const examples = [
         improvingFeature: 31,  // 32: Ease of manufacture (índice 31)
         worseningFeature: 15,  // 16: Duration of action by a stationary object (índice 15)
         sufield: { systems: [{ object: "User's hand", tool: "Hot handle", field: "Thermal", type: "harmful" }] },
-        teseStage: "maturity",
-        description: "Cooking Pot Handle - Maturity stage example"
+        ldstLaw: "law4", // Ley de Idealidad
+        description: "Cooking Pot Handle - Law 4 example"
     },
     {
         system: "Packaging for electronics",
@@ -571,8 +572,8 @@ const examples = [
         ozIntersection: "no-intersect",
         separationMethod: "bypassContradictoryDemands",
         sufield: { systems: [{ object: "Electronic device", tool: "Packaging material", field: "Mechanical", type: "excessive" }] },
-        teseStage: "maturity",
-        description: "Packaging for Electronics - Maturity stage example"
+        ldstLaw: "law6", // Ley de Transición al Supersistema
+        description: "Packaging for Electronics - Law 6 example"
     },
     {
         system: "Umbrella",
@@ -583,8 +584,8 @@ const examples = [
         improvingFeature: 3,   // 4: Length of stationary object (índice 3)
         worseningFeature: 10,  // 11: Stress or pressure (índice 10)
         sufield: { systems: [{ object: "User", tool: "Wind force", field: "Mechanical", type: "harmful" }] },
-        teseStage: "growth",
-        description: "Umbrella - Growth stage example"
+        ldstLaw: "law3", // Ley de Armonía
+        description: "Umbrella - Law 3 example"
     },
     {
         system: "Car Engine",
@@ -600,7 +601,7 @@ const examples = [
                 { object: "Coolant", tool: "Engine block", field: "Thermal", type: "inefficient" }
             ]
         },
-        teseStage: "decline",
-        description: "Car Engine - Decline stage example"
+        ldstLaw: "law7", // Ley de Transición Macro-Micro
+        description: "Car Engine - Law 7 example"
     }
 ];
