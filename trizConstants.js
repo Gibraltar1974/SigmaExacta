@@ -520,6 +520,23 @@ const standardSolutionClasses = {
     "Class 5: Strategies for simplification and Improvement": "This class offers solutions for simplifying systems and introducing effective changes. Use these when you need to make a system simpler, more efficient, or self-regulating."
 };
 
+// ===== NUEVO: Mapeo de fases de vida a leyes LDST =====
+const lifecycleToLdstMapping = {
+    birth: ["law1", "law2", "law3"],  // Enfasis en integridad, conductividad, armonía
+    growth: ["law4", "law5"],         // Enfasis en idealidad y desarrollo desigual
+    maturity: ["law6", "law7"],       // Enfasis en transición a supersistema y micro-nivel
+    decline: ["law4", "law8"],        // Re-idealización y aumento de complejidad
+    transition: ["law6", "law7", "law8"] // Transformación completa del sistema
+};
+
+const lifecycleRecommendations = {
+    birth: "Focus on establishing system integrity, energy flow, and harmonious interactions",
+    growth: "Focus on increasing ideality and resolving uneven development between subsystems",
+    maturity: "Focus on integration into supersystems and transition to micro-level solutions",
+    decline: "Focus on re-idealization and increasing field complexity for breakthrough",
+    transition: "Focus on complete system transformation through supersystem integration and new technologies"
+};
+
 // CORRECCIÓN: Ejemplos actualizados para usar combinaciones que existen en la matriz
 // CORRECCIÓN: Ejemplos actualizados para usar LDST en lugar de TESE
 const examples = [
@@ -532,6 +549,7 @@ const examples = [
         improvingFeature: 12,  // 13: Stability of the object (índice 12)
         worseningFeature: 0,   // 1: Weight of moving object (índice 0)
         sufield: { systems: [{ object: "Rider's weight", tool: "Frame tubes", field: "Mechanical", type: "insufficient" }] },
+        lifecycleStage: "growth", // NUEVA PROPIEDAD
         ldstLaw: "law4", // Ley de Idealidad
         description: "Bicycle Frame - Law 4 example"
     },
@@ -546,6 +564,7 @@ const examples = [
         ozIntersection: "intersect",
         separationMethod: "separationInRelation",
         sufield: { systems: [{ object: "User's eyes", tool: "Dark lens", field: "Optical", type: "harmful" }] },
+        lifecycleStage: "maturity", // NUEVA PROPIEDAD
         ldstLaw: "law5", // Ley de Desarrollo Desigual
         description: "Sunglasses - Law 5 example"
     },
@@ -558,6 +577,7 @@ const examples = [
         improvingFeature: 31,  // 32: Ease of manufacture (índice 31)
         worseningFeature: 15,  // 16: Duration of action by a stationary object (índice 15)
         sufield: { systems: [{ object: "User's hand", tool: "Hot handle", field: "Thermal", type: "harmful" }] },
+        lifecycleStage: "birth", // NUEVA PROPIEDAD
         ldstLaw: "law4", // Ley de Idealidad
         description: "Cooking Pot Handle - Law 4 example"
     },
@@ -572,6 +592,7 @@ const examples = [
         ozIntersection: "no-intersect",
         separationMethod: "bypassContradictoryDemands",
         sufield: { systems: [{ object: "Electronic device", tool: "Packaging material", field: "Mechanical", type: "excessive" }] },
+        lifecycleStage: "transition", // NUEVA PROPIEDAD
         ldstLaw: "law6", // Ley de Transición al Supersistema
         description: "Packaging for Electronics - Law 6 example"
     },
@@ -584,6 +605,7 @@ const examples = [
         improvingFeature: 3,   // 4: Length of stationary object (índice 3)
         worseningFeature: 10,  // 11: Stress or pressure (índice 10)
         sufield: { systems: [{ object: "User", tool: "Wind force", field: "Mechanical", type: "harmful" }] },
+        lifecycleStage: "decline", // NUEVA PROPIEDAD
         ldstLaw: "law3", // Ley de Armonía
         description: "Umbrella - Law 3 example"
     },
@@ -601,6 +623,7 @@ const examples = [
                 { object: "Coolant", tool: "Engine block", field: "Thermal", type: "inefficient" }
             ]
         },
+        lifecycleStage: "maturity", // NUEVA PROPIEDAD
         ldstLaw: "law7", // Ley de Transición Macro-Micro
         description: "Car Engine - Law 7 example"
     }

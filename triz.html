@@ -1548,28 +1548,34 @@
                 </p>
             </div>
 
-            <!-- REEMPLAZADO: Sección TESE por LDST -->
+            <!-- REEMPLAZADO: Sección LDST con selector de fase de vida -->
             <div class="solver-step" id="step-ldst">
                 <h3><i class="fas fa-project-diagram"></i> Step 1: Laws of Development of Technical Systems (LDST)</h3>
-                <p>Select a fundamental law of technical system development to analyze your system according to
+                <p>Select the life cycle stage of your system to get the most relevant development laws according to
                     Altshuller's classical framework.</p>
 
+                <!-- NUEVO: Selector de fase de vida -->
                 <div class="form-group">
-                    <label for="ldst-law-select">Law of Technical Systems Development:</label>
-                    <select id="ldst-law-select" onchange="updateLDST()">
-                        <option value="law1">Law 1: System Integrity</option>
-                        <option value="law2">Law 2: Energy Conductivity</option>
-                        <option value="law3">Law 3: Harmony</option>
-                        <option value="law4" selected>Law 4: Ideality</option>
-                        <option value="law5">Law 5: Uneven Development</option>
-                        <option value="law6">Law 6: Transition to Supersystem</option>
-                        <option value="law7">Law 7: Transition to Micro-Level</option>
-                        <option value="law8">Law 8: Increased S-Field Complexity</option>
+                    <label for="lifecycle-stage">System Life Cycle Stage:</label>
+                    <select id="lifecycle-stage" onchange="updateLDSTRecommendations()">
+                        <option value="birth">Birth (Introduction Phase)</option>
+                        <option value="growth">Growth Phase</option>
+                        <option value="maturity">Maturity Phase</option>
+                        <option value="decline">Decline Phase</option>
+                        <option value="transition">Transition to New System</option>
                     </select>
                 </div>
 
-                <!-- ELIMINADO: La visualización automática de LDST -->
-                <!-- Se mantiene solo el botón para mostrar/ocultar la tabla de leyes -->
+                <div class="form-group">
+                    <label for="ldst-law-select">Recommended Law of Technical Systems Development:</label>
+                    <select id="ldst-law-select" onchange="updateLDST()">
+                        <!-- Las opciones se llenarán dinámicamente basado en la fase de vida -->
+                        <option value="law4" selected>Law 4: Ideality</option>
+                    </select>
+                    <div id="ldst-recommendation-info" style="margin-top: 0.5rem; font-style: italic; color: #666;">
+                        Selected for Birth stage: Focus on achieving ideal system performance
+                    </div>
+                </div>
 
                 <div style="text-align: center; margin-top: 15px;">
                     <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide All
@@ -1850,7 +1856,6 @@
     <script src="physicalContradictionPrinciples1993.js"></script>
     <script src="76principlestriz.js"></script>
     <script src="sufield-diagrams.js"></script>
-    <!-- REEMPLAZADO: tese.js por ldst.js -->
     <script src="ldst.js"></script>
     <script src="trizConstants.js"></script>
 
@@ -1999,7 +2004,7 @@
             populateDropdowns();
             createContradictionMatrix();
             addSuFieldSystem(); // Add one empty Su-Field system by default
-            updateLDST(); // Inicializar LDST con selector
+            updateLDSTRecommendations(); // Inicializar LDST con recomendaciones basadas en fase de vida
 
             // MODIFICACIÓN: Añadir listeners para limpiar resultados en dropdowns y campos de texto
             document.getElementById('improving-feature').addEventListener('change', clearResults);
@@ -2022,6 +2027,9 @@
             document.getElementById('technical-solver-block').classList.add('hidden');
             document.getElementById('physical-solver-block').classList.add('hidden');
             document.getElementById('matrix-version-selector-container').classList.add('hidden');
+
+            // Resetear el selector de fase de vida
+            document.getElementById('lifecycle-stage').value = 'birth';
 
             // Restablecer la versión de matriz a clásica
             document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
@@ -2060,14 +2068,42 @@
             document.getElementById('solutions-matrix-container').classList.add('hidden');
 
             // Reset LDST
-            document.getElementById('ldst-law-select').value = 'law4';
-            updateLDST();
+            updateLDSTRecommendations();
         }
 
         function loadExample() {
-            resetTool();
+            // NO llamar resetTool() aquí - solo limpiar los campos específicos que necesitas
+            clearResults();
+
+            // Limpiar solo los campos necesarios en lugar de resetTool completo
+            document.getElementById('problem-system').value = '';
+            document.getElementById('problem-function').value = '';
+            document.getElementById('problem-harm').value = '';
+            document.getElementById('ifr-formulation').value = '';
+            document.getElementById('conflicting-parameter').value = '';
+
+            // Limpiar selecciones de contradicciones físicas
+            const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
+            physicalRadios.forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Reset physical strategy flow
+            physicalStrategyFlow = {
+                step1: false,
+                step2: false,
+                step3: false,
+                selectedStrategy: null,
+                selectedMethod: null
+            };
+
+            // Ocultar pasos físicos
+            document.getElementById('physical-step-2').classList.add('hidden');
+            document.getElementById('physical-step-3').classList.add('hidden');
+
             const currentExample = examples[exampleIndex];
 
+            // Ahora cargar los valores del ejemplo actual
             document.getElementById('problem-system').value = currentExample.system;
             document.getElementById('problem-function').value = currentExample.function;
             document.getElementById('problem-harm').value = currentExample.harm;
@@ -2079,7 +2115,7 @@
             const radio = document.querySelector(`input[name="contradiction-type"][value="${currentExample.contradictionType}"]`);
             if (radio) {
                 radio.checked = true;
-                radio.dispatchEvent(new Event('change')); // 'change' llamará a clearResults()
+                radio.dispatchEvent(new Event('change'));
             }
 
             if (currentExample.contradictionType === 'technical') {
@@ -2136,34 +2172,85 @@
                 });
             }
 
-            // Set LDST law
+            // Set LDST lifecycle stage and law
+            if (currentExample.lifecycleStage) {
+                document.getElementById('lifecycle-stage').value = currentExample.lifecycleStage;
+                updateLDSTRecommendations();
+            }
             if (currentExample.ldstLaw) {
                 document.getElementById('ldst-law-select').value = currentExample.ldstLaw;
                 updateLDST();
             }
 
+            // Incrementar el índice para el próximo ejemplo (cíclico)
             exampleIndex = (exampleIndex + 1) % examples.length;
-            clearResults(); // MODIFICACIÓN: Limpiar cualquier resultado que 'solve' pudiera haber dejado
         }
 
-        // ===== NUEVA FUNCIONALIDAD LDST CON SELECTOR =====
+        // ===== NUEVA FUNCIONALIDAD LDST CON SELECTOR DE FASE DE VIDA =====
+        function updateLDSTRecommendations() {
+            const lifecycleStage = document.getElementById('lifecycle-stage').value;
+            const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
+            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
+
+            const ldstSelect = document.getElementById('ldst-law-select');
+            const currentSelection = ldstSelect.value;
+
+            // Limpiar y repoblar el selector
+            ldstSelect.innerHTML = '';
+
+            recommendedLaws.forEach(lawId => {
+                const law = getLdstData(lawId);
+                const option = document.createElement('option');
+                option.value = lawId;
+                option.textContent = law.name;
+                ldstSelect.appendChild(option);
+            });
+
+            // Mantener la selección anterior si está en las recomendadas, sino usar la primera recomendada
+            if (recommendedLaws.includes(currentSelection)) {
+                ldstSelect.value = currentSelection;
+                currentLaw = currentSelection;
+            } else {
+                ldstSelect.value = recommendedLaws[0];
+                currentLaw = recommendedLaws[0];
+            }
+
+            // Actualizar la información de recomendación
+            document.getElementById('ldst-recommendation-info').textContent =
+                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
+
+            updateLDST();
+        }
+
         function updateLDST() {
             const lawSelect = document.getElementById('ldst-law-select');
             currentLaw = lawSelect.value;
 
             // Actualizar tabla de leyes
             updateLawsTable();
+
+            // Actualizar información de recomendación
+            const lifecycleStage = document.getElementById('lifecycle-stage').value;
+            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
+            document.getElementById('ldst-recommendation-info').textContent =
+                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
         }
 
         function updateLawsTable() {
-            // Reset todas las filas
+            // Reset todas las filas - SOLO si existen
             for (let i = 1; i <= 8; i++) {
-                document.getElementById(`law-${i}`).classList.remove('recommended-trend');
+                const lawElement = document.getElementById(`law-${i}`);
+                if (lawElement) {
+                    lawElement.classList.remove('recommended-trend');
+                }
             }
 
-            // Resaltar la ley seleccionada
+            // Resaltar la ley seleccionada - SOLO si existe
             const lawNumber = currentLaw.replace('law', '');
-            document.getElementById(`law-${lawNumber}`).classList.add('recommended-trend');
+            const selectedLawElement = document.getElementById(`law-${lawNumber}`);
+            if (selectedLawElement) {
+                selectedLawElement.classList.add('recommended-trend');
+            }
         }
 
         function toggleLawsTable() {
