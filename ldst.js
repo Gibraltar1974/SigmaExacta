@@ -124,6 +124,55 @@ const ldstLawIcons = {
     "law8": "fa-magnet"
 };
 
+// Lifecycle stage to LDST laws mapping with correlation explanations
+const lifecycleToLdstMapping = {
+    "birth": ["law1", "law2"],
+    "growth": ["law3", "law4"],
+    "maturity": ["law5", "law6"],
+    "decline": ["law7"],
+    "transition": ["law8"]
+};
+
+// Lifecycle stage recommendations with correlation explanations
+const lifecycleRecommendations = {
+    "birth": "Focus on establishing complete system structure and energy flow",
+    "growth": "Optimize coordination and move toward ideal system performance",
+    "maturity": "Address subsystem imbalances and integrate into larger systems",
+    "decline": "Transition to micro-levels and field-based solutions",
+    "transition": "Increase field complexity for next-generation systems"
+};
+
+// Lifecycle to principles correlation matrix
+const lifecyclePrinciplesCorrelation = {
+    "birth": {
+        "Completeness": "Establish all essential system components",
+        "Energy conductivity": "Ensure energy flows through all system parts",
+        "Rhythm-frequency coordination": "Set basic operational rhythms"
+    },
+    "growth": {
+        "Synchronization": "Coordinate system components efficiently",
+        "Resonance": "Leverage natural frequencies for performance",
+        "Elimination of parts": "Remove unnecessary components",
+        "Self-service": "Enable autonomous system functions"
+    },
+    "maturity": {
+        "Identification of lagging subsystems": "Find and improve bottlenecks",
+        "Harmonization": "Balance system performance",
+        "Integration": "Connect with larger systems",
+        "Monopolization": "Dominate specific functions"
+    },
+    "decline": {
+        "Fragmentation": "Break into smaller, specialized components",
+        "Use of fields": "Transition to field-based interactions",
+        "Increased interactivity": "Enhance component communication"
+    },
+    "transition": {
+        "Adding new fields": "Introduce advanced energy types",
+        "Combining fields": "Create synergistic field interactions",
+        "Transforming substances": "Change material compositions"
+    }
+};
+
 // Function to get LDST data by law
 function getLdstData(lawId) {
     return ldstLaws[lawId] || ldstLaws.law4; // Ideality law by default
@@ -146,4 +195,100 @@ function generateLdstPrinciplesIcons(principlesArray) {
 
     iconsHTML += '</div>';
     return iconsHTML;
+}
+
+// Function to generate lifecycle principles correlation table
+function generateLifecyclePrinciplesTable() {
+    let html = `
+        <div class="content-block">
+            <h4><i class="fas fa-table"></i> Lifecycle Stage - Principles Correlation Matrix</h4>
+            <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
+                This matrix shows how TRIZ principles correlate with different system lifecycle stages
+            </p>
+            <div style="overflow-x: auto;">
+                <table class="trends-table">
+                    <thead>
+                        <tr>
+                            <th>Lifecycle Stage</th>
+                            <th>Recommended Principles</th>
+                            <th>Application Focus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+
+    for (const [stage, principles] of Object.entries(lifecyclePrinciplesCorrelation)) {
+        const stageName = getLifecycleStageName(stage);
+        const principlesList = Object.keys(principles).join(', ');
+        const applicationFocus = Object.values(principles)[0]; // First principle's application focus
+
+        html += `
+            <tr>
+                <td><strong>${stageName}</strong></td>
+                <td>${principlesList}</td>
+                <td>${applicationFocus}</td>
+            </tr>
+        `;
+    }
+
+    html += `
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <h5><i class="fas fa-info-circle"></i> How to Use This Matrix</h5>
+                <ul>
+                    <li><strong>Birth Stage:</strong> Focus on establishing fundamental system structure and energy pathways</li>
+                    <li><strong>Growth Stage:</strong> Optimize coordination and eliminate inefficiencies</li>
+                    <li><strong>Maturity Stage:</strong> Address performance bottlenecks and integration opportunities</li>
+                    <li><strong>Decline Stage:</strong> Transition to more advanced technological paradigms</li>
+                    <li><strong>Transition Stage:</strong> Prepare for next-generation system architecture</li>
+                </ul>
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+// Helper function to get lifecycle stage display name
+function getLifecycleStageName(stageKey) {
+    const stageNames = {
+        "birth": "Birth (Introduction Phase)",
+        "growth": "Growth Phase",
+        "maturity": "Maturity Phase",
+        "decline": "Decline Phase",
+        "transition": "Transition to New System"
+    };
+    return stageNames[stageKey] || stageKey;
+}
+
+// Function to get principles for specific lifecycle stage
+function getPrinciplesForLifecycleStage(stage) {
+    return lifecyclePrinciplesCorrelation[stage] || {};
+}
+
+// Function to generate detailed lifecycle principles explanation
+function generateLifecyclePrinciplesExplanation(stage) {
+    const principles = getPrinciplesForLifecycleStage(stage);
+    const stageName = getLifecycleStageName(stage);
+
+    let html = `
+        <div class="content-block">
+            <h4><i class="fas fa-lifecycle"></i> ${stageName} - Principles Application Guide</h4>
+            <p><strong>Focus Area:</strong> ${lifecycleRecommendations[stage]}</p>
+    `;
+
+    for (const [principle, application] of Object.entries(principles)) {
+        html += `
+            <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <h5><i class="fas fa-lightbulb"></i> ${principle}</h5>
+                <p><strong>Application:</strong> ${application}</p>
+            </div>
+        `;
+    }
+
+    html += `</div>`;
+    return html;
 }

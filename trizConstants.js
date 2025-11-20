@@ -482,24 +482,26 @@ const classIcons = {
     "Class 5: Strategies for simplification/improvement": "fa-simplify"
 };
 
-// Mapeo de iconos para tipos de problemas Su-Field
+// Mapeo de iconos para tipos de problemas Su-Field (ACTUALIZADO)
 const problemTypeIcons = {
-    insufficient: "fa-tachometer-alt",
-    harmful: "fa-biohazard",
-    difficult: "fa-search",
-    missing: "fa-question-circle",
-    excessive: "fa-bolt",
-    inefficient: "fa-wrench"
+    insufficient: "fa-arrow-down",
+    harmful: "fa-skull",
+    difficult: "fa-ruler-combined",
+    missing: "fa-times",
+    excessive: "fa-arrow-up",
+    inefficient: "fa-hourglass-half",
+    solution: "fa-check-circle"
 };
 
-// Mapeo de colores para cada tipo de problema
+// Mapeo de colores para cada tipo de problema (ACTUALIZADO)
 const problemTypeColors = {
     insufficient: "#3498db", // Azul
-    harmful: "#e74c3c", // Rojo
-    difficult: "#f39c12", // Naranja
-    missing: "#9b59b6", // Púrpura
-    excessive: "#e67e22", // Naranja oscuro
-    inefficient: "#1abc9c" // Verde azulado
+    harmful: "#e74c3c",      // Rojo
+    difficult: "#f39c12",    // Naranja
+    missing: "#95a5a6",      // Gris
+    excessive: "#9b59b6",    // Púrpura
+    inefficient: "#1abc9c",  // Verde azulado
+    solution: "#00C853"      // Verde
 };
 
 const sufieldSolutions = {
@@ -520,25 +522,7 @@ const standardSolutionClasses = {
     "Class 5: Strategies for simplification and Improvement": "This class offers solutions for simplifying systems and introducing effective changes. Use these when you need to make a system simpler, more efficient, or self-regulating."
 };
 
-// ===== NUEVO: Mapeo de fases de vida a leyes LDST =====
-const lifecycleToLdstMapping = {
-    birth: ["law1", "law2", "law3"],  // Enfasis en integridad, conductividad, armonía
-    growth: ["law4", "law5"],         // Enfasis en idealidad y desarrollo desigual
-    maturity: ["law6", "law7"],       // Enfasis en transición a supersistema y micro-nivel
-    decline: ["law4", "law8"],        // Re-idealización y aumento de complejidad
-    transition: ["law6", "law7", "law8"] // Transformación completa del sistema
-};
-
-const lifecycleRecommendations = {
-    birth: "Focus on establishing system integrity, energy flow, and harmonious interactions",
-    growth: "Focus on increasing ideality and resolving uneven development between subsystems",
-    maturity: "Focus on integration into supersystems and transition to micro-level solutions",
-    decline: "Focus on re-idealization and increasing field complexity for breakthrough",
-    transition: "Focus on complete system transformation through supersystem integration and new technologies"
-};
-
-// CORRECCIÓN: Ejemplos actualizados para usar combinaciones que existen en la matriz
-// CORRECCIÓN: Ejemplos actualizados para usar LDST en lugar de TESE
+// CORRECCIÓN: Ejemplos completos y validados.
 const examples = [
     {
         system: "Bicycle Frame",
@@ -546,12 +530,12 @@ const examples = [
         harm: "It is too heavy",
         ifr: "The frame supports the rider and is lightweight.",
         contradictionType: "technical",
-        improvingFeature: 12,  // 13: Stability of the object (índice 12)
-        worseningFeature: 0,   // 1: Weight of moving object (índice 0)
+        improvingFeature: 12,  // 13: Stability of the object
+        worseningFeature: 0,   // 1: Weight of moving object
         sufield: { systems: [{ object: "Rider's weight", tool: "Frame tubes", field: "Mechanical", type: "insufficient" }] },
-        lifecycleStage: "growth", // NUEVA PROPIEDAD
-        ldstLaw: "law4", // Ley de Idealidad
-        description: "Bicycle Frame - Law 4 example"
+        lifecycleStage: "growth",
+        ldstLaw: "law4", 
+        description: "Bicycle Frame - Technical Contradiction"
     },
     {
         system: "Sunglasses",
@@ -560,26 +544,28 @@ const examples = [
         ifr: "The lenses block UV rays when needed and are clear when not.",
         contradictionType: "physical",
         conflictingParameter: "Lens Transparency",
-        ozDefinition: "conditional",
-        ozIntersection: "intersect",
-        separationMethod: "separationInRelation",
+        ozDefinition: "conditional", // Level 1: Conditional
+        ozIntersection: "intersect", // Level 2: Intersect -> Forces "Satisfy" strategy
+        separationMethod: "separationInRelation", // Level 3: Matches generated radio value
         sufield: { systems: [{ object: "User's eyes", tool: "Dark lens", field: "Optical", type: "harmful" }] },
-        lifecycleStage: "maturity", // NUEVA PROPIEDAD
-        ldstLaw: "law5", // Ley de Desarrollo Desigual
-        description: "Sunglasses - Law 5 example"
+        lifecycleStage: "maturity", 
+        ldstLaw: "law5", 
+        description: "Sunglasses - Physical (Separation in Relation)"
     },
     {
-        system: "Cooking Pot Handle",
-        function: "To be held by the user",
-        harm: "It gets too hot",
-        ifr: "The handle can be held comfortably while the pot is hot.",
-        contradictionType: "technical",
-        improvingFeature: 31,  // 32: Ease of manufacture (índice 31)
-        worseningFeature: 15,  // 16: Duration of action by a stationary object (índice 15)
-        sufield: { systems: [{ object: "User's hand", tool: "Hot handle", field: "Thermal", type: "harmful" }] },
-        lifecycleStage: "birth", // NUEVA PROPIEDAD
-        ldstLaw: "law4", // Ley de Idealidad
-        description: "Cooking Pot Handle - Law 4 example"
+        system: "Airplane Wing",
+        function: "To provide lift",
+        harm: "Creates drag at high speeds",
+        ifr: "The wing provides high lift for takeoff but zero drag during cruise.",
+        contradictionType: "physical",
+        conflictingParameter: "Surface Area",
+        ozDefinition: "temporal", // Level 1: Temporal
+        ozIntersection: "intersect", // Level 2: Intersect -> Forces "Satisfy" strategy
+        separationMethod: "separationInTime", // Level 3: Matches generated radio value
+        sufield: { systems: [{ object: "Air", tool: "Wing", field: "Aerodynamic", type: "inefficient" }] },
+        lifecycleStage: "maturity",
+        ldstLaw: "law3", 
+        description: "Airplane Wing - Physical (Separation in Time)"
     },
     {
         system: "Packaging for electronics",
@@ -588,13 +574,43 @@ const examples = [
         ifr: "The package protects the contents and opens easily.",
         contradictionType: "physical",
         conflictingParameter: "Strength/Toughness",
-        ozDefinition: "temporal",
-        ozIntersection: "no-intersect",
-        separationMethod: "bypassContradictoryDemands",
+        ozDefinition: "temporal", // Level 1: Temporal
+        ozIntersection: "no-intersect", // Level 2: No Intersect -> Forces "Bypass" strategy
+        separationMethod: "bypassContradictoryDemands", // Level 3: Matches generated radio value
         sufield: { systems: [{ object: "Electronic device", tool: "Packaging material", field: "Mechanical", type: "excessive" }] },
-        lifecycleStage: "transition", // NUEVA PROPIEDAD
-        ldstLaw: "law6", // Ley de Transición al Supersistema
-        description: "Packaging for Electronics - Law 6 example"
+        lifecycleStage: "transition", 
+        ldstLaw: "law6", 
+        description: "Packaging - Physical (Bypass Strategy)"
+    },
+    {
+        system: "Bicycle Chain",
+        function: "Transfer power",
+        harm: "Needs to bend around gears but stay rigid under tension",
+        ifr: "Chain is flexible and rigid simultaneously.",
+        contradictionType: "physical",
+        conflictingParameter: "Rigidity/Flexibility",
+        ozDefinition: "system", // Level 1: System
+        ozIntersection: "intersect", // Level 2: Intersect -> Forces "Satisfy" strategy
+        separationMethod: "separationInSystemLevel", // Level 3: Matches generated radio value
+        sufield: { systems: [{ object: "Gears", tool: "Chain links", field: "Mechanical", type: "difficult" }] },
+        lifecycleStage: "growth",
+        ldstLaw: "law2",
+        description: "Bike Chain - Physical (System Level Separation)"
+    },
+    {
+        system: "Diving Fin",
+        function: "Propel swimmer",
+        harm: "Difficult to walk on land/boat",
+        ifr: "Fin is large for swimming but small for walking.",
+        contradictionType: "physical",
+        conflictingParameter: "Size/Surface Area",
+        ozDefinition: "spatial", // Level 1: Spatial
+        ozIntersection: "intersect", // Level 2: Intersect -> Forces "Satisfy" strategy
+        separationMethod: "separationInSpace", // Level 3: Matches generated radio value
+        sufield: { systems: [{ object: "Water", tool: "Fin", field: "Mechanical", type: "inefficient" }] },
+        lifecycleStage: "growth",
+        ldstLaw: "law4",
+        description: "Diving Fin - Physical (Separation in Space)"
     },
     {
         system: "Umbrella",
@@ -602,12 +618,12 @@ const examples = [
         harm: "It flips inside-out in strong wind",
         ifr: "The umbrella shields from rain and remains stable in wind.",
         contradictionType: "technical",
-        improvingFeature: 3,   // 4: Length of stationary object (índice 3)
-        worseningFeature: 10,  // 11: Stress or pressure (índice 10)
+        improvingFeature: 3,   // 4: Length of stationary object
+        worseningFeature: 10,  // 11: Stress or pressure
         sufield: { systems: [{ object: "User", tool: "Wind force", field: "Mechanical", type: "harmful" }] },
-        lifecycleStage: "decline", // NUEVA PROPIEDAD
-        ldstLaw: "law3", // Ley de Armonía
-        description: "Umbrella - Law 3 example"
+        lifecycleStage: "decline", 
+        ldstLaw: "law3", 
+        description: "Umbrella - Technical Contradiction"
     },
     {
         system: "Car Engine",
@@ -615,16 +631,16 @@ const examples = [
         harm: "It produces a lot of waste heat",
         ifr: "The engine generates power without producing waste heat.",
         contradictionType: "technical",
-        improvingFeature: 18,  // 19: Use of energy by moving object (índice 18)
-        worseningFeature: 19,  // 20: Use of energy by stationary object (índice 19)
+        improvingFeature: 18,  // 19: Use of energy by moving object
+        worseningFeature: 19,  // 20: Use of energy by stationary object
         sufield: {
             systems: [
                 { object: "Piston", tool: "Fuel combustion", field: "Thermal", type: "harmful" },
                 { object: "Coolant", tool: "Engine block", field: "Thermal", type: "inefficient" }
             ]
         },
-        lifecycleStage: "maturity", // NUEVA PROPIEDAD
-        ldstLaw: "law7", // Ley de Transición Macro-Micro
-        description: "Car Engine - Law 7 example"
+        lifecycleStage: "maturity", 
+        ldstLaw: "law7", 
+        description: "Car Engine - Technical Contradiction"
     }
 ];

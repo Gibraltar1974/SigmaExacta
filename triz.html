@@ -504,6 +504,146 @@
             }
         }
 
+        /* ===== ESTILOS RESPONSIVOS PARA MÓVILES ===== */
+        @media (max-width: 768px) {
+
+            /* Ajustar diagramas Su-Field para móviles */
+            .sufield-svg-container {
+                width: 100% !important;
+                max-width: 280px !important;
+                height: 240px !important;
+                margin: 0 auto;
+            }
+
+            .sufield-triangle-container {
+                padding: 1rem !important;
+                margin: 1rem 0 !important;
+            }
+
+            /* Ajustar transformación de solución para móviles */
+            .solution-transformation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .transition-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
+
+            .before-state,
+            .after-state {
+                width: 100% !important;
+            }
+
+            /* Ajustar textos en resultados */
+            #results-container {
+                padding: 1rem !important;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+
+            #results-container .solver-step,
+            #results-container .principle-card,
+            #results-container .solution-card {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            #results-container h3,
+            #results-container h4,
+            #results-container h5 {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            /* Ajustar sistema Su-Field en móviles */
+            .sufield-system-fields {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+
+            .sufield-system {
+                padding: 1rem !important;
+            }
+
+            /* Ajustar matriz de contradicciones */
+            .matrix-container {
+                overflow-x: auto;
+                font-size: 0.7rem;
+            }
+
+            .matrix-table th,
+            .matrix-table td {
+                padding: 4px 2px !important;
+                font-size: 0.65rem;
+            }
+
+            /* Ajustar flujo de infografía */
+            .infographic-flow {
+                gap: 0.5rem;
+            }
+
+            .flow-step {
+                min-width: 120px;
+                padding: 0.8rem;
+            }
+
+            .flow-step .fas {
+                font-size: 1.4rem;
+            }
+
+            .flow-step strong {
+                font-size: 1rem;
+            }
+
+            .flow-step span {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            /* Ajustes adicionales para pantallas muy pequeñas */
+            .main-content-wrapper {
+                padding: 0.5rem !important;
+            }
+
+            .content-block {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .solver-step {
+                padding: 1rem !important;
+            }
+
+            .header {
+                padding: 1rem !important;
+            }
+
+            /* Textos más pequeños en diagramas */
+            .sufield-svg-container .node-type {
+                font-size: 0.55rem !important;
+            }
+
+            .sufield-svg-container .node-label {
+                font-size: 0.65rem !important;
+            }
+
+            /* Botones en móviles */
+            button {
+                padding: 0.8rem 1rem !important;
+                margin: 3px !important;
+                font-size: 0.9rem !important;
+            }
+
+            #solve-button {
+                padding: 0.9rem !important;
+                font-size: 1.1rem !important;
+            }
+        }
+
         /* NUEVOS ESTILOS SOLICITADOS PARA EL ICONO EN H1 */
         .triz-h1-icon-style {
             display: inline-flex;
@@ -1548,13 +1688,13 @@
                 </p>
             </div>
 
-            <!-- REEMPLAZADO: Sección LDST con selector de fase de vida -->
+            <!-- MODIFICADO: Sección LDST sin selector de ley específica -->
             <div class="solver-step" id="step-ldst">
                 <h3><i class="fas fa-project-diagram"></i> Step 1: Laws of Development of Technical Systems (LDST)</h3>
                 <p>Select the life cycle stage of your system to get the most relevant development laws according to
                     Altshuller's classical framework.</p>
 
-                <!-- NUEVO: Selector de fase de vida -->
+                <!-- Selector de fase de vida -->
                 <div class="form-group">
                     <label for="lifecycle-stage">System Life Cycle Stage:</label>
                     <select id="lifecycle-stage" onchange="updateLDSTRecommendations()">
@@ -1564,17 +1704,7 @@
                         <option value="decline">Decline Phase</option>
                         <option value="transition">Transition to New System</option>
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="ldst-law-select">Recommended Law of Technical Systems Development:</label>
-                    <select id="ldst-law-select" onchange="updateLDST()">
-                        <!-- Las opciones se llenarán dinámicamente basado en la fase de vida -->
-                        <option value="law4" selected>Law 4: Ideality</option>
-                    </select>
-                    <div id="ldst-recommendation-info" style="margin-top: 0.5rem; font-style: italic; color: #666;">
-                        Selected for Birth stage: Focus on achieving ideal system performance
-                    </div>
+                    <!-- El elemento ldst-recommendation-info se creará dinámicamente aquí -->
                 </div>
 
                 <div style="text-align: center; margin-top: 15px;">
@@ -1853,11 +1983,11 @@
 
     <script src="trizcontradiction.js"></script>
     <script src="trizcontradiction2003.js"></script>
-    <script src="physicalContradictionPrinciples1993.js"></script>
+    <script src="physicalcontradictionprinciples1993.js"></script>
     <script src="76principlestriz.js"></script>
     <script src="sufield-diagrams.js"></script>
     <script src="ldst.js"></script>
-    <script src="trizConstants.js"></script>
+    <script src="trizconstants.js"></script>
 
     <script>
         // ===== CARGAR HEADER DINÁMICAMENTE =====
@@ -1987,7 +2117,7 @@
         };
 
         // Variables para LDST
-        let currentLaw = 'law4';
+        let currentRecommendedLaws = ['law4']; // Por defecto
 
         // MODIFICACIÓN: Función centralizada para limpiar resultados
         function clearResults() {
@@ -2004,18 +2134,60 @@
             populateDropdowns();
             createContradictionMatrix();
             addSuFieldSystem(); // Add one empty Su-Field system by default
-            updateLDSTRecommendations(); // Inicializar LDST con recomendaciones basadas en fase de vida
 
-            // MODIFICACIÓN: Añadir listeners para limpiar resultados en dropdowns y campos de texto
-            document.getElementById('improving-feature').addEventListener('change', clearResults);
-            document.getElementById('worsening-feature').addEventListener('change', clearResults);
-            document.getElementById('conflicting-parameter').addEventListener('input', clearResults);
+            // MODIFICACIÓN: Inicializar LDST después de que se carguen todos los scripts
+            setTimeout(() => {
+                updateLDSTRecommendations();
+            }, 100);
+        }
 
-            // MODIFICACIÓN: Limpiar resultados si se edita el problema base
-            document.getElementById('problem-system').addEventListener('input', clearResults);
-            document.getElementById('problem-function').addEventListener('input', clearResults);
-            document.getElementById('problem-harm').addEventListener('input', clearResults);
-            document.getElementById('ifr-formulation').addEventListener('input', clearResults);
+        // ===== FUNCIÓN ACTUALIZADA PARA RECOMENDACIONES LDST =====
+        function updateLDSTRecommendations() {
+            const lifecycleStage = document.getElementById('lifecycle-stage').value;
+            currentRecommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
+            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
+
+            // Buscar o crear el elemento de recomendación
+            let recommendationElement = document.getElementById('ldst-recommendation-info');
+            if (!recommendationElement) {
+                // Si no existe, crearlo y añadirlo después del selector
+                const lifecycleSelect = document.getElementById('lifecycle-stage');
+                recommendationElement = document.createElement('div');
+                recommendationElement.id = 'ldst-recommendation-info';
+                recommendationElement.style.marginTop = '10px';
+                recommendationElement.style.fontStyle = 'italic';
+                recommendationElement.style.color = '#666';
+                lifecycleSelect.parentNode.appendChild(recommendationElement);
+            }
+
+            recommendationElement.textContent =
+                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
+
+            updateLawsTable();
+        }
+
+        function updateLawsTable() {
+            // Reset todas las filas - SOLO si existen
+            for (let i = 1; i <= 8; i++) {
+                const lawElement = document.getElementById(`law-${i}`);
+                if (lawElement) {
+                    lawElement.classList.remove('recommended-trend');
+                }
+            }
+
+            // Resaltar las leyes recomendadas - SOLO si existen
+            currentRecommendedLaws.forEach(lawId => {
+                const lawNumber = lawId.replace('law', '');
+                const selectedLawElement = document.getElementById(`law-${lawNumber}`);
+                if (selectedLawElement) {
+                    selectedLawElement.classList.add('recommended-trend');
+                }
+            });
+        }
+
+        function toggleLawsTable() {
+            const container = document.getElementById('laws-table-container');
+            container.classList.toggle('hidden');
         }
 
         function resetTool() {
@@ -2072,10 +2244,8 @@
         }
 
         function loadExample() {
-            // NO llamar resetTool() aquí - solo limpiar los campos específicos que necesitas
+            // Limpiar solo los campos necesarios
             clearResults();
-
-            // Limpiar solo los campos necesarios en lugar de resetTool completo
             document.getElementById('problem-system').value = '';
             document.getElementById('problem-function').value = '';
             document.getElementById('problem-harm').value = '';
@@ -2103,7 +2273,7 @@
 
             const currentExample = examples[exampleIndex];
 
-            // Ahora cargar los valores del ejemplo actual
+            // Cargar valores del ejemplo actual
             document.getElementById('problem-system').value = currentExample.system;
             document.getElementById('problem-function').value = currentExample.function;
             document.getElementById('problem-harm').value = currentExample.harm;
@@ -2122,7 +2292,6 @@
                 document.getElementById('improving-feature').value = currentExample.improvingFeature;
                 document.getElementById('worsening-feature').value = currentExample.worseningFeature;
 
-                // Also set matrix selection
                 improvingFeatureIndex = currentExample.improvingFeature;
                 worseningFeatureIndex = currentExample.worseningFeature;
                 updateMatrixDisplay();
@@ -2130,7 +2299,7 @@
             } else {
                 document.getElementById('conflicting-parameter').value = currentExample.conflictingParameter;
 
-                // Set physical contradiction steps if available
+                // Step 1: OZ Definition
                 if (currentExample.ozDefinition) {
                     const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.ozDefinition}"]`);
                     if (ozDefinitionRadio) {
@@ -2139,6 +2308,7 @@
                     }
                 }
 
+                // Step 2: OZ Intersection
                 if (currentExample.ozIntersection) {
                     const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.ozIntersection}"]`);
                     if (ozIntersectionRadio) {
@@ -2147,11 +2317,14 @@
                     }
                 }
 
+                // Step 3: Separation Method - CORRECCIÓN AQUÍ
                 if (currentExample.separationMethod) {
                     const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.separationMethod}"]`);
                     if (separationMethodRadio) {
                         separationMethodRadio.checked = true;
-                        updatePhysicalStrategy();
+                        // ANTES: updatePhysicalStrategy(); (Esto borraba la selección)
+                        // AHORA: handleSeparationMethodChange(); (Esto guarda la selección sin borrar)
+                        handleSeparationMethodChange();
                     }
                 }
             }
@@ -2167,95 +2340,18 @@
                     systemContainer.querySelector('.sufield-field').value = system.field || '';
                     systemContainer.querySelector('.sufield-type').value = system.type || 'insufficient';
 
-                    // Update diagram
                     updateSuFieldDiagram(systemContainer);
                 });
             }
 
-            // Set LDST lifecycle stage and law
+            // Set LDST lifecycle stage
             if (currentExample.lifecycleStage) {
                 document.getElementById('lifecycle-stage').value = currentExample.lifecycleStage;
                 updateLDSTRecommendations();
             }
-            if (currentExample.ldstLaw) {
-                document.getElementById('ldst-law-select').value = currentExample.ldstLaw;
-                updateLDST();
-            }
 
-            // Incrementar el índice para el próximo ejemplo (cíclico)
+            // Incrementar el índice para el próximo ejemplo
             exampleIndex = (exampleIndex + 1) % examples.length;
-        }
-
-        // ===== NUEVA FUNCIONALIDAD LDST CON SELECTOR DE FASE DE VIDA =====
-        function updateLDSTRecommendations() {
-            const lifecycleStage = document.getElementById('lifecycle-stage').value;
-            const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
-            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
-
-            const ldstSelect = document.getElementById('ldst-law-select');
-            const currentSelection = ldstSelect.value;
-
-            // Limpiar y repoblar el selector
-            ldstSelect.innerHTML = '';
-
-            recommendedLaws.forEach(lawId => {
-                const law = getLdstData(lawId);
-                const option = document.createElement('option');
-                option.value = lawId;
-                option.textContent = law.name;
-                ldstSelect.appendChild(option);
-            });
-
-            // Mantener la selección anterior si está en las recomendadas, sino usar la primera recomendada
-            if (recommendedLaws.includes(currentSelection)) {
-                ldstSelect.value = currentSelection;
-                currentLaw = currentSelection;
-            } else {
-                ldstSelect.value = recommendedLaws[0];
-                currentLaw = recommendedLaws[0];
-            }
-
-            // Actualizar la información de recomendación
-            document.getElementById('ldst-recommendation-info').textContent =
-                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
-
-            updateLDST();
-        }
-
-        function updateLDST() {
-            const lawSelect = document.getElementById('ldst-law-select');
-            currentLaw = lawSelect.value;
-
-            // Actualizar tabla de leyes
-            updateLawsTable();
-
-            // Actualizar información de recomendación
-            const lifecycleStage = document.getElementById('lifecycle-stage').value;
-            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
-            document.getElementById('ldst-recommendation-info').textContent =
-                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
-        }
-
-        function updateLawsTable() {
-            // Reset todas las filas - SOLO si existen
-            for (let i = 1; i <= 8; i++) {
-                const lawElement = document.getElementById(`law-${i}`);
-                if (lawElement) {
-                    lawElement.classList.remove('recommended-trend');
-                }
-            }
-
-            // Resaltar la ley seleccionada - SOLO si existe
-            const lawNumber = currentLaw.replace('law', '');
-            const selectedLawElement = document.getElementById(`law-${lawNumber}`);
-            if (selectedLawElement) {
-                selectedLawElement.classList.add('recommended-trend');
-            }
-        }
-
-        function toggleLawsTable() {
-            const container = document.getElementById('laws-table-container');
-            container.classList.toggle('hidden');
         }
 
         // MODIFICACIÓN: Función actualizada para mostrar/ocultar elementos según el tipo de contradicción
@@ -2667,13 +2763,21 @@
             problemData.harm = document.getElementById('problem-harm').value;
             problemData.ifr = document.getElementById('ifr-formulation').value;
 
-            // Agregar datos LDST
-            const ldstInfo = getLdstData(currentLaw);
+            // Agregar datos LDST - MODIFICADO: Usar todas las leyes recomendadas
+            const lifecycleStage = document.getElementById('lifecycle-stage').value;
+            const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
+
             problemData.ldst = {
-                law: currentLaw,
-                lawName: ldstInfo.name,
-                principles: ldstInfo.principles.join(', '),
-                examples: ldstInfo.examples
+                lifecycleStage: lifecycleStage,
+                recommendedLaws: recommendedLaws.map(lawId => {
+                    const law = getLdstData(lawId);
+                    return {
+                        id: lawId,
+                        name: law.name,
+                        principles: law.principles,
+                        examples: law.examples
+                    };
+                })
             };
 
             const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
@@ -2780,40 +2884,48 @@
             displayResults();
         }
 
+        // ===== FUNCIÓN displayResults CORREGIDA =====
         function displayResults() {
             const resultsDiv = document.getElementById('results-container');
             // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
             let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
 
-            // MODIFICACIÓN: Mover información de la matriz al principio
-            html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
-        <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
-    </div>`;
-
-            // Agregar información LDST
+            // Agregar información LDST - MODIFICADO: Mostrar todas las leyes recomendadas
             html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
-        <p><strong>Selected Law:</strong> ${problemData.ldst.lawName}</p>
-        <p><strong>Related Principles:</strong> ${problemData.ldst.principles}</p>
-        <div>${problemData.ldst.examples}</div>
-        
-        <div class="tese-trends-icons">`;
+        <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
+        <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
 
-            // Generar iconos específicos para los principios de esta ley
-            const ldstInfo = getLdstData(currentLaw);
-            ldstInfo.principles.forEach(principle => {
+            // Mostrar todas las leyes recomendadas
+            problemData.ldst.recommendedLaws.forEach(law => {
                 html += `
-            <div class="tese-trend-item">
-                <div class="tese-trend-icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <div class="tese-trend-name">${principle}</div>
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <h5>${law.name}</h5>
+                <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
+                <div>${law.examples}</div>
             </div>
         `;
             });
 
+            html += `
+        <div class="tese-trends-icons">`;
+
+            // Generar iconos para todas las leyes recomendadas
+            problemData.ldst.recommendedLaws.forEach(law => {
+                law.principles.forEach(principle => {
+                    html += `
+                <div class="tese-trend-item">
+                    <div class="tese-trend-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="tese-trend-name">${principle}</div>
+                </div>
+            `;
+                });
+            });
+
             html += `</div>
         <p style="margin-top: 1rem; font-style: italic; text-align: center;">
-            Apply these principles according to the fundamental law of technical systems development
+            Apply these principles according to the fundamental laws of technical systems development
         </p>
     </div>`;
 
@@ -2852,6 +2964,11 @@
             }
             html += `</div>`;
 
+            // MODIFICACIÓN: Mover el mensaje de la versión de la matriz aquí
+            html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
+        <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+    </div>`;
+
             html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
 
             if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
@@ -2883,79 +3000,25 @@
                     if (system.object || system.tool || system.field) {
                         html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
 
-                        // Show the Su-Field diagram for this system - USANDO EL MISMO CÓDIGO QUE EN updateSuFieldDiagram
+                        // Mostrar el diagrama Su-Field usando la función centralizada - CORREGIDO
                         html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
 
-                        // Función auxiliar para truncar texto (copiada de updateSuFieldDiagram)
-                        function truncateText(text, maxLength) {
-                            if (!text || text.length <= maxLength) return text;
-                            return text.substring(0, maxLength) + '...';
-                        }
+                        // Crear contenedores para los diagramas de problema y solución
+                        const problemDiagramId = `problem-diagram-${index}`;
+                        const solutionDiagramId = `solution-diagram-${index}`;
 
-                        // Coordenadas de los nodos (las mismas que en updateSuFieldDiagram)
-                        const s1 = { x: 110, y: 30, r: 22 };
-                        const s2 = { x: 50, y: 160, r: 22 };
-                        const f = { x: 170, y: 160, r: 22 };
-
-                        // Calcular puntos de intersección para las flechas (mismo código)
-                        function getCircleIntersection(cx, cy, r, tx, ty) {
-                            const dx = tx - cx;
-                            const dy = ty - cy;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-                            const nx = dx / distance;
-                            const ny = dy / distance;
-                            const ix = cx + nx * r;
-                            const iy = cy + ny * r;
-                            return { x: ix, y: iy };
-                        }
-
-                        const s1ToS2Start = getCircleIntersection(s1.x, s1.y, s1.r, s2.x, s2.y);
-                        const s1ToS2End = getCircleIntersection(s2.x, s2.y, s2.r, s1.x, s1.y);
-                        const s1ToFStart = getCircleIntersection(s1.x, s1.y, s1.r, f.x, f.y);
-                        const s1ToFEnd = getCircleIntersection(f.x, f.y, f.r, s1.x, s1.y);
-                        const s2ToFStart = getCircleIntersection(s2.x, s2.y, s2.r, f.x, f.y);
-                        const s2ToFEnd = getCircleIntersection(f.x, f.y, f.r, s2.x, s2.y);
-
-                        // MOSTRAR EL DIAGRAMA IDÉNTICO AL DE ENTRADA
                         html += `
-                    <div class="sufield-triangle-container">
-                        <div class="sufield-svg-container problem-${system.type}">
-                            <svg class="sufield-svg" viewBox="0 0 220 190">
-                                <defs>
-                                    <marker id="arrowhead-${index}" markerWidth="10" markerHeight="7" 
-                                            refX="9" refY="3.5" orient="auto">
-                                        <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
-                                    </marker>
-                                </defs>
-                                
-                                <polygon points="110,30 50,160 170,160" class="triangle-path"/>
-                                
-                                <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
-                                <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
-                                <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-${index})"/>
-                                
-                                <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
-                                <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
-                                <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
-                                
-                                <rect x="${s1.x - 25}" y="${s1.y - 8}" width="50" height="16" rx="3" class="text-background"/>
-                                <rect x="${s2.x - 25}" y="${s2.y - 8}" width="50" height="16" rx="3" class="text-background"/>
-                                <rect x="${f.x - 25}" y="${f.y - 8}" width="50" height="16" rx="3" class="text-background"/>
-                                
-                                <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 10)}</text>
-                                <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 10)}</text>
-                                <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 10)}</text>
-                                
-                                <text x="${s1.x}" y="${s1.y + 28}" class="node-type">Object (S1)</text>
-                                <text x="${s2.x}" y="${s2.y + 28}" class="node-type">Tool (S2)</text>
-                                <text x="${f.x}" y="${f.y + 28}" class="node-type">Field (F)</text>
-                                
-                                <foreignObject x="95" y="95" width="30" height="30">
-                                    <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas ${problemTypeIcons[system.type]} problem-indicator-icon" style="color: ${problemTypeColors[system.type]}; font-size: 1.8rem;"></i>
-                                    </div>
-                                </foreignObject>
-                            </svg>
+                    <div class="solution-transformation">
+                        <div class="before-state">
+                            <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
+                            <div class="state-label">Problem State</div>
+                        </div>
+                        
+                        <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        
+                        <div class="after-state">
+                            <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
+                            <div class="state-label">Solution State</div>
                         </div>
                     </div>
                 `;
@@ -2990,69 +3053,6 @@
                             </div>
                         `;
                                 html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
-
-                                // Add a visual representation of the solution approach
-                                html += `<div class="solution-transformation">
-                            <div class="before-state">
-                                <div class="sufield-svg-container problem-state problem-${system.type}">
-                                    <svg class="sufield-svg" viewBox="0 0 220 190">
-                                        <defs>
-                                            <marker id="arrowhead-problem-${index}" markerWidth="10" markerHeight="7" 
-                                                    refX="9" refY="3.5" orient="auto">
-                                                <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
-                                            </marker>
-                                        </defs>
-                                        <polygon points="110,30 50,160 170,160" class="triangle-path"/>
-                                        <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
-                                        <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
-                                        <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-problem-${index})"/>
-                                        <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
-                                        <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
-                                        <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
-                                        <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
-                                        <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
-                                        <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 8)}</text>
-                                        <foreignObject x="95" y="95" width="30" height="30">
-                                            <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas ${problemTypeIcons[system.type]}" style="color: ${problemTypeColors[system.type]}; font-size: 1.8rem;"></i>
-                                            </div>
-                                        </foreignObject>
-                                    </svg>
-                                </div>
-                                <div class="state-label">Problem State</div>
-                            </div>
-                            
-                            <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                            
-                            <div class="after-state">
-                                <div class="sufield-svg-container solution-state">
-                                    <svg class="sufield-svg" viewBox="0 0 220 190">
-                                        <defs>
-                                            <marker id="arrowhead-solution-${index}" markerWidth="10" markerHeight="7" 
-                                                    refX="9" refY="3.5" orient="auto">
-                                                <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
-                                            </marker>
-                                        </defs>
-                                        <polygon points="110,30 50,160 170,160" class="triangle-path" style="fill:rgba(230,255,230,0.8);"/>
-                                        <line x1="${s1ToS2Start.x}" y1="${s1ToS2Start.y}" x2="${s1ToS2End.x}" y2="${s1ToS2End.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
-                                        <line x1="${s1ToFStart.x}" y1="${s1ToFStart.y}" x2="${s1ToFEnd.x}" y2="${s1ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
-                                        <line x1="${s2ToFStart.x}" y1="${s2ToFStart.y}" x2="${s2ToFEnd.x}" y2="${s2ToFEnd.y}" class="interaction-line" marker-end="url(#arrowhead-solution-${index})"/>
-                                        <circle cx="${s1.x}" cy="${s1.y}" r="${s1.r}" class="sufield-node s1-node"/>
-                                        <circle cx="${s2.x}" cy="${s2.y}" r="${s2.r}" class="sufield-node s2-node"/>
-                                        <circle cx="${f.x}" cy="${f.y}" r="${f.r}" class="sufield-node f-node"/>
-                                        <text x="${s1.x}" y="${s1.y}" class="node-label">${truncateText(system.object || 'S1', 8)}</text>
-                                        <text x="${s2.x}" y="${s2.y}" class="node-label">${truncateText(system.tool || 'S2', 8)}</text>
-                                        <text x="${f.x}" y="${f.y}" class="node-label">${truncateText(system.field || 'F', 8)}</text>
-                                        <foreignObject x="95" y="95" width="30" height="30">
-                                            <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-check" style="color: #27ae60; font-size: 1.8rem;"></i>
-                                            </div>
-                                        </foreignObject>
-                                    </svg>
-                                </div>
-                                <div class="state-label">Solution State</div>
-                            </div>
-                        </div>`;
 
                                 html += `<div class="solution-description">`;
                                 html += `<h6>Recommended Standard Solutions:</h6>`;
@@ -3089,6 +3089,31 @@
 
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
+
+            // DESPUÉS de insertar el HTML, llamar a las funciones para dibujar los diagramas
+            problemData.sufield.systems.forEach((system, index) => {
+                if (system.object || system.tool || system.field) {
+                    const problemDiagramId = `problem-diagram-${index}`;
+                    const solutionDiagramId = `solution-diagram-${index}`;
+
+                    // Dibujar diagrama del problema usando la función centralizada
+                    updateProblemDiagramInSolution(problemDiagramId, {
+                        objectText: system.object,
+                        toolText: system.tool,
+                        fieldType: system.field,
+                        problemType: system.type
+                    });
+
+                    // Dibujar diagrama de la solución usando la función centralizada
+                    updateSolutionDiagram(
+                        solutionDiagramId,
+                        system.object,
+                        system.tool,
+                        system.field
+                    );
+                }
+            });
+
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -3109,8 +3134,12 @@
 
             // Agregar datos LDST
             ws_data.push(["Laws of Development of Technical Systems (LDST)"]);
-            ws_data.push(["Selected Law", problemData.ldst.lawName]);
-            ws_data.push(["Related Principles", problemData.ldst.principles]);
+            ws_data.push(["Life Cycle Stage", document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text]);
+            ws_data.push(["Recommended Laws"]);
+            problemData.ldst.recommendedLaws.forEach(law => {
+                ws_data.push(["", law.name]);
+                ws_data.push(["", "Related Principles", law.principles.join(', ')]);
+            });
             ws_data.push([]);
 
             ws_data.push(["Problem Definition"]);
