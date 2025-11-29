@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,149 +22,565 @@
 
     <style>
         /* ===== ESTILOS ORIGINALES (MANTENIDOS) ===== */
-        .top-bar { position: sticky; top: 0; z-index: 1001; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #222; }
-        .logo-text, .navigation .nav-link, .nav-toggle { color: #fff; }
-        .nav-toggle { display: none; font-size: 1.5rem; background: none; border: none; cursor: pointer; }
-        .navigation .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; }
-        .navigation .nav-link { padding: 10px 15px; text-decoration: none; font-weight: 600; display: block; }
-        .navigation .nav-link i { margin-left: 5px; transition: transform 0.3s ease; }
-        .nav-item-dropdown { position: relative; }
-        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); border-radius: 5px; z-index: 1000; min-width: 600px; padding: 20px; }
-        .dropdown-menu a, .dropdown-menu h4 { color: #333; }
-        .dropdown-link:hover { background-color: #f1f1f1; }
-        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
-        .nav-item-dropdown:hover>.dropdown-menu { display: block; }
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #222;
+        }
+
+        .logo-text,
+        .navigation .nav-link,
+        .nav-toggle {
+            color: #fff;
+        }
+
+        .nav-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .navigation .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navigation .nav-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+
+        .navigation .nav-link i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 5px;
+            z-index: 1000;
+            min-width: 600px;
+            padding: 20px;
+        }
+
+        .dropdown-menu a,
+        .dropdown-menu h4 {
+            color: #333;
+        }
+
+        .dropdown-link:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-item-dropdown:hover>.dropdown-menu {
+            display: block;
+        }
+
         @media (max-width: 992px) {
-            .nav-toggle { display: block; }
-            .navigation .nav-menu { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: #fff; border-top: 1px solid #eee; }
-            .navigation .nav-menu .nav-link { color: #333; }
-            .navigation .nav-menu.show-menu { display: flex; }
-            .navigation .nav-item { width: 100%; text-align: left; }
-            .nav-item-dropdown>.nav-link { display: flex; justify-content: space-between; align-items: center; }
-            .dropdown-menu { display: none; position: static; width: 100%; box-shadow: none; border-top: 1px solid #f0f0f0; padding: 10px 0 10px 30px; min-width: unset; background-color: #f9f9f9; }
-            .dropdown-menu.show-submenu { display: block; }
-            .nav-item-dropdown:hover>.dropdown-menu { display: none; }
-            .nav-item-dropdown.active:hover>.dropdown-menu { display: block; }
-            .nav-item-dropdown.active>.nav-link i { transform: rotate(180deg); }
+            .nav-toggle {
+                display: block;
+            }
+
+            .navigation .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border-top: 1px solid #eee;
+            }
+
+            .navigation .nav-menu .nav-link {
+                color: #333;
+            }
+
+            .navigation .nav-menu.show-menu {
+                display: flex;
+            }
+
+            .navigation .nav-item {
+                width: 100%;
+                text-align: left;
+            }
+
+            .nav-item-dropdown>.nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown-menu {
+                display: none;
+                position: static;
+                width: 100%;
+                box-shadow: none;
+                border-top: 1px solid #f0f0f0;
+                padding: 10px 0 10px 30px;
+                min-width: unset;
+                background-color: #f9f9f9;
+            }
+
+            .dropdown-menu.show-submenu {
+                display: block;
+            }
+
+            .nav-item-dropdown:hover>.dropdown-menu {
+                display: none;
+            }
+
+            .nav-item-dropdown.active:hover>.dropdown-menu {
+                display: block;
+            }
+
+            .nav-item-dropdown.active>.nav-link i {
+                transform: rotate(180deg);
+            }
         }
 
         :root {
-            --primary-color: #2c3e50; --secondary-color: #3498db; --accent-color: #e74c3c;
-            --light-color: #ecf0f1; --dark-color: #2c3e50; --success-color: #27ae60; --warning-color: #f39c12;
-            font-size: 16px; --professional-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); --professional-border: 1px solid #e1e5e9;
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            font-size: 16px;
+            --professional-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --professional-border: 1px solid #e1e5e9;
         }
-        *, ::after, ::before { box-sizing: border-box }
-        html { scroll-behavior: smooth; overflow-x: hidden; } /* Evita scroll horizontal global */
-        body { font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: #333; background-color: #f8fafc; line-height: 1.6; overflow-x: hidden; }
-        .main-content-wrapper { padding: 1.25rem; max-width: 100%; }
-        .header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: var(--professional-border); text-align: center; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 8px; padding: 1.5rem; }
-        .header h1 { color: var(--primary-color); font-size: clamp(1.5rem, 4vw, 1.8rem); margin: .5rem 0; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-        .header .header-subtitle { font-size: 1.1rem; color: #4a5568; margin: 0; font-weight: 400; }
-        .content-block { border: var(--professional-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; background-color: #fff; box-shadow: var(--professional-shadow); transition: transform 0.2s ease, box-shadow 0.2s ease; overflow-wrap: break-word; }
-        .content-block:hover { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12); }
-        .content-block h2 { font-size: 1.5em; margin-top: 0; margin-bottom: 1.25rem; color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: .6rem; font-weight: 800; }
-        .content-block h2 .fas { margin-right: .75rem }
-        .infographic-flow { display: flex; justify-content: space-between; align-items: stretch; margin-top: 1.5rem; text-align: center; flex-wrap: wrap; gap: .6rem; }
-        .flow-step { flex: 1; min-width: 150px; padding: 1rem; border: var(--professional-border); border-radius: 8px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .flow-step:hover { transform: translateY(-5px); box-shadow: var(--professional-shadow); }
-        .flow-step .fas { font-size: 1.8rem; color: var(--primary-color); margin-bottom: .6rem; }
-        .flow-step strong { display: block; font-size: 1.1rem; color: var(--primary-color); font-weight: 600; }
-        .flow-step span { font-size: .9em; color: #4a5568; }
-        .flow-arrow { font-size: 2rem; color: var(--secondary-color); margin: auto .6rem; flex-grow: 0; }
-        .instructions-box ul { margin: .6rem 0 0 0; padding-left: 1.25rem }
-        .instructions-box li { margin-bottom: .5rem; line-height: 1.6 }
-        .solver-step { border: var(--professional-border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; background-color: #fdfdfd; max-width: 100%; }
-        .solver-step h3 { font-size: 1.2em; margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: .6rem; font-weight: 800; }
-        .form-group { margin-bottom: 1.25rem }
-        label { color: var(--primary-color); font-weight: 600; display: block; margin-bottom: .5rem; }
-        input[type=text], select, textarea { width: 100%; padding: .6rem; border: var(--professional-border); border-radius: 4px; transition: border .3s, box-shadow .3s; font-size: 1rem; font-family: 'Nunito', sans-serif; background-color: #fff; }
-        button:focus-visible, input:focus, select:focus, textarea:focus { outline: 0; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, .2); }
-        textarea { min-height: 90px; resize: vertical; }
-        .radio-group label { display: flex; align-items: center; gap: 10px; font-weight: 400; margin-bottom: .6rem; cursor: pointer; }
-        .radio-group input { width: auto; margin: 0 }
-        button { background-color: var(--secondary-color); color: #fff; padding: .7rem 1.25rem; border: none; border-radius: 4px; cursor: pointer; margin: 5px; font-size: 1rem; transition: background-color .3s, transform 0.2s, box-shadow 0.2s; font-family: 'Nunito', sans-serif; font-weight: 600; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
-        .btn-success { background-color: var(--success-color) }
-        .btn-success:hover { background-color: #219653 }
-        .btn-warning { background-color: var(--warning-color) }
-        .btn-warning:hover { background-color: #d4ac0d }
-        #solve-button { width: 100%; padding: 1rem; font-size: 1.2em; font-weight: 700; margin-top: 1.25rem; }
-        #solve-button:hover { background-color: #2980b9 }
-        .hidden { display: none }
-        #results-container { border: 2px solid var(--success-color); background-color: #f8fef8; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; box-shadow: var(--professional-shadow); overflow-x: hidden; }
-        #results-container h3 { color: var(--success-color); font-weight: 800; }
-        .principle-item { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 1rem; }
-        .principle-item strong { color: var(--dark-color); font-size: 1.05em; font-weight: 600; }
-        .results-actions { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #eee; }
-        footer { padding: 2rem 1.25rem; text-align: center; }
-        .disclaimer-note { margin-top: 2rem; padding: 0 1rem; font-size: .8rem; color: #777; max-width: 800px; margin-left: auto; margin-right: auto; }
-        
+
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* Evita scroll horizontal global */
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f8fafc;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .main-content-wrapper {
+            padding: 1.25rem;
+            max-width: 100%;
+        }
+
+        .header {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: var(--professional-border);
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin: .5rem 0;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header .header-subtitle {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .content-block {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            box-shadow: var(--professional-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow-wrap: break-word;
+        }
+
+        .content-block:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-block h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: .6rem;
+            font-weight: 800;
+        }
+
+        .content-block h2 .fas {
+            margin-right: .75rem
+        }
+
+        .infographic-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-top: 1.5rem;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: .6rem;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: var(--professional-border);
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            transition: transform .2s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--professional-shadow);
+        }
+
+        .flow-step .fas {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: .6rem;
+        }
+
+        .flow-step strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .flow-step span {
+            font-size: .9em;
+            color: #4a5568;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: auto .6rem;
+            flex-grow: 0;
+        }
+
+        .instructions-box ul {
+            margin: .6rem 0 0 0;
+            padding-left: 1.25rem
+        }
+
+        .instructions-box li {
+            margin-bottom: .5rem;
+            line-height: 1.6
+        }
+
+        .solver-step {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            background-color: #fdfdfd;
+            max-width: 100%;
+        }
+
+        .solver-step h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: .6rem;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem
+        }
+
+        label {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: block;
+            margin-bottom: .5rem;
+        }
+
+        input[type=text],
+        select,
+        textarea {
+            width: 100%;
+            padding: .6rem;
+            border: var(--professional-border);
+            border-radius: 4px;
+            transition: border .3s, box-shadow .3s;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            background-color: #fff;
+        }
+
+        button:focus-visible,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 0;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, .2);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            margin-bottom: .6rem;
+            cursor: pointer;
+        }
+
+        .radio-group input {
+            width: auto;
+            margin: 0
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: .7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1rem;
+            transition: background-color .3s, transform 0.2s, box-shadow 0.2s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success {
+            background-color: var(--success-color)
+        }
+
+        .btn-success:hover {
+            background-color: #219653
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color)
+        }
+
+        .btn-warning:hover {
+            background-color: #d4ac0d
+        }
+
+        #solve-button {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 1.25rem;
+        }
+
+        #solve-button:hover {
+            background-color: #2980b9
+        }
+
+        .hidden {
+            display: none
+        }
+
+        #results-container {
+            border: 2px solid var(--success-color);
+            background-color: #f8fef8;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            box-shadow: var(--professional-shadow);
+            overflow-x: hidden;
+        }
+
+        #results-container h3 {
+            color: var(--success-color);
+            font-weight: 800;
+        }
+
+        .principle-item {
+            border-left: 3px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .principle-item strong {
+            color: var(--dark-color);
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .results-actions {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        footer {
+            padding: 2rem 1.25rem;
+            text-align: center;
+        }
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: .8rem;
+            color: #777;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         /* ===== MEJORAS PARA MÓVILES EN RESULTADOS ===== */
-        @media (max-width: 992px) { 
-            .infographic-flow { flex-direction: column; align-items: center } 
-            .flow-arrow { transform: rotate(90deg); margin: 1rem 0 } 
+        @media (max-width: 992px) {
+            .infographic-flow {
+                flex-direction: column;
+                align-items: center
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0
+            }
         }
-        
-        @media (max-width: 768px) { 
-            #results-container { 
-                padding: 1rem !important; 
+
+        @media (max-width: 768px) {
+            #results-container {
+                padding: 1rem !important;
                 width: 100%;
-                overflow-wrap: break-word; 
-                word-wrap: break-word; 
-                word-break: break-word; /* Asegura ruptura de palabras largas */
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                word-break: break-word;
+                /* Asegura ruptura de palabras largas */
             }
-            
+
             /* Contenedores de diagramas adaptables */
-            .sufield-svg-container { 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                height: auto !important; 
+            .sufield-svg-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
                 aspect-ratio: 4/3;
-                margin: 0 auto; 
+                margin: 0 auto;
             }
-            
+
             /* Ajuste del flujo de solución (Antes -> Después) */
-            .solution-transformation { 
-                flex-direction: column; 
-                gap: 1.5rem; 
+            .solution-transformation {
+                flex-direction: column;
+                gap: 1.5rem;
                 width: 100%;
-            } 
-            
-            .transition-arrow { 
-                transform: rotate(90deg); 
-                margin: 0.5rem 0; 
-            } 
-            
-            .before-state, .after-state { 
-                width: 100% !important; 
+            }
+
+            .transition-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
+
+            .before-state,
+            .after-state {
+                width: 100% !important;
                 max-width: 100%;
-            } 
-            
+            }
+
             /* Ajustes de espaciado interno en móviles */
-            #results-container .solver-step, 
-            #results-container .principle-card, 
-            #results-container .solution-card { 
-                padding: 1rem !important; 
-                margin-bottom: 1rem !important; 
-            } 
-            
-            .sufield-system-fields { grid-template-columns: 1fr !important; gap: 0.5rem !important; } 
-            .sufield-system { padding: 1rem !important; } 
-            
+            #results-container .solver-step,
+            #results-container .principle-card,
+            #results-container .solution-card {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .sufield-system-fields {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+
+            .sufield-system {
+                padding: 1rem !important;
+            }
+
             /* Tablas con scroll horizontal para evitar desborde */
-            .matrix-container, .table-responsive-wrapper { 
-                overflow-x: auto; 
-                font-size: 0.75rem; 
+            .matrix-container,
+            .table-responsive-wrapper {
+                overflow-x: auto;
+                font-size: 0.75rem;
                 display: block;
                 width: 100%;
-            } 
-            
-            .matrix-table th, .matrix-table td { 
-                padding: 4px 2px !important; 
-                font-size: 0.7rem; 
-                min-width: 60px; /* Evita colapso total */
             }
-            
+
+            .matrix-table th,
+            .matrix-table td {
+                padding: 4px 2px !important;
+                font-size: 0.7rem;
+                min-width: 60px;
+                /* Evita colapso total */
+            }
+
             /* Forzar scroll en tablas generadas */
             #results-container table {
                 display: block;
@@ -174,26 +589,66 @@
                 -webkit-overflow-scrolling: touch;
             }
 
-            .infographic-flow { gap: 0.5rem; } 
-            .flow-step { min-width: 120px; padding: 0.8rem; } 
-            .flow-step .fas { font-size: 1.4rem; } 
-            .flow-step strong { font-size: 1rem; } 
-            .flow-step span { font-size: 0.8rem; } 
+            .infographic-flow {
+                gap: 0.5rem;
+            }
+
+            .flow-step {
+                min-width: 120px;
+                padding: 0.8rem;
+            }
+
+            .flow-step .fas {
+                font-size: 1.4rem;
+            }
+
+            .flow-step strong {
+                font-size: 1rem;
+            }
+
+            .flow-step span {
+                font-size: 0.8rem;
+            }
         }
 
-        @media (max-width: 480px) { 
-            .main-content-wrapper { padding: 0.5rem !important; } 
-            .content-block { padding: 1rem !important; margin-bottom: 1rem !important; } 
-            .solver-step { padding: 0.75rem !important; } 
-            .header { padding: 1rem !important; } 
-            
+        @media (max-width: 480px) {
+            .main-content-wrapper {
+                padding: 0.5rem !important;
+            }
+
+            .content-block {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .solver-step {
+                padding: 0.75rem !important;
+            }
+
+            .header {
+                padding: 1rem !important;
+            }
+
             /* Texto más pequeño en diagramas para móviles muy pequeños */
-            .sufield-svg-container .node-type { font-size: 0.55rem !important; } 
-            .sufield-svg-container .node-label { font-size: 0.65rem !important; } 
-            
-            button { padding: 0.8rem 1rem !important; margin: 3px !important; font-size: 0.9rem !important; } 
-            #solve-button { padding: 0.9rem !important; font-size: 1.1rem !important; } 
-            
+            .sufield-svg-container .node-type {
+                font-size: 0.55rem !important;
+            }
+
+            .sufield-svg-container .node-label {
+                font-size: 0.65rem !important;
+            }
+
+            button {
+                padding: 0.8rem 1rem !important;
+                margin: 3px !important;
+                font-size: 0.9rem !important;
+            }
+
+            #solve-button {
+                padding: 0.9rem !important;
+                font-size: 1.1rem !important;
+            }
+
             /* Ajuste crítico para evitar scroll horizontal en el cuerpo */
             #results-container {
                 padding: 0.5rem !important;
@@ -201,111 +656,771 @@
             }
         }
 
-        .triz-h1-icon-style { display: inline-flex; justify-content: center; align-items: center; width: 35px; height: 35px; border-radius: 6px; background-color: #fc6d26; color: #fff; font-size: 1.2rem; margin-right: 0.75rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .physical-strategy-guide { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-left: 5px solid var(--secondary-color); padding: 1.5rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .strategy-title { font-weight: bold; color: var(--primary-color); font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .strategy-description { margin-bottom: 1rem; line-height: 1.5; }
-        .strategy-example { background: rgba(255, 255, 255, 0.7); padding: 1rem; border-radius: 5px; font-style: italic; border-left: 3px solid var(--accent-color); }
-        .physical-principle-card { border: var(--professional-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
-        .physical-principle-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-        .principle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .principle-number { background: var(--secondary-color); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .principle-name { font-weight: bold; color: var(--primary-color); font-size: 1.1rem; flex: 1; margin-left: 10px; }
-        .principle-description { margin-bottom: 1rem; line-height: 1.5; }
-        .principle-example { background: #f8f9fa; padding: 1rem; border-radius: 5px; border-left: 3px solid var(--warning-color); }
-        .example-title { font-weight: bold; color: var(--primary-color); margin-bottom: 0.5rem; }
-        .sufield-triangle-container { display: flex; justify-content: center; align-items: center; margin: 1.5rem 0; padding: 1.5rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border: var(--professional-border); position: relative; overflow: hidden; }
-        .sufield-svg-container { width: 320px; height: 280px; position: relative; }
-        .sufield-svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); }
-        .triangle-path { fill: rgba(255, 255, 255, 0.8); stroke: #dee2e6; stroke-width: 2; stroke-dasharray: 5, 5; }
-        .interaction-line { stroke: #3498db; stroke-width: 2; marker-end: url(#arrowhead); }
-        .problem-interaction { stroke: #e74c3c; stroke-width: 3; }
-        .sufield-node { cursor: default; transition: none; }
-        .sufield-node:hover { transform: none; filter: none; }
-        .s1-node { fill: #3498db; }
-        .s2-node { fill: #e74c3c; }
-        .f-node { fill: #f39c12; }
-        .node-label { font-weight: bold; font-size: 0.75rem; text-anchor: middle; dominant-baseline: middle; pointer-events: none; fill: #1a5632; filter: url(#text-background); }
-        .node-type { font-size: 0.65rem; text-anchor: middle; fill: #4a5568; font-weight: 600; }
-        .problem-indicator-icon { font-size: 1.8rem; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); animation: subtle-pulse 3s infinite; }
-        @keyframes subtle-pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-        .problem-insufficient .interaction-line { stroke-dasharray: 5, 5; stroke: #3498db; }
-        .problem-harmful .interaction-line { stroke: #e74c3c; stroke-width: 3; }
-        .problem-difficult .interaction-line { stroke-dasharray: 2, 2; stroke: #f39c12; }
-        .problem-missing .interaction-line { stroke-dasharray: 10, 5; stroke: #9b59b6; }
-        .problem-excessive .interaction-line { stroke: #e67e22; stroke-width: 4; }
-        .problem-inefficient .interaction-line { stroke: #1abc9c; stroke-width: 2; stroke-dasharray: 1, 0; }
-        .standard-solution-visual { margin-bottom: 2rem; padding: 1.5rem; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); border-left: 5px solid var(--secondary-color); }
-        .solution-transformation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .before-state, .after-state { text-align: center; flex: 1; }
-        .state-label { margin-top: 0.5rem; font-weight: bold; color: var(--primary-color); }
-        .transition-arrow { font-size: 2rem; color: var(--secondary-color); margin: 0 1rem; }
-        .problem-state .triangle-path { fill: rgba(255, 230, 230, 0.8); }
-        .solution-state .triangle-path { fill: rgba(230, 255, 230, 0.8); }
-        .solution-description { padding: 1rem; background: #f8f9fa; border-radius: 5px; }
-        .solution-description h5 { margin-top: 0; color: var(--primary-color); border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; }
-        .matrix-container { margin-top: 1rem; overflow-x: auto; border: var(--professional-border); border-radius: 8px; padding: 1rem; background: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
-        .matrix-table { border-collapse: collapse; width: 100%; font-size: 0.75rem; }
-        .matrix-table th, .matrix-table td { border: 1px solid #e0e0e0; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
-        .matrix-table th { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; font-weight: bold; position: sticky; top: 0; min-width: 40px; height: 40px; }
-        .matrix-table th:first-child { background: linear-gradient(135deg, #3498db, #2980b9); position: sticky; left: 0; z-index: 3; }
-        .matrix-table td { background-color: #fafafa; height: 35px; position: relative; }
-        .matrix-table td:hover { background-color: #e3f2fd; transform: scale(1.05); z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
-        .matrix-table .selected { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; font-weight: bold; box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4); }
-        .matrix-table .improving { background-color: #e8f5e9; }
-        .matrix-table .worsening { background-color: #ffebee; }
-        .principle-numbers { font-size: 0.7rem; line-height: 1.2; font-weight: bold; }
-        .matrix-toggle { margin-bottom: 1rem; text-align: center; }
-        .principle-icon, .solution-icon, .class-icon { display: inline-flex; justify-content: center; align-items: center; width: 24px; height: 24px; border-radius: 4px; margin-right: 8px; font-size: 0.9rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .principle-icon { background-color: #3498db; color: white; }
-        .solution-icon { background-color: #9b59b6; color: white; }
-        .class-icon { background-color: #e74c3c; color: white; }
-        .principle-card { border: var(--professional-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; border-left: 4px solid #3498db; }
-        .principle-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-        .principle-header { display: flex; align-items: center; margin-bottom: 0.5rem; }
-        .solution-card { border: var(--professional-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; background: #f8f9fa; transition: all 0.2s ease; }
-        .solution-card:hover { background: #e9ecef; }
-        .solution-header { display: flex; align-items: center; margin-bottom: 0.5rem; }
-        .class-header { display: flex; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e74c3c; }
-        .physical-principle-icon { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 6px; margin-right: 12px; font-size: 1rem; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .standard-solution-icon { display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 28px; border-radius: 5px; margin-right: 10px; font-size: 0.9rem; background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .icon-segmentation { color: #3498db; } .icon-extraction { color: #e74c3c; } .icon-local-quality { color: #2ecc71; } .icon-asymmetry { color: #9b59b6; } .icon-combining { color: #f39c12; } .icon-universality { color: #1abc9c; } .icon-nesting { color: #34495e; } .icon-counterweight { color: #7f8c8d; } .icon-preliminary { color: #d35400; } .icon-prior-action { color: #c0392b; }
-        .sufield-system { border: var(--professional-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; background: #fdfdfd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
-        .sufield-system-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #eee; }
-        .sufield-system-title { font-weight: bold; color: var(--primary-color); font-size: 1.1rem; }
-        .sufield-system-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-        @media (max-width: 768px) { .sufield-system-fields { grid-template-columns: 1fr; } }
-        .matrix-version-selector { background: #f8f9fa; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #3498db; }
-        .matrix-version-info { margin-top: 0.5rem; font-size: 0.9rem; color: #666; font-style: italic; }
-        .solutions-matrix { font-size: 0.7rem; }
-        .solutions-matrix th { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 8px 4px; text-align: center; white-space: nowrap; }
-        .solutions-matrix td { padding: 6px 4px; border: 1px solid #e0e0e0; vertical-align: top; }
-        .matrix-applicable { background-color: #d4edda; color: #155724; text-align: center; font-weight: bold; }
-        .solutions-matrix tr:hover td { background-color: #e3f2fd; }
-        .solutions-matrix tr:hover .matrix-applicable { background-color: #c3e6cb; }
-        #principles-toggle-container { display: flex; justify-content: center; align-items: center; width: 100%; margin: 1rem 0; }
-        #principles-toggle-container button { margin: 0 auto; display: block; }
-        .tese-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border: var(--professional-border); border-radius: 8px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        .tese-svg { width: 100%; height: 100%; }
-        .s-curve { fill: none; stroke: #3498db; stroke-width: 3; }
-        .stage-marker { fill: #e74c3c; stroke: #fff; stroke-width: 2; cursor: move; transition: all 0.3s ease; }
-        .stage-marker:hover { fill: #c0392b; transform: scale(1.2); }
-        .stage-label { font-size: 0.8rem; font-weight: bold; text-anchor: middle; fill: #2c3e50; }
-        .stage-line { stroke: #95a5a6; stroke-width: 1; stroke-dasharray: 5, 5; }
-        .tese-info { margin-top: 15px; padding: 15px; background: #fff; border-radius: 8px; border-left: 4px solid #3498db; }
-        .trends-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .trends-table th, .trends-table td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; }
-        .trends-table th { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; font-weight: bold; }
-        .trends-table tr:nth-child(even) { background-color: #f8f9fa; }
-        .trends-table tr:hover { background-color: #e3f2fd; }
-        .recommended-trend { background-color: #d4edda !important; font-weight: bold; }
-        .trend-icon-container { display: flex; align-items: center; margin-bottom: 0.5rem; }
-        .trend-icon { display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 28px; border-radius: 5px; margin-right: 10px; font-size: 0.9rem; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .tese-trends-icons { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0; flex-wrap: wrap; }
-        .tese-trend-item { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 80px; }
-        .tese-trend-icon { display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #3498db, #2980b9); color: white; font-size: 1.3rem; margin-bottom: 0.5rem; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); }
-        .tese-trend-name { font-size: 0.8rem; font-weight: 600; color: var(--primary-color); }
-        .text-background { fill: #f8f9fa; fill-opacity: 0.9; stroke: #dee2e6; stroke-width: 1; }
+        .triz-h1-icon-style {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            background-color: #fc6d26;
+            color: #fff;
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .physical-strategy-guide {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .strategy-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .strategy-description {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .strategy-example {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 5px;
+            font-style: italic;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .physical-principle-card {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .physical-principle-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .principle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .principle-number {
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .principle-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .principle-description {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .principle-example {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 3px solid var(--warning-color);
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .sufield-triangle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border: var(--professional-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sufield-svg-container {
+            width: 320px;
+            height: 280px;
+            position: relative;
+        }
+
+        .sufield-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .triangle-path {
+            fill: rgba(255, 255, 255, 0.8);
+            stroke: #dee2e6;
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+        }
+
+        .interaction-line {
+            stroke: #3498db;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .problem-interaction {
+            stroke: #e74c3c;
+            stroke-width: 3;
+        }
+
+        .sufield-node {
+            cursor: default;
+            transition: none;
+        }
+
+        .sufield-node:hover {
+            transform: none;
+            filter: none;
+        }
+
+        .s1-node {
+            fill: #3498db;
+        }
+
+        .s2-node {
+            fill: #e74c3c;
+        }
+
+        .f-node {
+            fill: #f39c12;
+        }
+
+        .node-label {
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+            fill: #1a5632;
+            filter: url(#text-background);
+        }
+
+        .node-type {
+            font-size: 0.65rem;
+            text-anchor: middle;
+            fill: #4a5568;
+            font-weight: 600;
+        }
+
+        .problem-indicator-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            animation: subtle-pulse 3s infinite;
+        }
+
+        @keyframes subtle-pulse {
+            0% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        .problem-insufficient .interaction-line {
+            stroke-dasharray: 5, 5;
+            stroke: #3498db;
+        }
+
+        .problem-harmful .interaction-line {
+            stroke: #e74c3c;
+            stroke-width: 3;
+        }
+
+        .problem-difficult .interaction-line {
+            stroke-dasharray: 2, 2;
+            stroke: #f39c12;
+        }
+
+        .problem-missing .interaction-line {
+            stroke-dasharray: 10, 5;
+            stroke: #9b59b6;
+        }
+
+        .problem-excessive .interaction-line {
+            stroke: #e67e22;
+            stroke-width: 4;
+        }
+
+        .problem-inefficient .interaction-line {
+            stroke: #1abc9c;
+            stroke-width: 2;
+            stroke-dasharray: 1, 0;
+        }
+
+        .standard-solution-visual {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .solution-transformation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .before-state,
+        .after-state {
+            text-align: center;
+            flex: 1;
+        }
+
+        .state-label {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .transition-arrow {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: 0 1rem;
+        }
+
+        .problem-state .triangle-path {
+            fill: rgba(255, 230, 230, 0.8);
+        }
+
+        .solution-state .triangle-path {
+            fill: rgba(230, 255, 230, 0.8);
+        }
+
+        .solution-description {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .solution-description h5 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 0.5rem;
+        }
+
+        .matrix-container {
+            margin-top: 1rem;
+            overflow-x: auto;
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .matrix-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.75rem;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            border: 1px solid #e0e0e0;
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .matrix-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            min-width: 40px;
+            height: 40px;
+        }
+
+        .matrix-table th:first-child {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            position: sticky;
+            left: 0;
+            z-index: 3;
+        }
+
+        .matrix-table td {
+            background-color: #fafafa;
+            height: 35px;
+            position: relative;
+        }
+
+        .matrix-table td:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .matrix-table .selected {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+        }
+
+        .matrix-table .improving {
+            background-color: #e8f5e9;
+        }
+
+        .matrix-table .worsening {
+            background-color: #ffebee;
+        }
+
+        .principle-numbers {
+            font-size: 0.7rem;
+            line-height: 1.2;
+            font-weight: bold;
+        }
+
+        .matrix-toggle {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .principle-icon,
+        .solution-icon,
+        .class-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .principle-icon {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .solution-icon {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .class-icon {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .principle-card {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+
+        .principle-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .principle-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .solution-card {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .solution-card:hover {
+            background: #e9ecef;
+        }
+
+        .solution-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .class-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e74c3c;
+        }
+
+        .physical-principle-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            margin-right: 12px;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .standard-solution-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-segmentation {
+            color: #3498db;
+        }
+
+        .icon-extraction {
+            color: #e74c3c;
+        }
+
+        .icon-local-quality {
+            color: #2ecc71;
+        }
+
+        .icon-asymmetry {
+            color: #9b59b6;
+        }
+
+        .icon-combining {
+            color: #f39c12;
+        }
+
+        .icon-universality {
+            color: #1abc9c;
+        }
+
+        .icon-nesting {
+            color: #34495e;
+        }
+
+        .icon-counterweight {
+            color: #7f8c8d;
+        }
+
+        .icon-preliminary {
+            color: #d35400;
+        }
+
+        .icon-prior-action {
+            color: #c0392b;
+        }
+
+        .sufield-system {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: #fdfdfd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .sufield-system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sufield-system-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .sufield-system-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .sufield-system-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .matrix-version-selector {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .matrix-version-info {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .solutions-matrix {
+            font-size: 0.7rem;
+        }
+
+        .solutions-matrix th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 8px 4px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .solutions-matrix td {
+            padding: 6px 4px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        .matrix-applicable {
+            background-color: #d4edda;
+            color: #155724;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .solutions-matrix tr:hover td {
+            background-color: #e3f2fd;
+        }
+
+        .solutions-matrix tr:hover .matrix-applicable {
+            background-color: #c3e6cb;
+        }
+
+        #principles-toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        #principles-toggle-container button {
+            margin: 0 auto;
+            display: block;
+        }
+
+        .tese-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+            border: var(--professional-border);
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .tese-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .s-curve {
+            fill: none;
+            stroke: #3498db;
+            stroke-width: 3;
+        }
+
+        .stage-marker {
+            fill: #e74c3c;
+            stroke: #fff;
+            stroke-width: 2;
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .stage-marker:hover {
+            fill: #c0392b;
+            transform: scale(1.2);
+        }
+
+        .stage-label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-anchor: middle;
+            fill: #2c3e50;
+        }
+
+        .stage-line {
+            stroke: #95a5a6;
+            stroke-width: 1;
+            stroke-dasharray: 5, 5;
+        }
+
+        .tese-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .trends-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .trends-table th,
+        .trends-table td {
+            border: 1px solid #e0e0e0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .trends-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+        }
+
+        .trends-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .trends-table tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .recommended-trend {
+            background-color: #d4edda !important;
+            font-weight: bold;
+        }
+
+        .trend-icon-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .trend-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tese-trends-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .tese-trend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .tese-trend-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .tese-trend-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .text-background {
+            fill: #f8f9fa;
+            fill-opacity: 0.9;
+            stroke: #dee2e6;
+            stroke-width: 1;
+        }
 
         /* ===== NUEVOS ESTILOS PARA TABS (WIZARD) ===== */
         .tabs-nav {
@@ -318,6 +1433,7 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
+
         .tabs-nav::-webkit-scrollbar {
             display: none;
         }
@@ -336,10 +1452,29 @@
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
         }
+
+        /* === MODIFICACIÓN: Media Query para distribuir pestañas en escritorio === */
+        @media (min-width: 992px) {
+            .tabs-nav {
+                overflow-x: hidden;
+                /* Elimina scroll en escritorio */
+            }
+
+            .tab-btn {
+                flex: 1;
+                /* Ocupar todo el ancho disponible */
+                justify-content: center;
+                /* Centrar contenido */
+                padding: 1rem 0.5rem;
+                /* Reducir padding lateral para ajustar mejor */
+            }
+        }
+
         .tab-btn:hover {
             background-color: #e2e8f0;
             color: var(--primary-color);
         }
+
         .tab-btn.active {
             background-color: #fff;
             color: var(--secondary-color);
@@ -350,6 +1485,7 @@
             border-right: 1px solid #e1e5e9;
             border-top: 1px solid #e1e5e9;
         }
+
         .tab-content {
             display: none;
             padding: 2rem;
@@ -359,13 +1495,23 @@
             border-radius: 0 0 8px 8px;
             animation: fadeIn 0.3s ease;
         }
+
         .tab-content.active {
             display: block;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .tab-nav-buttons {
             display: flex;
             justify-content: flex-end;
@@ -373,6 +1519,7 @@
             padding-top: 1rem;
             border-top: 1px solid #eee;
         }
+
         .btn-next-tab {
             background-color: var(--primary-color);
             color: white;
@@ -388,36 +1535,66 @@
 
     <main class="main-content-wrapper">
         <header class="header">
-            <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Free Online Inventive Problem Solving (TRIZ) Tool</h1>
+            <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Free Online Inventive Problem
+                Solving (TRIZ) Tool</h1>
             <p class="header-subtitle">A data-driven method for systematic innovation and invention.</p>
         </header>
 
         <nav class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start & Info</button>
-            <button class="tab-btn" onclick="switchTab('tab-ldst')"><i class="fas fa-project-diagram"></i> 1. LDST Analysis</button>
-            <button class="tab-btn" onclick="switchTab('tab-define')"><i class="fas fa-tasks"></i> 2. Define Problem</button>
-            <button class="tab-btn" onclick="switchTab('tab-ifr')"><i class="fas fa-rocket"></i> 3. Formulate IFR</button>
-            <button class="tab-btn" onclick="switchTab('tab-contradiction')"><i class="fas fa-exchange-alt"></i> 4. Contradiction</button>
-            <button class="tab-btn" onclick="switchTab('tab-sufield')"><i class="fas fa-atom"></i> 5. Su-Field Analysis</button>
-            <button class="tab-btn" onclick="switchTab('tab-solve')"><i class="fas fa-calculator"></i> 6. Solve & Report</button>
+            <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start &
+                Info</button>
+            <button class="tab-btn" onclick="switchTab('tab-ldst')"><i class="fas fa-project-diagram"></i> 1. LDST
+                Analysis</button>
+            <button class="tab-btn" onclick="switchTab('tab-define')"><i class="fas fa-tasks"></i> 2. Define
+                Problem</button>
+            <button class="tab-btn" onclick="switchTab('tab-ifr')"><i class="fas fa-rocket"></i> 3. Formulate
+                IFR</button>
+            <button class="tab-btn" onclick="switchTab('tab-contradiction')"><i class="fas fa-exchange-alt"></i> 4.
+                Contradiction</button>
+            <button class="tab-btn" onclick="switchTab('tab-sufield')"><i class="fas fa-atom"></i> 5. Su-Field
+                Analysis</button>
+            <button class="tab-btn" onclick="switchTab('tab-solve')"><i class="fas fa-calculator"></i> 6. Solve &
+                Report</button>
         </nav>
 
         <div id="tab-start" class="tab-content active">
-            
+
             <div class="content-block">
-                <div style="text-align: center; margin-bottom: 20px; padding: 20px; background: #f1f5f9; border-radius: 8px;">
+                <div
+                    style="text-align: center; margin-bottom: 20px; padding: 20px; background: #f1f5f9; border-radius: 8px;">
                     <h3 style="margin-top:0;">Start Here</h3>
                     <p>Load a pre-defined example to populate all tabs instantly, or reset to start fresh.</p>
-                    <button class="btn-success" onclick="loadExampleAndGo()"><i class="fas fa-magic"></i> Load Next Example & Fill All Tabs</button>
-                    <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
-                    <p style="margin-top:10px;"><strong>Status:</strong> <span id="current-example-description">No example loaded.</span></p>
+                    <button class="btn-success" onclick="loadExampleAndGo()"><i class="fas fa-magic"></i> Load Next
+                        Example & Fill All Tabs</button>
+                    <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset
+                        Tool</button>
+                    <p style="margin-top:10px;"><strong>Status:</strong> <span id="current-example-description">No
+                            example loaded.</span></p>
                 </div>
 
                 <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li><strong>TRIZ</strong> (Теория решения изобретательских задач), or "Theory of Inventive Problem Solving," is a systematic, data-driven methodology for innovation developed by <strong>Genrich Altshuller</strong> and his colleagues. Unlike traditional brainstorming approaches, TRIZ is based on analyzing patterns in millions of patents to identify universal principles of invention that transcend specific industries and technologies.</li>
-                        <li>The core premise of TRIZ is that most inventive problems contain inherent <strong>contradictions</strong> - situations where improving one parameter of a system inevitably worsens another. By systematically identifying and resolving these contradictions breakthrough solutions can be systematically discovered across all technical fields (using the <strong>Contradiction Matrix</strong>). For highly complex challenges, the <strong>ARIZ</strong> (Algorithm of Inventive Problem Solving) provides a detailed, step-by-step procedure for tackling the problem and resolving <strong>physical contradictions</strong> (where a single component requires two opposing properties simultaneously). Furthermore, the <strong>Su-Field Analysis</strong> (Substance-Field) serves as a graphical model to simplify a technical system into interacting components (Substances and Fields), allowing users to systematically apply Inventive Standards to fix or improve ineffective interactions. Finally, the <strong>LDST</strong> (Laws of Development of Technical Systems) is a thinking framework that ensures comprehensive problem resolution by analyzing the evolution of technical systems through fundamental laws of development.</li>
+                        <li><strong>TRIZ</strong> (Теория решения изобретательских задач), or "Theory of Inventive
+                            Problem Solving," is a systematic, data-driven methodology for innovation developed by
+                            <strong>Genrich Altshuller</strong> and his colleagues. Unlike traditional brainstorming
+                            approaches, TRIZ is based on analyzing patterns in millions of patents to identify universal
+                            principles of invention that transcend specific industries and technologies.</li>
+                        <li>The core premise of TRIZ is that most inventive problems contain inherent
+                            <strong>contradictions</strong> - situations where improving one parameter of a system
+                            inevitably worsens another. By systematically identifying and resolving these contradictions
+                            breakthrough solutions can be systematically discovered across all technical fields (using
+                            the <strong>Contradiction Matrix</strong>). For highly complex challenges, the
+                            <strong>ARIZ</strong> (Algorithm of Inventive Problem Solving) provides a detailed,
+                            step-by-step procedure for tackling the problem and resolving <strong>physical
+                                contradictions</strong> (where a single component requires two opposing properties
+                            simultaneously). Furthermore, the <strong>Su-Field Analysis</strong> (Substance-Field)
+                            serves as a graphical model to simplify a technical system into interacting components
+                            (Substances and Fields), allowing users to systematically apply Inventive Standards to fix
+                            or improve ineffective interactions. Finally, the <strong>LDST</strong> (Laws of Development
+                            of Technical Systems) is a thinking framework that ensures comprehensive problem resolution
+                            by analyzing the evolution of technical systems through fundamental laws of development.
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -426,16 +1603,30 @@
                 <h2><i class="fas fa-history"></i> History & Origin</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li>TRIZ was developed by <strong>Genrich Altshuller</strong> beginning in 1946 while working as a patent examiner in the Soviet Navy. After analyzing thousands of patents across diverse technical fields, he discovered that inventive problems, regardless of their specific domain, were solved using a surprisingly small set of universal principles and patterns.</li>
-                        <li>Altshuller's revolutionary insight was that <strong>innovation follows predictable patterns</strong> rather than being random acts of genius. His team systematically analyzed over 200,000 patents to codify these patterns into the foundational TRIZ tools that form the basis of the methodology today.</li>
+                        <li>TRIZ was developed by <strong>Genrich Altshuller</strong> beginning in 1946 while working as
+                            a patent examiner in the Soviet Navy. After analyzing thousands of patents across diverse
+                            technical fields, he discovered that inventive problems, regardless of their specific
+                            domain, were solved using a surprisingly small set of universal principles and patterns.
+                        </li>
+                        <li>Altshuller's revolutionary insight was that <strong>innovation follows predictable
+                                patterns</strong> rather than being random acts of genius. His team systematically
+                            analyzed over 200,000 patents to codify these patterns into the foundational TRIZ tools that
+                            form the basis of the methodology today.</li>
                         <li><strong>Key Historical Contributions:</strong>
                             <ul>
-                                <li><strong>Genrich Altshuller (1946-1985)</strong>: Developed the core TRIZ framework including the 40 Principles, Contradiction Matrix, and the ARIZ algorithm for complex problem solving</li>
-                                <li><strong>Boris Zlotin & Alla Zusman (1980s-1990s)</strong>: Advanced LDST (Laws of Development of Technical Systems) and expanded TRIZ applications</li>
-                                <li><strong>Vladimir Petrov (1990s-2000s)</strong>: Expanded the 76 Standard Solutions and refined the Su-Field methodology</li>
-                                <li><strong>Victor Fey & Eugene Rivin (1990s)</strong>: Adapted TRIZ for Western audiences and industrial applications</li>
-                                <li><strong>Simon Litvin (2000s)</strong>: Developed modern physical contradiction resolution methods and separation principles</li>
-                                <li><strong>Valeri Souchkov & Michael Orloff (2000s)</strong>: Refined function analysis and Su-Field modeling techniques</li>
+                                <li><strong>Genrich Altshuller (1946-1985)</strong>: Developed the core TRIZ framework
+                                    including the 40 Principles, Contradiction Matrix, and the ARIZ algorithm for
+                                    complex problem solving</li>
+                                <li><strong>Boris Zlotin & Alla Zusman (1980s-1990s)</strong>: Advanced LDST (Laws of
+                                    Development of Technical Systems) and expanded TRIZ applications</li>
+                                <li><strong>Vladimir Petrov (1990s-2000s)</strong>: Expanded the 76 Standard Solutions
+                                    and refined the Su-Field methodology</li>
+                                <li><strong>Victor Fey & Eugene Rivin (1990s)</strong>: Adapted TRIZ for Western
+                                    audiences and industrial applications</li>
+                                <li><strong>Simon Litvin (2000s)</strong>: Developed modern physical contradiction
+                                    resolution methods and separation principles</li>
+                                <li><strong>Valeri Souchkov & Michael Orloff (2000s)</strong>: Refined function analysis
+                                    and Su-Field modeling techniques</li>
                             </ul>
                         </li>
                     </ul>
@@ -446,20 +1637,52 @@
                 <h2><i class="fas fa-toolbox"></i> TRIZ Methodology & Tools</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li>The TRIZ methodology provides a structured approach to problem solving that guides innovators through a systematic process of analyzing problems, identifying contradictions, and applying proven solution patterns. The methodology integrates several powerful tools that work together to transform seemingly intractable problems into solvable challenges.</li>
-                        <li><strong>LDST - Laws of Development of Technical Systems</strong><br>LDST identifies fundamental laws that govern how technical systems evolve over time, helping innovators understand system dynamics and identify natural evolution paths based on Altshuller's original framework.</li>
-                        <li><strong>Ideal Final Result (IFR)</strong><br>The IFR is a powerful concept that defines the perfect solution where the system performs its function without any drawbacks, costs, or harmful effects. Formulating the IFR helps innovators break psychological inertia and focus on the essential function rather than being constrained by existing implementations.</li>
-                        <li><strong>Technical Contradictions</strong><br>Technical Contradictions occur when improving one parameter of a system causes another parameter to worsen. For example, making a car stronger typically makes it heavier. These contradictions are resolved using the <strong>Contradiction Matrix</strong> and <strong>40 Inventive Principles</strong>, which provide specific guidance on how to overcome the trade-off.</li>
-                        <li><strong>40 Inventive Principles</strong><br>The 40 Principles represent the most common patterns of invention found across all technical fields, from Segmentation and Asymmetry to Phase Transitions and Composite Materials. Each principle provides concrete strategies for transforming systems to resolve contradictions and achieve breakthrough improvements.</li>
-                        <li><strong>Contradiction Matrix</strong><br>The matrix systematically maps 39 improving parameters against 39 worsening parameters to suggest the most relevant principles for resolving specific technical contradictions. Modern versions (like the 2003 matrix) expand this to 48 parameters for greater precision and applicability to contemporary engineering challenges.</li>
-                        <li><strong>Physical Contradictions</strong><br>Physical Contradictions occur when a single parameter requires opposite states or properties. For example, a coffee cup needs to be hot to keep coffee warm but cool to hold comfortably. These are resolved using <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System Level) that allow the contradictory requirements to be satisfied simultaneously.</li>
-                        <li><strong>Su-Field Analysis</strong><br>Developed from Altshuller's work on substance-field modeling, Su-Field analysis represents any technical system as interactions between three fundamental elements:
+                        <li>The TRIZ methodology provides a structured approach to problem solving that guides
+                            innovators through a systematic process of analyzing problems, identifying contradictions,
+                            and applying proven solution patterns. The methodology integrates several powerful tools
+                            that work together to transform seemingly intractable problems into solvable challenges.
+                        </li>
+                        <li><strong>LDST - Laws of Development of Technical Systems</strong><br>LDST identifies
+                            fundamental laws that govern how technical systems evolve over time, helping innovators
+                            understand system dynamics and identify natural evolution paths based on Altshuller's
+                            original framework.</li>
+                        <li><strong>Ideal Final Result (IFR)</strong><br>The IFR is a powerful concept that defines the
+                            perfect solution where the system performs its function without any drawbacks, costs, or
+                            harmful effects. Formulating the IFR helps innovators break psychological inertia and focus
+                            on the essential function rather than being constrained by existing implementations.</li>
+                        <li><strong>Technical Contradictions</strong><br>Technical Contradictions occur when improving
+                            one parameter of a system causes another parameter to worsen. For example, making a car
+                            stronger typically makes it heavier. These contradictions are resolved using the
+                            <strong>Contradiction Matrix</strong> and <strong>40 Inventive Principles</strong>, which
+                            provide specific guidance on how to overcome the trade-off.</li>
+                        <li><strong>40 Inventive Principles</strong><br>The 40 Principles represent the most common
+                            patterns of invention found across all technical fields, from Segmentation and Asymmetry to
+                            Phase Transitions and Composite Materials. Each principle provides concrete strategies for
+                            transforming systems to resolve contradictions and achieve breakthrough improvements.</li>
+                        <li><strong>Contradiction Matrix</strong><br>The matrix systematically maps 39 improving
+                            parameters against 39 worsening parameters to suggest the most relevant principles for
+                            resolving specific technical contradictions. Modern versions (like the 2003 matrix) expand
+                            this to 48 parameters for greater precision and applicability to contemporary engineering
+                            challenges.</li>
+                        <li><strong>Physical Contradictions</strong><br>Physical Contradictions occur when a single
+                            parameter requires opposite states or properties. For example, a coffee cup needs to be hot
+                            to keep coffee warm but cool to hold comfortably. These are resolved using
+                            <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System
+                            Level) that allow the contradictory requirements to be satisfied simultaneously.</li>
+                        <li><strong>Su-Field Analysis</strong><br>Developed from Altshuller's work on substance-field
+                            modeling, Su-Field analysis represents any technical system as interactions between three
+                            fundamental elements:
                             <ul>
                                 <li><strong>Substance 1 (S1)</strong>: The object being acted upon or transformed</li>
-                                <li><strong>Substance 2 (S2)</strong>: The tool performing the action or causing the transformation</li>
-                                <li><strong>Field (F)</strong>: The energy or force causing the interaction between S1 and S2</li>
+                                <li><strong>Substance 2 (S2)</strong>: The tool performing the action or causing the
+                                    transformation</li>
+                                <li><strong>Field (F)</strong>: The energy or force causing the interaction between S1
+                                    and S2</li>
                             </ul>
-                            The <strong>76 Standard Solutions</strong> provide specific transformations for improving or resolving problems in Su-Field systems, categorized into five classes from building complete systems to simplification strategies. This systematic approach ensures that even complex system interactions can be analyzed and improved methodically.
+                            The <strong>76 Standard Solutions</strong> provide specific transformations for improving or
+                            resolving problems in Su-Field systems, categorized into five classes from building complete
+                            systems to simplification strategies. This systematic approach ensures that even complex
+                            system interactions can be analyzed and improved methodically.
                         </li>
                     </ul>
                 </div>
@@ -469,39 +1692,57 @@
                 <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li><strong>Load Example:</strong> Click "Load Next Example" above to populate all tabs with sample data.</li>
-                        <li><strong>Step 1 - LDST Analysis:</strong> Select a fundamental law of technical system development to get strategic guidance.</li>
-                        <li><strong>Step 2 - Define the Problem:</strong> Describe the system, its primary useful function, and main drawback in simple, clear terms.</li>
-                        <li><strong>Step 3 - Formulate Ideal Final Result (IFR):</strong> Define the ideal solution where the system performs its function without the drawback, costs, or harmful effects.</li>
-                        <li><strong>Step 4 - Identify the Core Contradiction:</strong> Select whether it's a technical contradiction (improving one feature worsens another) or physical contradiction (one feature needs opposite properties). Use the matrix or separation principles accordingly.</li>
-                        <li><strong>Step 5 - Su-Field Analysis:</strong> Model the problem as interactions between substances (S1, S2) and fields (F). Identify the problem type and get standard solutions.</li>
-                        <li><strong>Generate Solutions:</strong> Click "Solve Problem & Generate Report" on the final tab to receive inventive principles tailored to your contradiction.</li>
-                        <li><strong>Export:</strong> Once the report is generated, you can export it to Excel for your records and further analysis.</li>
+                        <li><strong>Load Example:</strong> Click "Load Next Example" above to populate all tabs with
+                            sample data.</li>
+                        <li><strong>Step 1 - LDST Analysis:</strong> Select a fundamental law of technical system
+                            development to get strategic guidance.</li>
+                        <li><strong>Step 2 - Define Problem:</strong> Describe the system, its primary useful function,
+                            and main drawback in simple, clear terms.</li>
+                        <li><strong>Step 3 - Formulate Ideal Final Result (IFR):</strong> Define the ideal solution
+                            where the system performs its function without the drawback, costs, or harmful effects.</li>
+                        <li><strong>Step 4 - Identify the Core Contradiction:</strong> Select whether it's a technical
+                            contradiction (improving one feature worsens another) or physical contradiction (one feature
+                            needs opposite properties). Use the matrix or separation principles accordingly.</li>
+                        <li><strong>Step 5 - Su-Field Analysis:</strong> Model the problem as interactions between
+                            substances (S1, S2) and fields (F). Identify the problem type and get standard solutions.
+                        </li>
+                        <li><strong>Generate Solutions:</strong> Click "Solve Problem & Generate Report" on the final
+                            tab to receive inventive principles tailored to your contradiction.</li>
+                        <li><strong>Export:</strong> Once the report is generated, you can export it to Excel for your
+                            records and further analysis.</li>
                     </ul>
 
                     <div class="infographic-flow">
-                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>1. LDST Analysis</strong><span>Apply fundamental laws of technical systems</span></div>
+                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>1. LDST
+                                Analysis</strong><span>Apply fundamental laws of technical systems</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-tasks"></i><strong>2. Define Problem</strong><span>Analyze the system and its drawback</span></div>
+                        <div class="flow-step"><i class="fas fa-tasks"></i><strong>2. Define
+                                Problem</strong><span>Analyze the system and its drawback</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. Formulate IFR</strong><span>Define the Ideal Final Result</span></div>
+                        <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. Formulate
+                                IFR</strong><span>Define the Ideal Final Result</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>4. Identify Contradiction</strong><span>Find the core technical or physical conflict</span></div>
+                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>4. Identify
+                                Contradiction</strong><span>Find the core technical or physical conflict</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-atom"></i><strong>5. Su-Field Analysis</strong><span>Model system interactions and apply standard solutions</span></div>
+                        <div class="flow-step"><i class="fas fa-atom"></i><strong>5. Su-Field
+                                Analysis</strong><span>Model system interactions and apply standard solutions</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-ldst')">Next Step: LDST <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-ldst')">Next Step: LDST <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <div id="tab-ldst" class="tab-content">
             <div class="solver-step" id="step-ldst">
                 <h3><i class="fas fa-project-diagram"></i> Step 1: Laws of Development of Technical Systems (LDST)</h3>
-                <p>Select the life cycle stage of your system to get the most relevant development laws according to Altshuller's classical framework.</p>
+                <p>Select the life cycle stage of your system to get the most relevant development laws according to
+                    Altshuller's classical framework.</p>
 
                 <div class="form-group">
                     <label for="lifecycle-stage">System Life Cycle Stage:</label>
@@ -512,17 +1753,19 @@
                         <option value="decline">Decline Phase</option>
                         <option value="transition">Transition to New System</option>
                     </select>
-                    </div>
+                </div>
 
                 <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide All LDST Laws</button>
+                    <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide All
+                        LDST Laws</button>
                 </div>
 
                 <div id="laws-table-container" class="hidden">
                     <div class="content-block">
                         <h4><i class="fas fa-graduation-cap"></i> Laws of Development of Technical Systems (LDST)</h4>
                         <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
-                            Source: Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution of Inventive Problems.
+                            Source: Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution
+                            of Inventive Problems.
                         </p>
                         <div style="overflow-x: auto;">
                             <table class="trends-table">
@@ -598,33 +1841,42 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-define')">Next Step: Define Problem <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-define')">Next Step: Define Problem <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <div id="tab-define" class="tab-content">
             <div class="solver-step" id="step-1">
                 <h3><i class="fas fa-tasks"></i> Step 2: Define the Problem</h3>
-                <div class="form-group"><label for="problem-system">System/Object to improve?</label><input type="text" id="problem-system" placeholder="e.g., A coffee mug"></div>
-                <div class="form-group"><label for="problem-function">Primary useful function?</label><input type="text" id="problem-function" placeholder="e.g., To hold hot liquid"></div>
-                <div class="form-group"><label for="problem-harm">Main drawback?</label><input type="text" id="problem-harm" placeholder="e.g., Burns the hand"></div>
+                <div class="form-group"><label for="problem-system">System/Object to improve?</label><input type="text"
+                        id="problem-system" placeholder="e.g., A coffee mug"></div>
+                <div class="form-group"><label for="problem-function">Primary useful function?</label><input type="text"
+                        id="problem-function" placeholder="e.g., To hold hot liquid"></div>
+                <div class="form-group"><label for="problem-harm">Main drawback?</label><input type="text"
+                        id="problem-harm" placeholder="e.g., Burns the hand"></div>
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-ifr')">Next Step: Formulate IFR <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-ifr')">Next Step: Formulate IFR <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <div id="tab-ifr" class="tab-content">
             <div class="solver-step" id="step-2">
                 <h3><i class="fas fa-rocket"></i> Step 3: Formulate Ideal Final Result (IFR)</h3>
-                <div class="form-group"><label for="ifr-formulation">The system <strong>itself</strong> performs the function without the drawback:</label><textarea id="ifr-formulation" placeholder="e.g., The coffee mug itself holds hot liquid and protects the hand."></textarea></div>
+                <div class="form-group"><label for="ifr-formulation">The system <strong>itself</strong> performs the
+                        function without the drawback:</label><textarea id="ifr-formulation"
+                        placeholder="e.g., The coffee mug itself holds hot liquid and protects the hand."></textarea>
+                </div>
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-contradiction')">Next Step: Contradiction <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-contradiction')">Next Step: Contradiction <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
@@ -633,8 +1885,12 @@
                 <h3><i class="fas fa-exchange-alt"></i> Step 4: Identify the Core Contradiction</h3>
 
                 <div class="form-group radio-group">
-                    <label><input type="radio" name="contradiction-type" value="technical" onchange="toggleContradictionForms()"> <strong>Technical Contradiction:</strong> Improving one feature makes another worse.</label>
-                    <label><input type="radio" name="contradiction-type" value="physical" onchange="toggleContradictionForms()"> <strong>Physical Contradiction:</strong> One feature needs opposite properties.</label>
+                    <label><input type="radio" name="contradiction-type" value="technical"
+                            onchange="toggleContradictionForms()"> <strong>Technical Contradiction:</strong> Improving
+                        one feature makes another worse.</label>
+                    <label><input type="radio" name="contradiction-type" value="physical"
+                            onchange="toggleContradictionForms()"> <strong>Physical Contradiction:</strong> One feature
+                        needs opposite properties.</label>
                 </div>
 
                 <div id="matrix-version-selector-container" class="matrix-version-selector hidden">
@@ -642,7 +1898,8 @@
                         <label for="matrix-version">TRIZ Matrix Version:</label>
                         <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
                             <label>
-                                <input type="radio" name="matrix-version" value="classic" checked onchange="changeMatrixVersion()">
+                                <input type="radio" name="matrix-version" value="classic" checked
+                                    onchange="changeMatrixVersion()">
                                 <strong>Classic Matrix</strong> (39 parameters, 40 principles)
                             </label>
                             <label>
@@ -651,23 +1908,29 @@
                             </label>
                         </div>
                         <div class="matrix-version-info" id="matrix-version-info">
-                            Using Classic TRIZ Matrix - The original 39x39 matrix. Altshuller, G. S. (1950-1980). 40 Principles: TRIZ Keys to Technical Innovation o The Innovation Algorithm: TRIZ, Systematic Innovation and Technical Creativity.
+                            Using Classic TRIZ Matrix - The original 39x39 matrix. Altshuller, G. S. (1950-1980). 40
+                            Principles: TRIZ Keys to Technical Innovation o The Innovation Algorithm: TRIZ, Systematic
+                            Innovation and Technical Creativity.
                         </div>
                     </div>
                 </div>
 
                 <div id="technical-solver-block" class="hidden">
                     <div class="matrix-toggle">
-                        <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i> Show/Hide Contradiction Matrix</button>
+                        <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i> Show/Hide
+                            Contradiction Matrix</button>
                     </div>
 
                     <div id="dropdown-view">
-                        <div class="form-group"><label for="improving-feature">Feature to Improve:</label><select id="improving-feature"></select></div>
-                        <div class="form-group"><label for="worsening-feature">Feature that Worsens:</label><select id="worsening-feature"></select></div>
+                        <div class="form-group"><label for="improving-feature">Feature to Improve:</label><select
+                                id="improving-feature"></select></div>
+                        <div class="form-group"><label for="worsening-feature">Feature that Worsens:</label><select
+                                id="worsening-feature"></select></div>
                     </div>
 
                     <div id="matrix-view" class="hidden">
-                        <p><strong>Click on a cell to select improving (row) and worsening (column) features. Hover your cursor over the cell to see more information</strong></p>
+                        <p><strong>Click on a cell to select improving (row) and worsening (column) features. Hover your
+                                cursor over the cell to see more information</strong></p>
                         <div class="matrix-container">
                             <table class="matrix-table" id="contradiction-matrix">
                             </table>
@@ -691,10 +1954,16 @@
                         <div class="form-group">
                             <label>Define Operational Zones/Times (OZ/OT):</label>
                             <div class="radio-group">
-                                <label><input type="radio" name="oz-definition" value="spatial" onchange="updatePhysicalStrategy()"> Spatial Zones (different locations)</label>
-                                <label><input type="radio" name="oz-definition" value="temporal" onchange="updatePhysicalStrategy()"> Temporal Zones (different times)</label>
-                                <label><input type="radio" name="oz-definition" value="conditional" onchange="updatePhysicalStrategy()"> Conditional Zones (different conditions)</label>
-                                <label><input type="radio" name="oz-definition" value="system" onchange="updatePhysicalStrategy()"> System Levels (different system hierarchies)</label>
+                                <label><input type="radio" name="oz-definition" value="spatial"
+                                        onchange="updatePhysicalStrategy()"> Spatial Zones (different locations)</label>
+                                <label><input type="radio" name="oz-definition" value="temporal"
+                                        onchange="updatePhysicalStrategy()"> Temporal Zones (different times)</label>
+                                <label><input type="radio" name="oz-definition" value="conditional"
+                                        onchange="updatePhysicalStrategy()"> Conditional Zones (different
+                                    conditions)</label>
+                                <label><input type="radio" name="oz-definition" value="system"
+                                        onchange="updatePhysicalStrategy()"> System Levels (different system
+                                    hierarchies)</label>
                             </div>
                         </div>
                     </div>
@@ -704,8 +1973,12 @@
                         <div class="form-group">
                             <label>Do the Operational Zones/Times intersect?</label>
                             <div class="radio-group">
-                                <label><input type="radio" name="oz-intersection" value="intersect" onchange="updatePhysicalStrategy()"> Yes, OZ/OT INTERSECT (Use Satisfy strategy)</label>
-                                <label><input type="radio" name="oz-intersection" value="no-intersect" onchange="updatePhysicalStrategy()"> No, OZ/OT do NOT intersect (Use Bypass strategy)</label>
+                                <label><input type="radio" name="oz-intersection" value="intersect"
+                                        onchange="updatePhysicalStrategy()"> Yes, OZ/OT INTERSECT (Use Satisfy
+                                    strategy)</label>
+                                <label><input type="radio" name="oz-intersection" value="no-intersect"
+                                        onchange="updatePhysicalStrategy()"> No, OZ/OT do NOT intersect (Use Bypass
+                                    strategy)</label>
                             </div>
                         </div>
                     </div>
@@ -719,7 +1992,8 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="principles-toggle-container" style="display: none; text-align: center; margin: 1rem 0;">
+                    <div class="form-group" id="principles-toggle-container"
+                        style="display: none; text-align: center; margin: 1rem 0;">
                         <button type="button" class="btn-success" onclick="togglePrinciplesTable()">
                             <i class="fas fa-table"></i> Show/Hide Physical Contradiction Principles
                         </button>
@@ -727,29 +2001,33 @@
 
                     <div class="hidden" id="principles-table-container">
                         <div class="content-block">
-                            <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles Reference</h4>
+                            <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles Reference
+                            </h4>
                             <div id="principles-table-content">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-sufield')">Next Step: Su-Field Analysis <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-sufield')">Next Step: Su-Field Analysis <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <div id="tab-sufield" class="tab-content">
             <div class="solver-step" id="step-4">
                 <h3><i class="fas fa-atom"></i> Step 5: Su-Field Analysis</h3>
-                <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system can have its own problem type.</p>
+                <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system can have
+                    its own problem type.</p>
 
                 <div id="sufield-systems-container">
                 </div>
 
                 <div class="form-group" style="margin-top: 10px;">
-                    <button type="button" class="btn-success" onclick="addSuFieldSystem()"><i class="fas fa-plus"></i> Add Su-Field System</button>
+                    <button type="button" class="btn-success" onclick="addSuFieldSystem()"><i class="fas fa-plus"></i>
+                        Add Su-Field System</button>
                 </div>
 
                 <div class="form-group" style="margin-top: 20px; text-align: center;">
@@ -763,21 +2041,23 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-solve')">Next Step: Solve & Report <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-next-tab" onclick="switchTab('tab-solve')">Next Step: Solve & Report <i
+                        class="fas fa-arrow-right"></i></button>
             </div>
         </div>
-        
+
         <div id="tab-solve" class="tab-content">
             <div class="solver-step" style="text-align: center; padding: 30px;">
                 <h2 style="color: var(--secondary-color);">Ready to Generate Solution?</h2>
                 <p>This will gather all data from LDST, Definition, Contradictions, and Su-Field analysis.</p>
-                <button id="solve-button" onclick="solveProblem()" style="max-width: 400px; margin: 0 auto; display: inline-block;">
+                <button id="solve-button" onclick="solveProblem()"
+                    style="max-width: 400px; margin: 0 auto; display: inline-block;">
                     <i class="fas fa-calculator"></i> Solve Problem & Generate Report
                 </button>
             </div>
-            
+
             <div id="results-container" class="hidden"></div>
         </div>
 
@@ -785,7 +2065,13 @@
 
     <footer>
         <div class="disclaimer-note">
-            <p><strong>Disclaimer:</strong> This tool is an educational implementation of the TRIZ (Theory of Inventive Problem Solving) methodology, originally developed by Genrich Altshuller. It is not affiliated with, sponsored by, or endorsed by any official TRIZ organizations. The principles and solutions suggested are for informational purposes only. We make no warranties regarding the effectiveness or novelty of any ideas generated. The user assumes full responsibility for the application and validation of concepts derived from this tool. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
+            <p><strong>Disclaimer:</strong> This tool is an educational implementation of the TRIZ (Theory of Inventive
+                Problem Solving) methodology, originally developed by Genrich Altshuller. It is not affiliated with,
+                sponsored by, or endorsed by any official TRIZ organizations. The principles and solutions suggested are
+                for informational purposes only. We make no warranties regarding the effectiveness or novelty of any
+                ideas generated. The user assumes full responsibility for the application and validation of concepts
+                derived from this tool. Sigma Exacta and its creators are not liable for any damages or losses resulting
+                from its use.</p>
         </div>
     </footer>
 
@@ -803,18 +2089,18 @@
             // Quitar clase active de todos los botones y contenidos
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+
             // Activar el seleccionado
             document.getElementById(tabId).classList.add('active');
-            
+
             // Activar botón correspondiente (buscando por el onclick)
             const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-            
+
             // Scroll al top suavemente
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         // ===== MODIFICACION LOAD EXAMPLE PARA POPULAR TODO DE UNA VEZ =====
         function loadExampleAndGo() {
             loadExample(); // Llama a la función original que rellena los campos
@@ -835,7 +2121,7 @@
                     initNavigationMenu();
                 })
                 .catch(error => console.error('Error loading header:', error));
-            
+
             init(); // Inicializar tool
         });
 
@@ -1073,7 +2359,7 @@
 
             // Reset LDST
             updateLDSTRecommendations();
-            
+
             // Volver a la pestaña inicial
             switchTab('tab-start');
         }
