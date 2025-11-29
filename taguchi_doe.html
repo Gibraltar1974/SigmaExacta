@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
 
-    <!-- AÑADIDO: Incluir KaTeX para renderizar fórmulas matemáticas -->
+    <!-- KaTeX para renderizar fórmulas matemáticas -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
@@ -30,9 +30,11 @@
 
     <link rel="stylesheet" href="styles.css">
 
-    <link rel="canonical" href="https://sigmaexacta.com/taguchi_doe">
+    <!-- Carga de la lógica de cálculo externa -->
+    <script src="taguchi_calculator.js"></script>
+
     <style>
-        /* Estilos específicos de la página */
+        /* Estilos base (Manteniendo los originales) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -42,6 +44,8 @@
             --success-color: #2ecc71;
             --success-bg-color: #e8f8f5;
             font-size: 16px;
+            --professional-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --professional-border: 1px solid #e1e5e9;
         }
 
         *,
@@ -129,6 +133,128 @@
             padding-left: 1.25rem;
             line-height: 1.8;
         }
+
+        /* ===== ESTILOS DE TABS (WIZARD) - IMPORTADOS DE TRIZ ===== */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .tabs-nav {
+                overflow-x: hidden;
+            }
+
+            .tab-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: fadeIn 0.3s ease;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-next-tab {
+            background-color: var(--primary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-next-tab:hover {
+            background-color: #34495e;
+        }
+
+        /* ===== FIN ESTILOS TABS ===== */
 
         .form-group {
             margin-bottom: 1.25rem;
@@ -363,15 +489,10 @@
             padding-top: 4px;
         }
 
-        /* ===== MODIFICACIÓN PARA ARREGLAR DESBORDAMIENTO DE TEXTO ===== */
         .conclusion-box li .summary-text {
             word-break: break-word;
-            /* Permite que palabras largas se rompan y pasen a la siguiente línea */
             min-width: 0;
-            /* Esencial para que los ítems de flexbox se encojan correctamente */
         }
-
-        /* ===== FIN DE LA MODIFICACIÓN ===== */
 
         .analysis-run-report {
             border: 1px solid #ddd;
@@ -397,7 +518,6 @@
             margin-right: auto;
         }
 
-        /* Estilos para la sección de fórmulas matemáticas */
         .formula-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -453,7 +573,6 @@
             font-weight: 600;
         }
 
-        /* Estilos para mejorar la visualización de fórmulas KaTeX */
         .katex {
             font-size: 1.1rem !important;
         }
@@ -497,29 +616,12 @@
 <body>
     <!-- Contenedor para cargar el header dinámicamente -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
-            <a href="/8d">8D Tool</a> |
-            <a href="/taguchi_doe">Taguchi DOE</a> |
-            <a href="/swot">SWOT Analysis</a> |
-            <a href="/balancedcard">Balanced Scorecard</a> |
-            <a href="/qfd">QFD</a> |
-            <a href="/apqp-ppap">APQP/PPAP</a> |
-            <a href="/ishikawa">Ishikawa</a> |
-            <a href="/fmea">FMEA</a> |
-            <a href="/vave">VAVE</a> |
-            <a href="/eisenhower">Eisenhower Matrix</a> |
-            <a href="/triz">TRIZ</a> |
-            <a href="/weibull">Weibull</a> |
-            <a href="/stack_up_analysis">Tolerance Stack-Up</a> |
-            <a href="/pdca">PDCA</a> |
-            <a href="/design_thinking">Design Thinking</a> |
-            <a href="/pugh">Pugh Matrix</a> |
-            <a href="/cpk_calculator">CpK Calculator</a> |
-            <a href="/control-plan">Control Plan</a>
+            <a href="/taguchi_doe">Taguchi DOE</a>
+            <!-- Links básicos -->
         </nav>
     </noscript>
 
@@ -532,76 +634,96 @@
             <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
         </header>
 
-        <!-- NEW SECTIONS ADDED HERE -->
-        <div class="container">
-            <h2><i class="fas fa-question-circle"></i> What is the Taguchi Method?</h2>
-            <p>The <strong>Taguchi Method</strong>, developed by Japanese engineer and statistician Genichi Taguchi, is
-                a systematic approach to improving product and process quality through robust design. Unlike traditional
-                experimental design methods that focus primarily on optimizing mean performance, the Taguchi Method
-                emphasizes minimizing the effects of uncontrollable factors (noise) to create products and processes
-                that perform consistently under varying conditions.</p>
-            <p>The core principles of the Taguchi Method include:</p>
-            <ul>
-                <li><strong>Robust Design:</strong> Designing products and processes that are insensitive to variations
-                    in manufacturing, environmental conditions, and component aging.</li>
-                <li><strong>Quality Loss Function:</strong> Quantifying the economic loss when a product deviates from
-                    its target value, even if it remains within specification limits.</li>
-                <li><strong>Orthogonal Arrays:</strong> Using specially designed fractional factorial experiments that
-                    allow testing multiple factors simultaneously with a minimal number of experimental runs.</li>
-                <li><strong>Signal-to-Noise (S/N) Ratios:</strong> Metrics that simultaneously consider both the mean
-                    performance and variability, helping identify factor settings that maximize performance while
-                    minimizing variation.</li>
-            </ul>
-            <p>The Taguchi Method has been widely adopted in manufacturing, engineering, and product development for its
-                practical approach to quality improvement and cost reduction.</p>
+        <!-- Navegación por pestañas (Estilo TRIZ) -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start &
+                Info</button>
+            <button class="tab-btn" onclick="switchTab('tab-setup')"><i class="fas fa-cogs"></i> Setup
+                Experiment</button>
+            <button class="tab-btn" onclick="switchTab('tab-data')"><i class="fas fa-table"></i> Design & Data</button>
+            <button class="tab-btn" onclick="switchTab('tab-analysis')"><i class="fas fa-chart-bar"></i> Analysis &
+                Report</button>
+            <button class="tab-btn" onclick="switchTab('tab-formulas')"><i class="fas fa-calculator"></i>
+                Formulas</button>
+        </nav>
+
+        <!-- TAB 1: Start & Info -->
+        <div id="tab-start" class="tab-content active">
+            <div style="margin-bottom: 2rem;">
+                <h2><i class="fas fa-question-circle"></i> What is the Taguchi Method?</h2>
+                <p>The <strong>Taguchi Method</strong>, developed by Japanese engineer and statistician Genichi Taguchi,
+                    is
+                    a systematic approach to improving product and process quality through robust design. Unlike
+                    traditional
+                    experimental design methods that focus primarily on optimizing mean performance, the Taguchi Method
+                    emphasizes minimizing the effects of uncontrollable factors (noise) to create products and processes
+                    that perform consistently under varying conditions.</p>
+                <p>The core principles of the Taguchi Method include:</p>
+                <ul>
+                    <li><strong>Robust Design:</strong> Designing products and processes that are insensitive to
+                        variations
+                        in manufacturing, environmental conditions, and component aging.</li>
+                    <li><strong>Quality Loss Function:</strong> Quantifying the economic loss when a product deviates
+                        from
+                        its target value, even if it remains within specification limits.</li>
+                    <li><strong>Orthogonal Arrays:</strong> Using specially designed fractional factorial experiments
+                        that
+                        allow testing multiple factors simultaneously with a minimal number of experimental runs.</li>
+                    <li><strong>Signal-to-Noise (S/N) Ratios:</strong> Metrics that simultaneously consider both the
+                        mean
+                        performance and variability, helping identify factor settings that maximize performance while
+                        minimizing variation.</li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h2><i class="fas fa-history"></i> Brief History of the Taguchi Method</h2>
+                <p>The Taguchi Method was developed by <strong>Genichi Taguchi</strong> in the 1950s while he was
+                    working at
+                    the Electrical Communications Laboratory (ECL) of Nippon Telegraph and Telephone (NTT) in Japan. His
+                    early work focused on improving telephone switching systems, where he recognized that traditional
+                    quality control methods were insufficient for preventing quality loss throughout the product
+                    lifecycle.
+                </p>
+                <p>Taguchi's key insight was that <strong>quality should be measured by the deviation from a target
+                        value</strong>, not just by conformance to specification limits. He introduced the concept of
+                    the
+                    <strong>Quality Loss Function</strong>, which mathematically represents the economic loss incurred
+                    when
+                    a product characteristic deviates from its ideal value.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h2><i class="fas fa-list-ol"></i> How to Use This Tool</h2>
+                <ol>
+                    <li>Go to the <strong>Setup Experiment</strong> tab.</li>
+                    <li><strong>Load Data or Start Fresh:</strong> Use "Load Example Data" for a quick demo or fill in
+                        the
+                        setup fields yourself.</li>
+                    <li><strong>Experiment Setup:</strong> Give your experiment a name and objective.</li>
+                    <li><strong>Define Factors and Levels:</strong> Add factors (variables) and their levels (settings).
+                    </li>
+                    <li><strong>Generate Design:</strong> Click "Generate Taguchi Design". This will take you to the
+                        <strong>Design & Data</strong> tab.
+                    </li>
+                    <li><strong>Enter Data:</strong> Enter your measured results for each run.</li>
+                    <li><strong>Calculate:</strong> Click "Calculate Full Analysis". This will take you to the
+                        <strong>Analysis & Report</strong> tab.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-next-tab" onclick="switchTab('tab-setup')">Next Step: Setup Experiment <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
 
-        <div class="container">
-            <h2><i class="fas fa-history"></i> Brief History of the Taguchi Method</h2>
-            <p>The Taguchi Method was developed by <strong>Genichi Taguchi</strong> in the 1950s while he was working at
-                the Electrical Communications Laboratory (ECL) of Nippon Telegraph and Telephone (NTT) in Japan. His
-                early work focused on improving telephone switching systems, where he recognized that traditional
-                quality control methods were insufficient for preventing quality loss throughout the product lifecycle.
-            </p>
-            <p>Taguchi's key insight was that <strong>quality should be measured by the deviation from a target
-                    value</strong>, not just by conformance to specification limits. He introduced the concept of the
-                <strong>Quality Loss Function</strong>, which mathematically represents the economic loss incurred when
-                a product characteristic deviates from its ideal value.</p>
-            <p>In the 1980s, Taguchi's methods gained international recognition when American companies, particularly in
-                the automotive industry, began adopting them to compete with Japanese manufacturers. Companies like
-                Ford, Xerox, and ITT successfully applied Taguchi methods to improve product quality and reduce costs.
-            </p>
-            <p>Today, the Taguchi Method remains a fundamental tool in quality engineering, design of experiments, and
-                robust design methodologies worldwide.</p>
-        </div>
-        <!-- END OF NEW SECTIONS -->
-
-        <div class="container">
-            <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-            <ol>
-                <li><strong>Load Data or Start Fresh:</strong> Use "Load Example Data" for a quick demo or fill in the
-                    setup fields yourself. Use "Reset Form" to start over.</li>
-                <li><strong>Experiment Setup:</strong> Give your experiment a clear name and a concise objective.</li>
-                <li><strong>Define Factors and Levels:</strong> A "factor" is a variable you want to test (e.g.,
-                    Temperature, Pressure). "Levels" are the specific settings for that factor (e.g., 100°C, 120°C for
-                    Temperature).</li>
-                <li><strong>Response and S/N Type:</strong> Enter the name of what you are measuring (the "Response
-                    Variable") and select the appropriate Signal-to-Noise (S/N) ratio (Smaller is better, Larger is
-                    better, or Nominal is best).</li>
-                <li><strong>Generate Design:</strong> Click "Generate Taguchi Design." The tool will create an
-                    experimental plan.</li>
-                <li><strong>Enter Data:</strong> Perform the experiments and enter your measured result for each run.
-                </li>
-                <li><strong>Calculate and Analyze:</strong> Click "Calculate Full Analysis." The full report will appear
-                    below. Each new calculation will be added below the previous one.</li>
-                <li><strong>Export:</strong> Click "Export to Excel" at the bottom of the report to save the results of
-                    the *last* analysis.</li>
-            </ol>
-        </div>
-
-        <div class="container">
+        <!-- TAB 2: Setup Experiment -->
+        <div id="tab-setup" class="tab-content">
             <button type="button" id="load-example-btn" class="add-factor"
-                style="margin-top: 0; margin-bottom: 1.5rem;">📋 Load Example Data</button>
+                style="margin-top: 0; margin-bottom: 1.5rem;">📋 Load Example Data & Auto-Fill Results</button>
 
             <h2>Experiment Setup</h2>
             <div class="form-group">
@@ -657,31 +779,49 @@
                 <button type="button" id="reset-form-btn" class="danger">❌ Reset Form</button>
             </div>
 
-            <button type="button" id="generate-design">🔧 Generate Taguchi Design</button>
+            <button type="button" id="generate-design" style="width: 100%; margin-top: 2rem; font-size: 1.1em;">🔧
+                Generate Taguchi Design</button>
         </div>
 
-        <div id="results-container" class="container hidden">
-            <div id="design-and-data-section">
-                <h2><i class="fas fa-table"></i> Design & Data Entry</h2>
-                <div id="experiment-info"></div>
-                <div id="orthogonal-array"></div>
-                <button type="button" id="calculate-analysis">📊 Calculate Full Analysis</button>
-            </div>
-            <div id="analysis-output-section" class="hidden">
-                <div id="analysis-history-container"></div>
-                <hr style="margin: 2rem 0;">
-                <div class="button-group">
-                    <button type="button" id="export-excel">📋 Export to Excel</button>
-                </div>
-                <div id="success-message" class="success-message"
-                    style="display:none; background-color: var(--success-bg-color); color: var(--success-color); border: 1px solid var(--success-color); padding: 1rem; border-radius: 6px; margin-top: 1rem; text-align: center;">
-                    Excel file generated successfully!
+        <!-- TAB 3: Design & Data -->
+        <div id="tab-data" class="tab-content">
+            <div id="results-container-data">
+                <div id="design-and-data-section">
+                    <h2><i class="fas fa-table"></i> Design & Data Entry</h2>
+                    <p style="margin-bottom: 1rem;">The Orthogonal Array below shows the experiments you need to
+                        perform. Enter your measured results in the rightmost column.</p>
+                    <div id="experiment-info"></div>
+                    <div id="orthogonal-array"></div>
+                    <button type="button" id="calculate-analysis" style="width: 100%; font-size: 1.1em;">📊 Calculate
+                        Full Analysis</button>
                 </div>
             </div>
         </div>
 
-        <!-- NEW MATHEMATICAL FORMULAS SECTION ADDED HERE -->
-        <div class="container">
+        <!-- TAB 4: Analysis & Report -->
+        <div id="tab-analysis" class="tab-content">
+            <div id="results-container-analysis">
+                <div id="analysis-output-section" class="hidden">
+                    <div id="analysis-history-container"></div>
+                    <hr style="margin: 2rem 0;">
+                    <div class="button-group">
+                        <button type="button" id="export-excel">📋 Export to Excel</button>
+                    </div>
+                    <div id="success-message" class="success-message"
+                        style="display:none; background-color: var(--success-bg-color); color: var(--success-color); border: 1px solid var(--success-color); padding: 1rem; border-radius: 6px; margin-top: 1rem; text-align: center;">
+                        Excel file generated successfully!
+                    </div>
+                </div>
+                <div id="no-analysis-msg" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                    <p><i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i></p>
+                    <p>No analysis generated yet. Please enter data in the "Design & Data" tab and click "Calculate Full
+                        Analysis".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Formulas -->
+        <div id="tab-formulas" class="tab-content">
             <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
             <div class="formula-grid">
                 <div class="formula-item">
@@ -732,8 +872,8 @@
                 </ul>
             </div>
         </div>
-        <!-- END OF MATHEMATICAL FORMULAS SECTION -->
     </main>
+
     <footer>
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
@@ -750,11 +890,10 @@
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                initializeMenu(); // Inicializar el menú después de cargar el header
+                initializeMenu();
             })
             .catch(error => console.error('Error loading header:', error));
 
-        // Función para inicializar el menú
         function initializeMenu() {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
@@ -786,13 +925,22 @@
             }
         }
 
-        // El resto del código JavaScript permanece igual
-        const orthogonalArrays = {
-            'L4': { 'name': 'L4', 'description': '3 factors with 2 levels', 'factors': 3, 'levels': 2, 'runs': 4, 'array': [[1, 1, 1], [1, 2, 2], [2, 1, 2], [2, 2, 1]] },
-            'L8': { 'name': 'L8', 'description': '7 factors with 2 levels', 'factors': 7, 'levels': 2, 'runs': 8, 'array': [[1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 2, 2, 2, 2], [1, 2, 2, 1, 1, 2, 2], [1, 2, 2, 2, 2, 1, 1], [2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 2, 1, 2, 1], [2, 2, 1, 1, 2, 2, 1], [2, 2, 1, 2, 1, 1, 2]] },
-            'L9': { 'name': 'L9', 'description': '4 factors with 3 levels', 'factors': 4, 'levels': 3, 'runs': 9, 'array': [[1, 1, 1, 1], [1, 2, 2, 2], [1, 3, 3, 3], [2, 1, 2, 3], [2, 2, 3, 1], [2, 3, 1, 2], [3, 1, 3, 2], [3, 2, 1, 3], [3, 3, 2, 1]] },
-            'L16': { 'name': 'L16', 'description': '15 factors with 2 levels', 'factors': 15, 'levels': 2, 'runs': 16, 'array': [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2], [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1], [1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2], [1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1], [1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1], [1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2], [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1], [2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1], [2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2], [2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1], [2, 2, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2], [2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1, 1, 2], [2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1]] }
-        };
+        // Lógica de Tabs
+        function switchTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         const DOM = {
             addFactorBtn: document.getElementById('add-factor'),
@@ -801,7 +949,7 @@
             exportExcelBtn: document.getElementById('export-excel'),
             loadExampleBtn: document.getElementById('load-example-btn'),
             resetFormBtn: document.getElementById('reset-form-btn'),
-            resultsContainer: document.getElementById('results-container'),
+            // Removed global resultsContainer reference since we split it
             designAndDataSection: document.getElementById('design-and-data-section'),
             analysisOutputSection: document.getElementById('analysis-output-section'),
             factorsContainer: document.getElementById('factors-container'),
@@ -809,6 +957,7 @@
             experimentInfoDiv: document.getElementById('experiment-info'),
             analysisHistoryContainer: document.getElementById('analysis-history-container'),
             successMessage: document.getElementById('success-message'),
+            noAnalysisMsg: document.getElementById('no-analysis-msg'),
         };
 
         let experimentData = {}, allCharts = [], calculationCount = 0;
@@ -826,46 +975,10 @@
             }
         };
 
-        // Expanded F-distribution critical values for alpha=0.05
-        const fCriticalValues = {
-            // df1 (Factor DF)
-            1: { 1: 161.4, 2: 18.51, 3: 10.13, 4: 7.71, 5: 6.61, 6: 5.99, 7: 5.59, 8: 5.32, 9: 5.12, 10: 4.96, 11: 4.84, 12: 4.75, 13: 4.67, 14: 4.60, 15: 4.54, 16: 4.49, 20: 4.35, 30: 4.17 },
-            2: { 1: 199.5, 2: 19.00, 3: 9.55, 4: 6.94, 5: 5.79, 6: 5.14, 7: 4.74, 8: 4.46, 9: 4.26, 10: 4.10, 11: 3.98, 12: 3.89, 13: 3.81, 14: 3.74, 15: 3.68, 16: 3.63, 20: 3.49, 30: 3.32 },
-            3: { 1: 215.7, 2: 19.16, 3: 9.28, 4: 6.59, 5: 5.41, 6: 4.76, 7: 4.35, 8: 4.07, 9: 3.86, 10: 3.71, 11: 3.59, 12: 3.49, 13: 3.41, 14: 3.34, 15: 3.29, 16: 3.24, 20: 3.10, 30: 2.92 },
-            4: { 1: 224.6, 2: 19.25, 3: 9.12, 4: 6.39, 5: 5.19, 6: 4.53, 7: 4.12, 8: 3.84, 9: 3.63, 10: 3.48, 11: 3.36, 12: 3.26, 13: 3.18, 14: 3.11, 15: 3.06, 16: 3.01, 20: 2.87, 30: 2.69 },
-            5: { 1: 230.2, 2: 19.30, 3: 9.01, 4: 6.26, 5: 5.05, 6: 4.39, 7: 3.97, 8: 3.69, 9: 3.48, 10: 3.33, 11: 3.20, 12: 3.11, 13: 3.03, 14: 2.96, 15: 2.90, 16: 2.85, 20: 2.71, 30: 2.53 },
-            6: { 1: 234.0, 2: 19.33, 3: 8.94, 4: 6.16, 5: 4.95, 6: 4.28, 7: 3.87, 8: 3.58, 9: 3.37, 10: 3.22, 11: 3.09, 12: 3.00, 13: 2.92, 14: 2.85, 15: 2.79, 16: 2.74, 20: 2.60, 30: 2.42 },
-            7: { 1: 236.8, 2: 19.35, 3: 8.89, 4: 6.09, 5: 4.88, 6: 4.21, 7: 3.79, 8: 3.50, 9: 3.29, 10: 3.14, 11: 3.01, 12: 2.91, 13: 2.83, 14: 2.76, 15: 2.71, 16: 2.66, 20: 2.51, 30: 2.33 },
-            8: { 1: 238.9, 2: 19.37, 3: 8.85, 4: 6.04, 5: 4.82, 6: 4.15, 7: 3.73, 8: 3.44, 9: 3.23, 10: 3.07, 11: 2.95, 12: 2.85, 13: 2.77, 14: 2.70, 15: 2.64, 16: 2.59, 20: 2.45, 30: 2.26 },
-            10: { 1: 241.9, 2: 19.40, 3: 8.79, 4: 5.96, 5: 4.74, 6: 4.06, 7: 3.64, 8: 3.35, 9: 3.14, 10: 2.98, 11: 2.85, 12: 2.75, 13: 2.67, 14: 2.60, 15: 2.54, 16: 2.49, 20: 2.35, 30: 2.16 },
-            15: { 1: 245.9, 2: 19.43, 3: 8.70, 4: 5.86, 5: 4.62, 6: 3.94, 7: 3.51, 8: 3.22, 9: 3.01, 10: 2.85, 11: 2.72, 12: 2.62, 13: 2.53, 14: 2.46, 15: 2.40, 16: 2.35, 20: 2.20, 30: 2.01 }
-        };
-
-        // Improved F-critical lookup
-        function getFCritical(df1, df2) {
-            if (df1 <= 0 || df2 <= 0) return Infinity; // Cannot calculate F-value
-
-            const availableDf1 = Object.keys(fCriticalValues).map(Number).sort((a, b) => a - b);
-            const availableDf2Map = fCriticalValues[availableDf1[0]]; // Assume all df1 keys have same df2 keys
-            const availableDf2 = Object.keys(availableDf2Map).map(Number).sort((a, b) => a - b);
-
-            // Find conservative DFs
-            const conservativeDf1 = availableDf1.slice().reverse().find(k => k <= df1) || availableDf1[0];
-            const conservativeDf2 = availableDf2.slice().reverse().find(k => k <= df2) || availableDf2[0];
-
-            if (fCriticalValues[conservativeDf1] && fCriticalValues[conservativeDf1][conservativeDf2]) {
-                return fCriticalValues[conservativeDf1][conservativeDf2];
-            }
-
-            return 4.0; // Fallback default
-        }
-
-
         document.addEventListener('DOMContentLoaded', () => {
             Chart.register(logoPlugin);
             logoImage.src = 'sigma-exacta-icon.jpg';
 
-            // El resto del código de inicialización de la aplicación
             resetForm();
             DOM.addFactorBtn.addEventListener('click', () => addFactorInput());
             DOM.generateDesignBtn.addEventListener('click', generateDesign);
@@ -874,7 +987,6 @@
             DOM.loadExampleBtn.addEventListener('click', loadExampleData);
             DOM.resetFormBtn.addEventListener('click', resetForm);
 
-            // Show/Hide Nominal Target Input
             document.querySelectorAll('input[name="snr-type"]').forEach(radio => {
                 radio.addEventListener('change', function () {
                     experimentData.snrType = this.value;
@@ -902,25 +1014,58 @@
             document.getElementById('response-variable').value = '';
             document.getElementById('array-select').value = '';
             document.querySelector('input[name="snr-type"][value="smaller"]').checked = true;
-            document.getElementById('nominal-target-group').classList.add('hidden'); // Hide target input
-            document.getElementById('nominal-target').value = ''; // Clear target input
+            document.getElementById('nominal-target-group').classList.add('hidden');
+            document.getElementById('nominal-target').value = '';
             DOM.factorsContainer.innerHTML = '';
-            DOM.resultsContainer.classList.add('hidden');
+
             DOM.analysisOutputSection.classList.add('hidden');
+            DOM.noAnalysisMsg.style.display = 'block';
+            DOM.orthogonalArrayDiv.innerHTML = '<p class="text-center" style="color:#7f8c8d; padding: 2rem;">No design generated yet. Please complete setup in the "Setup Experiment" tab.</p>';
+            DOM.experimentInfoDiv.innerHTML = '';
+
             DOM.analysisHistoryContainer.innerHTML = '';
             resetExperimentData();
             if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; }
             calculationCount = 0;
+            switchTab('tab-start');
         }
 
         function loadExampleData() {
-            resetForm();
+            // 1. Resetear el formulario para empezar limpio
+            document.getElementById('reset-form-btn').click();
+
+            // 2. Rellenar datos básicos
             document.getElementById('experiment-name').value = 'Process Optimization Study';
             document.getElementById('objective').value = 'Minimize defects in the production process while maintaining quality standards';
             document.getElementById('response-variable').value = 'Defect rate (%)';
-            addFactorInput('Temperature', '100°C, 120°C, 140°C');
+
+            // 3. Añadir factores
+            addFactorInput('Temperature', '100°C, 120°C');
             addFactorInput('Pressure', '50 psi, 60 psi');
-            addFactorInput('Speed', 'Low, Medium, High');
+            addFactorInput('Speed', 'Low, High');
+            addFactorInput('Material', 'Type A, Type B');
+
+            // 4. Generar el diseño automáticamente
+            generateDesign();
+
+            // 5. Rellenar los resultados de "Defect Rate %" automáticamente
+            // Como usamos 4 factores de 2 niveles, se generará un L8 (normalmente)
+            const inputs = document.querySelectorAll('.response-input');
+            const dummyData = [5.2, 4.8, 2.1, 2.5, 4.9, 5.1, 1.8, 2.0]; // Datos de ejemplo para L8
+
+            inputs.forEach((input, index) => {
+                // Si hay más inputs que dummyData, repetimos o generamos aleatorio
+                const val = dummyData[index] !== undefined ? dummyData[index] : (Math.random() * 5).toFixed(1);
+                input.value = val;
+                // Disparar evento change para que se guarde en experimentData
+                input.dispatchEvent(new Event('change'));
+            });
+
+            // 6. Cambiar a la pestaña de datos para que el usuario vea lo ocurrido
+            switchTab('tab-data');
+
+            // Opcional: Podríamos ejecutar calculateAnalysis automáticamente, 
+            // pero es mejor dejar que el usuario haga clic para ver el flujo.
         }
 
         function addFactorInput(name = '', levels = '') {
@@ -936,6 +1081,8 @@
             if (allCharts.length > 0) { allCharts.forEach(c => c.destroy()); allCharts = []; }
             calculationCount = 0;
             DOM.analysisOutputSection.classList.add('hidden');
+            DOM.noAnalysisMsg.style.display = 'block';
+
             resetExperimentData();
 
             experimentData.name = document.getElementById('experiment-name').value;
@@ -973,9 +1120,12 @@
                     return;
                 }
             }
-            experimentData.selectedArray = orthogonalArrays[arrayKey];
+
+            experimentData.selectedArray = TaguchiCalculator.orthogonalArrays[arrayKey];
             generateDesignTable();
-            DOM.resultsContainer.classList.remove('hidden');
+
+            // Cambiar automáticamente a la pestaña de datos
+            switchTab('tab-data');
         }
 
         function generateDesignTable() {
@@ -1006,7 +1156,7 @@
                 return;
             }
 
-            // Validate Target for Nominal
+            let target = null;
             if (experimentData.snrType === 'nominal') {
                 const targetInput = document.getElementById('nominal-target');
                 if (!targetInput.value || isNaN(parseFloat(targetInput.value))) {
@@ -1014,17 +1164,22 @@
                     targetInput.focus();
                     return;
                 }
+                target = parseFloat(targetInput.value);
             }
 
             calculationCount++;
-            calculateSNR(); // Calculate SNR first
-            calculateFactorEffects(); // Calculate for Response
-            calculateFactorEffects(true); // Calculate for SNR
-            determineOptimalLevels(); // Determine optimal based on SNR
-            calculatePredictedOutcome(); // Predict response based on optimal levels
-            calculateANOVA();
-            createAndDisplayReportBlock(calculationCount);
+            experimentData = TaguchiCalculator.runAnalysis(experimentData, target);
+
+            // Cambiar a la pestaña de análisis PRIMERO para que los gráficos se rendericen bien
+            switchTab('tab-analysis');
+            DOM.noAnalysisMsg.style.display = 'none';
             DOM.analysisOutputSection.classList.remove('hidden');
+
+            createAndDisplayReportBlock(calculationCount);
+
+            // Renderizar fórmulas matemáticas en el nuevo contenido
+            renderMathInElement(document.getElementById(`analysis-run-${calculationCount}`));
+
             document.getElementById(`analysis-run-${calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -1064,165 +1219,16 @@
                 </div> 
             </div> 
         `;
+            // Insertar al principio para ver el más reciente primero (opcional, o appendChild)
+            DOM.analysisHistoryContainer.innerHTML = ''; // Limpiar anteriores si se quiere solo el último
             DOM.analysisHistoryContainer.appendChild(reportWrapper);
+
             displayExecutiveSummary(runId);
             displayFactorEffectsTables(runId);
             displayAnovaTable(runId);
             displaySnrResults(runId);
             createParetoChart(runId);
             createMainEffectsCharts(runId);
-        }
-
-        function calculateFactorEffects(useSnr = false) {
-            const effects = {};
-            const data = useSnr ? experimentData.snrEffects.perRun : experimentData.results;
-            experimentData.factors.forEach((factor, factorIndex) => {
-                effects[factor.name] = { levels: {}, range: 0 };
-                factor.levels.forEach((level, levelIndex) => {
-                    let sum = 0, count = 0;
-                    experimentData.selectedArray.array.forEach((run, runIndex) => {
-                        const runLevelIndex = Math.min(run[factorIndex] - 1, factor.levels.length - 1);
-                        if (runLevelIndex === levelIndex) {
-                            sum += data[runIndex];
-                            count++;
-                        }
-                    });
-                    effects[factor.name].levels[level] = count > 0 ? sum / count : 0;
-                });
-                const avgs = Object.values(effects[factor.name].levels);
-                effects[factor.name].range = Math.max(...avgs) - Math.min(...avgs);
-            });
-            if (useSnr) {
-                experimentData.snrEffects.byFactor = effects;
-            } else {
-                experimentData.factorEffects = effects;
-            }
-        }
-
-        function determineOptimalLevels() {
-            // Optimal levels are *always* determined by *maximizing* the S/N ratio,
-            // regardless of the S/N type (smaller, larger, nominal).
-            // The `calculateFactorEffects(true)` must have been run first.
-            experimentData.optimalSettings = {};
-            Object.keys(experimentData.snrEffects.byFactor).forEach(factorName => {
-                const factor = experimentData.snrEffects.byFactor[factorName];
-                const levels = Object.entries(factor.levels);
-                let optimalEntry = levels.reduce((max, curr) => curr[1] > max[1] ? curr : max);
-                experimentData.optimalSettings[factorName] = { level: optimalEntry[0], snr_avg: optimalEntry[1] };
-            });
-
-            // Now, find the *expected response* at those optimal levels
-            // The `calculateFactorEffects(false)` must have been run first.
-            Object.keys(experimentData.optimalSettings).forEach(factorName => {
-                const optimalLevelName = experimentData.optimalSettings[factorName].level;
-                experimentData.optimalSettings[factorName].response_avg = experimentData.factorEffects[factorName].levels[optimalLevelName];
-            });
-        }
-
-        function calculatePredictedOutcome() {
-            const overallMean = experimentData.results.reduce((s, v) => s + v, 0) / experimentData.results.length;
-            let predictedEffect = overallMean;
-
-            // Prediction formula:
-            // y_pred = T_avg + (A_opt_avg - T_avg) + (B_opt_avg - T_avg) + ...
-            Object.entries(experimentData.optimalSettings).forEach(([factorName, setting]) => {
-                const factorEffect = setting.response_avg - overallMean;
-                predictedEffect += factorEffect;
-            });
-
-            experimentData.predictedResult = predictedEffect;
-        }
-
-        function calculateSNR() {
-            let target = null;
-            if (experimentData.snrType === 'nominal') {
-                target = parseFloat(document.getElementById('nominal-target').value);
-                experimentData.nominalTarget = target; // Save for report
-            }
-
-            const perRunSNR = experimentData.results.map(y => {
-                if (y === null || isNaN(y)) return 0;
-                switch (experimentData.snrType) {
-                    case 'smaller':
-                        // S/N = -10 * log10 ( 1/n * sum(y_i^2) )
-                        // For n=1, this is -10 * log10(y^2)
-                        return y === 0 ? -100 : -10 * Math.log10(y * y);
-                    case 'larger':
-                        // S/N = -10 * log10 ( 1/n * sum(1/y_i^2) )
-                        // For n=1, this is -10 * log10(1/y^2)
-                        return y === 0 ? -100 : -10 * Math.log10(1 / (y * y));
-                    case 'nominal':
-                        // S/N = -10 * log10( (y - T)^2 ) -> Mean Squared Deviation from Target T
-                        // This is the correct formula for n=1 and a known target.
-                        const deviation = y - target;
-                        // Return a large positive number if deviation is zero
-                        return deviation === 0 ? 100 : -10 * Math.log10(deviation * deviation);
-                    default:
-                        return 0;
-                }
-            });
-            experimentData.snrEffects = { perRun: perRunSNR };
-        }
-
-        // === FUNCTION WITH CORRECTION FROM PROBLEM 3 ===
-        function calculateANOVA() {
-            const results = experimentData.results;
-            const n = results.length;
-            if (n < 2) return;
-
-            const overallMean = results.reduce((s, v) => s + v, 0) / n;
-            const SSt = results.reduce((s, v) => s + (v - overallMean) ** 2, 0);
-
-            let totalFactorSS = 0;
-            let totalFactorDF = 0;
-            experimentData.anova = {};
-
-            experimentData.factors.forEach(factor => {
-                let factorSS = 0;
-                // This shortcut is valid *because* the arrays L4-L16 are balanced
-                const runsPerLevel = n / factor.levels.length;
-                Object.values(experimentData.factorEffects[factor.name].levels).forEach(levelMean => {
-                    factorSS += runsPerLevel * (levelMean - overallMean) ** 2;
-                });
-                const df = factor.levels.length - 1;
-                totalFactorSS += factorSS;
-                totalFactorDF += df;
-                experimentData.anova[factor.name] = { ss: factorSS, df: df };
-            });
-
-            const errorDF = (n - 1) - totalFactorDF;
-            // === CORRECTION 3 IMPLEMENTED ===
-            // Ensure Error SS is not negative due to floating point rounding
-            const errorSS = Math.max(0, SSt - totalFactorSS);
-            // === END CORRECTION ===
-
-            if (errorDF <= 0) {
-                experimentData.anova.error = { ss: errorSS, df: 0, ms: 0 }; // SS was already checked
-                experimentData.anova.total = { ss: SSt, df: n - 1 };
-                Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(k => {
-                    experimentData.anova[k].ms = experimentData.anova[k].df > 0 ? experimentData.anova[k].ss / experimentData.anova[k].df : 0;
-                    experimentData.anova[k].f = Infinity;
-                    experimentData.anova[k].isSignificant = 'N/A (Saturated)';
-                });
-                return;
-            }
-
-            const errorMS = errorSS / errorDF;
-
-            Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
-                const anovaFactor = experimentData.anova[factorName];
-                if (!anovaFactor.df) return;
-
-                anovaFactor.ms = anovaFactor.ss / anovaFactor.df;
-                anovaFactor.f = errorMS > 0 ? anovaFactor.ms / errorMS : Infinity;
-
-                // Use improved F-test for significance
-                const fCritical = getFCritical(anovaFactor.df, errorDF);
-                anovaFactor.isSignificant = anovaFactor.f > fCritical;
-            });
-
-            experimentData.anova.error = { ss: errorSS, df: errorDF, ms: errorMS };
-            experimentData.anova.total = { ss: SSt, df: n - 1 };
         }
 
         function displayExecutiveSummary(runId) {
@@ -1285,7 +1291,6 @@
 
         function displaySnrResults(runId) {
             const overallSnr = experimentData.snrEffects.perRun.reduce((a, b) => a + b, 0) / experimentData.snrEffects.perRun.length;
-            // Use getSnrTypeName to include the target value in the report
             document.getElementById(`snr-results-content-${runId}`).innerHTML = `<p><strong>Overall S/N Ratio (${getSnrTypeName(experimentData.snrType)}):</strong> <span class="snr-value" style="font-weight: bold; color: var(--primary-color);">${(overallSnr || 0).toFixed(2)} dB</span></p>`;
             const optimalDiv = document.getElementById(`optimal-levels-${runId}`);
             let html = `<h4>Optimal Levels for Robustness</h4><p>These are the settings that maximize the Signal-to-Noise ratio, making your process less sensitive to variation.</p><ul>`;
