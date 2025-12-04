@@ -31,22 +31,20 @@
             --success-color: #27ae60;
             --warning-color: #f39c12;
             font-size: 16px;
+            --professional-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --professional-border: 1px solid #e1e5e9;
         }
 
         body {
             background-color: #f5f7fa;
         }
 
-        /* === MODIFICACIÓN: Contenedor principal ocupa todo el ancho === */
         .main-content-wrapper {
             max-width: none;
-            /* Eliminamos la limitación de ancho */
             margin: 0 auto;
             padding: 1.25rem;
             width: 100%;
-            /* Ocupa todo el ancho disponible */
             box-sizing: border-box;
-            /* Incluye padding en el cálculo del ancho */
         }
 
         .header {
@@ -62,11 +60,8 @@
             margin: 0.5rem 0;
             font-weight: 800;
             display: flex;
-            /* Añadido para alinear el icono y el texto */
             align-items: center;
-            /* Centrado vertical */
             justify-content: center;
-            /* Centrado horizontal */
         }
 
         .header .header-subtitle {
@@ -76,13 +71,11 @@
             font-weight: 400;
         }
 
-        /* Estilo para el ícono H1 (basado en stack_up_analysis) */
         .header-icon-container {
             width: 42px;
             height: 42px;
             border-radius: 8px;
             background-color: #af52de;
-            /* Color de fondo del icono */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -91,22 +84,17 @@
 
         .header-icon-container .fas {
             font-size: 22px;
-            /* Tamaño del icono */
             color: #fff;
         }
 
-        /* Fin de los estilos del ícono H1 */
-
-        /* === MODIFICACIÓN: Bloques de contenido aprovechan mejor el espacio === */
         .content-block {
-            border: 1px solid #ddd;
+            border: var(--professional-border);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--professional-shadow);
             max-width: 1400px;
-            /* Límite máximo para mantener legibilidad */
             margin-left: auto;
             margin-right: auto;
         }
@@ -139,7 +127,7 @@
             flex: 1;
             min-width: 150px;
             padding: 1rem;
-            border: 1px solid #ddd;
+            border: var(--professional-border);
             border-radius: 8px;
             background-color: #f8f9fa;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -151,7 +139,7 @@
 
         .flow-step:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--professional-shadow);
         }
 
         .flow-step .fas {
@@ -190,7 +178,7 @@
         }
 
         .workshop-step {
-            border: 1px solid #eee;
+            border: var(--professional-border);
             border-radius: 8px;
             padding: 1.25rem;
             margin-bottom: 1.25rem;
@@ -225,7 +213,7 @@
         textarea {
             width: 100%;
             padding: 0.6rem;
-            border: 1px solid #ddd;
+            border: var(--professional-border);
             border-radius: 4px;
             transition: border 0.3s, box-shadow 0.3s;
             font-size: 1rem;
@@ -318,7 +306,7 @@
             background: #fff;
             padding: 0.5rem;
             border-radius: 4px;
-            border: 1px solid #eee;
+            border: var(--professional-border);
         }
 
         .results-actions {
@@ -353,22 +341,161 @@
             }
         }
 
-        /* === MODIFICACIÓN: Para pantallas muy grandes, añadimos márgenes laterales === */
-        @media (min-width: 1400px) {
-            .content-block {
-                margin-left: auto;
-                margin-right: auto;
+        /* === PROGRESS BAR STYLES === */
+        .progress-block {
+            background-color: white;
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--professional-shadow);
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* === TABS STYLES (FROM TRIZ) === */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        @media (min-width: 992px) {
+            .tabs-nav {
+                overflow-x: hidden;
             }
+
+            .tab-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: fadeIn 0.3s ease;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-next-tab,
+        .btn-prev-tab {
+            background-color: var(--primary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-prev-tab {
+            background-color: #6c757d;
+        }
+
+        .btn-prev-tab:hover {
+            background-color: #5a6268;
+        }
+
+        /* === ESTILOS PARA EJEMPLOS EN TAB START === */
+        .examples-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .examples-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .examples-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 1rem;
         }
     </style>
 </head>
 
 <body>
-
     <!-- Contenedor para el header que se cargará dinámicamente -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -404,68 +531,8 @@
             <p class="header-subtitle">A human-centered framework for innovation and creative problem-solving.</p>
         </header>
 
-        <div class="content-block">
-            <h2><i class="fas fa-question-circle"></i> What is Design Thinking?</h2>
-            <p><strong>Design Thinking</strong> is an iterative and non-linear process that teams use to understand
-                users, challenge assumptions, redefine problems, and create innovative solutions to prototype and test.
-                It is a human-centered approach, meaning it starts with the people you're designing for and ends with
-                new solutions that are tailor-made to suit their needs.</p>
-            <p>The process is often broken down into five distinct phases, which guide teams from empathy to
-                implementation.</p>
-            <div class="infographic-flow">
-                <div class="flow-step"><i class="fas fa-heart"></i><strong>1. Empathize</strong><span>Understand user
-                        needs.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-bullseye"></i><strong>2. Define</strong><span>State the core
-                        problem.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-lightbulb"></i><strong>3. Ideate</strong><span>Brainstorm
-                        solutions.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-cube"></i><strong>4. Prototype</strong><span>Build the
-                        solution.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-vial"></i><strong>5. Test</strong><span>Get user
-                        feedback.</span></div>
-            </div>
-        </div>
-
-        <div class="content-block">
-            <h2><i class="fas fa-history"></i> History & Origin</h2>
-            <p>While the term "Design Thinking" became popular in the 21st century, its roots go back decades. The
-                concept of design as a "way of thinking" can be traced to the 1969 book "The Sciences of the Artificial"
-                by Nobel laureate <strong>Herbert A. Simon</strong>. Further development occurred in design and
-                engineering fields throughout the 70s and 80s.</p>
-            <p>The methodology was popularized and adapted for business purposes by the design consultancy
-                <strong>IDEO</strong>. Figures like David Kelley and Tim Brown were instrumental in championing Design
-                Thinking as a way to solve complex problems in business and society. The <strong>Hasso Plattner
-                    Institute of Design at Stanford (d.school)</strong>, co-founded by Kelley, further solidified its
-                place as a formal and teachable innovation process.</p>
-        </div>
-
-        <div class="content-block">
-            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-            <div class="instructions-box">
-                <ul>
-                    <li><strong>Load Example:</strong> Click on any example button (Coffee Shop, Healthcare, or
-                        Education) to see a complete, detailed project documented through all five phases.</li>
-                    <li><strong>Follow the Steps:</strong> Fill in the details for each of the five Design Thinking
-                        phases for your own project. Each phase now includes comprehensive fields to guide your
-                        thinking.</li>
-                    <li><strong>Track Progress:</strong> Watch the progress bar as you complete each section to see how
-                        much of the workshop you've finished.</li>
-                    <li><strong>Generate Report:</strong> Click "Generate Design Thinking Report" to create a
-                        comprehensive summary of your entire process.</li>
-                    <li><strong>Export:</strong> Once the report is generated, you can export it to Excel, PDF, or copy
-                        to clipboard for your records or sharing with your team.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="content-block">
-            <h2><i class="fas fa-pencil-ruler"></i> Design Thinking Workshop</h2>
-
-            <!-- Progress Bar -->
+        <!-- Progress Block (visible in all tabs) -->
+        <div class="progress-block">
             <div style="margin-bottom: 25px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-weight: 600; color: var(--primary-color);">Workshop Progress</span>
@@ -486,17 +553,119 @@
                     <span id="step-5-indicator">⑤ Test</span>
                 </div>
             </div>
+        </div>
 
-            <div style="text-align: center; margin-bottom: 20px;">
-                <button class="btn-success" onclick="loadExample('coffee')"><i class="fas fa-coffee"></i> Coffee Shop
-                    Example</button>
-                <button class="btn-success" onclick="loadExample('healthcare')"><i class="fas fa-heartbeat"></i>
-                    Healthcare Example</button>
-                <button class="btn-success" onclick="loadExample('education')"><i class="fas fa-graduation-cap"></i>
-                    Education Example</button>
-                <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset Tool</button>
+        <!-- Tabs Navigation -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start &
+                Info</button>
+            <button class="tab-btn" onclick="switchTab('tab-emphatize')"><i class="fas fa-heart"></i> 1.
+                Empathize</button>
+            <button class="tab-btn" onclick="switchTab('tab-define')"><i class="fas fa-bullseye"></i> 2. Define</button>
+            <button class="tab-btn" onclick="switchTab('tab-ideate')"><i class="fas fa-lightbulb"></i> 3.
+                Ideate</button>
+            <button class="tab-btn" onclick="switchTab('tab-prototype')"><i class="fas fa-cube"></i> 4.
+                Prototype</button>
+            <button class="tab-btn" onclick="switchTab('tab-test')"><i class="fas fa-vial"></i> 5. Test</button>
+            <button class="tab-btn" onclick="switchTab('tab-report')"><i class="fas fa-file-alt"></i> Generate
+                Report</button>
+        </nav>
+
+        <!-- Tab 1: Start & Info -->
+        <div id="tab-start" class="tab-content active">
+            <!-- Examples Section -->
+            <div class="examples-section">
+                <h3><i class="fas fa-magic"></i> Quick Start Examples</h3>
+                <p>Click on any example button below to see a complete, detailed project documented through all five
+                    phases. This will populate all tabs with sample data.</p>
+
+                <div class="examples-buttons">
+                    <button class="btn-success" onclick="loadExample('coffee')"><i class="fas fa-coffee"></i> Coffee
+                        Shop Example</button>
+                    <button class="btn-success" onclick="loadExample('healthcare')"><i class="fas fa-heartbeat"></i>
+                        Healthcare Example</button>
+                    <button class="btn-success" onclick="loadExample('education')"><i class="fas fa-graduation-cap"></i>
+                        Education Example</button>
+                    <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset
+                        Tool</button>
+                </div>
             </div>
 
+            <div class="content-block">
+                <h2><i class="fas fa-question-circle"></i> What is Design Thinking?</h2>
+                <p><strong>Design Thinking</strong> is an iterative and non-linear process that teams use to understand
+                    users, challenge assumptions, redefine problems, and create innovative solutions to prototype and
+                    test.
+                    It is a human-centered approach, meaning it starts with the people you're designing for and ends
+                    with
+                    new solutions that are tailor-made to suit their needs.</p>
+                <p>The process is often broken down into five distinct phases, which guide teams from empathy to
+                    implementation.</p>
+                <div class="infographic-flow">
+                    <div class="flow-step"><i class="fas fa-heart"></i><strong>1. Empathize</strong><span>Understand
+                            user
+                            needs.</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-bullseye"></i><strong>2. Define</strong><span>State the core
+                            problem.</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-lightbulb"></i><strong>3. Ideate</strong><span>Brainstorm
+                            solutions.</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-cube"></i><strong>4. Prototype</strong><span>Build the
+                            solution.</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-vial"></i><strong>5. Test</strong><span>Get user
+                            feedback.</span></div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2><i class="fas fa-history"></i> History & Origin</h2>
+                <p>While the term "Design Thinking" became popular in the 21st century, its roots go back decades. The
+                    concept of design as a "way of thinking" can be traced to the 1969 book "The Sciences of the
+                    Artificial"
+                    by Nobel laureate <strong>Herbert A. Simon</strong>. Further development occurred in design and
+                    engineering fields throughout the 70s and 80s.</p>
+                <p>The methodology was popularized and adapted for business purposes by the design consultancy
+                    <strong>IDEO</strong>. Figures like David Kelley and Tim Brown were instrumental in championing
+                    Design
+                    Thinking as a way to solve complex problems in business and society. The <strong>Hasso Plattner
+                        Institute of Design at Stanford (d.school)</strong>, co-founded by Kelley, further solidified
+                    its
+                    place as a formal and teachable innovation process.
+                </p>
+            </div>
+
+            <div class="content-block">
+                <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+                <div class="instructions-box">
+                    <ul>
+                        <li><strong>Load Example:</strong> Click on any example button (Coffee Shop, Healthcare, or
+                            Education) to see a complete, detailed project documented through all five phases.</li>
+                        <li><strong>Follow the Steps:</strong> Fill in the details for each of the five Design Thinking
+                            phases for your own project. Each phase now includes comprehensive fields to guide your
+                            thinking.</li>
+                        <li><strong>Track Progress:</strong> Watch the progress bar as you complete each section to see
+                            how
+                            much of the workshop you've finished.</li>
+                        <li><strong>Generate Report:</strong> Click "Generate Design Thinking Report" to create a
+                            comprehensive summary of your entire process.</li>
+                        <li><strong>Export:</strong> Once the report is generated, you can export it to Excel, PDF, or
+                            copy
+                            to clipboard for your records or sharing with your team.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-next-tab" onclick="switchTab('tab-emphatize')">Next: Empathize <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 2: Empathize -->
+        <div id="tab-emphatize" class="tab-content">
             <div class="workshop-step" id="step-1">
                 <h3><i class="fas fa-heart"></i> Step 1: Empathize - Understand Your Users</h3>
                 <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Use interviews, observations,
@@ -535,6 +704,16 @@
                 </div>
             </div>
 
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-start')"><i class="fas fa-arrow-left"></i>
+                    Previous: Info</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-define')">Next: Define <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 3: Define -->
+        <div id="tab-define" class="tab-content">
             <div class="workshop-step" id="step-2">
                 <h3><i class="fas fa-bullseye"></i> Step 2: Define - State the Core Problem (Point of View)</h3>
                 <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: A good problem statement is
@@ -559,6 +738,16 @@
                 </div>
             </div>
 
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-emphatize')"><i class="fas fa-arrow-left"></i>
+                    Previous: Empathize</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-ideate')">Next: Ideate <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 4: Ideate -->
+        <div id="tab-ideate" class="tab-content">
             <div class="workshop-step" id="step-3">
                 <h3><i class="fas fa-lightbulb"></i> Step 3: Ideate - Brainstorm Solutions</h3>
                 <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Go for quantity over quality
@@ -589,6 +778,16 @@
                 </div>
             </div>
 
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-define')"><i class="fas fa-arrow-left"></i>
+                    Previous: Define</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-prototype')">Next: Prototype <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 5: Prototype -->
+        <div id="tab-prototype" class="tab-content">
             <div class="workshop-step" id="step-4">
                 <h3><i class="fas fa-cube"></i> Step 4: Prototype - Create a Tangible Representation</h3>
                 <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡Tip: Start with low-fidelity
@@ -620,6 +819,16 @@
                 </div>
             </div>
 
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-ideate')"><i class="fas fa-arrow-left"></i>
+                    Previous: Ideate</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-test')">Next: Test <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 6: Test -->
+        <div id="tab-test" class="tab-content">
             <div class="workshop-step" id="step-5">
                 <h3><i class="fas fa-vial"></i> Step 5: Test - Get Feedback</h3>
                 <p style="color: #555; font-style: italic; margin-bottom: 1rem;">💡 Tip: Show, don't tell. Let users
@@ -662,9 +871,30 @@
                 </div>
             </div>
 
-            <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate
-                Design Thinking Report</button>
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-prototype')"><i class="fas fa-arrow-left"></i>
+                    Previous: Prototype</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-report')">Next: Generate Report <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 7: Generate Report -->
+        <div id="tab-report" class="tab-content">
+            <div
+                style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                <h3><i class="fas fa-file-alt"></i> Ready to Generate Your Design Thinking Report</h3>
+                <p>Click the button below to create a comprehensive report of your Design Thinking workshop.</p>
+                <button id="generate-report-button" onclick="generateReport()"><i class="fas fa-file-alt"></i> Generate
+                    Design Thinking Report</button>
+            </div>
+
             <div id="results-container" class="hidden"></div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-test')"><i class="fas fa-arrow-left"></i> Previous:
+                    Test</button>
+            </div>
         </div>
     </main>
     <footer>
@@ -799,6 +1029,7 @@
             document.getElementById('results-container').classList.add('hidden');
             updateProgress();
             document.getElementById('empathize-users').focus();
+            switchTab('tab-start'); // Go back to first tab
         }
 
         function loadExample(type = 'coffee') {
@@ -872,7 +1103,7 @@
                     'prototype-assumptions': "ASSUMPTIONS TO TEST:\n\n1. ENGAGEMENT: Students will use academic help tool voluntarily\n- Test: Track daily active usage over 2 weeks\n\n2. LEARNING: Step-by-step guidance is better than direct answers\n- Test: Compare learning outcomes vs traditional answer keys\n\n3. PRIDE: Students feel accomplished, not ashamed, when using AI help\n- Test: Survey emotional response, repeat usage\n\n4. TEACHER VALUE: Dashboard insights lead to better interventions\n- Test: Teacher satisfaction, changed teaching behavior\n\n5. AI ACCURACY: AI can accurately understand and respond to diverse problems\n- Test: Accuracy rate across subjects, error tracking\n\n6. ACCESSIBILITY: SMS/low-tech option is sufficient for students without smartphones\n- Test: SMS-only user outcomes vs app users",
                     'test-plan': "PILOT STUDY: 2 high schools, 6 classrooms, 180 students total\n\nPARTICIPANTS:\n- 3 Math classes (Algebra 1, Geometry, Algebra 2)\n- 2 Science classes (Biology, Chemistry)\n- 1 English class (9th grade)\n- Mix of grade levels 9-11\n- Treatment group (with StudyBuddy) vs Control group\n\nDURATION: 8-week pilot during regular school year\n\nPHASE 1 (Week 1): Teacher training, student onboarding\nPHASE 2 (Weeks 2-7): Active use with monitoring\nPHASE 3 (Week 8): Assessment and interviews\n\nDATA COLLECTION:\n- Pre/post concept assessments\n- Daily usage analytics\n- Weekly student surveys\n- Teacher weekly logs\n- Parent feedback surveys\n- Focus groups (students, teachers, parents)",
                     'test-questions': "KEY RESEARCH QUESTIONS:\n\n1. Does StudyBuddy improve learning outcomes vs control?\n2. Which students benefit most (struggling vs average vs advanced)?\n3. What homework completion rates with vs without tool?\n4. Do students use it regularly or only when desperate?\n5. Which features are used most/least?\n6. Does AI guidance method work or do students just want answers?\n7. Do teachers actually use the dashboard?\n8. Does dashboard change teaching practice?\n9. Do struggling students get identified earlier?\n10. What barriers prevent students from using it?\n11. Does it work equally well across subjects?\n12. Is SMS option sufficient or app necessary?\n13. Do parents engage with progress updates?\n14. What's the optimal frequency of teacher alerts?\n15. Does peer tutoring component add value?",
-                    'test-feedback': "QUANTITATIVE RESULTS (180 students, 8 weeks):\n✓ 78% of students used StudyBuddy at least 3x/week\n✓ Average usage: 4.2 sessions per week, 12 mins per session\n✓ Homework completion rate: 85% (vs 67% in control group)\n✓ Test score improvement: +11% on average (vs +3% in control)\n✓ Struggling students (bottom quartile) improved +18%\n\nQUALITATIVE FEEDBACK:\n\nSTUDENTS (52 surveyed):\n'I actually understand now instead of just copying answers' - 15 students mentioned\n'I use it every night for math homework' - 31 students\n'Sometimes it doesn't understand my question' - 18 students\n'I like that it doesn't just give me the answer' - 23 students\n'Wish it worked for history and social studies too' - 12 students\n'The streak counter motivates me to practice daily' - 27 students\n\nTEACHERS (6 interviewed):\n✓ 5/6 checked dashboard at least twice per week\n✓ 4/6 changed their teaching based on struggle data\n✓ All 6 identified at-risk students earlier than usual\n'I can see exactly where my class is confused - game changer' - Ms. Rodriguez\n'Saved me hours of grading and identifying struggling students' - Mr. Lee\n'Some students over-rely on it instead of thinking first' - Ms. Johnson\n\nPARENTS (28 surveyed):\n✓ 24/28 appreciated weekly progress updates\n✓ 19/28 felt 'more connected to child's learning'\n'I can finally help even though I don't know the subjects' - Multiple parents",
+                    'test-feedback': "QUANTITATIVE RESULTS (180 students, 8 weeks):\n✓ 78% of students used StudyBuddy at least 3x/week\n✓ Average usage: 4.2 sessions per week, 12 mins per session\n✓ Homework completion rate: 85% (vs 67% in control group)\n✓ Test score improvement: +11% on average (vs +3% in control)\n✓ Struggling students (bottom quartile) improved +18%\n\nQUALITATIVE FEEDBACK:\n\nSTUDENTS (52 surveyed):\n'I actually understand now instead of just copying answers' - 15 students mentioned\n'I use it every night for math homework' - 31 students\n'Sometimes it doesn't understand my question' - 18 students\n'I like that it doesn't just give me the answer' - 23 students\n'Wish it worked for history and social studies too' - 12 students\n'The streak counter motivates me to practice daily' - 27 students\n\nTEACHERS (6 interviewed):\n✓ 5/6 checked dashboard at least twice per week\n✓ 4/6 changed their teaching based on struggle data\n✓ All 6 identified at-risk students earlier than usual\n'I can see exactly where my class is confused - game changer' - Ms. Rodriguez\n'Saved me hours of grading and identifying struggling students' - Mr. Lee\n'Some students over-reliy on it instead of thinking first' - Ms. Johnson\n\nPARENTS (28 surveyed):\n✓ 24/28 appreciated weekly progress updates\n✓ 19/28 felt 'more connected to child's learning'\n'I can finally help even though I don't know the subjects' - Multiple parents",
                     'test-learnings': "WHAT WORKED EXCEPTIONALLY WELL:\n✓ Step-by-step guidance model - students learned rather than just getting answers\n✓ Immediate feedback loop - students stayed engaged\n✓ Teacher dashboard - early identification of struggles was transformative\n✓ Gamification elements - streaks and progress tracking drove daily usage\n✓ Low-tech SMS option worked surprisingly well (22% of users preferred it)\n✓ Homework completion rates improved dramatically\n\nWHAT DIDN'T WORK AS EXPECTED:\n✗ AI sometimes misunderstood complex word problems (78% accuracy)\n✗ Peer tutoring feature underutilized (only 12% engaged with it)\n✗ Some students tried to 'game' the system to get direct answers\n✗ Spanish language version had translation quality issues\n✗ Parent app adoption lower than expected (only 45% of parents used it)\n✗ Requires strong initial onboarding - 15% of students never started\n\nSURPRISE DISCOVERIES:\n! Students used it MORE for practice, not just homework help\n! Teachers wanted 'intervention success tracking' - did their help work?\n! Students requested voice input option (especially for word problems)\n! Strongest predictor of success: frequency of use, not duration\n! Students shared accounts with siblings/friends (unexpected viral growth)\n! Several teachers started creating their own problems in the system\n! Parents used progress summaries to have specific conversations with kids\n! Struggling students became MORE willing to ask teacher questions after using tool",
                     'test-iterations': "ITERATION 1 - IMMEDIATE FIXES (4 weeks):\n1. Improve AI natural language understanding (target 90% accuracy)\n2. Add voice input for problem submission\n3. Strengthen 'gaming prevention' - detect answer-seeking behavior\n4. Enhanced onboarding with interactive tutorial\n5. Improve Spanish translation quality with native speakers\n\nITERATION 2 - FEATURE ENHANCEMENTS (8 weeks):\n6. Add History and Social Studies subject support\n7. Intervention tracking for teachers (what worked?)\n8. Study group formation tool (virtual study sessions)\n9. More granular progress visualizations for students\n10. Parent engagement nudges (low engagement alerts)\n11. Offline mode improvements for low-connectivity areas\n\nITERATION 3 - EXPANSION (12 weeks):\n12. Video explanation library (supplement to text guidance)\n13. Integration with Google Classroom and Canvas\n14. Teacher collaboration space (share strategies)\n15. Advanced analytics: learning path optimization\n16. College prep mode (SAT/ACT practice)\n17. Achievement sharing (social proof, optional)\n18. AI-generated practice problems customized to struggles\n19. Parent-teacher messaging integration\n20. School district dashboard for administrators\n\nPILOT EXPANSION PLAN:\n- Scale from 2 schools to 10 schools (1,500 students)\n- Add middle school grades (6-8)\n- 6-month longitudinal study\n- Partner with university research team\n- Seek district-wide adoption funding",
                     'test-metrics': "PRIMARY SUCCESS METRICS:\n\nSTUDENT LEARNING:\n- Test score improvement: >10% vs control (achieved 11% ✓)\n- Homework completion rate: >80% (achieved 85% ✓)\n- Concept mastery (pre/post assessment): >15% improvement\n- Student engagement score: >4/5 (achieved 4.3 ✓)\n- Time to problem solving: Reduce by 25%\n\nUSAGE & RETENTION:\n- Weekly active users: >70% (achieved 78% ✓)\n- Average sessions per week: >3 (achieved 4.2 ✓)\n- Retention rate (8 weeks): >65%\n- Daily streak users: >30% (achieved 41% ✓)\n- Feature adoption (teacher dashboard): >80% (achieved 83% ✓)\n\nTEACHER IMPACT:\n- Time saved on identifying struggles: >3 hours/week\n- Early intervention rate: +50% (identifying students earlier)\n- Teacher satisfaction: >4/5\n- Likelihood to recommend: >80%\n- Changed teaching practice: >60% (achieved 67% ✓)\n\nEQUITY & ACCESS:\n- Low-income student usage: Equal to average (achieved ✓)\n- English language learner usage: >60%\n- SMS-only user outcomes: Within 10% of app users\n- Parent engagement (non-English speaking): >40%\n\nSCALABILITY:\n- Cost per student per month: <$5\n- AI response time: <3 seconds (achieved 2.1 sec ✓)\n- System uptime: >99%\n- Support tickets per 100 users: <5\n- Net Promoter Score: >50 (achieved 62 ✓)"
@@ -891,7 +1122,8 @@
             }
 
             updateProgress();
-            // Eliminé el scroll automático para que la página no se mueva
+            // Auto-switch to Empathize tab after loading example
+            setTimeout(() => switchTab('tab-emphatize'), 100);
         }
 
         function generateReport() {
@@ -1002,10 +1234,10 @@
             html += `</div>`;
 
             html += `<div class="results-actions">
-            <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
-            <button class="btn-success" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Export to PDF</button>
-            <button onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy to Clipboard</button>
-        </div>`;
+                <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                <button class="btn-success" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                <button onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy to Clipboard</button>
+            </div>`;
 
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
@@ -1210,6 +1442,23 @@
             }).catch(() => {
                 alert('Unable to copy to clipboard. Please use the Export to Excel option instead.');
             });
+        }
+
+        // ===== TABS FUNCTIONS =====
+        function switchTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente (buscando por el onclick)
+            const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
     </script>
