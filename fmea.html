@@ -62,8 +62,6 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 1.25rem;
-
-      /* --- CORRECCIÓN DEFINITIVA PARA MÓVILES PARA EVITAR DESBORDAMIENTO --- */
       display: grid;
       grid-template-columns: minmax(0, 1fr);
     }
@@ -91,6 +89,129 @@
       margin: 0 auto;
     }
 
+    /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (TABS) ===== */
+    .tabs-nav {
+      display: flex;
+      background-color: #f1f5f9;
+      border-radius: 8px 8px 0 0;
+      overflow-x: auto;
+      border-bottom: 2px solid var(--secondary-color);
+      margin-bottom: 0;
+      margin-top: 1.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+    }
+
+    @media (min-width: 992px) {
+      .tabs-nav {
+        overflow-x: hidden;
+      }
+
+      .tab-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 1rem 0.5rem;
+      }
+    }
+
+    .tab-btn:hover {
+      background-color: #e2e8f0;
+      color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+      background-color: #fff;
+      color: var(--secondary-color);
+      border-bottom-color: var(--secondary-color);
+      border-radius: 8px 8px 0 0;
+      margin-bottom: -2px;
+      border-left: 1px solid #e1e5e9;
+      border-right: 1px solid #e1e5e9;
+      border-top: 1px solid #e1e5e9;
+    }
+
+    /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
+    .tabs-container {
+      background: #fff;
+      border: 1px solid #e1e5e9;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    /* PESTAÑAS - Todas con el mismo ancho */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+      width: 100%;
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
+    .tab-content-wrapper {
+      padding: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+
+    /* Ajuste para pantallas móviles */
+    @media (max-width: 768px) {
+      .tab-content-wrapper {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tab-content-wrapper {
+        padding: 0.75rem;
+      }
+    }
+
+    /* ===== ESTILOS ORIGINALES MODIFICADOS ===== */
     .container {
       background-color: white;
       border-radius: 8px;
@@ -326,7 +447,6 @@
     }
 
     #fmeaResultsContainer {
-      display: none;
       margin-top: 1.25rem;
     }
 
@@ -563,8 +683,7 @@
 
   <!-- Contenedor para el header cargado dinámicamente -->
   <div id="header-container"></div>
-  <div id="header-container"></div>
-  
+
   <noscript>
     <nav>
       <a href="/">Home</a> |
@@ -598,150 +717,207 @@
         <h1>Free Online FMEA (Failure Modes and Effects Analysis) for Problem Prevention</h1>
       </div>
       <p class="header-subtitle">A powerful online tool for proactively identifying and mitigating potential failures in
-        <strong>Designs (DFMEA)</strong> and <strong>Processes (PFMEA)</strong>.</p>
+        <strong>Designs (DFMEA)</strong> and <strong>Processes (PFMEA)</strong>.
+      </p>
     </header>
 
-    <div class="container">
-      <h2><i class="fas fa-question-circle"></i> What is Failure Mode & Effects Analysis (FMEA)?</h2>
-      <p><strong>Failure Mode and Effects Analysis (FMEA)</strong> is a systematic, proactive method for evaluating a
-        process or design to identify where and how it might fail and to assess the relative impact of different
-        failures. The goal is to identify, prioritize, and eliminate or reduce potential failures, starting with the
-        highest-priority ones. This tool supports the modern <strong>AIAG & VDA 7-Step FMEA</strong> process, focusing
-        on the Structure, Function, and Failure Analysis steps.</p>
-      <p>Key components of an FMEA include:</p>
-      <ul>
-        <li><strong>Failure Modes:</strong> The specific ways in which a component, system, or process could fail to
-          meet the design intent.</li>
-        <li><strong>Effects of Failure:</strong> The consequences of a failure mode on the system, customer, or
-          downstream processes.</li>
-        <li><strong>Causes of Failure:</strong> The design or process weaknesses, errors, or conditions that could
-          trigger the failure mode.</li>
-        <li><strong>Risk Priority Number (RPN):</strong> A numerical ranking of the risk associated with each potential
-          failure. It is calculated as:
-          <strong>RPN = Severity (S) × Occurrence (O) × Detection (D)</strong>
-          <ul>
-            <li><strong>Severity (S):</strong> The seriousness of the effect of the failure.</li>
-            <li><strong>Occurrence (O):</strong> The likelihood that the cause of the failure will occur.</li>
-            <li><strong>Detection (D):</strong> The ability of current controls to detect the cause or the failure mode
-              before it reaches the customer.</li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+    <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
+    <div class="tabs-container">
+      <!-- NAVEGACIÓN DE PESTAÑAS -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-theory')"><i class="fas fa-book"></i> Theory &
+          Info</button>
+        <button class="tab-btn" onclick="switchTab('tab-structure')"><i class="fas fa-cogs"></i> Define
+          Structure</button>
+        <button class="tab-btn" onclick="switchTab('tab-visualize')"><i class="fas fa-project-diagram"></i>
+          Visualize</button>
+        <button class="tab-btn" onclick="switchTab('tab-results')"><i class="fas fa-table"></i> FMEA Results</button>
+      </nav>
 
-    <div class="container">
-      <h2><i class="fas fa-history"></i> Brief History of FMEA and Modern Standards</h2>
-      <p>The FMEA methodology was first developed by the U.S. military in the late 1940s and documented in military
-        procedure <strong>MIL-P-1629</strong>. It was designed to evaluate the reliability and safety of military
-        equipment by identifying all possible failure modes and their effects on mission success.</p>
-      <p>Its value was quickly recognized by the aerospace industry. NASA extensively used FMEA during the
-        <strong>Apollo program</strong> in the 1960s to mitigate risks and enhance the safety of space missions. In the
-        1970s, the automotive industry, led by Ford Motor Company, adopted FMEA to improve vehicle safety and quality,
-        popularizing its use in the commercial sector. Today, the standard for FMEA is often governed by the
-        <strong>AIAG & VDA FMEA Handbook</strong>, which promotes a <strong>7-Step approach</strong> for systematic
-        analysis and risk mitigation. This tool helps practitioners structure their analysis according to these modern
-        principles.</p>
-    </div>
+      <!-- PESTAÑA 1: TEORÍA -->
+      <div id="tab-theory" class="tab-content active">
+        <div class="tab-content-wrapper">
+          <div class="container">
+            <h2><i class="fas fa-question-circle"></i> What is Failure Mode & Effects Analysis (FMEA)?</h2>
+            <p><strong>Failure Mode and Effects Analysis (FMEA)</strong> is a systematic, proactive method for
+              evaluating a
+              process or design to identify where and how it might fail and to assess the relative impact of different
+              failures. The goal is to identify, prioritize, and eliminate or reduce potential failures, starting with
+              the
+              highest-priority ones. This tool supports the modern <strong>AIAG & VDA 7-Step FMEA</strong> process,
+              focusing
+              on the Structure, Function, and Failure Analysis steps.</p>
+            <p>Key components of an FMEA include:</p>
+            <ul>
+              <li><strong>Failure Modes:</strong> The specific ways in which a component, system, or process could fail
+                to
+                meet the design intent.</li>
+              <li><strong>Effects of Failure:</strong> The consequences of a failure mode on the system, customer, or
+                downstream processes.</li>
+              <li><strong>Causes of Failure:</strong> The design or process weaknesses, errors, or conditions that could
+                trigger the failure mode.</li>
+              <li><strong>Risk Priority Number (RPN):</strong> A numerical ranking of the risk associated with each
+                potential
+                failure. It is calculated as:
+                <strong>RPN = Severity (S) × Occurrence (O) × Detection (D)</strong>
+                <ul>
+                  <li><strong>Severity (S):</strong> The seriousness of the effect of the failure.</li>
+                  <li><strong>Occurrence (O):</strong> The likelihood that the cause of the failure will occur.</li>
+                  <li><strong>Detection (D):</strong> The ability of current controls to detect the cause or the failure
+                    mode
+                    before it reaches the customer.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
 
-    <div class="container">
-      <h2><i class="fas fa-cogs"></i> How to Use This Tool: The 7-Step FMEA Approach</h2>
-      <ol>
-        <li><strong>Define Structure (Step 1):</strong> In the "Components" panel, add all the parts or steps of your
-          system/process. Mark items as "External" if they are outside your system boundary (e.g., user, power source).
-          Use the "Contacts" panel to define the connections and interfaces.</li>
-        <li><strong>Define Functions (Step 2):</strong> In the "Functions" panel, describe what the system is supposed
-          to do (requirements). Assign each function to the specific contacts involved in carrying it out.</li>
-        <li><strong>Visualize:</strong> The tool automatically generates a structure chart (network diagram) to help you
-          visualize the system's components, interfaces, and functions, supporting the Structure and Function Analysis.
-          You can drag nodes to rearrange the layout.</li>
-        <li><strong>Generate FMEA Table (Step 3 - Failure Analysis):</strong> Click the "Generate FMEA" button. This
-          will create a new FMEA analysis block below based on the functions you defined. Each time you click it, a new
-          analysis is added, allowing you to compare versions.</li>
-        <li><strong>Analyze Failures (Steps 4 & 5):</strong> For each function in the table, fill in the potential
-          failure modes, their effects (Step 4: Effect Analysis), potential causes, and any current controls in place to
-          prevent or detect them (Step 5: Risk Analysis).</li>
-        <li><strong>Assess Risk (Step 5: Risk Analysis):</strong> Use the dropdowns to assign <strong>Severity
-            (S)</strong>, <strong>Occurrence (O)</strong>, and <strong>Detection (D)</strong> scores. The tool
-          automatically calculates the <strong>RPN</strong> to help you prioritize.</li>
-        <li><strong>Define Actions & Export (Steps 6 & 7):</strong> For high-risk items, list recommended actions (Step
-          6: Optimization). When complete, you can export that specific FMEA table to an Excel file for your records
-          (Step 7: Results Documentation).</li>
-      </ol>
-    </div>
+          <div class="container">
+            <h2><i class="fas fa-history"></i> Brief History of FMEA and Modern Standards</h2>
+            <p>The FMEA methodology was first developed by the U.S. military in the late 1940s and documented in
+              military
+              procedure <strong>MIL-P-1629</strong>. It was designed to evaluate the reliability and safety of military
+              equipment by identifying all possible failure modes and their effects on mission success.</p>
+            <p>Its value was quickly recognized by the aerospace industry. NASA extensively used FMEA during the
+              <strong>Apollo program</strong> in the 1960s to mitigate risks and enhance the safety of space missions.
+              In the
+              1970s, the automotive industry, led by Ford Motor Company, adopted FMEA to improve vehicle safety and
+              quality,
+              popularizing its use in the commercial sector. Today, the standard for FMEA is often governed by the
+              <strong>AIAG & VDA FMEA Handbook</strong>, which promotes a <strong>7-Step approach</strong> for
+              systematic
+              analysis and risk mitigation. This tool helps practitioners structure their analysis according to these
+              modern
+              principles.
+            </p>
+          </div>
 
+          <div class="container">
+            <h2><i class="fas fa-cogs"></i> How to Use This Tool: The 7-Step FMEA Approach</h2>
+            <ol>
+              <li><strong>Define Structure (Step 1):</strong> In the "Components" panel, add all the parts or steps of
+                your
+                system/process. Mark items as "External" if they are outside your system boundary (e.g., user, power
+                source).
+                Use the "Contacts" panel to define the connections and interfaces.</li>
+              <li><strong>Define Functions (Step 2):</strong> In the "Functions" panel, describe what the system is
+                supposed
+                to do (requirements). Assign each function to the specific contacts involved in carrying it out.</li>
+              <li><strong>Visualize:</strong> The tool automatically generates a structure chart (network diagram) to
+                help you
+                visualize the system's components, interfaces, and functions, supporting the Structure and Function
+                Analysis.
+                You can drag nodes to rearrange the layout.</li>
+              <li><strong>Generate FMEA Table (Step 3 - Failure Analysis):</strong> Click the "Generate FMEA" button.
+                This
+                will create a new FMEA analysis block below based on the functions you defined. Each time you click it,
+                a new
+                analysis is added, allowing you to compare versions.</li>
+              <li><strong>Analyze Failures (Steps 4 & 5):</strong> For each function in the table, fill in the potential
+                failure modes, their effects (Step 4: Effect Analysis), potential causes, and any current controls in
+                place to
+                prevent or detect them (Step 5: Risk Analysis).</li>
+              <li><strong>Assess Risk (Step 5: Risk Analysis):</strong> Use the dropdowns to assign <strong>Severity
+                  (S)</strong>, <strong>Occurrence (O)</strong>, and <strong>Detection (D)</strong> scores. The tool
+                automatically calculates the <strong>RPN</strong> to help you prioritize.</li>
+              <li><strong>Define Actions & Export (Steps 6 & 7):</strong> For high-risk items, list recommended actions
+                (Step
+                6: Optimization). When complete, you can export that specific FMEA table to an Excel file for your
+                records
+                (Step 7: Results Documentation).</li>
+            </ol>
+          </div>
 
-    <div class="calculation-block">
-      <button id="loadExampleBtn" style="background-color: #27ae60;"><i class="fas fa-lightbulb"></i> Load
-        Example</button>
-      <button id="resetAllBtn" style="background-color: #f39c12;"><i class="fas fa-redo"></i> Reset All</button>
-    </div>
-
-    <div class="panels-container">
-      <div id="componentsPanel" class="calculation-block">
-        <div class="calculation-title">Components</div>
-        <div class="form-group">
-          <label for="componentName"><i class="fas fa-cube"></i> Component Name:</label>
-          <input type="text" id="componentName" placeholder="Enter component name">
-          <label>
-            <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;"> External Component
-          </label>
-          <button id="addComponentBtn"><i class="fas fa-plus"></i> Add Component</button>
-          <button id="clearComponentsBtn"><i class="fas fa-trash"></i> Clear All</button>
+          <div class="calculation-block">
+            <button id="loadExampleBtn" style="background-color: #27ae60;"><i class="fas fa-lightbulb"></i> Load
+              Example</button>
+            <button id="resetAllBtn" style="background-color: #f39c12;"><i class="fas fa-redo"></i> Reset All</button>
+          </div>
         </div>
-        <div class="item-list" id="componentsList"></div>
       </div>
 
-      <div id="contactsPanel" class="calculation-block">
-        <div class="calculation-title">Contacts</div>
-        <div class="form-group">
-          <label for="contactFrom"><i class="fas fa-arrow-right"></i> From Component:</label>
-          <select id="contactFrom" disabled>
-            <option value="">Select component</option>
-          </select>
-          <label for="contactTo"><i class="fas fa-arrow-left"></i> To Component:</label>
-          <select id="contactTo" disabled>
-            <option value="">Select component</option>
-          </select>
-          <button id="addContactBtn" disabled><i class="fas fa-plus"></i> Add Contact</button>
-          <button id="clearContactsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+      <!-- PESTAÑA 2: DEFINIR ESTRUCTURA -->
+      <div id="tab-structure" class="tab-content">
+        <div class="tab-content-wrapper">
+          <div class="panels-container">
+            <div id="componentsPanel" class="calculation-block">
+              <div class="calculation-title">Components</div>
+              <div class="form-group">
+                <label for="componentName"><i class="fas fa-cube"></i> Component Name:</label>
+                <input type="text" id="componentName" placeholder="Enter component name">
+                <label>
+                  <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;"> External
+                  Component
+                </label>
+                <button id="addComponentBtn"><i class="fas fa-plus"></i> Add Component</button>
+                <button id="clearComponentsBtn"><i class="fas fa-trash"></i> Clear All</button>
+              </div>
+              <div class="item-list" id="componentsList"></div>
+            </div>
+
+            <div id="contactsPanel" class="calculation-block">
+              <div class="calculation-title">Contacts</div>
+              <div class="form-group">
+                <label for="contactFrom"><i class="fas fa-arrow-right"></i> From Component:</label>
+                <select id="contactFrom" disabled>
+                  <option value="">Select component</option>
+                </select>
+                <label for="contactTo"><i class="fas fa-arrow-left"></i> To Component:</label>
+                <select id="contactTo" disabled>
+                  <option value="">Select component</option>
+                </select>
+                <button id="addContactBtn" disabled><i class="fas fa-plus"></i> Add Contact</button>
+                <button id="clearContactsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+              </div>
+              <div class="item-list" id="contactsList"></div>
+            </div>
+
+            <div id="functionsPanel" class="calculation-block">
+              <div class="calculation-title">Functions</div>
+              <div class="form-group">
+                <label for="functionName"><i class="fas fa-bolt"></i> Function Name:</label>
+                <input type="text" id="functionName" placeholder="Enter function name">
+                <label for="functionType">Function Type:</label>
+                <select id="functionType">
+                  <option value="primary">Primary</option>
+                  <option value="secondary">Secondary</option>
+                </select>
+                <label for="functionContacts"><i class="fas fa-link"></i> Contacts:</label>
+                <select id="functionContacts" multiple disabled>
+                </select>
+                <button id="addFunctionBtn" disabled><i class="fas fa-plus"></i> Add Function</button>
+                <button id="clearFunctionsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+              </div>
+              <div class="item-list" id="functionsList"></div>
+            </div>
+          </div>
         </div>
-        <div class="item-list" id="contactsList"></div>
       </div>
 
-      <div id="functionsPanel" class="calculation-block">
-        <div class="calculation-title">Functions</div>
-        <div class="form-group">
-          <label for="functionName"><i class="fas fa-bolt"></i> Function Name:</label>
-          <input type="text" id="functionName" placeholder="Enter function name">
-          <label for="functionType">Function Type:</label>
-          <select id="functionType">
-            <option value="primary">Primary</option>
-            <option value="secondary">Secondary</option>
-          </select>
-          <label for="functionContacts"><i class="fas fa-link"></i> Contacts:</label>
-          <select id="functionContacts" multiple disabled>
-          </select>
-          <button id="addFunctionBtn" disabled><i class="fas fa-plus"></i> Add Function</button>
-          <button id="clearFunctionsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+      <!-- PESTAÑA 3: VISUALIZAR -->
+      <div id="tab-visualize" class="tab-content">
+        <div class="tab-content-wrapper">
+          <div id="network-wrapper">
+            <img id="networkIcon" src="sigma-exacta-icon.jpg" alt="Sigma Exacta Inverted Logo">
+            <button id="exportChartBtn" title="Export Chart as JPG"><i class="fas fa-camera"></i></button>
+            <button id="fitViewBtn" title="Fit to View"><i class="fas fa-compress-arrows-alt"></i></button>
+            <button id="generateFMEABtn"><i class="fas fa-file-alt"></i> Generate FMEA</button>
+            <div id="networkChart">
+              <div id="network-instruction">Drag nodes to rearrange the layout</div>
+              <div id="networkCanvas" style="width: 100%; height: 100%;"></div>
+              <div id="networkLegend"></div>
+            </div>
+          </div>
         </div>
-        <div class="item-list" id="functionsList"></div>
       </div>
-    </div>
 
-    <div id="network-wrapper">
-      <img id="networkIcon" src="sigma-exacta-icon.jpg" alt="Sigma Exacta Inverted Logo">
-      <button id="exportChartBtn" title="Export Chart as JPG"><i class="fas fa-camera"></i></button>
-      <button id="fitViewBtn" title="Fit to View"><i class="fas fa-compress-arrows-alt"></i></button>
-      <button id="generateFMEABtn"><i class="fas fa-file-alt"></i> Generate FMEA</button>
-      <div id="networkChart">
-        <div id="network-instruction">Drag nodes to rearrange the layout</div>
-        <div id="networkCanvas" style="width: 100%; height: 100%;"></div>
-        <div id="networkLegend"></div>
+      <!-- PESTAÑA 4: RESULTADOS FMEA -->
+      <div id="tab-results" class="tab-content">
+        <div class="tab-content-wrapper">
+          <div id="fmeaResultsContainer" class="calculation-block">
+            <div class="calculation-title">FMEA Results</div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div id="fmeaResultsContainer" class="calculation-block">
-      <div class="calculation-title">FMEA Results</div>
     </div>
   </main>
   <footer>
@@ -795,6 +971,27 @@
           toolsDropdownContainer.classList.toggle('active');
         }
       });
+    }
+
+    // Función para cambiar entre pestañas
+    function switchTab(tabId) {
+      // Quitar clase active de todos los botones y contenidos
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      // Activar el contenido seleccionado
+      document.getElementById(tabId).classList.add('active');
+
+      // Activar botón correspondiente
+      const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Si la pestaña activa es "Visualize", ajustar el gráfico
+      if (tabId === 'tab-visualize' && network) {
+        setTimeout(() => {
+          network.fit({ animation: true });
+        }, 100);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -866,9 +1063,8 @@
       components = []; contacts = []; functions = [];
       contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0;
       analysisCounter = 0;
-      fmeaResultsContainer.style.display = 'none';
-      const instances = fmeaResultsContainer.querySelectorAll('.analysis-instance');
-      instances.forEach(instance => instance.remove());
+      fmeaResultsContainer.innerHTML = '<div class="calculation-title">FMEA Results</div>';
+      fmeaResultsContainer.style.display = 'block';
 
       if (network) {
         network.destroy();
@@ -1286,7 +1482,9 @@
 
       fmeaResultsContainer.appendChild(analysisInstance);
       fmeaResultsContainer.style.display = 'block';
-      analysisInstance.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Cambiar a la pestaña de resultados automáticamente
+      switchTab('tab-results');
     }
 
     function exportTableToExcel(tableElement, fileName) {
