@@ -53,12 +53,15 @@
             color: #333;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         .main-content-wrapper {
             max-width: 1200px;
             margin: 0 auto;
             padding: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .main-header {
@@ -146,16 +149,27 @@
             border-top: 1px solid #e1e5e9;
         }
 
-        .wizard-tab-content {
-            display: none;
-            padding: 2rem;
+        /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
+        .tabs-container {
             background: #fff;
             border: 1px solid #e1e5e9;
             border-top: none;
             border-radius: 0 0 8px 8px;
-            animation: fadeIn 0.3s ease;
-            margin-bottom: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        /* PESTAÑAS - Todas con el mismo ancho */
+        .wizard-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
         }
 
         .wizard-tab-content.active {
@@ -174,12 +188,34 @@
             }
         }
 
+        /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
+        .tab-content-wrapper {
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* Ajuste para pantallas móviles */
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+        }
+
         .tab-nav-buttons {
             display: flex;
             justify-content: flex-end;
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 1px solid #eee;
+            width: 100%;
         }
 
         .btn-next-tab {
@@ -202,19 +238,7 @@
             transform: translateY(-2px);
         }
 
-        /* Ajustes para contenedores dentro de pestañas */
-        .wizard-tab-content .container {
-            margin-top: 1.5rem;
-            box-shadow: none;
-            border: 1px solid #eee;
-            padding: 1.5rem;
-        }
-
-        .wizard-tab-content .container:first-child {
-            margin-top: 0;
-        }
-
-        /* ===== ESTILOS ORIGINALES ===== */
+        /* ===== ESTILOS ORIGINALES MODIFICADOS ===== */
 
         .container {
             background-color: white;
@@ -222,6 +246,12 @@
             padding: 1.5rem;
             margin-top: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container:first-child {
+            margin-top: 0;
         }
 
         .container h2 {
@@ -262,6 +292,8 @@
             align-items: center;
             min-height: 120px;
             font-size: 1.1em;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .formula-item h3 {
@@ -301,7 +333,9 @@
 
         .calculator-section {
             margin-top: 0;
-            /* Ajustado para tabs */
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .calculation-block {
@@ -311,6 +345,8 @@
             margin-bottom: 1.25rem;
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .calculation-title {
@@ -388,6 +424,9 @@
             gap: 1.25rem;
             align-items: stretch;
             margin-top: 1.25rem;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .charts-wrapper {
@@ -396,6 +435,9 @@
             flex-direction: column;
             gap: 1.25rem;
             min-width: 300px;
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .charts-wrapper>div {
@@ -606,6 +648,9 @@
 
             .formula-grid {
                 grid-template-columns: 1fr;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
             }
 
             .katex {
@@ -621,8 +666,23 @@
                 align-items: flex-start;
             }
 
-            .wizard-tab-content {
-                padding: 1rem;
+            .formula-item {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .button-group button {
+                margin: 5px 0;
+                width: 100%;
             }
         }
     </style>
@@ -668,302 +728,365 @@
                 distribution plots, and I-Charts for robust analysis.</p>
         </header>
 
-        <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
-        <nav class="tabs-nav">
-            <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i> Theory &
-                Info</button>
-            <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i> Calculator
-                Tool</button>
-            <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
-                Formulas</button>
-        </nav>
+        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
+        <div class="tabs-container">
+            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+            <nav class="tabs-nav">
+                <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i>
+                    Theory &
+                    Info</button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i>
+                    Calculator
+                    Tool</button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
+                    Formulas</button>
+            </nav>
 
-        <!-- PESTAÑA 1: TEORÍA -->
-        <div id="tab-theory" class="wizard-tab-content active">
-            <div class="container">
-                <h2><i class="fas fa-question-circle"></i> What is Process Capability (Cp, Cpk)?</h2>
-                <p>Process Capability analysis is a fundamental tool in Statistical Process Control (SPC) used to
-                    measure
-                    the ability of a process to produce output within specification limits (LSL and USL). It helps
-                    determine
-                    if a process is <em>capable</em> of consistently meeting customer requirements.</p>
-                <p>This analysis uses key indices:</p>
-                <ul>
-                    <li><strong>Cp (Process Capability):</strong> Measures the <em>potential</em> capability of the
-                        process.
-                        It compares the total specification width (USL - LSL) to the natural process variation
-                        (6-sigma),
-                        but it <strong>does not account for centering</strong>. It answers: "Is the process spread
-                        narrow
-                        enough?"</li>
-                    <li><strong>Cpk (Process Capability Index):</strong> Measures the <em>actual</em> capability of the
-                        process. It accounts for <strong>both spread and centering</strong> by comparing the process
-                        mean to
-                        the nearest specification limit. It answers: "Is the process spread narrow enough AND is it
-                        running
-                        near the target?"</li>
-                </ul>
-                <p>Generally, a Cpk value of 1.33 or higher is considered capable for many industries, though this
-                    requirement can vary.</p>
-            </div>
-
-            <div class="container">
-                <h2><i class="fas fa-history"></i> Brief History of Statistical Process Control (SPC)</h2>
-                <p>The concept of process control is rooted in the work of <strong>Walter A. Shewhart</strong> at Bell
-                    Labs
-                    in the 1920s. He developed control charts to distinguish between "common cause" variation (the
-                    natural,
-                    inherent variability of a process) and "special cause" variation (external, unpredictable events).
-                    This
-                    was the birth of Statistical Process Control (SPC).</p>
-            </div>
-
-            <div class="container">
-                <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-                <ol>
-                    <li><strong>Enter Process Data and Specifications:</strong> Add one or more datasets using the "Add
-                        Dataset" button. Fill in measurements for each dataset, along with the common Lower (LSL), Upper
-                        (USL), and Target values.</li>
-                    <li><strong>Calculate Results:</strong> Press the <strong>Calculate</strong> button. The tool will
-                        compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term indices (Pp, Ppk)
-                        combining all datasets, perform normality tests, and display process distribution plots and
-                        Individuals Control Charts.</li>
-                    <li><strong>Review Results:</strong> Analyze both the individual dataset results and the overall
-                        performance. Switch between datasets using the tabs to see detailed results for each one.</li>
-                    <li><strong>Add or Remove Datasets (Optional):</strong> Use the "Add Dataset" button to include more
-                        data or the "Remove" button next to each dataset to delete it.</li>
-                    <li><strong>Export Your Analysis:</strong> Click <strong>Export to Excel</strong> to download a
-                        spreadsheet containing all individual calculations and the overall performance summary.</li>
-                </ol>
-            </div>
-
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to Calculator <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA -->
-        <div id="tab-tool" class="wizard-tab-content">
-            <div class="calculator-section">
-                <div class="calculation-block">
-                    <div class="calculation-title">Data Input</div>
-                    <form id="cpkForm">
-                        <div id="datasetsContainer">
-                            <div class="dataset-container" data-id="1">
-                                <div class="dataset-header">
-                                    <span class="dataset-title">Measurements (Dataset #1)</span>
-                                    <button type="button" class="remove-dataset-btn" style="display:none;"><i
-                                            class="fas fa-times"></i> Remove</button>
-                                </div>
-                                <textarea class="measurements-input" rows="1"
-                                    placeholder="Enter values or click 'Fill Example'" required></textarea>
-                            </div>
-                        </div>
-
-                        <div class="datasets-controls">
-                            <button type="button" id="addDatasetBtn" class="button-yellow"><i class="fas fa-plus"></i>
-                                Add
-                                Dataset</button>
-                        </div>
-
-                        <label for="lsl"><i class="fas fa-arrow-down"></i> Lower Specification Limit (LSL):</label>
-                        <input type="text" id="lsl" required />
-                        <label for="usl"><i class="fas fa-arrow-up"></i> Upper Specification Limit (USL):</label>
-                        <input type="text" id="usl" required />
-                        <label for="target"><i class="fas fa-bullseye"></i> Target (T):</label>
-                        <input type="text" id="target" required />
-
-                        <div class="button-group" style="margin-top:0; margin-left:0;">
-                            <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
-                            <button type="button" id="fillExampleBtn" class="button-yellow"><i
-                                    class="fas fa-lightbulb"></i>
-                                Fill Example</button>
-                            <button type="button" id="resetDataBtn" class="reset-btn"><i class="fas fa-undo"></i> Reset
-                                Data</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
-
-                <div class="results-container">
-                    <div id="results" style="display:none;">
-                        <div class="results-content">
-                            <div class="calculation-title">Short-Term Results</div>
-                            <p><i class="fas fa-chart-line"></i> Mean: <span id="mean" class="result-value">-</span></p>
-                            <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
-                                    class="result-value">-</span></p>
-                            <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp" class="result-value">-</span></p>
-                            <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk" class="result-value">-</span>
-                            </p>
-                            <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm" class="result-value">-</span></p>
-                            <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span id="failures_ppm"
-                                    class="result-value">-</span> ppm</p>
-                            <p><i class="fas fa-percentage"></i> Defective Parts: <span id="defective_percentage"
-                                    class="result-value">-</span>%</p>
-
-                            <div class="normality-results">
-                                <div class="calculation-title"
-                                    style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality Tests
-                                </div>
-                                <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
-                                <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
-                                <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
-                            </div>
-                        </div>
+            <!-- PESTAÑA 1: TEORÍA -->
+            <div id="tab-theory" class="wizard-tab-content active">
+                <div class="tab-content-wrapper">
+                    <div class="container">
+                        <h2><i class="fas fa-question-circle"></i> What is Process Capability (Cp, Cpk)?</h2>
+                        <p>Process Capability analysis is a fundamental tool in Statistical Process Control (SPC) used
+                            to
+                            measure
+                            the ability of a process to produce output within specification limits (LSL and USL). It
+                            helps
+                            determine
+                            if a process is <em>capable</em> of consistently meeting customer requirements.</p>
+                        <p>This analysis uses key indices:</p>
+                        <ul>
+                            <li><strong>Cp (Process Capability):</strong> Measures the <em>potential</em> capability of
+                                the
+                                process.
+                                It compares the total specification width (USL - LSL) to the natural process variation
+                                (6-sigma),
+                                but it <strong>does not account for centering</strong>. It answers: "Is the process
+                                spread
+                                narrow
+                                enough?"</li>
+                            <li><strong>Cpk (Process Capability Index):</strong> Measures the <em>actual</em> capability
+                                of the
+                                process. It accounts for <strong>both spread and centering</strong> by comparing the
+                                process
+                                mean to
+                                the nearest specification limit. It answers: "Is the process spread narrow enough AND is
+                                it
+                                running
+                                near the target?"</li>
+                        </ul>
+                        <p>Generally, a Cpk value of 1.33 or higher is considered capable for many industries, though
+                            this
+                            requirement can vary.</p>
                     </div>
 
-                    <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
-                        <div id="cpkChart">
-                            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                            <canvas id="cpkChartCanvas"></canvas>
-                            <div class="chart-legend">
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color"
-                                        style="background-color: #333; border-top: 2px dashed #333;">
-                                    </div> Mean
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color"
-                                        style="background-color: #3498db; border-top: 2px solid #3498db;"></div> Process
-                                    Limits (±3σ)
-                                </div>
-                            </div>
-                        </div>
-                        <div id="controlChartContainer">
-                            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                            <canvas id="controlChartCanvas"></canvas>
-                        </div>
+                    <div class="container">
+                        <h2><i class="fas fa-history"></i> Brief History of Statistical Process Control (SPC)</h2>
+                        <p>The concept of process control is rooted in the work of <strong>Walter A. Shewhart</strong>
+                            at Bell
+                            Labs
+                            in the 1920s. He developed control charts to distinguish between "common cause" variation
+                            (the
+                            natural,
+                            inherent variability of a process) and "special cause" variation (external, unpredictable
+                            events).
+                            This
+                            was the birth of Statistical Process Control (SPC).</p>
+                    </div>
+
+                    <div class="container">
+                        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+                        <ol>
+                            <li><strong>Enter Process Data and Specifications:</strong> Add one or more datasets using
+                                the "Add
+                                Dataset" button. Fill in measurements for each dataset, along with the common Lower
+                                (LSL), Upper
+                                (USL), and Target values.</li>
+                            <li><strong>Calculate Results:</strong> Press the <strong>Calculate</strong> button. The
+                                tool will
+                                compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term indices
+                                (Pp, Ppk)
+                                combining all datasets, perform normality tests, and display process distribution plots
+                                and
+                                Individuals Control Charts.</li>
+                            <li><strong>Review Results:</strong> Analyze both the individual dataset results and the
+                                overall
+                                performance. Switch between datasets using the tabs to see detailed results for each
+                                one.</li>
+                            <li><strong>Add or Remove Datasets (Optional):</strong> Use the "Add Dataset" button to
+                                include more
+                                data or the "Remove" button next to each dataset to delete it.</li>
+                            <li><strong>Export Your Analysis:</strong> Click <strong>Export to Excel</strong> to
+                                download a
+                                spreadsheet containing all individual calculations and the overall performance summary.
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to Calculator <i
+                                class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
+            </div>
 
-                <div class="calculation-block">
-                    <div class="calculation-title">Overall Performance (Long-Term Analysis)</div>
-
-                    <div class="overall-results-container">
-                        <div id="overallResults" style="display:none;">
-                            <div class="results-content">
-                                <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
-                                <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span id="overall_mean"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev:</b> <span id="overall_dev"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-tachometer-alt"></i> <b>Ppk:</b> <span id="overall_ppk"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-exclamation-triangle"></i> <b>Expected Failures:</b> <span
-                                        id="overall_failures" class="result-value">-</span> ppm</p>
-                                <p><i class="fas fa-percentage"></i> <b>Defective Parts:</b> <span
-                                        id="overall_defective" class="result-value">-</span>%</p>
-                                <div class="normality-results">
-                                    <div class="calculation-title"
-                                        style="font-size:1.1em;margin-top:1rem;margin-bottom:.5rem">Overall Normality
+            <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA -->
+            <div id="tab-tool" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="calculator-section">
+                        <div class="calculation-block">
+                            <div class="calculation-title">Data Input</div>
+                            <form id="cpkForm">
+                                <div id="datasetsContainer">
+                                    <div class="dataset-container" data-id="1">
+                                        <div class="dataset-header">
+                                            <span class="dataset-title">Measurements (Dataset #1)</span>
+                                            <button type="button" class="remove-dataset-btn" style="display:none;"><i
+                                                    class="fas fa-times"></i> Remove</button>
+                                        </div>
+                                        <textarea class="measurements-input" rows="1"
+                                            placeholder="Enter values or click 'Fill Example'" required></textarea>
                                     </div>
-                                    <p>Shapiro-Wilk: <span id="overall_shapiro" class="result-value">-</span></p>
-                                    <p>Kolmogorov-Smirnov: <span id="overall_kolmogorov" class="result-value">-</span>
+                                </div>
+
+                                <div class="datasets-controls">
+                                    <button type="button" id="addDatasetBtn" class="button-yellow"><i
+                                            class="fas fa-plus"></i>
+                                        Add
+                                        Dataset</button>
+                                </div>
+
+                                <label for="lsl"><i class="fas fa-arrow-down"></i> Lower Specification Limit
+                                    (LSL):</label>
+                                <input type="text" id="lsl" required />
+                                <label for="usl"><i class="fas fa-arrow-up"></i> Upper Specification Limit
+                                    (USL):</label>
+                                <input type="text" id="usl" required />
+                                <label for="target"><i class="fas fa-bullseye"></i> Target (T):</label>
+                                <input type="text" id="target" required />
+
+                                <div class="button-group" style="margin-top:0; margin-left:0;">
+                                    <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
+                                    <button type="button" id="fillExampleBtn" class="button-yellow"><i
+                                            class="fas fa-lightbulb"></i>
+                                        Fill Example</button>
+                                    <button type="button" id="resetDataBtn" class="reset-btn"><i
+                                            class="fas fa-undo"></i> Reset
+                                        Data</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
+
+                        <div class="results-container">
+                            <div id="results" style="display:none;">
+                                <div class="results-content">
+                                    <div class="calculation-title">Short-Term Results</div>
+                                    <p><i class="fas fa-chart-line"></i> Mean: <span id="mean"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
+                                            class="result-value">-</span>
                                     </p>
-                                    <p>Anderson-Darling: <span id="overall_anderson" class="result-value">-</span></p>
+                                    <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
+                                            id="failures_ppm" class="result-value">-</span> ppm</p>
+                                    <p><i class="fas fa-percentage"></i> Defective Parts: <span
+                                            id="defective_percentage" class="result-value">-</span>%</p>
+
+                                    <div class="normality-results">
+                                        <div class="calculation-title"
+                                            style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality
+                                            Tests
+                                        </div>
+                                        <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
+                                        <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
+                                        <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
+                                <div id="cpkChart">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="cpkChartCanvas"></canvas>
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color"
+                                                style="background-color: #333; border-top: 2px dashed #333;">
+                                            </div> Mean
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color"
+                                                style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
+                                            Process
+                                            Limits (±3σ)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="controlChartContainer">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="controlChartCanvas"></canvas>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="charts-wrapper" id="long-term-charts-wrapper" style="display: none;">
-                            <div id="overallChartContainer">
-                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                                <canvas id="overallChartCanvas"></canvas>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
+                        <div class="calculation-block">
+                            <div class="calculation-title">Overall Performance (Long-Term Analysis)</div>
+
+                            <div class="overall-results-container">
+                                <div id="overallResults" style="display:none;">
+                                    <div class="results-content">
+                                        <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
+                                        <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
+                                                class="result-value">-</span></p>
+                                        <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span
+                                                id="overall_mean" class="result-value">-</span></p>
+                                        <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev:</b> <span
+                                                id="overall_dev" class="result-value">-</span></p>
+                                        <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
+                                                class="result-value">-</span></p>
+                                        <p><i class="fas fa-tachometer-alt"></i> <b>Ppk:</b> <span id="overall_ppk"
+                                                class="result-value">-</span></p>
+                                        <p><i class="fas fa-exclamation-triangle"></i> <b>Expected Failures:</b> <span
+                                                id="overall_failures" class="result-value">-</span> ppm</p>
+                                        <p><i class="fas fa-percentage"></i> <b>Defective Parts:</b> <span
+                                                id="overall_defective" class="result-value">-</span>%</p>
+                                        <div class="normality-results">
+                                            <div class="calculation-title"
+                                                style="font-size:1.1em;margin-top:1rem;margin-bottom:.5rem">Overall
+                                                Normality
+                                            </div>
+                                            <p>Shapiro-Wilk: <span id="overall_shapiro" class="result-value">-</span>
+                                            </p>
+                                            <p>Kolmogorov-Smirnov: <span id="overall_kolmogorov"
+                                                    class="result-value">-</span>
+                                            </p>
+                                            <p>Anderson-Darling: <span id="overall_anderson"
+                                                    class="result_value">-</span></p>
+                                        </div>
                                     </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color"
-                                            style="background-color: #333; border-top: 2px dashed #333;"></div> Mean
+                                </div>
+
+                                <div class="charts-wrapper" id="long-term-charts-wrapper" style="display: none;">
+                                    <div id="overallChartContainer">
+                                        <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                            class="chart-watermark">
+                                        <canvas id="overallChartCanvas"></canvas>
+                                        <div class="chart-legend">
+                                            <div class="legend-item">
+                                                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                                                LSL/USL
+                                            </div>
+                                            <div class="legend-item">
+                                                <div class="legend-color"
+                                                    style="background-color: #333; border-top: 2px dashed #333;"></div>
+                                                Mean
+                                            </div>
+                                            <div class="legend-item">
+                                                <div class="legend-color"
+                                                    style="background-color: #3498db; border-top: 2px solid #3498db;">
+                                                </div>
+                                                Process
+                                                Limits (±3σ)
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color"
-                                            style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
-                                        Process
-                                        Limits (±3σ)
+                                    <div id="overallControlChartContainer">
+                                        <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                            class="chart-watermark">
+                                        <canvas id="overallControlChartCanvas"></canvas>
                                     </div>
                                 </div>
                             </div>
-                            <div id="overallControlChartContainer">
-                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                                <canvas id="overallControlChartCanvas"></canvas>
+
+                            <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
+                                <button type="button" id="exportBtn" class="button-green" disabled><i
+                                        class="fas fa-file-excel"></i>
+                                    Export to Excel</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
-                        <button type="button" id="exportBtn" class="button-green" disabled><i
-                                class="fas fa-file-excel"></i>
-                            Export to Excel</button>
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-formulas')">View Formulas <i
+                                class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchWizardTab('tab-formulas')">View Formulas <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 3: FÓRMULAS -->
-        <div id="tab-formulas" class="wizard-tab-content">
-            <div class="container">
-                <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
-                <div class="formula-grid">
-                    <div class="formula-item">
-                        <h3>Sigma Within (Short-Term)</h3>
-                        <div style="font-size: 1rem;">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$</div>
-                        <p>Where $d_2 = 1.128$ for $n=2$</p>
+            <!-- PESTAÑA 3: FÓRMULAS -->
+            <div id="tab-formulas" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="container">
+                        <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+                        <div class="formula-grid">
+                            <div class="formula-item">
+                                <h3>Sigma Within (Short-Term)</h3>
+                                <div style="font-size: 1rem;">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$
+                                </div>
+                                <p>Where $d_2 = 1.128$ for $n=2$</p>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Cp (Capability)</h3>
+                                <div style="font-size: 1rem;">$$ C_p = \frac{USL - LSL}{6\sigma_{\text{within}}} $$
+                                </div>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Cpk (Centering)</h3>
+                                <div style="font-size: 1rem;">$$ C_{pk} = \min\left( \frac{USL -
+                                    \mu}{3\sigma_{\text{within}}},
+                                    \frac{\mu - LSL}{3\sigma_{\text{within}}} \right) $$</div>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Cpm (Targeting)</h3>
+                                <div style="font-size: 1rem;">$$ C_{pm} = \frac{USL -
+                                    LSL}{6\sqrt{\sigma_{\text{within}}^2 +
+                                    (\mu - T)^2}} $$</div>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Pp (Performance)</h3>
+                                <div style="font-size: 1rem;">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{overall}}} $$
+                                </div>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Ppk (Centering)</h3>
+                                <div style="font-size: 1.1rem;">$$ P_{pk} = \min\left( \frac{USL -
+                                    \mu}{3\sigma_{\text{overall}}}, \frac{\mu - LSL}{3\sigma_{\text{overall}}} \right)
+                                    $$</div>
+                            </div>
+                        </div>
+                        <div class="legend">
+                            <h3>Capability Legend</h3>
+                            <ul>
+                                <li><code>Cp, Pp</code>: Process Capability/Performance - measures potential capability
+                                    if
+                                    process is centered</li>
+                                <li><code>Cpk, Ppk</code>: Process Capability/Performance Index - accounts for process
+                                    centering
+                                </li>
+                                <li><code>Cpm</code>: Process Capability Index considering target value</li>
+                                <li><code>LSL, USL</code>: Lower and Upper Specification Limits</li>
+                                <li><code>T</code>: Target value</li>
+                                <li><code>μ</code>: Process mean</li>
+                                <li><code>σ<sub>within</sub></code>: Short-term standard deviation (within-subgroup
+                                    variation)
+                                </li>
+                                <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="formula-item">
-                        <h3>Cp (Capability)</h3>
-                        <div style="font-size: 1rem;">$$ C_p = \frac{USL - LSL}{6\sigma_{\text{within}}} $$</div>
-                    </div>
-                    <div class="formula-item">
-                        <h3>Cpk (Centering)</h3>
-                        <div style="font-size: 1rem;">$$ C_{pk} = \min\left( \frac{USL - \mu}{3\sigma_{\text{within}}},
-                            \frac{\mu - LSL}{3\sigma_{\text{within}}} \right) $$</div>
-                    </div>
-                    <div class="formula-item">
-                        <h3>Cpm (Targeting)</h3>
-                        <div style="font-size: 1rem;">$$ C_{pm} = \frac{USL - LSL}{6\sqrt{\sigma_{\text{within}}^2 +
-                            (\mu - T)^2}} $$</div>
-                    </div>
-                    <div class="formula-item">
-                        <h3>Pp (Performance)</h3>
-                        <div style="font-size: 1rem;">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{overall}}} $$</div>
-                    </div>
-                    <div class="formula-item">
-                        <h3>Ppk (Centering)</h3>
-                        <div style="font-size: 1.1rem;">$$ P_{pk} = \min\left( \frac{USL -
-                            \mu}{3\sigma_{\text{overall}}}, \frac{\mu - LSL}{3\sigma_{\text{overall}}} \right) $$</div>
-                    </div>
-                </div>
-                <div class="legend">
-                    <h3>Capability Legend</h3>
-                    <ul>
-                        <li><code>Cp, Pp</code>: Process Capability/Performance - measures potential capability if
-                            process is centered</li>
-                        <li><code>Cpk, Ppk</code>: Process Capability/Performance Index - accounts for process centering
-                        </li>
-                        <li><code>Cpm</code>: Process Capability Index considering target value</li>
-                        <li><code>LSL, USL</code>: Lower and Upper Specification Limits</li>
-                        <li><code>T</code>: Target value</li>
-                        <li><code>μ</code>: Process mean</li>
-                        <li><code>σ<sub>within</sub></code>: Short-term standard deviation (within-subgroup variation)
-                        </li>
-                        <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)</li>
-                    </ul>
                 </div>
             </div>
         </div>
