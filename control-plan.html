@@ -340,6 +340,136 @@
             margin-left: auto;
             margin-right: auto;
         }
+
+        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 0;
+            margin-top: 1.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .tabs-nav {
+                overflow-x: hidden;
+            }
+
+            .tab-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .wizard-tab-content {
+            display: none;
+            padding: 2rem;
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: fadeIn 0.3s ease;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .wizard-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-next-tab {
+            background-color: var(--secondary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-next-tab:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Ajustes para contenedores dentro de pestañas */
+        .wizard-tab-content .content-block {
+            margin-top: 1.5rem;
+            box-shadow: none;
+            border: 1px solid #eee;
+            padding: 1.5rem;
+        }
+
+        .wizard-tab-content .content-block:first-child {
+            margin-top: 0;
+        }
     </style>
 </head>
 
@@ -347,7 +477,7 @@
 
     <div id="header-placeholder"></div>
     <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -381,80 +511,126 @@
             <p class="header-subtitle">Ensuring Quality at Every Step of Your Process</p>
         </header>
 
-        <div class="content-block">
-            <h2><i class="fas fa-file-signature"></i> What is a Control Plan?</h2>
-            <p>A Control Plan is a living document that provides a structured summary of the methods used for
-                controlling processes and products. Its primary goal is to ensure all outputs meet customer requirements
-                by minimizing process and product variation. It acts as a roadmap for quality control, detailing every
-                check and balance from raw materials to the final product.</p>
-            <div class="infographic-flow">
-                <div class="flow-step"> <i class="fas fa-cogs"></i> <strong>1. Process</strong> <span>What step is being
-                        done?</span> </div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"> <i class="fas fa-ruler-combined"></i> <strong>2. Characteristic</strong>
-                    <span>What is being measured?</span> </div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"> <i class="fas fa-shield-alt"></i> <strong>3. Control</strong> <span>How is it
-                        being checked?</span> </div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"> <i class="fas fa-exclamation-triangle"></i> <strong>4. Reaction</strong>
-                    <span>What happens if it's wrong?</span> </div>
+        <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i> Theory &
+                Info</button>
+            <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-cogs"></i> Control Plan
+                Tool</button>
+            <button class="tab-btn" onclick="switchWizardTab('tab-resources')"><i class="fas fa-external-link-alt"></i>
+                Resources</button>
+        </nav>
+
+        <!-- PESTAÑA 1: TEORÍA -->
+        <div id="tab-theory" class="wizard-tab-content active">
+            <div class="content-block">
+                <h2><i class="fas fa-file-signature"></i> What is a Control Plan?</h2>
+                <p>A Control Plan is a living document that provides a structured summary of the methods used for
+                    controlling processes and products. Its primary goal is to ensure all outputs meet customer
+                    requirements
+                    by minimizing process and product variation. It acts as a roadmap for quality control, detailing
+                    every
+                    check and balance from raw materials to the final product.</p>
+                <div class="infographic-flow">
+                    <div class="flow-step"> <i class="fas fa-cogs"></i> <strong>1. Process</strong> <span>What step is
+                            being
+                            done?</span> </div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"> <i class="fas fa-ruler-combined"></i> <strong>2. Characteristic</strong>
+                        <span>What is being measured?</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"> <i class="fas fa-shield-alt"></i> <strong>3. Control</strong> <span>How is
+                            it
+                            being checked?</span> </div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"> <i class="fas fa-exclamation-triangle"></i> <strong>4. Reaction</strong>
+                        <span>What happens if it's wrong?</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="content-block">
-            <h2><i class="fas fa-list-ol"></i> Key Components</h2>
-            <ul class="key-components-list">
-                <li><strong>Process Name:</strong> The specific manufacturing step being controlled.</li>
-                <li><strong>Characteristic:</strong> The specific product or process feature being measured.</li>
-                <li><strong>Specification / Tolerance:</strong> The target value and acceptable range.</li>
-                <li><strong>Evaluation Technique:</strong> The tool or method used to perform the measurement.</li>
-                <li><strong>Sample Size / Frequency:</strong> How many parts to check and how often.</li>
-                <li><strong>Control Method:</strong> How the data is recorded and monitored.</li>
-                <li><strong>Reaction Plan:</strong> Predefined actions to take if a characteristic is out of spec.</li>
-            </ul>
-        </div>
-
-        <div class="content-block">
-            <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-            <div class="instructions-box">
-                <ul>
-                    <li>Click <strong><i class="fas fa-plus"></i> Add Row</strong> to add a new process step.</li>
-                    <li>Click the <strong><i class="fas fa-trash-alt"></i></strong> button on any row to delete it.</li>
-                    <li>Use <strong><i class="fas fa-magic"></i> Load Example</strong> or <strong><i
-                                class="fas fa-undo"></i> Reset Plan</strong>.</li>
-                    <li>On mobile, scroll the table horizontally to see all columns.</li>
-                    <li>Click <strong><i class="fas fa-file-excel"></i> Export to Excel</strong> to download your plan.
+            <div class="content-block">
+                <h2><i class="fas fa-list-ol"></i> Key Components</h2>
+                <ul class="key-components-list">
+                    <li><strong>Process Name:</strong> The specific manufacturing step being controlled.</li>
+                    <li><strong>Characteristic:</strong> The specific product or process feature being measured.</li>
+                    <li><strong>Specification / Tolerance:</strong> The target value and acceptable range.</li>
+                    <li><strong>Evaluation Technique:</strong> The tool or method used to perform the measurement.</li>
+                    <li><strong>Sample Size / Frequency:</strong> How many parts to check and how often.</li>
+                    <li><strong>Control Method:</strong> How the data is recorded and monitored.</li>
+                    <li><strong>Reaction Plan:</strong> Predefined actions to take if a characteristic is out of spec.
                     </li>
                 </ul>
             </div>
-        </div>
 
-        <div class="content-block">
-            <div class="table-container">
-                <table id="controlPlanTable">
-                    <thead>
-                        <tr>
-                            <th style="min-width: 150px;"><i class="fas fa-cogs"></i> Process Name</th>
-                            <th style="min-width: 120px;"><i class="fas fa-robot"></i> Machine / Tool</th>
-                            <th style="min-width: 150px;"><i class="fas fa-ruler-combined"></i> Characteristic</th>
-                            <th style="min-width: 150px;"><i class="fas fa-arrows-alt-h"></i> Spec / Tolerance</th>
-                            <th style="min-width: 200px;"><i class="fas fa-search"></i> Evaluation Technique</th>
-                            <th style="min-width: 120px;"><i class="fas fa-box"></i> Sample Size / Freq.</th>
-                            <th style="min-width: 200px;"><i class="fas fa-shield-alt"></i> Control Method</th>
-                            <th style="min-width: 200px;"><i class="fas fa-exclamation-triangle"></i> Reaction Plan</th>
-                            <th style="min-width: 80px;"><i class="fas fa-times-circle"></i> Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="content-block">
+                <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+                <div class="instructions-box">
+                    <ul>
+                        <li>Click <strong><i class="fas fa-plus"></i> Add Row</strong> to add a new process step.</li>
+                        <li>Click the <strong><i class="fas fa-trash-alt"></i></strong> button on any row to delete it.
+                        </li>
+                        <li>Use <strong><i class="fas fa-magic"></i> Load Example</strong> or <strong><i
+                                    class="fas fa-undo"></i> Reset Plan</strong>.</li>
+                        <li>On mobile, scroll the table horizontally to see all columns.</li>
+                        <li>Click <strong><i class="fas fa-file-excel"></i> Export to Excel</strong> to download your
+                            plan.
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="button-container">
-                <button id="addRowBtn" class="btn-primary"><i class="fas fa-plus"></i> Add Row</button>
-                <button id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
-                <button id="resetPlanBtn" class="btn-warning"><i class="fas fa-undo"></i> Reset Plan</button>
-                <button id="exportBtn" class="btn-success"><i class="fas fa-file-excel"></i> Export to Excel</button>
+            <div class="tab-nav-buttons">
+                <button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to Control Plan Tool <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 2: HERRAMIENTA CONTROL PLAN -->
+        <div id="tab-tool" class="wizard-tab-content">
+            <div class="content-block">
+                <div class="table-container">
+                    <table id="controlPlanTable">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 150px;"><i class="fas fa-cogs"></i> Process Name</th>
+                                <th style="min-width: 120px;"><i class="fas fa-robot"></i> Machine / Tool</th>
+                                <th style="min-width: 150px;"><i class="fas fa-ruler-combined"></i> Characteristic</th>
+                                <th style="min-width: 150px;"><i class="fas fa-arrows-alt-h"></i> Spec / Tolerance</th>
+                                <th style="min-width: 200px;"><i class="fas fa-search"></i> Evaluation Technique</th>
+                                <th style="min-width: 120px;"><i class="fas fa-box"></i> Sample Size / Freq.</th>
+                                <th style="min-width: 200px;"><i class="fas fa-shield-alt"></i> Control Method</th>
+                                <th style="min-width: 200px;"><i class="fas fa-exclamation-triangle"></i> Reaction Plan
+                                </th>
+                                <th style="min-width: 80px;"><i class="fas fa-times-circle"></i> Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="button-container">
+                    <button id="addRowBtn" class="btn-primary"><i class="fas fa-plus"></i> Add Row</button>
+                    <button id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load Example</button>
+                    <button id="resetPlanBtn" class="btn-warning"><i class="fas fa-undo"></i> Reset Plan</button>
+                    <button id="exportBtn" class="btn-success"><i class="fas fa-file-excel"></i> Export to
+                        Excel</button>
+                </div>
+            </div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-next-tab" onclick="switchWizardTab('tab-resources')">Go to Resources <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: RECURSOS -->
+        <div id="tab-resources" class="wizard-tab-content">
+            <div class="content-block">
+                <h2><i class="fas fa-external-link-alt"></i> Additional Resources</h2>
+                <p>Here you can find additional resources for Control Plan development and quality management.</p>
+                <p>This section is under construction. More features and resources will be added in the future.</p>
             </div>
         </div>
     </main>
@@ -582,6 +758,25 @@
                     document.getElementById('header-placeholder').innerHTML = '<p>Error al cargar el header.</p>';
                 });
         });
+    </script>
+
+    <!-- Script para funcionalidad de Tabs Wizard -->
+    <script>
+        function switchWizardTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos de wizard
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
 
 </body>
