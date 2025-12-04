@@ -968,18 +968,55 @@
             // --- Page-specific logic for Design Thinking tool ---
             document.querySelectorAll('textarea').forEach(textarea => {
                 textarea.addEventListener('input', function () {
-                    autoResizeTextarea(this);
+                    forceResizeTextarea(this);
                     updateProgress();
                 });
-                autoResizeTextarea(textarea);
+                forceResizeTextarea(textarea);
             });
 
             updateProgress();
         }
 
-        function autoResizeTextarea(textarea) {
+        function forceResizeTextarea(textarea) {
+            // Primero, hacer visible temporalmente el textarea si está en una pestaña oculta
+            const originalDisplay = textarea.style.display;
+            const originalVisibility = textarea.style.visibility;
+            const originalPosition = textarea.style.position;
+            const originalTop = textarea.style.top;
+            const originalLeft = textarea.style.left;
+
+            if (!isElementVisible(textarea)) {
+                textarea.style.display = 'block';
+                textarea.style.visibility = 'hidden';
+                textarea.style.position = 'absolute';
+                textarea.style.top = '-9999px';
+                textarea.style.left = '-9999px';
+            }
+
+            // Resetear altura
             textarea.style.height = 'auto';
-            textarea.style.height = (textarea.scrollHeight) + 'px';
+
+            // Forzar un reflow
+            void textarea.offsetHeight;
+
+            // Calcular nueva altura
+            const newHeight = Math.max(textarea.scrollHeight, 45);
+            textarea.style.height = newHeight + 'px';
+
+            // Restaurar estilos originales si los cambiamos
+            if (!isElementVisible(textarea)) {
+                textarea.style.display = originalDisplay;
+                textarea.style.visibility = originalVisibility;
+                textarea.style.position = originalPosition;
+                textarea.style.top = originalTop;
+                textarea.style.left = originalLeft;
+            }
+        }
+
+        function isElementVisible(el) {
+            return el.offsetParent !== null ||
+                el.style.display !== 'none' ||
+                el.getBoundingClientRect().width > 0;
         }
 
         function updateProgress() {
@@ -1024,7 +1061,7 @@
             workshopData = {};
             document.querySelectorAll('textarea').forEach(el => {
                 el.value = '';
-                autoResizeTextarea(el);
+                forceResizeTextarea(el);
             });
             document.getElementById('results-container').classList.add('hidden');
             updateProgress();
@@ -1112,16 +1149,23 @@
 
             const example = examples[type];
             if (example) {
+                // Cargar todos los datos primero
                 Object.keys(example).forEach(fieldId => {
                     const field = document.getElementById(fieldId);
                     if (field) {
                         field.value = example[fieldId];
-                        autoResizeTextarea(field);
                     }
                 });
+
+                // Redimensionar todos los textareas inmediatamente
+                setTimeout(() => {
+                    document.querySelectorAll('textarea').forEach(textarea => {
+                        forceResizeTextarea(textarea);
+                    });
+                    updateProgress();
+                }, 50);
             }
 
-            updateProgress();
             // Auto-switch to Empathize tab after loading example
             setTimeout(() => switchTab('tab-emphatize'), 100);
         }
@@ -1451,11 +1495,19 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
             // Activar el seleccionado
-            document.getElementById(tabId).classList.add('active');
+            const tab = document.getElementById(tabId);
+            tab.classList.add('active');
 
             // Activar botón correspondiente (buscando por el onclick)
             const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
+
+            // Redimensionar los textareas en la pestaña activa después de un breve delay
+            setTimeout(() => {
+                tab.querySelectorAll('textarea').forEach(textarea => {
+                    forceResizeTextarea(textarea);
+                });
+            }, 50);
 
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
