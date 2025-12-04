@@ -20,8 +20,15 @@
     integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
     crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-    onload="renderMathInElement(document.body);"></script>
+    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body, {
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false},
+                  {left: '\\[', right: '\\]', display: true}
+              ],
+              throwOnError: false
+            });"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
@@ -96,12 +103,132 @@
       margin: 0 auto;
     }
 
+    /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) - ACTUALIZADOS ===== */
+    .tabs-nav {
+      display: flex;
+      background-color: #f1f5f9;
+      border-radius: 8px 8px 0 0;
+      overflow-x: auto;
+      border-bottom: 2px solid var(--secondary-color);
+      margin-bottom: 0;
+      margin-top: 1.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      width: 100%;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .tab-btn {
+        padding: 1rem 0.5rem;
+      }
+    }
+
+    .tab-btn:hover {
+      background-color: #e2e8f0;
+      color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+      background-color: #fff;
+      color: var(--secondary-color);
+      border-bottom-color: var(--secondary-color);
+      border-radius: 8px 8px 0 0;
+      margin-bottom: -2px;
+      border-left: 1px solid #e1e5e9;
+      border-right: 1px solid #e1e5e9;
+      border-top: 1px solid #e1e5e9;
+    }
+
+    .wizard-tab-content {
+      display: none;
+      padding: 2rem;
+      background: #fff;
+      border: 1px solid #e1e5e9;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      animation: fadeIn 0.3s ease;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      width: 100%;
+    }
+
+    .wizard-tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tab-nav-buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+      width: 100%;
+    }
+
+    .btn-next-tab {
+      background-color: var(--secondary-color);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn-next-tab:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
     .container {
       background-color: white;
       border-radius: 8px;
       padding: 1.5rem;
       margin-top: 1.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
     }
 
     .container h2 {
@@ -123,8 +250,10 @@
       padding-left: 1.25rem;
     }
 
+    /* ESTILOS ESPECÍFICOS PARA PESTAÑA 2 (CALCULATOR) */
     .calculator-section {
-      margin-top: 2rem;
+      margin-top: 0;
+      width: 100%;
     }
 
     .calculation-block {
@@ -134,6 +263,7 @@
       margin-bottom: 1.25rem;
       background-color: white;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      width: 100%;
     }
 
     .calculation-title {
@@ -173,9 +303,11 @@
       box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
     }
 
+    /* CORRECCIÓN 1: Altura mínima para el textarea */
     textarea {
       resize: vertical;
       overflow-y: hidden;
+      min-height: 80px;
     }
 
     button {
@@ -209,12 +341,30 @@
       background-color: #27ae60;
     }
 
+    .btn-reset {
+      background-color: #e74c3c;
+    }
+
+    .btn-reset:hover {
+      background-color: #c0392b;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
     .results-container {
       display: flex;
       flex-wrap: wrap;
       gap: 1.25rem;
       align-items: flex-start;
       margin-top: 1.25rem;
+      width: 100%;
+      /* CORRECCIÓN 2: Forzar layout desde el principio */
+      min-height: 450px;
     }
 
     #weibullChartContainer {
@@ -228,6 +378,8 @@
       display: flex;
       align-items: flex-start;
       gap: 1rem;
+      /* CORRECCIÓN 2: Mantener altura incluso cuando está vacío */
+      min-height: 420px;
     }
 
     .chart-watermark {
@@ -250,9 +402,18 @@
       padding: 1.25rem;
       border-radius: 8px;
       border: 1px solid #ddd;
-      width: 350px;
       min-width: 300px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      flex: 1;
+      /* CORRECCIÓN 2: Mostrar desde el principio para mantener layout */
+      display: block;
+      opacity: 0.7;
+      background-color: #f9f9f9;
+    }
+
+    .results-visible {
+      opacity: 1;
+      background-color: white;
     }
 
     #results p {
@@ -265,6 +426,63 @@
       color: var(--dark-color);
     }
 
+    /* ESTILOS ESPECÍFICOS PARA PESTAÑA 3 (FÓRMULAS) */
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .formula-item {
+      padding: 1.5rem 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+      font-size: 1.1em;
+    }
+
+    .formula-item h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    .legend {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+
+    .legend h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+
+    .legend ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .legend li {
+      margin-bottom: 0.5rem;
+    }
+
+    .legend code {
+      background-color: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ESTILOS COMUNES */
     footer {
       padding: 2rem 1.25rem;
       text-align: center;
@@ -285,6 +503,7 @@
       flex-direction: column;
       gap: 1.5rem;
       margin-top: 1rem;
+      width: 100%;
     }
 
     .result-card {
@@ -354,74 +573,22 @@
       margin-top: 5px;
     }
 
-    /* AÑADIDO: Estilos para la sección de fórmulas matemáticas */
-    .formula-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-
-    .formula-item {
-      padding: 1.5rem 1rem;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 120px;
-      font-size: 1.1em;
-    }
-
-    .formula-item h3 {
-      margin-top: 0;
-      margin-bottom: 1rem;
-      color: var(--primary-color);
-    }
-
-    .legend {
-      margin-top: 2rem;
-      padding: 1rem;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background-color: #fdfdfd;
-    }
-
-    .legend h3 {
-      margin-top: 0;
-      color: var(--primary-color);
-    }
-
-    .legend ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .legend li {
-      margin-bottom: 0.5rem;
-    }
-
-    .legend code {
-      background-color: #eee;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
+    /* RESPONSIVE ADJUSTMENTS */
     @media (max-width: 768px) {
       .results-container {
         flex-direction: column;
+        min-height: auto;
       }
 
       #results,
       #weibullChartContainer {
         width: 100%;
+        min-width: unset;
       }
 
       .main-content-wrapper {
         margin-top: 10px;
+        padding: 1rem;
       }
 
       .formula-grid {
@@ -430,6 +597,28 @@
 
       .katex {
         font-size: 0.9rem !important;
+      }
+
+      .wizard-tab-content {
+        padding: 1rem;
+      }
+
+      .tab-btn {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .container,
+      .calculation-block {
+        padding: 1rem;
+      }
+
+      .tabs-nav {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        width: calc(100% + 2rem);
+        border-radius: 0;
+        padding: 0 1rem;
       }
     }
 
@@ -440,7 +629,77 @@
 
       .container,
       .calculation-block {
-        padding: 1rem;
+        padding: 0.8rem;
+      }
+
+      .tab-btn {
+        padding: 0.6rem 0.3rem;
+        font-size: 0.8rem;
+        gap: 0.25rem;
+      }
+
+      .tab-btn i {
+        font-size: 0.9rem;
+      }
+
+      .main-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .main-header p {
+        font-size: 1rem;
+      }
+
+      .tabs-nav {
+        margin-left: -0.8rem;
+        margin-right: -0.8rem;
+        width: calc(100% + 1.6rem);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .main-content-wrapper {
+        max-width: 1200px;
+        padding: 1.5rem 2rem;
+      }
+
+      .tab-btn {
+        padding: 1rem 1rem;
+        font-size: 1.1rem;
+      }
+
+      /* Asegurar que las pestañas 2 y 3 ocupen todo el ancho */
+      #tab-tool .container,
+      #tab-formulas .container {
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      #weibullChartContainer,
+      #results {
+        max-width: none;
+      }
+    }
+
+    @media (min-width: 992px) {
+
+      /* Ajustes específicos para pantallas grandes */
+      .results-container {
+        flex-wrap: nowrap;
+      }
+
+      #weibullChartContainer {
+        flex: 2;
+      }
+
+      #results {
+        flex: 1;
+        max-width: 400px;
+      }
+
+      .formula-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -451,7 +710,7 @@
   <!-- Header incluido desde archivo externo -->
   <div id="header-container"></div>
   <div id="header-container"></div>
-  
+
   <noscript>
     <nav>
       <a href="/">Home</a> |
@@ -485,185 +744,224 @@
       <p>Estimate reliability and predict failures using the Weibull distribution.</p>
     </header>
 
-    <div class="container">
-      <h2><i class="fas fa-question-circle"></i> What is Weibull Analysis?</h2>
-      <p><strong>Weibull Analysis</strong> is a powerful statistical method used in reliability engineering to model
-        time-to-failure data. It is highly versatile and can model the failure characteristics of complex systems, from
-        infant mortality to wear-out failures.</p>
-      <p>The analysis yields two key parameters:</p>
-      <ul>
-        <li><strong>Beta (β) - The Shape Parameter:</strong> Describes the failure mode.
-          <ul>
-            <li><strong>β &lt; 1:</strong> Decreasing failure rate (infant mortality). Failures are more likely at the
-              beginning.</li>
-            <li><strong>β = 1:</strong> Constant failure rate (random failures). The process follows an exponential
-              distribution.</li>
-            <li><strong>β &gt; 1:</strong> Increasing failure rate (wear-out). Failures become more likely as the
-              product ages.</li>
-          </ul>
-        </li>
-        <li><strong>Eta (η) - The Scale Parameter:</strong> Also known as the characteristic life. It's the time at
-          which <strong>63.2%</strong> of the population is expected to have failed.</li>
-      </ul>
-    </div>
+    <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i> Theory &
+        Info</button>
+      <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i> Calculator
+        Tool</button>
+      <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
+        Formulas</button>
+    </nav>
 
-    <div class="container">
-      <h2><i class="fas fa-tools"></i> Why is Weibull Analysis Useful?</h2>
-      <p>Originally developed by Waloddi Weibull to model material strength, this analysis is now a cornerstone of
-        modern reliability engineering. It allows engineers and managers to make data-driven decisions about:</p>
-      <ul>
-        <li><strong>Maintenance Planning:</strong> Predict when parts are likely to fail to schedule preventive
-          maintenance.</li>
-        <li><strong>Warranty Analysis:</strong> Forecast warranty claims and costs.</li>
-        <li>
-        <li><strong>Design Improvement:</strong> Identify failure modes (e.g., wear-out vs. early failures) to guide
-          product improvements.</li>
-        <li><strong>Risk Assessment:</strong> Quantify the reliability of a component or system over its operational
-          life.</li>
-      </ul>
-    </div>
-
-    <!-- AÑADIDO: Sección History & Origin -->
-    <div class="container">
-      <h2><i class="fas fa-history"></i> History & Origin</h2>
-      <p>The Weibull distribution was first described by Swedish engineer and mathematician <strong>Waloddi
-          Weibull</strong> in 1937. Initially developed to model material strength and fatigue life, Weibull presented
-        his distribution to the American Society of Mechanical Engineers in 1951 in a famous paper titled "A Statistical
-        Distribution Function of Wide Applicability."</p>
-      <p>What made Weibull's approach revolutionary was its flexibility to model various failure patterns through its
-        shape parameter (β). Unlike the normal distribution, which assumes symmetrical variation around a mean, the
-        Weibull distribution can effectively model:</p>
-      <ul>
-        <li><strong>Infant Mortality</strong> (β < 1): Early failures due to manufacturing defects</li>
-        <li><strong>Random Failures</strong> (β = 1): Constant failure rate, equivalent to exponential distribution</li>
-        <li><strong>Wear-Out Failures</strong> (β > 1): Age-related failures that increase over time</li>
-      </ul>
-      <p>This versatility made Weibull analysis particularly valuable in reliability engineering, maintenance planning,
-        and failure analysis across industries from aerospace to manufacturing.</p>
-    </div>
-
-    <div class="container">
-      <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-      <ol>
-        <li><strong>Enter Failure Data:</strong> In the first field, type the times at which failures occurred,
-          separated by commas. These can be hours, cycles, kilometers, etc. You can also press "Load Example" to see a
-          sample dataset.</li>
-        <li><strong>Analyze:</strong> Press the "Analyze Failures" button.</li>
-        <li><strong>Review Results:</strong>
-          <ul style="margin-top: 10px; list-style-type: circle;">
-            <li><strong>Numerical Results:</strong> Review the calculated Beta (β), Eta (η), and Mean Time To Failure
-              (MTTF). Interpret the Beta value to understand the failure mode of your system.</li>
-            <li><strong>Weibull Probability Plot:</strong> This special chart visualizes your failure data. If the
-              points form a reasonably straight line, it confirms that the Weibull distribution is a good fit for your
-              data. The blue line is the best-fit regression line used to calculate the parameters.</li>
-            <li><strong>Make a Prediction (Optional):</strong> Enter a specific time (in the same units as your failure
-              data) into the prediction field and press "Analyze Failures" again to see the cumulative probability of
-              failure by that time.</li>
-            <li><strong>Add and Export:</strong> You can add multiple analyses to a list and then export all results to
-              an Excel file for your reports.</li>
-          </ul>
-        </li>
-      </ol>
-    </div>
-
-    <div class="calculator-section">
-      <div class="calculation-block">
-        <div class="calculation-title">Weibull Analysis Calculator</div>
-        <form id="weibullForm">
-          <label for="failureTimes"><i class="fas fa-clock"></i> Times to Failure (comma-separated):</label>
-          <textarea id="failureTimes" rows="1" placeholder="Example: 1500, 2350, 1820, 2100" required></textarea>
-
-          <label for="predictTime"><i class="fas fa-bullseye"></i> Predict Probability of Failure by Time
-            (Optional):</label>
-          <input type="text" id="predictTime" placeholder="e.g., 2000" />
-
-          <button type="submit"><i class="fas fa-calculator"></i> Analyze Failures</button>
-          <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load
-            Example</button>
-        </form>
+    <!-- PESTAÑA 1: TEORÍA -->
+    <div id="tab-theory" class="wizard-tab-content active">
+      <div class="container">
+        <h2><i class="fas fa-question-circle"></i> What is Weibull Analysis?</h2>
+        <p><strong>Weibull Analysis</strong> is a powerful statistical method used in reliability engineering to model
+          time-to-failure data. It is highly versatile and can model the failure characteristics of complex systems,
+          from
+          infant mortality to wear-out failures.</p>
+        <p>The analysis yields two key parameters:</p>
+        <ul>
+          <li><strong>Beta (β) - The Shape Parameter:</strong> Describes the failure mode.
+            <ul>
+              <li><strong>β &lt; 1:</strong> Decreasing failure rate (infant mortality). Failures are more likely at the
+                beginning.</li>
+              <li><strong>β = 1:</strong> Constant failure rate (random failures). The process follows an exponential
+                distribution.</li>
+              <li><strong>β &gt; 1:</strong> Increasing failure rate (wear-out). Failures become more likely as the
+                product ages.</li>
+            </ul>
+          </li>
+          <li><strong>Eta (η) - The Scale Parameter:</strong> Also known as the characteristic life. It's the time at
+            which <strong>63.2%</strong> of the population is expected to have failed.</li>
+        </ul>
       </div>
 
-      <div class="results-container">
-        <div id="results" style="display:none;">
-          <div class="calculation-title">Results</div>
-          <p><i class="fas fa-shapes"></i> Shape Parameter (β): <span id="beta" class="result-value">-</span></p>
-          <p><i class="fas fa-ruler-horizontal"></i> Scale Parameter / Characteristic Life (η): <span id="eta"
-              class="result-value">-</span></p>
-          <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf" class="result-value">-</span>
-          </p>
-          <hr style="border: 1px solid #eee; margin: 1rem 0;">
-          <p id="predictionResult" style="display:none;">
-            <i class="fas fa-chart-pie"></i> Probability of failure by time <span id="timeForPrediction"
-              class="result-value">-</span>: <span id="failureProbability" class="result-value">-</span>%
-          </p>
+      <div class="container">
+        <h2><i class="fas fa-tools"></i> Why is Weibull Analysis Useful?</h2>
+        <p>Originally developed by Waloddi Weibull to model material strength, this analysis is now a cornerstone of
+          modern reliability engineering. It allows engineers and managers to make data-driven decisions about:</p>
+        <ul>
+          <li><strong>Maintenance Planning:</strong> Predict when parts are likely to fail to schedule preventive
+            maintenance.</li>
+          <li><strong>Warranty Analysis:</strong> Forecast warranty claims and costs.</li>
+          <li>
+          <li><strong>Design Improvement:</strong> Identify failure modes (e.g., wear-out vs. early failures) to guide
+            product improvements.</li>
+          <li><strong>Risk Assessment:</strong> Quantify the reliability of a component or system over its operational
+            life.</li>
+        </ul>
+      </div>
 
-          <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to List</button>
+      <div class="container">
+        <h2><i class="fas fa-history"></i> History & Origin</h2>
+        <p>The Weibull distribution was first described by Swedish engineer and mathematician <strong>Waloddi
+            Weibull</strong> in 1937. Initially developed to model material strength and fatigue life, Weibull presented
+          his distribution to the American Society of Mechanical Engineers in 1951 in a famous paper titled "A
+          Statistical
+          Distribution Function of Wide Applicability."</p>
+        <p>What made Weibull's approach revolutionary was its flexibility to model various failure patterns through its
+          shape parameter (β). Unlike the normal distribution, which assumes symmetrical variation around a mean, the
+          Weibull distribution can effectively model:</p>
+        <ul>
+          <li><strong>Infant Mortality</strong> (β < 1): Early failures due to manufacturing defects</li>
+          <li><strong>Random Failures</strong> (β = 1): Constant failure rate, equivalent to exponential distribution
+          </li>
+          <li><strong>Wear-Out Failures</strong> (β > 1): Age-related failures that increase over time</li>
+        </ul>
+        <p>This versatility made Weibull analysis particularly valuable in reliability engineering, maintenance
+          planning,
+          and failure analysis across industries from aerospace to manufacturing.</p>
+      </div>
+
+      <div class="container">
+        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+        <ol>
+          <li><strong>Enter Failure Data:</strong> In the first field, type the times at which failures occurred,
+            separated by commas. These can be hours, cycles, kilometers, etc. You can also press "Load Example" to see a
+            sample dataset.</li>
+          <li><strong>Analyze:</strong> Press the "Analyze Failures" button.</li>
+          <li><strong>Review Results:</strong>
+            <ul style="margin-top: 10px; list-style-type: circle;">
+              <li><strong>Numerical Results:</strong> Review the calculated Beta (β), Eta (η), and Mean Time To Failure
+                (MTTF). Interpret the Beta value to understand the failure mode of your system.</li>
+              <li><strong>Weibull Probability Plot:</strong> This special chart visualizes your failure data. If the
+                points form a reasonably straight line, it confirms that the Weibull distribution is a good fit for your
+                data. The blue line is the best-fit regression line used to calculate the parameters.</li>
+              <li><strong>Make a Prediction (Optional):</strong> Enter a specific time (in the same units as your
+                failure
+                data) into the prediction field and press "Analyze Failures" again to see the cumulative probability of
+                failure by that time.</li>
+              <li><strong>Add and Export:</strong> You can add multiple analyses to a list and then export all results
+                to
+                an Excel file for your reports.</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="tab-nav-buttons">
+        <button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to Calculator <i
+            class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA -->
+    <div id="tab-tool" class="wizard-tab-content">
+      <div class="calculator-section">
+        <div class="calculation-block">
+          <div class="calculation-title">Weibull Analysis Calculator</div>
+          <form id="weibullForm">
+            <label for="failureTimes"><i class="fas fa-clock"></i> Times to Failure (comma-separated):</label>
+            <textarea id="failureTimes" rows="1" placeholder="Example: 1500, 2350, 1820, 2100" required></textarea>
+
+            <label for="predictTime"><i class="fas fa-bullseye"></i> Predict Probability of Failure by Time
+              (Optional):</label>
+            <input type="text" id="predictTime" placeholder="e.g., 2000" />
+
+            <div class="button-group">
+              <button type="submit"><i class="fas fa-calculator"></i> Analyze Failures</button>
+              <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load
+                Example</button>
+              <!-- CORRECCIÓN 3: Botón para resetear datos -->
+              <button type="button" id="resetDataBtn" class="btn-reset"><i class="fas fa-undo"></i> Reset Data</button>
+            </div>
+          </form>
         </div>
 
-        <div id="weibullChartContainer">
-          <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Watermark" class="chart-watermark">
-          <div class="canvas-wrapper">
-            <canvas id="weibullChartCanvas"></canvas>
+        <div class="results-container">
+          <div id="results">
+            <div class="calculation-title">Results</div>
+            <p><i class="fas fa-shapes"></i> Shape Parameter (β): <span id="beta" class="result-value">-</span></p>
+            <p><i class="fas fa-ruler-horizontal"></i> Scale Parameter / Characteristic Life (η): <span id="eta"
+                class="result-value">-</span></p>
+            <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf"
+                class="result-value">-</span>
+            </p>
+            <hr style="border: 1px solid #eee; margin: 1rem 0;">
+            <p id="predictionResult">
+              <i class="fas fa-chart-pie"></i> Probability of failure by time <span id="timeForPrediction"
+                class="result-value">-</span>: <span id="failureProbability" class="result-value">-</span>%
+            </p>
+
+            <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to List</button>
+          </div>
+
+          <div id="weibullChartContainer">
+            <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Watermark" class="chart-watermark">
+            <div class="canvas-wrapper">
+              <canvas id="weibullChartCanvas"></canvas>
+            </div>
           </div>
         </div>
+
+        <div class="calculation-block">
+          <div class="calculation-title">Aggregated Results</div>
+          <div id="aggregatedResultsContainer">
+          </div>
+          <button id="exportBtn" style="margin-top: 10px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
+        </div>
       </div>
 
-      <div class="calculation-block">
-        <div class="calculation-title">Aggregated Results</div>
-        <div id="aggregatedResultsContainer">
-        </div>
-        <button id="exportBtn" style="margin-top: 10px;"><i class="fas fa-file-excel"></i> Export to Excel</button>
+      <div class="tab-nav-buttons">
+        <button class="btn-next-tab" onclick="switchWizardTab('tab-formulas')">View Formulas <i
+            class="fas fa-arrow-right"></i></button>
       </div>
     </div>
 
-    <!-- AÑADIDO: Sección Mathematical Formulas -->
-    <div class="container">
-      <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
-      <div class="formula-grid">
-        <div class="formula-item">
-          <h3>Weibull Probability Density Function (PDF)</h3>
-          <div style="font-size: 1rem;">$$ f(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} e^{-\left(
-            \frac{t}{\eta} \right)^{\beta}} $$</div>
-          <p>Where $t$ is time, $\beta$ is the shape parameter, and $\eta$ is the scale parameter.</p>
+    <!-- PESTAÑA 3: FÓRMULAS -->
+    <div id="tab-formulas" class="wizard-tab-content">
+      <div class="container">
+        <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
+        <div class="formula-grid">
+          <div class="formula-item">
+            <h3>Weibull Probability Density Function (PDF)</h3>
+            <div style="font-size: 1rem;">$$ f(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1}
+              e^{-\left(
+              \frac{t}{\eta} \right)^{\beta}} $$</div>
+            <p>Where $t$ is time, $\beta$ is the shape parameter, and $\eta$ is the scale parameter.</p>
+          </div>
+          <div class="formula-item">
+            <h3>Cumulative Distribution Function (CDF)</h3>
+            <div style="font-size: 1rem;">$$ F(t) = 1 - e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+            <p>Probability of failure by time $t$.</p>
+          </div>
+          <div class="formula-item">
+            <h3>Reliability Function</h3>
+            <div style="font-size: 1rem;">$$ R(t) = e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
+            <p>Probability of survival beyond time $t$.</p>
+          </div>
+          <div class="formula-item">
+            <h3>Mean Time To Failure (MTTF)</h3>
+            <div style="font-size: 1rem;">$$ MTTF = \eta \cdot \Gamma\left(1 + \frac{1}{\beta}\right) $$</div>
+            <p>Where $\Gamma$ is the Gamma function.</p>
+          </div>
+          <div class="formula-item">
+            <h3>Failure Rate (Hazard Function)</h3>
+            <div style="font-size: 1rem;">$$ h(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} $$</div>
+            <p>Instantaneous failure rate at time $t$.</p>
+          </div>
+          <div class="formula-item">
+            <h3>Median Life</h3>
+            <div style="font-size: 1rem;">$$ t_{0.5} = \eta (\ln 2)^{1/\beta} $$</div>
+            <p>Time when 50% of units have failed.</p>
+          </div>
         </div>
-        <div class="formula-item">
-          <h3>Cumulative Distribution Function (CDF)</h3>
-          <div style="font-size: 1rem;">$$ F(t) = 1 - e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
-          <p>Probability of failure by time $t$.</p>
+        <div class="legend">
+          <h3>Weibull Parameters Legend</h3>
+          <ul>
+            <li><code>β (Beta)</code>: Shape parameter - determines failure pattern</li>
+            <li><code>η (Eta)</code>: Scale parameter - characteristic life (63.2% failure point)</li>
+            <li><code>t</code>: Time or cycles</li>
+            <li><code>Γ</code>: Gamma function</li>
+            <li><code>f(t)</code>: Probability density at time t</li>
+            <li><code>F(t)</code>: Cumulative probability of failure by time t</li>
+            <li><code>R(t)</code>: Reliability (survival probability) at time t</li>
+            <li><code>h(t)</code>: Failure rate at time t</li>
+          </ul>
         </div>
-        <div class="formula-item">
-          <h3>Reliability Function</h3>
-          <div style="font-size: 1rem;">$$ R(t) = e^{-\left( \frac{t}{\eta} \right)^{\beta}} $$</div>
-          <p>Probability of survival beyond time $t$.</p>
-        </div>
-        <div class="formula-item">
-          <h3>Mean Time To Failure (MTTF)</h3>
-          <div style="font-size: 1rem;">$$ MTTF = \eta \cdot \Gamma\left(1 + \frac{1}{\beta}\right) $$</div>
-          <p>Where $\Gamma$ is the Gamma function.</p>
-        </div>
-        <div class="formula-item">
-          <h3>Failure Rate (Hazard Function)</h3>
-          <div style="font-size: 1rem;">$$ h(t) = \frac{\beta}{\eta} \left( \frac{t}{\eta} \right)^{\beta-1} $$</div>
-          <p>Instantaneous failure rate at time $t$.</p>
-        </div>
-        <div class="formula-item">
-          <h3>Median Life</h3>
-          <div style="font-size: 1rem;">$$ t_{0.5} = \eta (\ln 2)^{1/\beta} $$</div>
-          <p>Time when 50% of units have failed.</p>
-        </div>
-      </div>
-      <div class="legend">
-        <h3>Weibull Parameters Legend</h3>
-        <ul>
-          <li><code>β (Beta)</code>: Shape parameter - determines failure pattern</li>
-          <li><code>η (Eta)</code>: Scale parameter - characteristic life (63.2% failure point)</li>
-          <li><code>t</code>: Time or cycles</li>
-          <li><code>Γ</code>: Gamma function</li>
-          <li><code>f(t)</code>: Probability density at time t</li>
-          <li><code>F(t)</code>: Cumulative probability of failure by time t</li>
-          <li><code>R(t)</code>: Reliability (survival probability) at time t</li>
-          <li><code>h(t)</code>: Failure rate at time t</li>
-        </ul>
       </div>
     </div>
   </main>
@@ -679,6 +977,39 @@
     </div>
   </footer>
   <script>
+    // Script para funcionalidad de Tabs Wizard
+    function switchWizardTab(tabId) {
+      // Quitar clase active de todos los botones y contenidos de wizard
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+
+      // Activar el contenido seleccionado
+      const tabContent = document.getElementById(tabId);
+      tabContent.classList.add('active');
+
+      // Activar botón correspondiente
+      const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Forzar el renderizado de fórmulas matemáticas cuando se cambia a la pestaña de fórmulas
+      if (tabId === 'tab-formulas' && typeof renderMathInElement === 'function') {
+        setTimeout(() => {
+          renderMathInElement(tabContent, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        }, 100);
+      }
+
+      // Scroll al top suavemente
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // Cargar el header desde el archivo externo
     fetch('header.html')
       .then(response => response.text())
@@ -741,6 +1072,60 @@
       return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
     }
 
+    // Inicializar el gráfico vacío al cargar la página
+    function initializeEmptyChart() {
+      const ctx = document.getElementById("weibullChartCanvas").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "scatter",
+        data: {
+          datasets: []
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "logarithmic",
+              title: { display: true, text: "Time to Failure (Log Scale)" },
+              grid: { color: "rgba(0, 0, 0, 0.05)" }
+            },
+            y: {
+              type: "linear",
+              title: { display: true, text: "ln(ln(1/(1-F(t))))" },
+              grid: { color: "rgba(0, 0, 0, 0.05)" }
+            }
+          },
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.x !== null) {
+                    label += `Time = ${context.parsed.x.toFixed(2)}`;
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Llamar a la inicialización del gráfico cuando se carga la página
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeEmptyChart();
+
+      // CORRECCIÓN 1: Ajustar altura del textarea al cargar la página
+      const failureTimesTextarea = document.getElementById('failureTimes');
+      failureTimesTextarea.style.height = 'auto';
+      failureTimesTextarea.style.height = (failureTimesTextarea.scrollHeight) + 'px';
+    });
+
     document.getElementById("weibullForm").addEventListener("submit", function (event) {
       event.preventDefault();
       calculateWeibull();
@@ -751,6 +1136,45 @@
       const failureTimesTextarea = document.getElementById('failureTimes');
       failureTimesTextarea.value = exampleData;
       failureTimesTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // Opcional: Ejecutar automáticamente el análisis
+      setTimeout(() => {
+        calculateWeibull();
+      }, 100);
+    });
+
+    // CORRECCIÓN 3: Función para resetear datos
+    document.getElementById('resetDataBtn').addEventListener('click', function () {
+      // Limpiar campos de entrada
+      document.getElementById('failureTimes').value = '';
+      document.getElementById('predictTime').value = '';
+
+      // Ajustar altura del textarea
+      const failureTimesTextarea = document.getElementById('failureTimes');
+      failureTimesTextarea.style.height = 'auto';
+      failureTimesTextarea.style.height = (failureTimesTextarea.scrollHeight) + 'px';
+
+      // Restablecer resultados
+      document.getElementById("beta").textContent = '-';
+      document.getElementById("eta").textContent = '-';
+      document.getElementById("mttf").textContent = '-';
+      document.getElementById("predictionResult").style.display = 'none';
+      document.getElementById("addBtn").disabled = true;
+
+      // Restaurar gráfico vacío
+      if (chart) chart.destroy();
+      initializeEmptyChart();
+
+      // Remover clase de resultados visibles
+      document.getElementById('results').classList.remove('results-visible');
+
+      // Limpiar resultados agregados
+      aggregatedResultsData = [];
+      calculationCounter = 1;
+      document.getElementById('aggregatedResultsContainer').innerHTML = '';
+
+      // Mostrar mensaje de confirmación
+      alert('Data has been reset. You can enter new failure times.');
     });
 
     function calculateWeibull() {
@@ -811,8 +1235,9 @@
         predictionResultEl.style.display = "none";
       }
 
-      document.getElementById("results").style.display = "block";
+      // Mostrar resultados con estilo completo
       document.getElementById("addBtn").disabled = false;
+      document.getElementById('results').classList.add('results-visible');
 
       lastResult = {
         id: calculationCounter,
@@ -977,8 +1402,6 @@
       failureTimesTextarea.style.height = 'auto';
       failureTimesTextarea.style.height = (failureTimesTextarea.scrollHeight) + 'px';
     });
-    // Trigger on load in case there's pre-filled data (e.g., from browser cache)
-    failureTimesTextarea.dispatchEvent(new Event('input'));
 
   </script>
 
