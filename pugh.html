@@ -24,19 +24,26 @@
     <style>
         body {
             background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .main-content-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.25rem;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
         }
 
         .main-header {
             text-align: center;
-            padding: 1rem 0;
-            margin-bottom: 1.25rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0;
             border-bottom: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .main-header h1 {
@@ -61,6 +68,8 @@
             padding: 1.5rem;
             margin-top: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .container h2 {
@@ -82,8 +91,134 @@
             padding-left: 1.25rem;
         }
 
+        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 0;
+            margin-top: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            width: 100%;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: #3498db;
+            border-bottom-color: #3498db;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
+        .tabs-container {
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* PESTAÑAS - Todas con el mismo ancho */
+        .wizard-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .wizard-tab-content.active {
+            display: block;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
+        .tab-content-wrapper {
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* Ajuste para pantallas móviles */
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+        }
+
         .calculator-section {
-            margin-top: 2rem;
+            margin-top: 0;
+            width: 100%;
         }
 
         .calculation-block {
@@ -93,6 +228,8 @@
             margin-bottom: 1.25rem;
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .calculation-title {
@@ -205,10 +342,12 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 10px;
+            width: 100%;
         }
 
         .input-item input {
             flex-grow: 1;
+            min-width: 0;
         }
 
         #matrix-container {
@@ -216,13 +355,15 @@
             margin-top: 1rem;
             display: grid;
             grid-template-columns: minmax(0, 1fr);
+            width: 100%;
         }
 
         .pugh-matrix {
-            /* width: 100%; */
             border-collapse: collapse;
             white-space: nowrap;
             font-size: 0.95rem;
+            width: 100%;
+            min-width: 600px;
         }
 
         .pugh-matrix th,
@@ -283,6 +424,95 @@
         .pugh-matrix .winning-column-header {
             background-color: #27ae60;
         }
+
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-next-tab {
+            background-color: #3498db;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-next-tab:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-next-tab.btn-prev {
+            background-color: #95a5a6;
+        }
+
+        .btn-next-tab.btn-prev:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-next-tab.btn-success {
+            background-color: #27ae60;
+        }
+
+        .btn-next-tab.btn-success:hover {
+            background-color: #229954;
+        }
+
+        .data-summary {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .data-summary h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .data-summary ul {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .data-summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        .matrix-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        /* Estilos para la sección de matriz en Data Input */
+        .matrix-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #3498db;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -290,8 +520,7 @@
 
     <!-- Contenedor donde se cargará el header dinámicamente -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -320,105 +549,220 @@
         <header class="main-header">
             <h1>
                 <i style="
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center; 
-        width: 1.5em; 
-        height: 1.5em; 
-        background-color: #27ae60; 
-        color: white; 
-        border-radius: 4px; 
-        font-size: 1.1em;
-        margin-right: 0.25em;
-    " class="fas fa-project-diagram"></i>
+                    display: inline-flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    width: 1.5em; 
+                    height: 1.5em; 
+                    background-color: #27ae60; 
+                    color: white; 
+                    border-radius: 4px; 
+                    font-size: 1.1em;
+                    margin-right: 0.25em;
+                " class="fas fa-project-diagram"></i>
                 Free Online Pugh Matrix Evaluating Tool (Decision Matrix)
             </h1>
             <p>Systematically evaluate and select the best concept from a list of alternatives.</p>
         </header>
 
-        <div class="container">
-            <h2><i class="fas fa-question-circle"></i> What is a Pugh Matrix?</h2>
-            <p>A <strong>Pugh Matrix</strong>, also known as a decision matrix or concept selection matrix, is a
-                qualitative tool used to evaluate multiple concepts or alternatives against a set of criteria. It was
-                developed by Stuart Pugh as a method for making more objective decisions during the product design
-                process.</p>
-            <p>The core idea is to establish a "baseline" or "datum" concept, which can be the current standard or one
-                of the new ideas. All other concepts are then compared to this baseline for each criterion, scoring them
-                as "Better" (+), "Same" (S), or "Worse" (-). By summing the scores, the team can identify the most
-                promising concept(s) for further development.</p>
-        </div>
+        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
+        <div class="tabs-container">
+            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+            <nav class="tabs-nav">
+                <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
+                    <i class="fas fa-book"></i> Theory & Info
+                </button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-input')">
+                    <i class="fas fa-edit"></i> Data Input & Matrix
+                </button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-results')">
+                    <i class="fas fa-chart-bar"></i> Results
+                </button>
+            </nav>
 
-        <div class="container">
-            <h2><i class="fas fa-history"></i> Brief History of the Pugh Matrix</h2>
-            <p>The Pugh Matrix was developed by <strong>Stuart Pugh</strong>, a British product designer and professor
-                at the University of Strathclyde, in the 1980s. He introduced it as part of his "Total Design"
-                methodology. Pugh recognized that design teams often struggled with making objective choices between
-                multiple viable concepts early in the design process. Existing methods were often unstructured or overly
-                complex.</p>
-            <p>His solution was a simple, disciplined, and team-oriented matrix that replaced vague discussions with a
-                structured evaluation. The tool's focus on comparing everything against a common baseline (the "datum")
-                made it highly effective for identifying not just the best concept, but also for creating hybrid
-                concepts by combining the best features of several ideas. It quickly became a staple in engineering and
-                product development worldwide.</p>
-        </div>
-
-        <div class="container">
-            <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
-            <ol>
-                <li><strong>Add Criteria:</strong> Click the "<strong>+</strong>" button in the "Criteria" section to
-                    add evaluation criteria (e.g., Cost, Weight, Durability). Add as many as you need.</li>
-                <li><strong>Add Concepts:</strong> Similarly, click the "<strong>+</strong>" button in the "Concepts"
-                    section to add your different ideas or alternatives (e.g., Plastic Case, Aluminum Case).</li>
-                <li><strong>Generate Matrix:</strong> Click the "Generate Matrix" button. This will create an
-                    interactive table below.</li>
-                <li><strong>Set Baseline:</strong> In the generated table header, a dropdown will appear. Select which
-                    concept will be your baseline for comparison. The baseline column will be highlighted in blue.</li>
-                <li><strong>Set Weights:</strong> For each criterion, enter a weight (e.g., from 1 to 5) to signify its
-                    importance.</li>
-                <li><strong>Score Concepts:</strong> For each concept and criterion, compare it to the baseline:
-                    <ul style="margin-top: 10px; margin-bottom: 10px; list-style-type: circle;">
-                        <li><strong>+ (Better):</strong> The concept is significantly better than the baseline for this
-                            criterion.</li>
-                        <li><strong>S (Same):</strong> The concept is about the same as the baseline.</li>
-                        <li><strong>- (Worse):</strong> The concept is significantly worse than the baseline.</li>
-                    </ul>
-                </li>
-                <li><strong>Analyze Results:</strong> The "Totals" row automatically calculates the weighted score for
-                    each concept. The concept with the highest score is highlighted in green.</li>
-                <li><strong>Export:</strong> You can export the final matrix to an Excel file for your reports.</li>
-            </ol>
-        </div>
-
-        <div class="calculator-section">
-            <div class="calculation-block">
-                <div class="calculation-title">Matrix Setup</div>
-                <form id="pughForm">
-                    <div class="input-list-label">
-                        <label for="criteria-list"><i class="fas fa-list-check"></i> Criteria</label>
-                        <button type="button" id="add-criterion-btn" class="action-button"
-                            title="Add Criterion">+</button>
+            <!-- PESTAÑA 1: TEORÍA -->
+            <div id="tab-theory" class="wizard-tab-content active">
+                <div class="tab-content-wrapper">
+                    <div class="container">
+                        <h2><i class="fas fa-question-circle"></i> What is a Pugh Matrix?</h2>
+                        <p>A <strong>Pugh Matrix</strong>, also known as a decision matrix or concept selection matrix,
+                            is a
+                            qualitative tool used to evaluate multiple concepts or alternatives against a set of
+                            criteria. It was
+                            developed by Stuart Pugh as a method for making more objective decisions during the product
+                            design
+                            process.</p>
+                        <p>The core idea is to establish a "baseline" or "datum" concept, which can be the current
+                            standard or one
+                            of the new ideas. All other concepts are then compared to this baseline for each criterion,
+                            scoring them
+                            as "Better" (+), "Same" (S), or "Worse" (-). By summing the scores, the team can identify
+                            the most
+                            promising concept(s) for further development.</p>
                     </div>
-                    <div id="criteria-list"></div>
 
-                    <div class="input-list-label" style="margin-top: 2rem;">
-                        <label for="concepts-list"><i class="fas fa-lightbulb"></i> Concepts / Alternatives</label>
-                        <button type="button" id="add-concept-btn" class="action-button" title="Add Concept">+</button>
+                    <div class="container">
+                        <h2><i class="fas fa-history"></i> Brief History of the Pugh Matrix</h2>
+                        <p>The Pugh Matrix was developed by <strong>Stuart Pugh</strong>, a British product designer and
+                            professor
+                            at the University of Strathclyde, in the 1980s. He introduced it as part of his "Total
+                            Design"
+                            methodology. Pugh recognized that design teams often struggled with making objective choices
+                            between
+                            multiple viable concepts early in the design process. Existing methods were often
+                            unstructured or overly
+                            complex.</p>
+                        <p>His solution was a simple, disciplined, and team-oriented matrix that replaced vague
+                            discussions with a
+                            structured evaluation. The tool's focus on comparing everything against a common baseline
+                            (the "datum")
+                            made it highly effective for identifying not just the best concept, but also for creating
+                            hybrid
+                            concepts by combining the best features of several ideas. It quickly became a staple in
+                            engineering and
+                            product development worldwide.</p>
                     </div>
-                    <div id="concepts-list"></div>
 
-                    <div style="margin-top: 2rem;">
-                        <button type="submit"><i class="fas fa-table-cells"></i> Generate Matrix</button>
-                        <button type="button" id="fillExampleBtn" class="example-btn"><i class="fas fa-magic"></i> Fill
-                            Example</button>
+                    <div class="container">
+                        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+                        <ol>
+                            <li><strong>Add Criteria:</strong> In the "Data Input & Matrix" tab, add evaluation criteria
+                                (e.g.,
+                                Cost, Weight, Durability).</li>
+                            <li><strong>Add Concepts:</strong> Add your different ideas or alternatives (e.g., Plastic
+                                Case, Aluminum Case).</li>
+                            <li><strong>Generate Matrix:</strong> Click "Generate Matrix" to create an interactive
+                                table.</li>
+                            <li><strong>Set Baseline:</strong> Select which concept will be your baseline for
+                                comparison.</li>
+                            <li><strong>Set Weights:</strong> For each criterion, enter a weight (e.g., from 1 to 5) to
+                                signify its importance.</li>
+                            <li><strong>Score Concepts:</strong> For each concept and criterion, compare it to the
+                                baseline using +, S, or -.</li>
+                            <li><strong>Analyze Results:</strong> Go to the "Results" tab to see the calculated scores
+                                and the winning concept.</li>
+                            <li><strong>Export:</strong> Export the final matrix to an Excel file for your reports.</li>
+                        </ol>
                     </div>
-                </form>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-input')">Go to Data Input & Matrix <i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
             </div>
 
-            <div class="calculation-block" id="matrix-output-block" style="display:none;">
-                <div class="calculation-title">Interactive Pugh Matrix</div>
-                <div id="matrix-container"></div>
-                <button id="exportBtn" style="margin-top: 10px;" disabled><i class="fas fa-file-excel"></i> Export to
-                    Excel</button>
+            <!-- PESTAÑA 2: ENTRADA DE DATOS Y MATRIZ -->
+            <div id="tab-input" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="calculator-section">
+                        <div class="calculation-block">
+                            <div class="calculation-title">Data Input</div>
+                            <form id="pughForm">
+                                <div class="input-list-label">
+                                    <label for="criteria-list"><i class="fas fa-list-check"></i> Criteria</label>
+                                    <button type="button" id="add-criterion-btn" class="action-button"
+                                        title="Add Criterion">+</button>
+                                </div>
+                                <div id="criteria-list"></div>
+
+                                <div class="input-list-label" style="margin-top: 2rem;">
+                                    <label for="concepts-list"><i class="fas fa-lightbulb"></i> Concepts /
+                                        Alternatives</label>
+                                    <button type="button" id="add-concept-btn" class="action-button"
+                                        title="Add Concept">+</button>
+                                </div>
+                                <div id="concepts-list"></div>
+
+                                <div style="margin-top: 2rem;">
+                                    <button type="button" id="fillExampleBtn" class="example-btn"><i
+                                            class="fas fa-magic"></i> Fill
+                                        Example</button>
+                                    <button type="button" id="clearDataBtn" style="background-color: #e74c3c;"><i
+                                            class="fas fa-trash"></i> Clear Data</button>
+                                </div>
+                            </form>
+
+                            <!-- Sección de la matriz en la misma pestaña -->
+                            <div class="matrix-section">
+                                <div class="calculation-title">Matrix Builder</div>
+
+                                <div class="matrix-actions">
+                                    <button type="button" id="generateMatrixBtn"><i class="fas fa-table-cells"></i>
+                                        Generate
+                                        Matrix</button>
+                                </div>
+
+                                <div id="matrix-container" style="margin-top: 2rem;">
+                                    <p style="color: #7f8c8d; text-align: center; padding: 2rem;">
+                                        <i class="fas fa-info-circle"
+                                            style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                        Click "Generate Matrix" to create your Pugh Matrix.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="data-summary" id="data-summary" style="display: none;">
+                            <h3><i class="fas fa-clipboard-check"></i> Data Summary</h3>
+                            <p><strong>Criteria:</strong> <span id="criteria-count">0</span> items</p>
+                            <p><strong>Concepts:</strong> <span id="concepts-count">0</span> items</p>
+                            <p style="margin-top: 1rem; color: #27ae60; font-weight: 600;">
+                                <i class="fas fa-check-circle"></i> Ready to generate matrix
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
+                                class="fas fa-arrow-left"></i> Back to Theory</button>
+                        <button class="btn-next-tab btn-success" onclick="goToResults()" id="go-to-results-btn"
+                            disabled>Go to Results <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PESTAÑA 3: RESULTADOS -->
+            <div id="tab-results" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="calculation-block">
+                        <div class="calculation-title">Results</div>
+
+                        <div id="results-matrix-container">
+                            <p style="color: #7f8c8d; text-align: center; padding: 2rem;">
+                                <i class="fas fa-info-circle"
+                                    style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                Complete the matrix in the "Data Input & Matrix" tab to see results here.
+                            </p>
+                        </div>
+
+                        <div id="results-summary" style="display: none;">
+                            <div class="calculation-title" style="margin-top: 2rem;">Results Summary</div>
+                            <div id="winning-concept"
+                                style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                                <h3 style="margin-top: 0; color: #155724;"><i class="fas fa-trophy"></i> Winning Concept
+                                </h3>
+                                <p id="winning-concept-name"
+                                    style="font-size: 1.2rem; font-weight: 800; color: #155724;">-</p>
+                                <p id="winning-concept-score" style="color: #0c5460;">Score: <span
+                                        id="score-value">1</span></p>
+                            </div>
+                        </div>
+
+                        <div class="matrix-actions" style="margin-top: 2rem;">
+                            <button id="exportBtn" disabled><i class="fas fa-file-excel"></i> Export to Excel</button>
+                            <button onclick="switchWizardTab('tab-input')" style="background-color: #6c757d;"><i
+                                    class="fas fa-edit"></i> Edit Matrix</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-input')"><i
+                                class="fas fa-arrow-left"></i> Back to Data Input & Matrix</button>
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory <i
+                                class="fas fa-book"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -436,6 +780,185 @@
     </footer>
 
     <script>
+        // ============================================
+        // VARIABLES GLOBALES Y FUNCIONES GLOBALES
+        // ============================================
+
+        // Variables globales para almacenar datos
+        let criteriaData = [];
+        let conceptsData = [];
+        let matrixGenerated = false;
+        let matrixData = null;
+
+        // Función para obtener valores de una lista de inputs
+        function getValuesFromList(list) {
+            if (!list) return [];
+            return Array.from(list.querySelectorAll('input')).map(input => input.value.trim()).filter(val => val !== '');
+        }
+
+        // Función para cambiar entre tabs
+        function switchWizardTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos de wizard
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para guardar datos de entrada
+        function saveInputData() {
+            const criteriaList = document.getElementById('criteria-list');
+            const conceptsList = document.getElementById('concepts-list');
+
+            if (criteriaList) {
+                criteriaData = getValuesFromList(criteriaList);
+            }
+
+            if (conceptsList) {
+                conceptsData = getValuesFromList(conceptsList);
+            }
+
+            // Actualizar contadores en Data Input tab
+            const criteriaCount = document.getElementById('criteria-count');
+            const conceptsCount = document.getElementById('concepts-count');
+            if (criteriaCount) criteriaCount.textContent = criteriaData.length;
+            if (conceptsCount) conceptsCount.textContent = conceptsData.length;
+
+            // Mostrar/ocultar resumen de datos
+            const dataSummary = document.getElementById('data-summary');
+            if (dataSummary) {
+                if (criteriaData.length > 0 || conceptsData.length > 0) {
+                    dataSummary.style.display = 'block';
+                } else {
+                    dataSummary.style.display = 'none';
+                }
+            }
+        }
+
+        // Función para validar datos de entrada
+        function validateDataInput() {
+            const criteriaList = document.getElementById('criteria-list');
+            const conceptsList = document.getElementById('concepts-list');
+
+            if (!criteriaList || !conceptsList) return;
+
+            const criteria = getValuesFromList(criteriaList);
+            const concepts = getValuesFromList(conceptsList);
+
+            // Habilitar/deshabilitar botón para ir a Results
+            const goToResultsBtn = document.getElementById('go-to-results-btn');
+            if (goToResultsBtn) {
+                if (criteria.length >= 1 && concepts.length >= 2) {
+                    goToResultsBtn.disabled = false;
+                } else {
+                    goToResultsBtn.disabled = true;
+                }
+            }
+        }
+
+        // Función para ir a Results
+        function goToResults() {
+            if (matrixGenerated) {
+                switchWizardTab('tab-results');
+                updateResultsView();
+            } else {
+                alert('Please generate the matrix first in the Data Input & Matrix tab.');
+            }
+        }
+
+        // Función para actualizar la vista de resultados
+        function updateResultsView() {
+            if (!matrixGenerated) return;
+
+            const resultsContainer = document.getElementById('results-matrix-container');
+            const resultsSummary = document.getElementById('results-summary');
+            const exportBtn = document.getElementById('exportBtn');
+
+            // Clonar la matriz para la vista de resultados
+            const table = document.getElementById('interactiveMatrix');
+            if (!table) return;
+
+            const tableClone = table.cloneNode(true);
+
+            // Hacer la matriz de solo lectura
+            tableClone.querySelectorAll('input, select').forEach(el => {
+                if (el.tagName === 'SELECT') {
+                    const optionText = el.options[el.selectedIndex].text;
+                    const cell = el.closest('td') || el.closest('th');
+                    cell.innerHTML = `<strong>${optionText}</strong>`;
+                } else if (el.tagName === 'INPUT') {
+                    const value = el.value;
+                    const cell = el.closest('td') || el.closest('th');
+                    cell.innerHTML = `<strong>${value}</strong>`;
+                }
+            });
+
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+                resultsContainer.appendChild(tableClone);
+            }
+
+            // Mostrar resumen de resultados
+            if (resultsSummary) {
+                resultsSummary.style.display = 'block';
+            }
+
+            // Encontrar el concepto ganador
+            const totalCells = table.querySelectorAll('.total-row td[data-concept-index]');
+            let maxScore = -Infinity;
+            let winningIndex = -1;
+            let winningScore = 0;
+            const baselineSelector = document.getElementById('baseline-selector');
+            let baselineIndex = 0;
+
+            if (baselineSelector) {
+                baselineIndex = parseInt(baselineSelector.value);
+            }
+
+            totalCells.forEach((cell, index) => {
+                if (index !== baselineIndex) {
+                    const score = parseInt(cell.textContent) || 0;
+                    if (score > maxScore) {
+                        maxScore = score;
+                        winningIndex = index;
+                        winningScore = score;
+                    }
+                }
+            });
+
+            // Mostrar concepto ganador
+            const winningConceptName = document.getElementById('winning-concept-name');
+            const scoreValue = document.getElementById('score-value');
+            const winningConceptDiv = document.getElementById('winning-concept');
+
+            if (winningConceptName && scoreValue && winningConceptDiv) {
+                if (winningIndex !== -1 && maxScore > 0) {
+                    const winningConcept = conceptsData[winningIndex];
+                    winningConceptName.textContent = winningConcept;
+                    scoreValue.textContent = winningScore;
+                } else {
+                    winningConceptName.textContent = 'No clear winner';
+                    scoreValue.textContent = '0';
+                    winningConceptDiv.style.backgroundColor = '#f8d7da';
+                    winningConceptDiv.style.borderColor = '#f5c6cb';
+                    winningConceptDiv.querySelector('h3').style.color = '#721c24';
+                }
+            }
+
+            // Habilitar botón de exportación
+            if (exportBtn) {
+                exportBtn.disabled = false;
+            }
+        }
+
         // Función para inicializar el menú de navegación
         function initializeNavigationMenu() {
             const navToggle = document.getElementById('nav-toggle');
@@ -469,33 +992,38 @@
             }
         }
 
-        // Cargar el header desde header.html
-        fetch('header.html')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                // Inicializar el menú después de cargar el header
-                initializeNavigationMenu();
-            })
-            .catch(error => {
-                console.error('Error loading header:', error);
-            });
-
+        // ============================================
+        // CÓDIGO PRINCIPAL CUANDO EL DOM ESTÁ LISTO
+        // ============================================
         document.addEventListener("DOMContentLoaded", function () {
-            // LÓGICA DE LA MATRIZ DE PUGH (con cambios en JS)
-            const pughForm = document.getElementById('pughForm');
+            // Cargar el header desde header.html
+            fetch('header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const headerContainer = document.getElementById('header-container');
+                    if (headerContainer) {
+                        headerContainer.innerHTML = data;
+                    }
+                    // Inicializar el menú después de cargar el header
+                    initializeNavigationMenu();
+                })
+                .catch(error => {
+                    console.error('Error loading header:', error);
+                });
+
+            // LÓGICA DE LA MATRIZ DE PUGH
             const criteriaList = document.getElementById('criteria-list');
             const conceptsList = document.getElementById('concepts-list');
             const addCriterionBtn = document.getElementById('add-criterion-btn');
             const addConceptBtn = document.getElementById('add-concept-btn');
             const fillExampleBtn = document.getElementById('fillExampleBtn');
-            const matrixOutputBlock = document.getElementById('matrix-output-block');
-            const matrixContainer = document.getElementById('matrix-container');
+            const clearDataBtn = document.getElementById('clearDataBtn');
+            const generateMatrixBtn = document.getElementById('generateMatrixBtn');
             const exportBtn = document.getElementById('exportBtn');
 
             const createInputItem = (placeholder) => {
@@ -509,90 +1037,123 @@
             };
 
             const addInputToList = (list, placeholder) => {
+                if (!list) return;
                 const newItem = createInputItem(placeholder);
                 list.appendChild(newItem);
                 newItem.querySelector('input').focus();
+                validateDataInput();
+                saveInputData();
             };
 
-            addCriterionBtn.addEventListener('click', () => addInputToList(criteriaList, `Criterion ${criteriaList.children.length + 1}`));
-            addConceptBtn.addEventListener('click', () => addInputToList(conceptsList, `Concept ${conceptsList.children.length + 1}`));
+            if (addCriterionBtn && criteriaList) {
+                addCriterionBtn.addEventListener('click', () => addInputToList(criteriaList, `Criterion ${criteriaList.children.length + 1}`));
+            }
+
+            if (addConceptBtn && conceptsList) {
+                addConceptBtn.addEventListener('click', () => addInputToList(conceptsList, `Concept ${conceptsList.children.length + 1}`));
+            }
 
             const handleRemove = (e) => {
                 if (e.target.classList.contains('remove-btn')) {
                     e.target.parentElement.remove();
+                    validateDataInput();
+                    saveInputData();
                 }
             };
-            criteriaList.addEventListener('click', handleRemove);
-            conceptsList.addEventListener('click', handleRemove);
+
+            if (criteriaList) {
+                criteriaList.addEventListener('click', handleRemove);
+            }
+
+            if (conceptsList) {
+                conceptsList.addEventListener('click', handleRemove);
+            }
 
             const populateList = (list, items, placeholderPrefix) => {
+                if (!list) return;
                 list.innerHTML = '';
                 items.forEach((itemText, i) => {
                     const item = createInputItem(`${placeholderPrefix} ${i + 1}`);
                     item.querySelector('input').value = itemText;
                     list.appendChild(item);
                 });
+                validateDataInput();
+                saveInputData();
             };
 
             const initInputs = () => {
-                populateList(criteriaList, ['Criterion 1', 'Criterion 2', 'Criterion 3'], 'Criterion');
-                populateList(conceptsList, ['Concept A', 'Concept B'], 'Concept');
+                if (criteriaList && conceptsList) {
+                    populateList(criteriaList, ['Criterion 1', 'Criterion 2', 'Criterion 3'], 'Criterion');
+                    populateList(conceptsList, ['Concept A', 'Concept B'], 'Concept');
+                }
             };
 
-            fillExampleBtn.addEventListener('click', () => {
-                populateList(criteriaList, ['Manufacturing Cost', 'Weight', 'Durability & Strength', 'Appearance', 'Ease of Assembly'], 'Criterion');
-                populateList(conceptsList, ['Standard Plastic Case', 'Machined Aluminum Case', '3D Printed Case'], 'Concept');
-            });
+            if (fillExampleBtn) {
+                fillExampleBtn.addEventListener('click', () => {
+                    if (criteriaList && conceptsList) {
+                        populateList(criteriaList, ['Manufacturing Cost', 'Weight', 'Durability & Strength', 'Appearance', 'Ease of Assembly'], 'Criterion');
+                        populateList(conceptsList, ['Standard Plastic Case', 'Machined Aluminum Case', '3D Printed Case'], 'Concept');
+                    }
+                });
+            }
 
-            pughForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                generateMatrix();
-            });
+            if (clearDataBtn) {
+                clearDataBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear all data?')) {
+                        if (criteriaList) criteriaList.innerHTML = '';
+                        if (conceptsList) conceptsList.innerHTML = '';
+                        criteriaData = [];
+                        conceptsData = [];
+                        matrixGenerated = false;
+                        matrixData = null;
+                        validateDataInput();
+                        saveInputData();
+                        const goToResultsBtn = document.getElementById('go-to-results-btn');
+                        if (goToResultsBtn) goToResultsBtn.disabled = true;
+                        // Limpiar también la matriz si existe
+                        const matrixContainer = document.getElementById('matrix-container');
+                        if (matrixContainer) {
+                            matrixContainer.innerHTML = `<p style="color: #7f8c8d; text-align: center; padding: 2rem;">
+                                <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                Click "Generate Matrix" to create your Pugh Matrix.
+                            </p>`;
+                        }
+                    }
+                });
+            }
 
-            function getValuesFromList(list) {
-                return Array.from(list.querySelectorAll('input')).map(input => input.value.trim()).filter(val => val !== '');
+            if (generateMatrixBtn) {
+                generateMatrixBtn.addEventListener('click', function () {
+                    if (criteriaData.length < 1 || conceptsData.length < 2) {
+                        alert('⚠️ Please enter at least 1 criterion and 2 concepts.');
+                        return;
+                    }
+
+                    generateMatrix();
+                });
             }
 
             function generateMatrix() {
-                const criteria = getValuesFromList(criteriaList);
-                const concepts = getValuesFromList(conceptsList);
+                const matrixContainer = document.getElementById('matrix-container');
+                if (!matrixContainer) return;
 
-                if (criteria.length < 1 || concepts.length < 2) {
-                    alert('⚠️ Please enter at least 1 criterion and 2 concepts.');
-                    return;
-                }
-
-                let infoContainer = matrixOutputBlock.querySelector('#matrix-info-container');
-                if (!infoContainer) {
-                    infoContainer = document.createElement('div');
-                    infoContainer.id = 'matrix-info-container';
-                    const title = matrixOutputBlock.querySelector('.calculation-title');
-                    title.insertAdjacentElement('afterend', infoContainer);
-                }
-
-                // ===================================================================
-                // ===== MODIFICACIÓN: Formato de fecha y hora personalizado =====
-                // ===================================================================
                 const now = new Date();
                 const day = now.getDate();
-                const month = now.getMonth() + 1; // getMonth() es 0-indexado
+                const month = now.getMonth() + 1;
                 const year = now.getFullYear();
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 const seconds = String(now.getSeconds()).padStart(2, '0');
 
                 const timestamp = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-                // ===================================================================
 
-                infoContainer.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; flex-wrap: wrap; color: #7f8c8d; font-size: 0.9em;">
+                let tableHTML = `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; flex-wrap: wrap; color: #7f8c8d; font-size: 0.9em;">
             <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" style="height: 35px; width: 35px; border-radius: 5px;">
             <span>Generated on: ${timestamp}</span>
-        </div>
-      `;
+        </div>`;
 
-                let tableHTML = `<table class="pugh-matrix" id="interactiveMatrix"><thead><tr>`;
-                let baselineOptions = concepts.map((con, i) => `<option value="${i}">${con}</option>`).join('');
+                tableHTML += `<table class="pugh-matrix" id="interactiveMatrix"><thead><tr>`;
+                let baselineOptions = conceptsData.map((con, i) => `<option value="${i}">${con}</option>`).join('');
                 tableHTML += `
           <th class="criterion-cell">
               Criteria
@@ -602,15 +1163,15 @@
               </div>
           </th>
           <th>Weight</th>`;
-                concepts.forEach((concept, index) => {
+                conceptsData.forEach((concept, index) => {
                     tableHTML += `<th data-concept-index="${index}">${concept}</th>`;
                 });
                 tableHTML += `</tr></thead><tbody>`;
-                criteria.forEach((criterion, critIndex) => {
+                criteriaData.forEach((criterion, critIndex) => {
                     tableHTML += `<tr data-criterion-index="${critIndex}">`;
                     tableHTML += `<td class="criterion-cell">${criterion}</td>`;
                     tableHTML += `<td><input type="number" class="weight-input" value="1" min="1"></td>`;
-                    concepts.forEach((concept, conIndex) => {
+                    conceptsData.forEach((concept, conIndex) => {
                         tableHTML += `<td data-concept-index="${conIndex}">
                   <select class="score-select">
                       <option value="1">+</option><option value="0" selected>S</option><option value="-1">-</option>
@@ -620,16 +1181,22 @@
                     tableHTML += `</tr>`;
                 });
                 tableHTML += `</tbody><tfoot><tr class="total-row"><td><strong>TOTALS</strong></td><td></td>`;
-                concepts.forEach((concept, index) => {
+                conceptsData.forEach((concept, index) => {
                     tableHTML += `<td data-concept-index="${index}">0</td>`;
                 });
                 tableHTML += `</tr></tfoot></table>`;
 
                 matrixContainer.innerHTML = tableHTML;
-                matrixOutputBlock.style.display = 'block';
-                exportBtn.disabled = false;
 
-                document.getElementById('baseline-selector').addEventListener('change', updateScores);
+                matrixGenerated = true;
+                const goToResultsBtn = document.getElementById('go-to-results-btn');
+                if (goToResultsBtn) goToResultsBtn.disabled = false;
+
+                const baselineSelector = document.getElementById('baseline-selector');
+                if (baselineSelector) {
+                    baselineSelector.addEventListener('change', updateScores);
+                }
+
                 document.querySelectorAll('.weight-input, .score-select').forEach(el => el.addEventListener('change', updateScores));
 
                 updateScores();
@@ -639,7 +1206,10 @@
                 const table = document.getElementById('interactiveMatrix');
                 if (!table) return;
 
-                const baselineIndex = parseInt(document.getElementById('baseline-selector').value);
+                const baselineSelector = document.getElementById('baseline-selector');
+                if (!baselineSelector) return;
+
+                const baselineIndex = parseInt(baselineSelector.value);
                 const concepts = Array.from(table.querySelectorAll('thead th[data-concept-index]'));
                 const criteriaRows = table.querySelectorAll('tbody tr');
                 const totals = Array(concepts.length).fill(0);
@@ -652,7 +1222,8 @@
                             cell.classList.add('baseline-cell');
                             cell.innerHTML = '<strong>B</strong>';
                         });
-                        table.querySelector(`.total-row td[data-concept-index="${index}"]`).classList.add('baseline-cell');
+                        const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
+                        if (totalCell) totalCell.classList.add('baseline-cell');
                     } else {
                         th.classList.remove('baseline-cell');
                         cells.forEach(cell => {
@@ -662,17 +1233,21 @@
                             }
                             cell.classList.remove('baseline-cell');
                         });
-                        table.querySelector(`.total-row td[data-concept-index="${index}"]`).classList.remove('baseline-cell');
+                        const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
+                        if (totalCell) totalCell.classList.remove('baseline-cell');
                     }
                 });
 
                 criteriaRows.forEach(row => {
-                    const weight = parseInt(row.querySelector('.weight-input').value) || 0;
+                    const weightInput = row.querySelector('.weight-input');
+                    const weight = weightInput ? parseInt(weightInput.value) || 0 : 0;
                     concepts.forEach((th, conIndex) => {
                         if (conIndex !== baselineIndex) {
                             const scoreSelect = row.querySelector(`td[data-concept-index="${conIndex}"] select`);
-                            const score = parseInt(scoreSelect.value);
-                            totals[conIndex] += score * weight;
+                            if (scoreSelect) {
+                                const score = parseInt(scoreSelect.value);
+                                totals[conIndex] += score * weight;
+                            }
                         }
                     });
                 });
@@ -687,6 +1262,8 @@
 
             function highlightWinner(totals, baselineIndex) {
                 const table = document.getElementById('interactiveMatrix');
+                if (!table) return;
+
                 let maxScore = -Infinity;
                 let winnerIndex = -1;
 
@@ -704,42 +1281,44 @@
                 const isDraw = totals.filter((score, index) => index !== baselineIndex && score === maxScore).length > 1;
 
                 if (winnerIndex !== -1 && maxScore > 0 && !isDraw) {
-                    table.querySelector(`thead th[data-concept-index="${winnerIndex}"]`).classList.add('winning-column-header');
+                    const winnerHeader = table.querySelector(`thead th[data-concept-index="${winnerIndex}"]`);
+                    if (winnerHeader) winnerHeader.classList.add('winning-column-header');
                     table.querySelectorAll(`tbody td[data-concept-index="${winnerIndex}"], tfoot td[data-concept-index="${winnerIndex}"]`).forEach(cell => {
                         cell.classList.add('winning-column');
                     });
                 }
             }
 
-            exportBtn.addEventListener('click', function () {
-                const table = document.getElementById('interactiveMatrix');
-                if (!table) {
-                    alert("No matrix to export.");
-                    return;
-                }
-                const tableClone = table.cloneNode(true);
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function () {
+                    const table = document.getElementById('interactiveMatrix');
+                    if (!table) {
+                        alert("No matrix to export.");
+                        return;
+                    }
+                    const tableClone = table.cloneNode(true);
 
-                tableClone.querySelectorAll('input, select').forEach(el => {
-                    const cell = el.closest('td') || el.closest('th');
-                    if (el.id === 'baseline-selector') {
-                        cell.querySelector('label').remove();
-                        cell.querySelector('select').remove();
-                        cell.innerHTML += `<br>Baseline: ${el.options[el.selectedIndex].text}`;
-                    } else if (el.classList.contains('score-select')) {
-                        cell.textContent = el.options[el.selectedIndex].text;
-                    }
-                    else {
-                        cell.textContent = el.value;
-                    }
+                    tableClone.querySelectorAll('input, select').forEach(el => {
+                        const cell = el.closest('td') || el.closest('th');
+                        if (el.id === 'baseline-selector') {
+                            cell.querySelector('label').remove();
+                            cell.querySelector('select').remove();
+                            cell.innerHTML += `<br>Baseline: ${el.options[el.selectedIndex].text}`;
+                        } else if (el.classList.contains('score-select')) {
+                            cell.textContent = el.options[el.selectedIndex].text;
+                        }
+                        else {
+                            cell.textContent = el.value;
+                        }
+                    });
+
+                    const wb = XLSX.utils.table_to_book(tableClone, { sheet: "Pugh Matrix" });
+                    XLSX.writeFile(wb, "Pugh_Matrix_Sigma_Exacta.xlsx");
                 });
+            }
 
-                const wb = XLSX.utils.table_to_book(tableClone, { sheet: "Pugh Matrix" });
-                XLSX.writeFile(wb, "Pugh_Matrix_Sigma_Exacta.xlsx");
-            });
-
-            // Initialize with default fields
+            // Inicializar con campos por defecto
             initInputs();
-
         });
     </script>
 
