@@ -4,7 +4,7 @@
 <head>
     <link rel="canonical" href="https://sigmaexacta.com/apqp-ppap" />
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Online Dynamic APQP/PPAP Planning Tool | Sigma Exacta</title>
     <meta name="description"
         content="Free dynamic APQP and PPAP planner to manage new product development projects. Track phases, tasks, and PPAP elements, generate Gantt charts, and export reports. Ideal for quality engineers and project managers.">
@@ -12,6 +12,7 @@
         content="Open source, Free software, APQP, PPAP, AIAG, Automotive Industry Action Group, Quality Planning, Product Launch, Gantt Chart, Project Management, Quality Engineering, Project Planning, Milestones, SigmaExacta">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +22,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
+        /* ESTILOS EXISTENTES (conservados) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -404,10 +406,8 @@
         }
 
         /* REGLAS AÑADIDAS PARA FORZAR EL COLOR ROJIZO DEL LOGO Y EL ICONO BLANCO */
-        /* Estas reglas anulan el styles.css si este no funciona, aplicando los estilos directamente. */
         .tool-logo[data-color="17"] {
             background-color: var(--danger-color);
-            /* Usando la variable --danger-color: #e74c3c */
         }
 
         .tool-logo {
@@ -415,24 +415,17 @@
             justify-content: center;
             align-items: center;
             width: 35px;
-            /* Ajuste para que se vea como un cuadrado */
             height: 35px;
             border-radius: 8px;
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
-            /* Separación sobre el H1 */
         }
 
         .tool-logo[data-color="17"] i {
             color: white;
-            /* Color del icono forzado a blanco */
         }
 
-        /* ========================================================================= */
-
-        /* ============================================== */
-        /* ===== NUEVOS Y MEJORADOS ESTILOS GANTT ===== */
-        /* ============================================== */
+        /* ===== ESTILOS GANTT (conservados) ===== */
         #gantt-chart-container {
             overflow-x: auto;
             padding: 1rem;
@@ -445,13 +438,11 @@
         .gantt-inner-container {
             position: relative;
             min-width: 900px;
-            /* Ancho mínimo para la línea de tiempo, previene compresión */
         }
 
         .gantt-header {
             display: grid;
             grid-template-columns: 280px 1fr;
-            /* Columna para etiqueta, columna para timeline */
             gap: 20px;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--border-color);
@@ -483,7 +474,6 @@
         .gantt-row {
             display: grid;
             grid-template-columns: 280px 1fr;
-            /* Debe coincidir con el grid del header */
             gap: 20px;
             align-items: center;
             margin-bottom: 0.5rem;
@@ -524,15 +514,236 @@
         .gantt-bar:hover {
             opacity: 1;
         }
+
+        /* ===== NUEVOS ESTILOS PARA TABS ===== */
+        .tabs-container {
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+            box-sizing: border-box;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 0;
+            margin-top: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            width: 100%;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: #3498db;
+            border-bottom-color: #3498db;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .wizard-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .wizard-tab-content.active {
+            display: block;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content-wrapper {
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* Estilos para subtabs dentro de Project Setup */
+        .subtabs-nav {
+            display: flex;
+            background-color: #edf2f7;
+            border-radius: 6px 6px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #2c3e50;
+            margin-bottom: 0;
+            margin-top: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .subtabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subtab-btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #4a5568;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .subtab-btn:hover {
+            background-color: #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .subtab-btn.active {
+            background-color: #fff;
+            color: #2c3e50;
+            border-bottom-color: #2c3e50;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #cbd5e0;
+            border-right: 1px solid #cbd5e0;
+            border-top: 1px solid #cbd5e0;
+        }
+
+        .subtabs-container {
+            background: #fff;
+            border: 1px solid #cbd5e0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .subtab-content {
+            display: none;
+            padding: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .subtab-content.active {
+            display: block;
+        }
+
+        /* Botones de exportación */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .button.export-excel {
+            background-color: #27ae60;
+        }
+
+        .button.export-image {
+            background-color: #e67e22;
+        }
+
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .subtab-btn {
+                padding: 0.6rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            .export-buttons .button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <!-- Contenedor para el header que se cargará dinámicamente -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -565,116 +776,213 @@
             </p>
         </header>
 
-        <section class="section">
-            <h2 class="section-title"><i class="fas fa-info-circle"></i> What are APQP & PPAP?</h2>
-            <p><strong>Advanced Product Quality Planning (APQP)</strong> is a structured framework of procedures and
-                techniques used to develop products, particularly in the automotive industry. The primary goal of APQP
-                is to ensure that new products meet customer requirements through a standardized, preventative process,
-                rather than relying on defect detection after production.</p>
-            <p><strong>Production Part Approval Process (PPAP)</strong> is a key output of the APQP process, typically
-                concluding Phase 4. It is the formal method for providing evidence that a supplier's production process
-                can consistently produce parts that meet all customer engineering design and specification requirements.
-                The PPAP package is a comprehensive set of documents that serves as official approval to begin mass
-                production.</p>
-        </section>
-        <section class="section">
-            <h2 class="section-title"><i class="fas fa-history"></i> History and Purpose</h2>
-            <p>The concept of APQP was developed in the late 1980s by the <strong>Automotive Industry Action Group
-                    (AIAG)</strong>, a non-profit association founded by the 'Big Three' U.S. automobile manufacturers:
-                Ford, General Motors, and Chrysler. The goal was to standardize the product development and quality
-                planning process for their vast network of suppliers.</p>
-            <p>Before APQP, suppliers dealt with different requirements from each manufacturer, leading to complexity
-                and inefficiency. APQP created a common language and a single, robust framework to guide product
-                development from concept to full production. Its purpose is to foster clear communication, identify and
-                mitigate risks early, and ensure that the final product is delivered on time, within budget, and to the
-                customer's satisfaction. This proactive approach is visualized through its five distinct phases:</p>
-            <div class="infographic-flow">
-                <div class="flow-step"><i class="fas fa-clipboard-list"></i><strong>Phase 1: Plan &
-                        Define</strong><span>Understand the customer's voice.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-drafting-compass"></i><strong>Phase 2: Product
-                        Design</strong><span>Develop product features and characteristics.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-cogs"></i><strong>Phase 3: Process Design</strong><span>Design a
-                        capable manufacturing system.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-check-double"></i><strong>Phase 4:
-                        Validation</strong><span>Validate the manufacturing process.</span></div>
-                <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div class="flow-step"><i class="fas fa-chart-line"></i><strong>Phase 5: Feedback</strong><span>Assess
-                        and improve continuously.</span></div>
-            </div>
-        </section>
-        <section class="section">
-            <h2 class="section-title"><i class="fas fa-question-circle"></i> How to Use This Planner</h2>
-            <ul>
-                <li><strong>Step 1: Project Setup:</strong> Enter the basic project information, including the project
-                    name, part number, customer, and project lead. Add team members' names, one per line, to make them
-                    available for assignment.</li>
-                <li><strong>Step 2: Plan APQP Phases:</strong> For each of the five APQP phases, add specific tasks,
-                    assign a responsible team member, set start/end dates, and update the status and notes as the
-                    project progresses.</li>
-                <li><strong>Step 3: Manage PPAP Checklist:</strong> Review the 18 standard PPAP elements. Assign a
-                    responsible person, update the status (Pending, In Progress, Completed, or N/A), and add any
-                    relevant notes.</li>
-                <li><strong>Step 4: Visualize Progress:</strong> After entering dates for your APQP tasks, click
-                    "Generate Gantt" to see a visual timeline of your project.</li>
-                <li><strong>Step 5: Track Actions:</strong> Click "Generate Action Plan" to automatically create a to-do
-                    list of all pending and in-progress items from both APQP and PPAP sections.</li>
-                <li><strong>Step 6: Export Report:</strong> Once your plan is complete, use the "Export to Excel" button
-                    to download a comprehensive report containing all project details, plans, and checklists.</li>
-            </ul>
-        </section>
-
         <div class="button-group">
             <button id="load-example-btn" class="button success"><i class="fas fa-lightbulb"></i> Load Example</button>
             <button id="reset-btn" class="button warning"><i class="fas fa-undo"></i> Reset</button>
         </div>
-        <div id="main-content">
-            <section class="section" id="project-setup-section"></section>
-            <section class="section" id="apqp-section">
-                <h2 class="section-title"><i class="fas fa-tasks"></i>Advanced Product Quality Planning (APQP) Phases
-                </h2>
-                <div id="apqp-phases-container"></div>
-            </section>
-            <section class="section" id="ppap-section">
-                <h2 class="section-title"><i class="fas fa-list-check"></i>Production Part Approval Process (PPAP)
-                    Checklist</h2>
-                <div id="ppap-container"></div>
-            </section>
-            <section class="section">
-                <h2 class="section-title"><i class="fas fa-chart-bar"></i>APQP Gantt Chart</h2>
-                <button class="button primary" onclick="generateGantt()"><i class="fas fa-project-diagram"></i> Generate
-                    Gantt</button>
-                <div id="gantt-chart-container">Enter task dates and click "Generate" to see the project timeline.</div>
-            </section>
-            <section class="section">
-                <h2 class="section-title"><i class="fas fa-clipboard-check"></i>Automatic Action Plan</h2>
-                <button class="button primary" onclick="generateActionItems()"><i class="fas fa-bolt"></i> Generate
-                    Action Plan</button>
-                <table id="action-items-table">
-                    <thead>
-                        <tr>
-                            <th>Action Item</th>
-                            <th>Responsible</th>
-                            <th>Due Date</th>
-                            <th>Source</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="4" style="text-align:center;">Click "Generate" to populate with pending and
-                                in-progress tasks.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </div>
-        <div class="actions">
-            <button class="button primary" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to
-                Excel</button>
+
+        <!-- CONTENEDOR DE TABS PRINCIPALES -->
+        <div class="tabs-container">
+            <!-- NAVEGACIÓN DE TABS PRINCIPALES -->
+            <nav class="tabs-nav">
+                <button class="tab-btn active" onclick="switchMainTab('tab-theory')">
+                    <i class="fas fa-book"></i> Theory & Info
+                </button>
+                <button class="tab-btn" onclick="switchMainTab('tab-project-setup')">
+                    <i class="fas fa-edit"></i> Project Setup
+                </button>
+                <button class="tab-btn" onclick="switchMainTab('tab-gantt')">
+                    <i class="fas fa-chart-bar"></i> Gantt
+                </button>
+                <button class="tab-btn" onclick="switchMainTab('tab-action-plan')">
+                    <i class="fas fa-clipboard-check"></i> Action Plan
+                </button>
+            </nav>
+
+            <!-- TAB 1: TEORÍA & INFO -->
+            <div id="tab-theory" class="wizard-tab-content active">
+                <div class="tab-content-wrapper">
+                    <section class="section">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> What are APQP & PPAP?</h2>
+                        <p><strong>Advanced Product Quality Planning (APQP)</strong> is a structured framework of
+                            procedures and techniques used to develop products, particularly in the automotive industry.
+                            The primary goal of APQP is to ensure that new products meet customer requirements through a
+                            standardized, preventative process, rather than relying on defect detection after
+                            production.</p>
+                        <p><strong>Production Part Approval Process (PPAP)</strong> is a key output of the APQP
+                            process, typically concluding Phase 4. It is the formal method for providing evidence that a
+                            supplier's production process can consistently produce parts that meet all customer
+                            engineering design and specification requirements. The PPAP package is a comprehensive set
+                            of documents that serves as official approval to begin mass production.</p>
+                    </section>
+                    <section class="section">
+                        <h2 class="section-title"><i class="fas fa-history"></i> History and Purpose</h2>
+                        <p>The concept of APQP was developed in the late 1980s by the <strong>Automotive Industry
+                                Action Group (AIAG)</strong>, a non-profit association founded by the 'Big Three' U.S.
+                            automobile manufacturers: Ford, General Motors, and Chrysler. The goal was to standardize
+                            the product development and quality planning process for their vast network of suppliers.
+                        </p>
+                        <p>Before APQP, suppliers dealt with different requirements from each manufacturer, leading to
+                            complexity and inefficiency. APQP created a common language and a single, robust framework
+                            to guide product development from concept to full production. Its purpose is to foster clear
+                            communication, identify and mitigate risks early, and ensure that the final product is
+                            delivered on time, within budget, and to the customer's satisfaction. This proactive
+                            approach is visualized through its five distinct phases:</p>
+                        <div class="infographic-flow">
+                            <div class="flow-step"><i class="fas fa-clipboard-list"></i><strong>Phase 1: Plan &
+                                    Define</strong><span>Understand the customer's voice.</span></div>
+                            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-step"><i class="fas fa-drafting-compass"></i><strong>Phase 2: Product
+                                    Design</strong><span>Develop product features and characteristics.</span></div>
+                            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-step"><i class="fas fa-cogs"></i><strong>Phase 3: Process
+                                    Design</strong><span>Design a capable manufacturing system.</span></div>
+                            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-step"><i class="fas fa-check-double"></i><strong>Phase 4:
+                                    Validation</strong><span>Validate the manufacturing process.</span></div>
+                            <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-step"><i class="fas fa-chart-line"></i><strong>Phase 5:
+                                    Feedback</strong><span>Assess and improve continuously.</span></div>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h2 class="section-title"><i class="fas fa-question-circle"></i> How to Use This Planner</h2>
+                        <ul>
+                            <li><strong>Step 1: Project Setup:</strong> Enter the basic project information, including
+                                the project name, part number, customer, and project lead. Add team members' names, one
+                                per line, to make them available for assignment.</li>
+                            <li><strong>Step 2: Plan APQP Phases:</strong> For each of the five APQP phases, add
+                                specific tasks, assign a responsible team member, set start/end dates, and update the
+                                status and notes as the project progresses.</li>
+                            <li><strong>Step 3: Manage PPAP Checklist:</strong> Review the 18 standard PPAP elements.
+                                Assign a responsible person, update the status (Pending, In Progress, Completed, or
+                                N/A), and add any relevant notes.</li>
+                            <li><strong>Step 4: Visualize Progress:</strong> After entering dates for your APQP tasks,
+                                click "Generate Gantt" to see a visual timeline of your project.</li>
+                            <li><strong>Step 5: Track Actions:</strong> Click "Generate Action Plan" to automatically
+                                create a to-do list of all pending and in-progress items from both APQP and PPAP
+                                sections.</li>
+                            <li><strong>Step 6: Export Report:</strong> Once your plan is complete, use the "Export to
+                                Excel" button to download a comprehensive report containing all project details, plans,
+                                and checklists.</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+            <!-- TAB 2: PROJECT SETUP (con subtabs) -->
+            <div id="tab-project-setup" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <!-- Subtabs dentro de Project Setup -->
+                    <div class="subtabs-container">
+                        <nav class="subtabs-nav">
+                            <button class="subtab-btn active" onclick="switchSubTab('subtab-project-config')">Project
+                                Setup</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-phase1')">Phase 1</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-phase2')">Phase 2</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-phase3')">Phase 3</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-phase4')">Phase 4</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-phase5')">Phase 5</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-ppap')">PPAP Checklist</button>
+                        </nav>
+
+                        <!-- SUBTAB: Project Setup -->
+                        <div id="subtab-project-config" class="subtab-content active">
+                            <div id="project-setup-section"></div>
+                        </div>
+
+                        <!-- SUBTAB: Phase 1 -->
+                        <div id="subtab-phase1" class="subtab-content">
+                            <div id="apqp-phase-1"></div>
+                        </div>
+
+                        <!-- SUBTAB: Phase 2 -->
+                        <div id="subtab-phase2" class="subtab-content">
+                            <div id="apqp-phase-2"></div>
+                        </div>
+
+                        <!-- SUBTAB: Phase 3 -->
+                        <div id="subtab-phase3" class="subtab-content">
+                            <div id="apqp-phase-3"></div>
+                        </div>
+
+                        <!-- SUBTAB: Phase 4 -->
+                        <div id="subtab-phase4" class="subtab-content">
+                            <div id="apqp-phase-4"></div>
+                        </div>
+
+                        <!-- SUBTAB: Phase 5 -->
+                        <div id="subtab-phase5" class="subtab-content">
+                            <div id="apqp-phase-5"></div>
+                        </div>
+
+                        <!-- SUBTAB: PPAP Checklist -->
+                        <div id="subtab-ppap" class="subtab-content">
+                            <div id="ppap-checklist"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: GANTT -->
+            <div id="tab-gantt" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <section class="section">
+                        <h2 class="section-title"><i class="fas fa-chart-bar"></i>APQP Gantt Chart</h2>
+                        <button class="button primary" onclick="generateGantt()"><i class="fas fa-project-diagram"></i>
+                            Generate Gantt</button>
+
+                        <div class="export-buttons">
+                            <button class="button export-excel" onclick="exportGanttToExcel()">
+                                <i class="fas fa-file-excel"></i> Export Gantt to Excel
+                            </button>
+                            <button class="button export-image" onclick="exportGanttToImage()">
+                                <i class="fas fa-image"></i> Export Gantt to Image
+                            </button>
+                        </div>
+
+                        <div id="gantt-chart-container">Enter task dates and click "Generate" to see the project
+                            timeline.</div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- TAB 4: ACTION PLAN -->
+            <div id="tab-action-plan" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <section class="section">
+                        <h2 class="section-title"><i class="fas fa-clipboard-check"></i>Automatic Action Plan</h2>
+                        <button class="button primary" onclick="generateActionItems()"><i class="fas fa-bolt"></i>
+                            Generate Action Plan</button>
+
+                        <div class="export-buttons">
+                            <button class="button export-excel" onclick="exportActionPlanToExcel()">
+                                <i class="fas fa-file-excel"></i> Export Action Plan to Excel
+                            </button>
+                        </div>
+
+                        <table id="action-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Action Item</th>
+                                    <th>Responsible</th>
+                                    <th>Due Date</th>
+                                    <th>Source</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;">Click "Generate" to populate with
+                                        pending and in-progress tasks.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+            </div>
         </div>
     </main>
+
     <footer role="contentinfo">
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
@@ -727,23 +1035,392 @@
             toolsDropdownToggle.addEventListener('click', (event) => { if (window.innerWidth <= 992) { event.preventDefault(); toolsDropdownMenu.classList.toggle('show-submenu'); toolsDropdownContainer.classList.toggle('active'); } });
         }
 
-        // --- SCRIPT de la herramienta APQP/PPAP (Lógica principal sin cambios) ---
-        let state = {};
-        const getInitialState = () => ({ projectInfo: { name: '', partNumber: '', customer: '', lead: '', team: [], }, apqpPhases: [{ id: 1, title: 'Phase 1: Plan and Define Program', icon: 'fa-clipboard-list', desc: 'Objective: To ensure customer needs and expectations are clearly understood.', tasks: [] }, { id: 2, title: 'Phase 2: Product Design & Development', icon: 'fa-drafting-compass', desc: 'Objective: To develop the product\'s features and design.', tasks: [] }, { id: 3, title: 'Phase 3: Process Design & Development', icon: 'fa-cogs', desc: 'Objective: To design and develop a capable manufacturing system.', tasks: [] }, { id: 4, title: 'Phase 4: Product & Process Validation', icon: 'fa-check-double', desc: 'Objective: To validate that the process can consistently produce a compliant product.', tasks: [] }, { id: 5, title: 'Phase 5: Feedback, Assessment & Corrective Action', icon: 'fa-chart-line', desc: 'Objective: Monitor performance, reduce variation, and document lessons learned.', tasks: [] }], ppapElements: ["Design Records", "Engineering Change Docs", "Customer Engineering Approval", "Design FMEA (DFMEA)", "Process Flow Diagram", "Process FMEA (PFMEA)", "Control Plan", "Measurement System Analysis (MSA)", "Dimensional Results", "Material/Performance Test Results", "Initial Process Studies", "Qualified Laboratory Documentation", "Appearance Approval Report (AAR)", "Sample Production Parts", "Master Sample", "Checking Aids", "Customer-Specific Requirements", "Part Submission Warrant (PSW)"].map((name, index) => ({ id: Date.now() + index, name, responsible: '', status: 'pending', notes: '' })) });
-        function renderResponsibleDropdown(selectedValue = '') { const options = state.projectInfo.team.map(member => `<option value="${member}" ${member === selectedValue ? 'selected' : ''}>${member}</option>`).join(''); return `<select class="responsible-selector"><option value="">--Select--</option>${options}</select>`; }
-        function renderStatusDropdown(selectedValue = 'pending') { const statuses = { pending: 'Pending', progress: 'In Progress', completed: 'Completed', na: 'N/A' }; const options = Object.entries(statuses).map(([key, value]) => `<option value="${key}" ${key === selectedValue ? 'selected' : ''}>${value}</option>`).join(''); return `<select class="status-selector">${options}</select>`; }
-        function renderProjectSetup() { const { name, partNumber, customer, lead, team } = state.projectInfo; const container = document.getElementById('project-setup-section'); container.innerHTML = ` <h2 class="section-title"><i class="fas fa-info-circle"></i> Project Setup</h2> <div class="grid-form"> <div class="form-group"><label for="project-name">Project / Program Name</label><input type="text" id="project-name" value="${name}"></div> <div class="form-group"><label for="part-number">Part Number</label><input type="text" id="part-number" value="${partNumber}"></div> <div class="form-group"><label for="customer">Customer</label><input type="text" id="customer" value="${customer}"></div> <div class="form-group"><label for="project-lead">Project Lead</label><input type="text" id="project-lead" value="${lead}"></div> </div> <div class="form-group" style="margin-top: 20px;"> <label for="team-members">Team Members (one name per line)</label> <textarea id="team-members" rows="4" placeholder="John Doe\nJane Smith">${team.join('\n')}</textarea> </div>`; }
-        function renderApqpPhases() { const container = document.getElementById('apqp-phases-container'); container.innerHTML = state.apqpPhases.map((phase, phaseIndex) => ` <details open> <summary><span class="summary-title"><i class="fas ${phase.icon}"></i> ${phase.title}</span><span class="toggle-icon"></span></summary> <div class="phase-content"> <p class="phase-description"><strong>${phase.desc}</strong></p> <table class="apqp-table"> <thead><tr><th>Task / Element</th><th style="width: 20%;">Responsible</th><th style="width: 10%;">Start</th><th style="width: 10%;">End</th><th style="width: 15%;">Status</th><th style="width: 25%;">Notes</th><th style="width: 5%;">Action</th></tr></thead> <tbody> ${phase.tasks.map(task => ` <tr class="task-row status-${task.status}" data-task-id="${task.id}" data-phase-index="${phaseIndex}"> <td><input type="text" placeholder="New task..." value="${task.name}"></td> <td>${renderResponsibleDropdown(task.responsible)}</td> <td><input type="date" value="${task.start}"></td> <td><input type="date" value="${task.end}"></td> <td>${renderStatusDropdown(task.status)}</td> <td><input type="text" value="${task.notes}"></td> <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td> </tr> `).join('')} </tbody> </table> <div class="table-actions"><button class="button secondary add-task-btn" data-phase-index="${phaseIndex}"><i class="fas fa-plus"></i> Add Task</button></div> </div> </details> `).join(''); }
-        function renderPpapChecklist() { const container = document.getElementById('ppap-container'); container.innerHTML = ` <table id="ppap-table"> <thead><tr><th>#</th><th>PPAP Element</th><th style="width: 20%;">Responsible</th><th style="width: 15%;">Status</th><th style="width: 25%;">Notes</th><th>Action</th></tr></thead> <tbody> ${state.ppapElements.map((elem, index) => ` <tr class="task-row status-${elem.status}" data-task-id="${elem.id}"> <td>${index + 1}</td> <td><input type="text" placeholder="New PPAP element..." value="${elem.name}"></td> <td>${renderResponsibleDropdown(elem.responsible)}</td> <td>${renderStatusDropdown(elem.status)}</td> <td><input type="text" value="${elem.notes}"></td> <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td> </tr> `).join('')} </tbody> </table> <div class="table-actions"><button class="button secondary add-ppap-btn"><i class="fas fa-plus"></i> Add Element</button></div>`; }
-        function renderAll() { renderProjectSetup(); renderApqpPhases(); renderPpapChecklist(); }
-        function setupEventListeners() { const main = document.getElementById('main-content'); main.addEventListener('change', e => { const target = e.target; const taskRow = target.closest('tr[data-task-id]'); if (!taskRow) return; const taskId = Number(taskRow.dataset.taskId); const phaseIndex = taskRow.dataset.phaseIndex; let element; if (phaseIndex !== undefined) { element = state.apqpPhases[phaseIndex].tasks.find(t => t.id === taskId); } else { element = state.ppapElements.find(el => el.id === taskId); } if (!element) return; if (target.matches('input[type="text"]')) { const prop = taskRow.cells[taskRow.cells.length === 7 ? 0 : 1].contains(target) ? 'name' : 'notes'; element[prop] = target.value; } else if (target.matches('input[type="date"]')) { const prop = taskRow.cells[2].contains(target) ? 'start' : 'end'; element[prop] = target.value; } else if (target.matches('.responsible-selector')) { element.responsible = target.value; } else if (target.matches('.status-selector')) { element.status = target.value; taskRow.className = `task-row status-${element.status}`; } }); main.addEventListener('input', e => { const target = e.target; if (target.id === 'project-name') state.projectInfo.name = target.value; if (target.id === 'part-number') state.projectInfo.partNumber = target.value; if (target.id === 'customer') state.projectInfo.customer = target.value; if (target.id === 'project-lead') state.projectInfo.lead = target.value; if (target.id === 'team-members') { state.projectInfo.team = target.value.split('\n').filter(Boolean); } }); main.addEventListener('focusout', e => { if (e.target.id === 'team-members') { renderAll(); } }); main.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; if (target.classList.contains('add-task-btn')) { const phaseIndex = target.dataset.phaseIndex; state.apqpPhases[phaseIndex].tasks.push({ id: Date.now(), name: '', responsible: '', start: '', end: '', status: 'pending', notes: '' }); renderApqpPhases(); } if (target.classList.contains('add-ppap-btn')) { state.ppapElements.push({ id: Date.now(), name: '', responsible: '', status: 'pending', notes: '' }); renderPpapChecklist(); } if (target.classList.contains('remove-task-btn')) { const taskRow = target.closest('tr[data-task-id]'); const taskId = Number(taskRow.dataset.taskId); const phaseIndex = taskRow.dataset.phaseIndex; if (phaseIndex !== undefined) { state.apqpPhases[phaseIndex].tasks = state.apqpPhases[phaseIndex].tasks.filter(t => t.id !== taskId); renderApqpPhases(); } else { state.ppapElements = state.ppapElements.filter(el => el.id !== taskId); renderPpapChecklist(); } } }); document.getElementById('load-example-btn').addEventListener('click', loadExample); document.getElementById('reset-btn').addEventListener('click', resetForm); }
-        function init() { state = getInitialState(); renderAll(); setupEventListeners(); document.querySelector('#action-items-table tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;">Click "Generate" to populate.</td></tr>'; document.getElementById('gantt-chart-container').innerHTML = 'Enter task dates and click "Generate" to see the project timeline.'; }
-        function loadExample() { const today = new Date(); const d = (days) => new Date(today.getTime() + days * 86400000).toISOString().split('T')[0]; const exampleState = getInitialState(); exampleState.projectInfo = { name: 'Next-Gen LED Headlight Assembly', partNumber: 'HL-2025-A1', customer: 'Aura Motors', lead: 'Sarah Miller', team: ['Sarah Miller', 'David Chen', 'Emily Rodriguez', 'Michael Johnson'] }; exampleState.apqpPhases[0].tasks = [{ id: Date.now() + 1, name: 'Customer Requirements (SOR) Review', responsible: 'Sarah Miller', start: d(0), end: d(7), status: 'completed', notes: 'SOR v2.1 analyzed.' }, { id: Date.now() + 2, name: 'Preliminary Feasibility Study', responsible: 'David Chen', start: d(5), end: d(15), status: 'completed', notes: 'Feasible with tooling investment.' }, { id: Date.now() + 3, name: 'Define Quality & Reliability Goals', responsible: 'Emily Rodriguez', start: d(10), end: d(20), status: 'progress', notes: 'Targeting >50k hours lifespan.' }]; exampleState.apqpPhases[1].tasks = [{ id: Date.now() + 4, name: 'DFMEA', responsible: 'David Chen', start: d(21), end: d(40), status: 'progress', notes: 'High RPNs on heat dissipation.' }, { id: Date.now() + 5, name: 'Prototype Build A', responsible: 'Michael Johnson', start: d(41), end: d(55), status: 'pending', notes: '' }, { id: Date.now() + 6, name: 'Design Verification Plan & Report (DVP&R)', responsible: 'Emily Rodriguez', start: d(45), end: d(70), status: 'pending', notes: 'Vibration and thermal tests planned.' }]; exampleState.apqpPhases[2].tasks = [{ id: Date.now() + 7, name: 'Process Flow Diagram', responsible: 'Michael Johnson', start: d(60), end: d(70), status: 'completed', notes: 'Final version approved.' }, { id: Date.now() + 8, name: 'PFMEA', responsible: 'Michael Johnson', start: d(71), end: d(90), status: 'progress', notes: '' }, { id: Date.now() + 9, name: 'Control Plan (Pre-launch)', responsible: 'Emily Rodriguez', start: d(85), end: d(95), status: 'pending', notes: '' }]; exampleState.apqpPhases[3].tasks = [{ id: Date.now() + 10, name: 'Significant Production Run', responsible: 'Michael Johnson', start: d(100), end: d(105), status: 'pending', notes: '300 pieces planned.' }, { id: Date.now() + 11, name: 'Capability Studies (Pp/Ppk)', responsible: 'Emily Rodriguez', start: d(106), end: d(115), status: 'pending', notes: '' }, { id: Date.now() + 12, name: 'Part Submission Warrant (PSW)', responsible: 'Sarah Miller', start: d(120), end: d(125), status: 'pending', notes: '' }]; exampleState.ppapElements[0].status = 'completed'; exampleState.ppapElements[0].responsible = 'David Chen'; exampleState.ppapElements[3].status = 'progress'; exampleState.ppapElements[3].responsible = 'David Chen'; exampleState.ppapElements[4].status = 'completed'; exampleState.ppapElements[4].responsible = 'Michael Johnson'; exampleState.ppapElements[5].status = 'progress'; exampleState.ppapElements[5].responsible = 'Michael Johnson'; exampleState.ppapElements[6].status = 'pending'; exampleState.ppapElements[6].responsible = 'Emily Rodriguez'; exampleState.ppapElements[12].status = 'na'; state = exampleState; renderAll(); }
-        function resetForm() { if (confirm("Are you sure you want to reset all project data?")) init(); }
+        // --- FUNCIONES PARA TABS ---
+        function switchMainTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
 
-        // ==============================================
-        // ===== FUNCIÓN GANTT MODIFICADA Y MEJORADA =====
-        // ==============================================
+            // Activar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchMainTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchSubTab(subTabId) {
+            // Quitar clase active de todos los botones y contenidos de subtabs
+            document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.subtab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el contenido seleccionado
+            document.getElementById(subTabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: document.querySelector('.subtabs-container').offsetTop, behavior: 'smooth' });
+        }
+
+        // --- SCRIPT de la herramienta APQP/PPAP (Lógica principal modificada para tabs) ---
+        let state = {};
+        const getInitialState = () => ({
+            projectInfo: {
+                name: '',
+                partNumber: '',
+                customer: '',
+                lead: '',
+                team: [],
+            },
+            apqpPhases: [
+                {
+                    id: 1,
+                    title: 'Phase 1: Plan and Define Program',
+                    icon: 'fa-clipboard-list',
+                    desc: 'Objective: To ensure customer needs and expectations are clearly understood.',
+                    tasks: []
+                },
+                {
+                    id: 2,
+                    title: 'Phase 2: Product Design & Development',
+                    icon: 'fa-drafting-compass',
+                    desc: 'Objective: To develop the product\'s features and design.',
+                    tasks: []
+                },
+                {
+                    id: 3,
+                    title: 'Phase 3: Process Design & Development',
+                    icon: 'fa-cogs',
+                    desc: 'Objective: To design and develop a capable manufacturing system.',
+                    tasks: []
+                },
+                {
+                    id: 4,
+                    title: 'Phase 4: Product & Process Validation',
+                    icon: 'fa-check-double',
+                    desc: 'Objective: To validate that the process can consistently produce a compliant product.',
+                    tasks: []
+                },
+                {
+                    id: 5,
+                    title: 'Phase 5: Feedback, Assessment & Corrective Action',
+                    icon: 'fa-chart-line',
+                    desc: 'Objective: Monitor performance, reduce variation, and document lessons learned.',
+                    tasks: []
+                }
+            ],
+            ppapElements: [
+                "Design Records",
+                "Engineering Change Docs",
+                "Customer Engineering Approval",
+                "Design FMEA (DFMEA)",
+                "Process Flow Diagram",
+                "Process FMEA (PFMEA)",
+                "Control Plan",
+                "Measurement System Analysis (MSA)",
+                "Dimensional Results",
+                "Material/Performance Test Results",
+                "Initial Process Studies",
+                "Qualified Laboratory Documentation",
+                "Appearance Approval Report (AAR)",
+                "Sample Production Parts",
+                "Master Sample",
+                "Checking Aids",
+                "Customer-Specific Requirements",
+                "Part Submission Warrant (PSW)"
+            ].map((name, index) => ({
+                id: Date.now() + index,
+                name,
+                responsible: '',
+                status: 'pending',
+                notes: ''
+            }))
+        });
+
+        function renderResponsibleDropdown(selectedValue = '') {
+            const options = state.projectInfo.team.map(member =>
+                `<option value="${member}" ${member === selectedValue ? 'selected' : ''}>${member}</option>`
+            ).join('');
+            return `<select class="responsible-selector"><option value="">--Select--</option>${options}</select>`;
+        }
+
+        function renderStatusDropdown(selectedValue = 'pending') {
+            const statuses = {
+                pending: 'Pending',
+                progress: 'In Progress',
+                completed: 'Completed',
+                na: 'N/A'
+            };
+            const options = Object.entries(statuses).map(([key, value]) =>
+                `<option value="${key}" ${key === selectedValue ? 'selected' : ''}>${value}</option>`
+            ).join('');
+            return `<select class="status-selector">${options}</select>`;
+        }
+
+        function renderProjectSetup() {
+            const { name, partNumber, customer, lead, team } = state.projectInfo;
+            const container = document.getElementById('project-setup-section');
+            container.innerHTML = `
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Project Setup</h2>
+                <div class="grid-form">
+                    <div class="form-group"><label for="project-name">Project / Program Name</label><input type="text" id="project-name" value="${name}"></div>
+                    <div class="form-group"><label for="part-number">Part Number</label><input type="text" id="part-number" value="${partNumber}"></div>
+                    <div class="form-group"><label for="customer">Customer</label><input type="text" id="customer" value="${customer}"></div>
+                    <div class="form-group"><label for="project-lead">Project Lead</label><input type="text" id="project-lead" value="${lead}"></div>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="team-members">Team Members (one name per line)</label>
+                    <textarea id="team-members" rows="4" placeholder="John Doe\nJane Smith">${team.join('\n')}</textarea>
+                </div>`;
+        }
+
+        function renderApqpPhases() {
+            state.apqpPhases.forEach((phase, phaseIndex) => {
+                const container = document.getElementById(`apqp-phase-${phase.id}`);
+                if (!container) return;
+                container.innerHTML = `
+                    <h3 class="section-title"><i class="fas ${phase.icon}"></i> ${phase.title}</h3>
+                    <p class="phase-description"><strong>${phase.desc}</strong></p>
+                    <table class="apqp-table">
+                        <thead>
+                            <tr>
+                                <th>Task / Element</th>
+                                <th style="width: 20%;">Responsible</th>
+                                <th style="width: 10%;">Start</th>
+                                <th style="width: 10%;">End</th>
+                                <th style="width: 15%;">Status</th>
+                                <th style="width: 25%;">Notes</th>
+                                <th style="width: 5%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${phase.tasks.map(task => `
+                                <tr class="task-row status-${task.status}" data-task-id="${task.id}" data-phase-index="${phaseIndex}">
+                                    <td><input type="text" placeholder="New task..." value="${task.name}"></td>
+                                    <td>${renderResponsibleDropdown(task.responsible)}</td>
+                                    <td><input type="date" value="${task.start}"></td>
+                                    <td><input type="date" value="${task.end}"></td>
+                                    <td>${renderStatusDropdown(task.status)}</td>
+                                    <td><input type="text" value="${task.notes}"></td>
+                                    <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="table-actions">
+                        <button class="button secondary add-task-btn" data-phase-index="${phaseIndex}"><i class="fas fa-plus"></i> Add Task</button>
+                    </div>`;
+            });
+        }
+
+        function renderPpapChecklist() {
+            const container = document.getElementById('ppap-checklist');
+            if (!container) return;
+            container.innerHTML = `
+                <table id="ppap-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>PPAP Element</th>
+                            <th style="width: 20%;">Responsible</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 25%;">Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${state.ppapElements.map((elem, index) => `
+                            <tr class="task-row status-${elem.status}" data-task-id="${elem.id}">
+                                <td>${index + 1}</td>
+                                <td><input type="text" placeholder="New PPAP element..." value="${elem.name}"></td>
+                                <td>${renderResponsibleDropdown(elem.responsible)}</td>
+                                <td>${renderStatusDropdown(elem.status)}</td>
+                                <td><input type="text" value="${elem.notes}"></td>
+                                <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div class="table-actions">
+                    <button class="button secondary add-ppap-btn"><i class="fas fa-plus"></i> Add Element</button>
+                </div>`;
+        }
+
+        function renderAll() {
+            renderProjectSetup();
+            renderApqpPhases();
+            renderPpapChecklist();
+        }
+
+        function setupEventListeners() {
+            // Usar delegación de eventos en el documento para manejar elementos dinámicos
+            document.addEventListener('change', e => {
+                const target = e.target;
+                const taskRow = target.closest('tr[data-task-id]');
+                if (!taskRow) return;
+
+                const taskId = Number(taskRow.dataset.taskId);
+                const phaseIndex = taskRow.dataset.phaseIndex;
+                let element;
+
+                if (phaseIndex !== undefined) {
+                    element = state.apqpPhases[phaseIndex].tasks.find(t => t.id === taskId);
+                } else {
+                    element = state.ppapElements.find(el => el.id === taskId);
+                }
+
+                if (!element) return;
+
+                if (target.matches('input[type="text"]')) {
+                    const prop = taskRow.cells[taskRow.cells.length === 7 ? 0 : 1].contains(target) ? 'name' : 'notes';
+                    element[prop] = target.value;
+                } else if (target.matches('input[type="date"]')) {
+                    const prop = taskRow.cells[2].contains(target) ? 'start' : 'end';
+                    element[prop] = target.value;
+                } else if (target.matches('.responsible-selector')) {
+                    element.responsible = target.value;
+                } else if (target.matches('.status-selector')) {
+                    element.status = target.value;
+                    taskRow.className = `task-row status-${element.status}`;
+                }
+            });
+
+            document.addEventListener('input', e => {
+                const target = e.target;
+                if (target.id === 'project-name') state.projectInfo.name = target.value;
+                if (target.id === 'part-number') state.projectInfo.partNumber = target.value;
+                if (target.id === 'customer') state.projectInfo.customer = target.value;
+                if (target.id === 'project-lead') state.projectInfo.lead = target.value;
+                if (target.id === 'team-members') {
+                    state.projectInfo.team = target.value.split('\n').filter(Boolean);
+                }
+            });
+
+            document.addEventListener('focusout', e => {
+                if (e.target.id === 'team-members') {
+                    renderAll();
+                }
+            });
+
+            document.addEventListener('click', e => {
+                const target = e.target.closest('button');
+                if (!target) return;
+
+                if (target.classList.contains('add-task-btn')) {
+                    const phaseIndex = target.dataset.phaseIndex;
+                    state.apqpPhases[phaseIndex].tasks.push({
+                        id: Date.now(),
+                        name: '',
+                        responsible: '',
+                        start: '',
+                        end: '',
+                        status: 'pending',
+                        notes: ''
+                    });
+                    renderApqpPhases();
+                }
+
+                if (target.classList.contains('add-ppap-btn')) {
+                    state.ppapElements.push({
+                        id: Date.now(),
+                        name: '',
+                        responsible: '',
+                        status: 'pending',
+                        notes: ''
+                    });
+                    renderPpapChecklist();
+                }
+
+                if (target.classList.contains('remove-task-btn')) {
+                    const taskRow = target.closest('tr[data-task-id]');
+                    const taskId = Number(taskRow.dataset.taskId);
+                    const phaseIndex = taskRow.dataset.phaseIndex;
+
+                    if (phaseIndex !== undefined) {
+                        state.apqpPhases[phaseIndex].tasks = state.apqpPhases[phaseIndex].tasks.filter(t => t.id !== taskId);
+                        renderApqpPhases();
+                    } else {
+                        state.ppapElements = state.ppapElements.filter(el => el.id !== taskId);
+                        renderPpapChecklist();
+                    }
+                }
+            });
+
+            document.getElementById('load-example-btn').addEventListener('click', loadExample);
+            document.getElementById('reset-btn').addEventListener('click', resetForm);
+        }
+
+        function init() {
+            state = getInitialState();
+            renderAll();
+            setupEventListeners();
+            document.querySelector('#action-items-table tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;">Click "Generate" to populate.</td></tr>';
+            document.getElementById('gantt-chart-container').innerHTML = 'Enter task dates and click "Generate" to see the project timeline.';
+        }
+
+        function loadExample() {
+            const today = new Date();
+            const d = (days) => new Date(today.getTime() + days * 86400000).toISOString().split('T')[0];
+            const exampleState = getInitialState();
+            exampleState.projectInfo = {
+                name: 'Next-Gen LED Headlight Assembly',
+                partNumber: 'HL-2025-A1',
+                customer: 'Aura Motors',
+                lead: 'Sarah Miller',
+                team: ['Sarah Miller', 'David Chen', 'Emily Rodriguez', 'Michael Johnson']
+            };
+
+            exampleState.apqpPhases[0].tasks = [
+                { id: Date.now() + 1, name: 'Customer Requirements (SOR) Review', responsible: 'Sarah Miller', start: d(0), end: d(7), status: 'completed', notes: 'SOR v2.1 analyzed.' },
+                { id: Date.now() + 2, name: 'Preliminary Feasibility Study', responsible: 'David Chen', start: d(5), end: d(15), status: 'completed', notes: 'Feasible with tooling investment.' },
+                { id: Date.now() + 3, name: 'Define Quality & Reliability Goals', responsible: 'Emily Rodriguez', start: d(10), end: d(20), status: 'progress', notes: 'Targeting >50k hours lifespan.' }
+            ];
+
+            exampleState.apqpPhases[1].tasks = [
+                { id: Date.now() + 4, name: 'DFMEA', responsible: 'David Chen', start: d(21), end: d(40), status: 'progress', notes: 'High RPNs on heat dissipation.' },
+                { id: Date.now() + 5, name: 'Prototype Build A', responsible: 'Michael Johnson', start: d(41), end: d(55), status: 'pending', notes: '' },
+                { id: Date.now() + 6, name: 'Design Verification Plan & Report (DVP&R)', responsible: 'Emily Rodriguez', start: d(45), end: d(70), status: 'pending', notes: 'Vibration and thermal tests planned.' }
+            ];
+
+            exampleState.apqpPhases[2].tasks = [
+                { id: Date.now() + 7, name: 'Process Flow Diagram', responsible: 'Michael Johnson', start: d(60), end: d(70), status: 'completed', notes: 'Final version approved.' },
+                { id: Date.now() + 8, name: 'PFMEA', responsible: 'Michael Johnson', start: d(71), end: d(90), status: 'progress', notes: '' },
+                { id: Date.now() + 9, name: 'Control Plan (Pre-launch)', responsible: 'Emily Rodriguez', start: d(85), end: d(95), status: 'pending', notes: '' }
+            ];
+
+            exampleState.apqpPhases[3].tasks = [
+                { id: Date.now() + 10, name: 'Significant Production Run', responsible: 'Michael Johnson', start: d(100), end: d(105), status: 'pending', notes: '300 pieces planned.' },
+                { id: Date.now() + 11, name: 'Capability Studies (Pp/Ppk)', responsible: 'Emily Rodriguez', start: d(106), end: d(115), status: 'pending', notes: '' },
+                { id: Date.now() + 12, name: 'Part Submission Warrant (PSW)', responsible: 'Sarah Miller', start: d(120), end: d(125), status: 'pending', notes: '' }
+            ];
+
+            exampleState.ppapElements[0].status = 'completed';
+            exampleState.ppapElements[0].responsible = 'David Chen';
+            exampleState.ppapElements[3].status = 'progress';
+            exampleState.ppapElements[3].responsible = 'David Chen';
+            exampleState.ppapElements[4].status = 'completed';
+            exampleState.ppapElements[4].responsible = 'Michael Johnson';
+            exampleState.ppapElements[5].status = 'progress';
+            exampleState.ppapElements[5].responsible = 'Michael Johnson';
+            exampleState.ppapElements[6].status = 'pending';
+            exampleState.ppapElements[6].responsible = 'Emily Rodriguez';
+            exampleState.ppapElements[12].status = 'na';
+
+            state = exampleState;
+            renderAll();
+        }
+
+        function resetForm() {
+            if (confirm("Are you sure you want to reset all project data?")) init();
+        }
+
+        // ===== FUNCIONES GANTT =====
         function generateGantt() {
             const container = document.getElementById('gantt-chart-container');
             const tasks = [];
@@ -818,8 +1495,173 @@
             });
         }
 
-        function generateActionItems() { const actionTbody = document.querySelector('#action-items-table tbody'); actionTbody.innerHTML = ''; let hasActions = false; state.apqpPhases.forEach(phase => { phase.tasks.forEach(task => { if ((task.status === 'pending' || task.status === 'progress') && task.name) { const newRow = actionTbody.insertRow(); newRow.innerHTML = `<td>${task.name}</td><td>${task.responsible || 'Unassigned'}</td><td>${task.end || 'N/A'}</td><td>${phase.title}</td>`; hasActions = true; } }); }); state.ppapElements.forEach(elem => { if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) { const newRow = actionTbody.insertRow(); newRow.innerHTML = `<td>${elem.name}</td><td>${elem.responsible || 'Unassigned'}</td><td>N/A</td><td>PPAP Checklist</td>`; hasActions = true; } }); if (!hasActions) { actionTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--success-color);">No pending or in-progress actions found. Great job!</td></tr>'; } }
-        function exportToExcel() { const wb = XLSX.utils.book_new(); const { name, partNumber, customer, lead, team } = state.projectInfo; const project_info = [["Project Name", name], ["Part Number", partNumber], ["Customer", customer], ["Project Lead", lead], [], ["Team Members"], ...team.map(m => [m])]; XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info"); const apqp_data = [["Phase", "Task", "Responsible", "Start Date", "End Date", "Status", "Notes"]]; state.apqpPhases.forEach(phase => { phase.tasks.forEach(task => { apqp_data.push([phase.title, task.name, task.responsible, task.start, task.end, task.status, task.notes]); }); }); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(apqp_data), "APQP Plan"); const ppap_data = [["#", "Element", "Responsible", "Status", "Notes"]]; state.ppapElements.forEach((elem, index) => { ppap_data.push([index + 1, elem.name, elem.responsible, elem.status, elem.notes]); }); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ppap_data), "PPAP Checklist"); generateActionItems(); const actionTable = document.getElementById("action-items-table"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(actionTable), "Action Plan"); const projectName = state.projectInfo.name || "Dynamic_APQP_Plan"; XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}.xlsx`); }
+        // ===== FUNCIONES DE EXPORTACIÓN =====
+        function exportGanttToExcel() {
+            const wb = XLSX.utils.book_new();
+
+            // Hoja 1: Project Setup
+            const { name, partNumber, customer, lead, team } = state.projectInfo;
+            const project_info = [
+                ["APQP/PPAP Project - Gantt Chart Export"],
+                ["Generated on: " + new Date().toLocaleString()],
+                [],
+                ["PROJECT INFORMATION"],
+                ["Project Name", name],
+                ["Part Number", partNumber],
+                ["Customer", customer],
+                ["Project Lead", lead],
+                [],
+                ["Team Members"],
+                ...team.map(m => [m])
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info");
+
+            // Hoja 2: Gantt Data
+            const gantt_data = [["Phase", "Task", "Start Date", "End Date", "Duration (days)", "Status"]];
+            state.apqpPhases.forEach(phase => {
+                phase.tasks.forEach(task => {
+                    if (task.name && task.start && task.end) {
+                        const startDate = new Date(task.start);
+                        const endDate = new Date(task.end);
+                        const durationDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                        gantt_data.push([phase.title, task.name, task.start, task.end, durationDays, task.status]);
+                    }
+                });
+            });
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(gantt_data), "Gantt Data");
+
+            // Hoja 3: Summary
+            const summary_data = [
+                ["APQP/PPAP GANTT CHART SUMMARY"],
+                ["Generated on: " + new Date().toLocaleString()],
+                [],
+                ["Project Name", name],
+                ["Total Phases", state.apqpPhases.length],
+                ["Total Tasks", state.apqpPhases.reduce((sum, phase) => sum + phase.tasks.length, 0)],
+                ["Tasks with Dates", state.apqpPhases.reduce((sum, phase) => sum + phase.tasks.filter(t => t.start && t.end).length, 0)],
+                [],
+                ["PHASE BREAKDOWN"]
+            ];
+
+            state.apqpPhases.forEach((phase, index) => {
+                summary_data.push([`Phase ${index + 1}`, phase.tasks.length]);
+            });
+
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary_data), "Summary");
+
+            const projectName = state.projectInfo.name || "APQP_Gantt_Chart";
+            XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}_Gantt.xlsx`);
+        }
+
+        function exportGanttToImage() {
+            const container = document.getElementById('gantt-chart-container');
+
+            if (container.innerHTML.includes('Enter task dates')) {
+                alert("Please generate the Gantt chart first by clicking 'Generate Gantt'.");
+                return;
+            }
+
+            html2canvas(container, {
+                scale: 2,
+                backgroundColor: "#ffffff",
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `${state.projectInfo.name || 'APQP_Gantt'}_Chart.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function exportActionPlanToExcel() {
+            // Primero generamos el action plan si no está generado
+            generateActionItems();
+
+            const wb = XLSX.utils.book_new();
+
+            // Hoja 1: Project Setup
+            const { name, partNumber, customer, lead, team } = state.projectInfo;
+            const project_info = [
+                ["APQP/PPAP Project - Action Plan Export"],
+                ["Generated on: " + new Date().toLocaleString()],
+                [],
+                ["PROJECT INFORMATION"],
+                ["Project Name", name],
+                ["Part Number", partNumber],
+                ["Customer", customer],
+                ["Project Lead", lead],
+                [],
+                ["Team Members"],
+                ...team.map(m => [m]),
+                [],
+                ["ACTION PLAN SUMMARY"],
+                ["Total Pending/In-Progress Items", document.querySelectorAll('#action-items-table tbody tr').length - 1]
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info");
+
+            // Hoja 2: Action Plan
+            const actionTable = document.getElementById("action-items-table");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(actionTable), "Action Plan");
+
+            // Hoja 3: APQP Tasks
+            const apqp_data = [["Phase", "Task", "Responsible", "Start Date", "End Date", "Status", "Priority"]];
+            let priorityCounter = 1;
+
+            state.apqpPhases.forEach(phase => {
+                phase.tasks.forEach(task => {
+                    if ((task.status === 'pending' || task.status === 'progress') && task.name) {
+                        const priority = `APQP-${String(priorityCounter).padStart(3, '0')}`;
+                        apqp_data.push([phase.title, task.name, task.responsible || 'Unassigned', task.start || 'N/A', task.end || 'N/A', task.status, priority]);
+                        priorityCounter++;
+                    }
+                });
+            });
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(apqp_data), "APQP Tasks");
+
+            // Hoja 4: PPAP Tasks
+            const ppap_data = [["PPAP Element", "Responsible", "Status", "Priority"]];
+            priorityCounter = 1;
+
+            state.ppapElements.forEach(elem => {
+                if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) {
+                    const priority = `PPAP-${String(priorityCounter).padStart(3, '0')}`;
+                    ppap_data.push([elem.name, elem.responsible || 'Unassigned', elem.status, priority]);
+                    priorityCounter++;
+                }
+            });
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ppap_data), "PPAP Tasks");
+
+            const projectName = state.projectInfo.name || "APQP_Action_Plan";
+            XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}_Action_Plan.xlsx`);
+        }
+
+        function generateActionItems() {
+            const actionTbody = document.querySelector('#action-items-table tbody');
+            actionTbody.innerHTML = '';
+            let hasActions = false;
+
+            state.apqpPhases.forEach(phase => {
+                phase.tasks.forEach(task => {
+                    if ((task.status === 'pending' || task.status === 'progress') && task.name) {
+                        const newRow = actionTbody.insertRow();
+                        newRow.innerHTML = `<td>${task.name}</td><td>${task.responsible || 'Unassigned'}</td><td>${task.end || 'N/A'}</td><td>${phase.title}</td>`;
+                        hasActions = true;
+                    }
+                });
+            });
+
+            state.ppapElements.forEach(elem => {
+                if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) {
+                    const newRow = actionTbody.insertRow();
+                    newRow.innerHTML = `<td>${elem.name}</td><td>${elem.responsible || 'Unassigned'}</td><td>N/A</td><td>PPAP Checklist</td>`;
+                    hasActions = true;
+                }
+            });
+
+            if (!hasActions) {
+                actionTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--success-color);">No pending or in-progress actions found. Great job!</td></tr>';
+            }
+        }
 
         // Inicializar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
