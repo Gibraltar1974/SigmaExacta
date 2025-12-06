@@ -9,7 +9,7 @@
     <meta name="description"
         content="Free SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis interactive tool. Ideal for strategic business planning, marketing, and personal projects.">
     <meta name="keywords"
-        content="Open Source, Free Solftware, SWOT analysis, SWOT matrix, SWOT tool, strategic planning, strengths, weaknesses, opportunities, threats, free online swot generator">
+        content="Open Source, Free Software, SWOT analysis, SWOT matrix, SWOT tool, strategic planning, strengths, weaknesses, opportunities, threats, free online swot generator">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -53,12 +53,10 @@
             color: #333;
             background-color: #f5f7fa;
             line-height: 1.6;
-            /* === MODIFICACIÓN: Asegurar que el body ocupe todo el ancho de la pantalla === */
             width: 100%;
             overflow-x: hidden;
         }
 
-        /* === MODIFICACIÓN: Contenedor principal ahora ocupa todo el ancho === */
         .main-content-wrapper {
             width: 100%;
             max-width: 100%;
@@ -66,13 +64,138 @@
             padding: 0;
         }
 
+        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 0;
+            margin-top: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            width: 100%;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: #3498db;
+            border-bottom-color: #3498db;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
+        .tabs-container {
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* PESTAÑAS - Todas con el mismo ancho */
+        .wizard-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .wizard-tab-content.active {
+            display: block;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
+        .tab-content-wrapper {
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* Ajuste para pantallas móviles */
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+        }
+
         .header {
             margin-bottom: 1.25rem;
             padding: 1.25rem;
             border-bottom: 1px solid #ddd;
             text-align: center;
-            /* === MODIFICACIÓN: Fondo para el header === */
             background-color: white;
+            width: 100%;
         }
 
         .header h1 {
@@ -80,39 +203,23 @@
             font-size: clamp(1.5rem, 4vw, 1.8rem);
             margin: 0.5rem 0;
             font-weight: 800;
-            /* === INICIO DE MODIFICACIÓN: Alinear el icono y el texto === */
             display: flex;
             justify-content: center;
-            /* Mantiene la alineación central del texto */
             align-items: center;
-            /* === FIN DE MODIFICACIÓN === */
         }
 
-        /* === INICIO DE MODIFICACIÓN: Estilo para el icono dentro del h1 (restaurando el botón) === */
         .header h1 .fas {
             font-size: 1.8rem;
-            /* Tamaño del icono incrementado (antes 1.4rem) */
-
-            /* Estilos para restaurar la apariencia de "botón marrón" */
             background-color: #7b293e;
             color: white;
-            /* Color del icono */
             width: 39px;
-            /* ¡Aumento del 30%! (antes 30px) */
             height: 39px;
-            /* ¡Aumento del 30%! (antes 30px) */
-            /* === MODIFICACIÓN: Forma cuadrada con esquinas redondeadas === */
             border-radius: 6px;
-            /* === FIN DE MODIFICACIÓN === */
             display: flex;
             justify-content: center;
             align-items: center;
-
             margin-right: 0.75rem;
-            /* Espacio a la derecha del icono */
         }
-
-        /* === FIN DE MODIFICACIÓN === */
 
         .header p {
             color: #666;
@@ -129,7 +236,6 @@
             margin-bottom: 1.25rem;
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            /* === MODIFICACIÓN: Asegurar que los bloques se adapten al ancho === */
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
@@ -221,7 +327,6 @@
             flex-wrap: wrap;
             gap: 0.6rem;
             justify-content: center;
-            /* === MODIFICACIÓN: Asegurar que los controles se adapten al ancho === */
             width: 100%;
             box-sizing: border-box;
         }
@@ -354,7 +459,6 @@
             display: grid;
             gap: 1.25rem;
             grid-template-columns: 1fr;
-            /* === MODIFICACIÓN: Asegurar que el grid se adapte al ancho === */
             width: 100%;
             box-sizing: border-box;
         }
@@ -369,7 +473,6 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 0;
-            /* === MODIFICACIÓN: Asegurar que los bloques del grid se adapten al ancho === */
             width: 100%;
             box-sizing: border-box;
         }
@@ -447,6 +550,52 @@
             background-color: var(--secondary-color);
         }
 
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-next-tab {
+            background-color: #3498db;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-next-tab:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-next-tab.btn-prev {
+            background-color: #95a5a6;
+        }
+
+        .btn-next-tab.btn-prev:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-next-tab.btn-success {
+            background-color: #27ae60;
+        }
+
+        .btn-next-tab.btn-success:hover {
+            background-color: #229954;
+        }
+
         .tool-logo {
             display: flex;
             justify-content: center;
@@ -459,11 +608,9 @@
             background-color: #7b293e;
         }
 
-        /* === MODIFICACIÓN: Footer adaptado al ancho de pantalla === */
         footer {
             padding: 2rem 1.25rem;
             text-align: center;
-            /* Asegurar que el footer ocupe todo el ancho */
             width: 100%;
             box-sizing: border-box;
         }
@@ -479,16 +626,14 @@
             box-sizing: border-box;
         }
 
-        /* === MODIFICACIÓN: Contenedor para centrar contenido en pantallas grandes === */
         .content-container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 0 1.25rem;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        /* === MODIFICACIÓN: Ajustes para dispositivos móviles === */
         @media (max-width: 768px) {
             .header {
                 padding: 1rem;
@@ -523,10 +668,8 @@
 </head>
 
 <body>
-    <!-- === MODIFICACIÓN: Header dinámico cargado desde archivo externo === -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -551,11 +694,8 @@
         </nav>
     </noscript>
 
-    <!-- === MODIFICACIÓN: Contenedor principal para el contenido del cuerpo === -->
     <main class="main-content-wrapper">
         <div class="content-container">
-            <div id="toast-notification"></div>
-
             <header class="header">
                 <h1><i class="fas fa-puzzle-piece"></i> Strengths, Weaknesses, Opportunities and Threats (SWOT) Analysis
                     Matrix</h1>
@@ -563,118 +703,175 @@
                     objectives.</p>
             </header>
 
-            <div class="content-block">
-                <h2><i class="fas fa-question-circle"></i> What is a SWOT Analysis?</h2>
-                <p>A <strong>SWOT analysis</strong> is a strategic planning technique used to help a person or
-                    organization identify its Strengths, Weaknesses, Opportunities, and Threats related to business
-                    competition or project planning. It provides a structured framework for reviewing strategy,
-                    position, and direction.</p>
-                <ul>
-                    <li><strong>Internal Factors:</strong> Strengths and Weaknesses are internal to the organization
-                        (e.g., reputation, patents, location). You can influence these.</li>
-                    <li><strong>External Factors:</strong> Opportunities and Threats are external to the organization
-                        (e.g., competitors, prices, market trends). You cannot control these.</li>
-                </ul>
-                <div class="infographic-grid">
-                    <div class="flow-step strengths"><i
-                            class="fas fa-thumbs-up"></i><strong>Strengths</strong><span>Internal, positive
-                            factors</span></div>
-                    <div class="flow-step weaknesses"><i
-                            class="fas fa-thumbs-down"></i><strong>Weaknesses</strong><span>Internal, negative
-                            factors</span></div>
-                    <div class="flow-step opportunities"><i
-                            class="fas fa-search-plus"></i><strong>Opportunities</strong><span>External, positive
-                            factors</span></div>
-                    <div class="flow-step threats"><i class="fas fa-bolt"></i><strong>Threats</strong><span>External,
-                            negative factors</span></div>
-                </div>
-            </div>
+            <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
+            <div class="tabs-container">
+                <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+                <nav class="tabs-nav">
+                    <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
+                        <i class="fas fa-book"></i> Theory & Info
+                    </button>
+                    <button class="tab-btn" onclick="switchWizardTab('tab-matrix')">
+                        <i class="fas fa-table-cells"></i> SWOT Matrix
+                    </button>
+                </nav>
 
-            <div class="content-block">
-                <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
-                <p>The concept is credited to <strong>Albert Humphrey</strong>, who led a research project at the
-                    Stanford Research Institute in the 1960s and 1970s. The goal of the research was to identify why
-                    corporate planning consistently failed. The resulting framework, initially called SOFT
-                    (Satisfactory, Opportunity, Fault, Threat), was later evolved into the SWOT analysis we use today.
-                </p>
-                <p>Its primary purpose is to provide a comprehensive, bird's-eye view of the most important factors
-                    influencing a decision, making it a powerful tool for strategic alignment and risk assessment.</p>
-            </div>
+                <!-- PESTAÑA 1: TEORÍA -->
+                <div id="tab-theory" class="wizard-tab-content active">
+                    <div class="tab-content-wrapper">
+                        <div class="content-block">
+                            <h2><i class="fas fa-question-circle"></i> What is a SWOT Analysis?</h2>
+                            <p>A <strong>SWOT analysis</strong> is a strategic planning technique used to help a person
+                                or
+                                organization identify its Strengths, Weaknesses, Opportunities, and Threats related to
+                                business
+                                competition or project planning. It provides a structured framework for reviewing
+                                strategy,
+                                position, and direction.</p>
+                            <ul>
+                                <li><strong>Internal Factors:</strong> Strengths and Weaknesses are internal to the
+                                    organization
+                                    (e.g., reputation, patents, location). You can influence these.</li>
+                                <li><strong>External Factors:</strong> Opportunities and Threats are external to the
+                                    organization
+                                    (e.g., competitors, prices, market trends). You cannot control these.</li>
+                            </ul>
+                            <div class="infographic-grid">
+                                <div class="flow-step strengths"><i
+                                        class="fas fa-thumbs-up"></i><strong>Strengths</strong><span>Internal, positive
+                                        factors</span></div>
+                                <div class="flow-step weaknesses"><i
+                                        class="fas fa-thumbs-down"></i><strong>Weaknesses</strong><span>Internal,
+                                        negative
+                                        factors</span></div>
+                                <div class="flow-step opportunities"><i
+                                        class="fas fa-search-plus"></i><strong>Opportunities</strong><span>External,
+                                        positive
+                                        factors</span></div>
+                                <div class="flow-step threats"><i
+                                        class="fas fa-bolt"></i><strong>Threats</strong><span>External,
+                                        negative factors</span></div>
+                            </div>
+                        </div>
 
-            <div class="content-block">
-                <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-                <div class="instructions-box">
-                    <ul>
-                        <li><strong>Add items:</strong> Type into the text fields for each category and press the
-                            <strong>Enter</strong> key or click the <strong>+</strong> button to add it to the list.
-                        </li>
-                        <li><strong>Load an example:</strong> If you're unsure where to start, click the <strong>"Load
-                                Example"</strong> button to see a filled-out matrix.</li>
-                        <li><strong>Manage your list:</strong> Delete any point by clicking the cross icon (<i
-                                class="fas fa-times" style="font-size: 0.8em;"></i>) next to it.</li>
-                        <li><strong>Export your work:</strong> When you're done, click <strong>"Export to
-                                Excel"</strong> to download your analysis as an <code>.xlsx</code> file, ready for your
-                            reports and presentations.</li>
-                    </ul>
-                </div>
-            </div>
+                        <div class="content-block">
+                            <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
+                            <p>The concept is credited to <strong>Albert Humphrey</strong>, who led a research project
+                                at the
+                                Stanford Research Institute in the 1960s and 1970s. The goal of the research was to
+                                identify why
+                                corporate planning consistently failed. The resulting framework, initially called SOFT
+                                (Satisfactory, Opportunity, Fault, Threat), was later evolved into the SWOT analysis we
+                                use today.
+                            </p>
+                            <p>Its primary purpose is to provide a comprehensive, bird's-eye view of the most important
+                                factors
+                                influencing a decision, making it a powerful tool for strategic alignment and risk
+                                assessment.</p>
+                        </div>
 
-            <div class="block">
-                <div class="controls-container">
-                    <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i> Load
-                        Example</button>
-                    <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset
-                        Matrix</button>
-                    <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to
-                        Excel</button>
-                </div>
-            </div>
+                        <div class="content-block">
+                            <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+                            <div class="instructions-box">
+                                <ul>
+                                    <li><strong>Add items:</strong> Type into the text fields for each category and
+                                        press the
+                                        <strong>Enter</strong> key or click the <strong>+</strong> button to add it to
+                                        the list.
+                                    </li>
+                                    <li><strong>Load an example:</strong> If you're unsure where to start, click the
+                                        <strong>"Load
+                                            Example"</strong> button to see a filled-out matrix.</li>
+                                    <li><strong>Manage your list:</strong> Delete any point by clicking the cross icon
+                                        (<i class="fas fa-times" style="font-size: 0.8em;"></i>) next to it.</li>
+                                    <li><strong>Export your work:</strong> When you're done, click <strong>"Export to
+                                            Excel"</strong> to download your analysis as an <code>.xlsx</code> file,
+                                        ready for your
+                                        reports and presentations.</li>
+                                </ul>
+                            </div>
+                        </div>
 
-            <div class="swot-grid" id="swotGrid">
-                <div class="block">
-                    <div class="block-title title-strengths"><i class="fas fa-thumbs-up"></i> Strengths</div>
-                    <div class="swot-list" id="strengthsList"></div>
-                    <div class="add-item-container">
-                        <input type="text" id="strengths-input" placeholder="Add a strength..."
-                            data-category="strengths">
-                        <button class="btn-add-item strengths" data-category="strengths" title="Add Strength"><i
-                                class="fas fa-plus"></i></button>
+                        <div class="tab-nav-buttons">
+                            <button class="btn-next-tab" onclick="switchWizardTab('tab-matrix')">Go to SWOT Matrix <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
                     </div>
                 </div>
-                <div class="block">
-                    <div class="block-title title-weaknesses"><i class="fas fa-thumbs-down"></i> Weaknesses</div>
-                    <div class="swot-list" id="weaknessesList"></div>
-                    <div class="add-item-container">
-                        <input type="text" id="weaknesses-input" placeholder="Add a weakness..."
-                            data-category="weaknesses">
-                        <button class="btn-add-item weaknesses" data-category="weaknesses" title="Add Weakness"><i
-                                class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="block-title title-opportunities"><i class="fas fa-search-plus"></i> Opportunities</div>
-                    <div class="swot-list" id="opportunitiesList"></div>
-                    <div class="add-item-container">
-                        <input type="text" id="opportunities-input" placeholder="Add an opportunity..."
-                            data-category="opportunities">
-                        <button class="btn-add-item opportunities" data-category="opportunities"
-                            title="Add Opportunity"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="block-title title-threats"><i class="fas fa-bolt"></i> Threats</div>
-                    <div class="swot-list" id="threatsList"></div>
-                    <div class="add-item-container">
-                        <input type="text" id="threats-input" placeholder="Add a threat..." data-category="threats">
-                        <button class="btn-add-item threats" data-category="threats" title="Add Threat"><i
-                                class="fas fa-plus"></i></button>
+
+                <!-- PESTAÑA 2: MATRIZ SWOT -->
+                <div id="tab-matrix" class="wizard-tab-content">
+                    <div class="tab-content-wrapper">
+                        <div id="toast-notification"></div>
+
+                        <div class="block">
+                            <div class="controls-container">
+                                <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i>
+                                    Load
+                                    Example</button>
+                                <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i>
+                                    Reset
+                                    Matrix</button>
+                                <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to
+                                    Excel</button>
+                            </div>
+                        </div>
+
+                        <div class="swot-grid" id="swotGrid">
+                            <div class="block">
+                                <div class="block-title title-strengths"><i class="fas fa-thumbs-up"></i> Strengths
+                                </div>
+                                <div class="swot-list" id="strengthsList"></div>
+                                <div class="add-item-container">
+                                    <input type="text" id="strengths-input" placeholder="Add a strength..."
+                                        data-category="strengths">
+                                    <button class="btn-add-item strengths" data-category="strengths"
+                                        title="Add Strength"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="block">
+                                <div class="block-title title-weaknesses"><i class="fas fa-thumbs-down"></i> Weaknesses
+                                </div>
+                                <div class="swot-list" id="weaknessesList"></div>
+                                <div class="add-item-container">
+                                    <input type="text" id="weaknesses-input" placeholder="Add a weakness..."
+                                        data-category="weaknesses">
+                                    <button class="btn-add-item weaknesses" data-category="weaknesses"
+                                        title="Add Weakness"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="block">
+                                <div class="block-title title-opportunities"><i class="fas fa-search-plus"></i>
+                                    Opportunities</div>
+                                <div class="swot-list" id="opportunitiesList"></div>
+                                <div class="add-item-container">
+                                    <input type="text" id="opportunities-input" placeholder="Add an opportunity..."
+                                        data-category="opportunities">
+                                    <button class="btn-add-item opportunities" data-category="opportunities"
+                                        title="Add Opportunity"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="block">
+                                <div class="block-title title-threats"><i class="fas fa-bolt"></i> Threats</div>
+                                <div class="swot-list" id="threatsList"></div>
+                                <div class="add-item-container">
+                                    <input type="text" id="threats-input" placeholder="Add a threat..."
+                                        data-category="threats">
+                                    <button class="btn-add-item threats" data-category="threats" title="Add Threat"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-nav-buttons">
+                            <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
+                                    class="fas fa-arrow-left"></i> Back to Theory</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- === MODIFICACIÓN: Footer adaptado al ancho de pantalla === -->
     <footer>
         <div class="content-container">
             <div class="disclaimer-note">
@@ -691,6 +888,27 @@
     </footer>
 
     <script>
+        // ============================================
+        // FUNCIONES GLOBALES
+        // ============================================
+
+        // Función para cambiar entre tabs
+        function switchWizardTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos de wizard
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         // === MODIFICACIÓN: Cargar header dinámicamente ===
         fetch('header.html')
             .then(response => response.text())
