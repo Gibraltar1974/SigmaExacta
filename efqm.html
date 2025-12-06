@@ -54,6 +54,8 @@
             line-height: 1.6;
             -webkit-text-size-adjust: 100%;
             /* Prevenir auto-zoom en iOS */
+            width: 100%;
+            overflow-x: hidden;
         }
 
         img,
@@ -62,10 +64,172 @@
             height: auto;
         }
 
+        /* ===== NUEVO SISTEMA DE PESTAÑAS ===== */
         .main-content-wrapper {
-            padding: 1.25rem;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
+        .main-header {
+            text-align: center;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #f5f7fa;
+        }
+
+        .main-header h1 {
+            color: #2c3e50;
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-header p {
+            color: #7f8c8d;
+            font-weight: 400;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+        .tabs-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 0;
+            margin-top: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            flex: 1;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            background-color: #fff;
+            color: #3498db;
+            border-bottom-color: #3498db;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
+        .tabs-container {
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* PESTAÑAS - Todas con el mismo ancho */
+        .wizard-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .wizard-tab-content.active {
+            display: block;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
+        .tab-content-wrapper {
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* Ajuste para pantallas móviles */
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ===== ESTILOS EXISTENTES DE EFQM ===== */
         .header {
             margin-bottom: 1.25rem;
             padding-bottom: 1rem;
@@ -97,6 +261,8 @@
             margin-bottom: 1.25rem;
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .block-title {
@@ -404,15 +570,69 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* El texto del H1 ya se ajustó arriba para tener display: flex */
+        /* Estilos para los botones de navegación entre pestañas */
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-next-tab {
+            background-color: #3498db;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-next-tab:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-next-tab.btn-prev {
+            background-color: #95a5a6;
+        }
+
+        .btn-next-tab.btn-prev:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-next-tab.btn-success {
+            background-color: #27ae60;
+        }
+
+        .btn-next-tab.btn-success:hover {
+            background-color: #229954;
+        }
+
+        /* Botones de acción en la pestaña de resultados */
+        .results-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            width: 100%;
+            justify-content: center;
+        }
     </style>
 </head>
 
 <body>
     <!-- Contenedor donde se cargará el header dinámicamente -->
     <div id="header-container"></div>
-    <div id="header-container"></div>
-    
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -438,7 +658,7 @@
     </noscript>
 
     <main class="main-content-wrapper">
-        <header class="header">
+        <header class="main-header">
             <h1>
                 <a href="https://www.efqm.org/" target="_blank" title="Learn more about the EFQM Model"
                     style="text-decoration: none;">
@@ -451,105 +671,190 @@
             <p>Diagnose your organization's maturity level using a holistic performance framework.</p>
         </header>
 
-        <div class="block">
-            <div class="block-title"><i class="fas fa-info-circle"></i> What is an Organizational Maturity Framework?
-            </div>
-            <p>An Organizational Maturity or Business Excellence Framework is a strategic management tool used for
-                self-assessment and continuous improvement. These frameworks provide a holistic view of an organization
-                by evaluating its performance across a balanced set of criteria, from leadership and strategy to
-                processes and results.</p>
-        </div>
+        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
+        <div class="tabs-container">
+            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+            <nav class="tabs-nav">
+                <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
+                    <i class="fas fa-book"></i> Theory & Info
+                </button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-input')">
+                    <i class="fas fa-edit"></i> Data Input & Assessment
+                </button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-results')">
+                    <i class="fas fa-chart-bar"></i> Results & Export
+                </button>
+            </nav>
 
-        <div class="block">
-            <div class="block-title"><i class="fas fa-history"></i> History and Purpose</div>
-            <p>The concept of organizational excellence evolved from the quality movements of the 20th century. After
-                World War II, W. Edwards Deming's work on quality control in Japan led to the creation of the
-                <strong>Deming Prize</strong> in 1951, one of the earliest models for recognizing company-wide quality
-                management.</p>
-            <p>In response to growing international competition, the United States established the <strong>Baldrige
-                    Performance Excellence Framework</strong> in 1987. Shortly after, European leaders created the
-                <strong>EFQM Model</strong> (European Foundation for Quality Management) in 1989 to enhance the
-                competitiveness of European organizations.</p>
-            <p>The purpose of these frameworks is to move beyond simple product quality checks and provide a holistic,
-                non-prescriptive guide for achieving sustainable excellence across all facets of an organization.</p>
-        </div>
+            <!-- PESTAÑA 1: TEORÍA -->
+            <div id="tab-theory" class="wizard-tab-content active">
+                <div class="tab-content-wrapper">
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-info-circle"></i> What is an Organizational Maturity
+                            Framework?
+                        </div>
+                        <p>An Organizational Maturity or Business Excellence Framework is a strategic management tool
+                            used for
+                            self-assessment and continuous improvement. These frameworks provide a holistic view of an
+                            organization
+                            by evaluating its performance across a balanced set of criteria, from leadership and
+                            strategy to
+                            processes and results.</p>
+                    </div>
 
-        <div class="block">
-            <div class="block-title"><i class="fas fa-tools"></i> How to Use This Tool</div>
-            <ul>
-                <li><strong>Step 1: Perform Assessment:</strong> Click on each of the 7 criteria below to expand the
-                    section. Use the sliders to score your organization's performance on each sub-criterion. Scores
-                    update in real-time.</li>
-                <li><strong>Step 2: Review Dashboard:</strong> Your scores will automatically update the dashboard,
-                    showing pillar scores, a total score, and a maturity level. The radar chart provides a visual
-                    profile of your organization's strengths.</li>
-                <li><strong>Step 3: Analyze Results:</strong> The "Automated Analysis" section will highlight your key
-                    strengths and potential opportunities for improvement based on your scores.</li>
-                <li><strong>Step 4: Create an Action Plan:</strong> Use the "Notes & Action Plan" text area to document
-                    key insights and define concrete next steps.</li>
-                <li><strong>Step 5: Export Report:</strong> Click the "Export to Excel" button to download a
-                    comprehensive report with your summary, scores, chart, and action plan.</li>
-            </ul>
-        </div>
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-history"></i> History and Purpose</div>
+                        <p>The concept of organizational excellence evolved from the quality movements of the 20th
+                            century. After
+                            World War II, W. Edwards Deming's work on quality control in Japan led to the creation of
+                            the
+                            <strong>Deming Prize</strong> in 1951, one of the earliest models for recognizing
+                            company-wide quality
+                            management.
+                        </p>
+                        <p>In response to growing international competition, the United States established the
+                            <strong>Baldrige
+                                Performance Excellence Framework</strong> in 1987. Shortly after, European leaders
+                            created the
+                            <strong>EFQM Model</strong> (European Foundation for Quality Management) in 1989 to enhance
+                            the
+                            competitiveness of European organizations.
+                        </p>
+                        <p>The purpose of these frameworks is to move beyond simple product quality checks and provide a
+                            holistic,
+                            non-prescriptive guide for achieving sustainable excellence across all facets of an
+                            organization.</p>
+                    </div>
 
-        <div class="block" style="text-align:center;">
-            <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-bolt"></i> Load Example
-                Data</button>
-            <button type="button" id="resetBtn"><i class="fas fa-undo"></i> Reset All Scores</button>
-        </div>
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-tools"></i> How to Use This Tool</div>
+                        <ul>
+                            <li><strong>Step 1: Perform Assessment:</strong> In the "Data Input & Assessment" tab, click
+                                on each of the 7 criteria to expand the section. Use the sliders to score your
+                                organization's performance on each sub-criterion. Scores update in real-time.</li>
+                            <li><strong>Step 2: Review Dashboard:</strong> Your scores will automatically update the
+                                dashboard in the "Results & Export" tab, showing pillar scores, a total score, and a
+                                maturity level. The radar chart provides a visual profile of your organization's
+                                strengths.</li>
+                            <li><strong>Step 3: Analyze Results:</strong> The "Automated Analysis" section will
+                                highlight your key strengths and potential opportunities for improvement based on your
+                                scores.</li>
+                            <li><strong>Step 4: Create an Action Plan:</strong> Use the "Notes & Action Plan" text area
+                                to document key insights and define concrete next steps.</li>
+                            <li><strong>Step 5: Export Report:</strong> In the "Results & Export" tab, click the "Export
+                                to Excel" button to download a comprehensive report with your summary, scores, chart,
+                                and action plan.</li>
+                        </ul>
+                    </div>
 
-        <div id="assessmentAccordion" class="block"></div>
-
-        <div class="block results-dashboard" id="results-block">
-            <div id="score-summary">
-                <div class="block-title"><i class="fas fa-sitemap"></i> Foundations: <span id="foundations_score"
-                        class="result-value">-</span> / 200 pts</div>
-                <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Logo" class="summary-logo">
-                <p><i class="fas fa-cogs"></i> Processes: <span id="processes_score" class="result-value">-</span> / 400
-                    pts</p>
-                <p><i class="fas fa-trophy"></i> Outcomes: <span id="outcomes_score" class="result-value">-</span> / 400
-                    pts</p>
-                <hr>
-                <p style="font-size: 1.2em; font-weight: bold;">Total Score: <span id="total_score"
-                        class="result-value">-</span> / 1000</p>
-                <p>Maturity Level: <span id="maturity_level" class="badge">-</span></p>
-            </div>
-            <div id="chart-wrapper">
-                <canvas id="excellenceChart"></canvas>
-            </div>
-        </div>
-
-        <div class="block" id="analysis-block">
-            <div class="block-title"><i class="fas fa-lightbulb"></i> Automated Analysis</div>
-            <div class="results-dashboard">
-                <div class="analysis-section">
-                    <h4><i class="fas fa-star" style="color:var(--success-color);"></i> Key Strengths</h4>
-                    <ul id="strengths-list">
-                        <li>Complete the assessment to see analysis.</li>
-                    </ul>
-                </div>
-                <div class="analysis-section">
-                    <h4><i class="fas fa-lightbulb" style="color:var(--warning-color);"></i> Opportunities for
-                        Improvement</h4>
-                    <ul id="ofis-list">
-                        <li>Complete the assessment to see analysis.</li>
-                    </ul>
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-input')">Go to Data Input &
+                            Assessment <i class="fas fa-arrow-right"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="block" id="notes-block">
-            <div class="block-title"><i class="fas fa-pen-alt"></i> Notes & Action Plan</div>
-            <p>Use the space below to write down your reflections, key findings, or next steps.</p>
-            <textarea id="actionPlan"
-                placeholder="e.g., Action: Review stakeholder engagement strategy (Criterion 3). Owner: John Doe. Deadline: Q3."></textarea>
-        </div>
+            <!-- PESTAÑA 2: ENTRADA DE DATOS Y EVALUACIÓN -->
+            <div id="tab-input" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-tasks"></i> Organizational Assessment</div>
+                        <p>Click on each criterion below to expand and evaluate your organization's performance. Use the
+                            sliders to assign scores (0-100%) for each sub-criterion.</p>
 
-        <div class="block" style="text-align: center;">
-            <button id="exportExcelBtn"><i class="fas fa-file-excel"></i> Export Excellence Report to Excel</button>
-            <button id="exportJpgBtn"><i class="fas fa-file-image"></i> Export Results to JPG</button>
+                        <div style="text-align:center; margin-bottom: 1.5rem;">
+                            <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-bolt"></i>
+                                Load Example
+                                Data</button>
+                            <button type="button" id="resetBtn"><i class="fas fa-undo"></i> Reset All Scores</button>
+                        </div>
+
+                        <div id="assessmentAccordion"></div>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
+                                class="fas fa-arrow-left"></i> Back to Theory</button>
+                        <button class="btn-next-tab btn-success" onclick="switchWizardTab('tab-results')">Go to Results
+                            & Export <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PESTAÑA 3: RESULTADOS Y EXPORTACIÓN -->
+            <div id="tab-results" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-chart-line"></i> Results Dashboard</div>
+
+                        <div class="results-dashboard" id="results-block">
+                            <div id="score-summary">
+                                <div class="block-title"><i class="fas fa-sitemap"></i> Foundations: <span
+                                        id="foundations_score" class="result-value">-</span> / 200 pts</div>
+                                <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Logo" class="summary-logo">
+                                <p><i class="fas fa-cogs"></i> Processes: <span id="processes_score"
+                                        class="result-value">-</span> / 400
+                                    pts</p>
+                                <p><i class="fas fa-trophy"></i> Outcomes: <span id="outcomes_score"
+                                        class="result-value">-</span> / 400
+                                    pts</p>
+                                <hr>
+                                <p style="font-size: 1.2em; font-weight: bold;">Total Score: <span id="total_score"
+                                        class="result-value">-</span> / 1000</p>
+                                <p>Maturity Level: <span id="maturity_level" class="badge">-</span></p>
+                            </div>
+                            <div id="chart-wrapper">
+                                <canvas id="excellenceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block" id="analysis-block">
+                        <div class="block-title"><i class="fas fa-lightbulb"></i> Automated Analysis</div>
+                        <div class="results-dashboard">
+                            <div class="analysis-section">
+                                <h4><i class="fas fa-star" style="color:var(--success-color);"></i> Key Strengths</h4>
+                                <ul id="strengths-list">
+                                    <li>Complete the assessment to see analysis.</li>
+                                </ul>
+                            </div>
+                            <div class="analysis-section">
+                                <h4><i class="fas fa-lightbulb" style="color:var(--warning-color);"></i> Opportunities
+                                    for
+                                    Improvement</h4>
+                                <ul id="ofis-list">
+                                    <li>Complete the assessment to see analysis.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block" id="notes-block">
+                        <div class="block-title"><i class="fas fa-pen-alt"></i> Notes & Action Plan</div>
+                        <p>Use the space below to write down your reflections, key findings, or next steps.</p>
+                        <textarea id="actionPlan"
+                            placeholder="e.g., Action: Review stakeholder engagement strategy (Criterion 3). Owner: John Doe. Deadline: Q3."></textarea>
+                    </div>
+
+                    <div class="block" style="text-align: center;">
+                        <div class="results-actions">
+                            <button id="exportExcelBtn"><i class="fas fa-file-excel"></i> Export Excellence Report to
+                                Excel</button>
+                            <button id="exportJpgBtn"><i class="fas fa-file-image"></i> Export Results to JPG</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-input')"><i
+                                class="fas fa-arrow-left"></i> Back to Data Input & Assessment</button>
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory <i
+                                class="fas fa-book"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
     <footer>
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
@@ -564,6 +869,32 @@
     </footer>
 
     <script>
+        // ============================================
+        // FUNCIONES DEL SISTEMA DE PESTAÑAS
+        // ============================================
+
+        // Función para cambiar entre tabs
+        function switchWizardTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos de wizard
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Actualizar gráfico cuando se cambia a la pestaña de resultados
+            if (tabId === 'tab-results' && excellenceChart) {
+                updateUI();
+            }
+        }
+
         // Cargar el header dinámicamente
         fetch('header.html')
             .then(response => response.text())
