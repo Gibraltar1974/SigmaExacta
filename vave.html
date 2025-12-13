@@ -12,6 +12,8 @@
         content="Open source, Free Software, SigmaExacta, VAVE, Value Analysis, Value Engineering, function analysis, cost reduction, value index, product design, engineering tool, free VAVE tool, VA-VE">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -217,10 +219,25 @@
             padding-left: 1.25rem;
         }
 
-        /* ESTILOS ESPECÍFICOS DE VAVE DENTRO DE LAS TABS */
-        .calculator-section {
-            margin-top: 0;
+        /* ===== ESTILOS PARA LA ESTRUCTURA (igual que en FMEA) ===== */
+        .panels-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
             width: 100%;
+            margin-bottom: 1.25rem;
+        }
+
+        .structure-panel {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 300px;
+            min-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-grow: 1;
         }
 
         .calculation-block {
@@ -298,12 +315,200 @@
             cursor: not-allowed;
         }
 
-        .example-btn {
-            background-color: #27ae60;
+        .item-list {
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .example-btn:hover {
-            background-color: #229954;
+        .item {
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-name {
+            flex-grow: 1;
+            margin-right: 0.6rem;
+        }
+
+        .item-actions button {
+            padding: 5px 8px;
+            font-size: 0.8rem;
+            margin: 0 2px;
+        }
+
+        /* ===== ESTILOS PARA EL DIAGRAMA DE RED ===== */
+        #network-wrapper {
+            position: relative;
+            width: 100%;
+            margin: 1.25rem auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+        }
+
+        #networkChart {
+            width: 100%;
+            height: 600px;
+            position: relative;
+        }
+
+        #networkCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #networkIcon {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            z-index: 1001;
+            filter: invert(1);
+        }
+
+        #fitViewBtn,
+        #exportChartBtn {
+            position: absolute;
+            top: 25px;
+            z-index: 1001;
+            padding: 0.5rem 0.75rem;
+        }
+
+        #fitViewBtn {
+            right: 25px;
+        }
+
+        #exportChartBtn {
+            right: 80px;
+            background-color: #16a085;
+        }
+
+        #exportChartBtn:hover {
+            background-color: #117a65;
+        }
+
+        #generateVAVEValuesBtn {
+            padding: 0.6rem 1rem;
+            font-size: 1em;
+            background-color: #9013fe;
+            margin-bottom: 1.5rem;
+        }
+
+        #generateVAVEValuesBtn:hover {
+            background-color: #7a0fd8;
+        }
+
+        #network-instruction {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #888;
+            font-size: 0.9rem;
+            font-style: italic;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        #networkLegend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 0.6rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            max-height: 90%;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        #networkLegend div {
+            margin: 5px 0;
+        }
+
+        #networkLegend span {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #ccc;
+        }
+
+        /* ===== ESTILOS PARA LA TABLA DE VAVE ===== */
+        .vave-table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 1.25rem;
+        }
+
+        .vave-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1000px;
+            background: white;
+        }
+
+        .vave-table th,
+        .vave-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+            vertical-align: top;
+            white-space: normal;
+        }
+
+        .vave-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .vave-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .vave-table input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+
+        .value-index-high {
+            background-color: #d4edda !important;
+            font-weight: bold;
+            color: #155724;
+        }
+
+        .value-index-medium {
+            background-color: #fff3cd !important;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .value-index-low {
+            background-color: #f8d7da !important;
+            font-weight: bold;
+            color: #721c24;
         }
 
         .tab-nav-buttons {
@@ -352,7 +557,22 @@
             background-color: #229954;
         }
 
-        /* Estilos específicos del contenido VAVE */
+        .btn-next-tab.btn-purple {
+            background-color: #9013fe;
+        }
+
+        .btn-next-tab.btn-purple:hover {
+            background-color: #7a0fd8;
+        }
+
+        .example-btn {
+            background-color: #27ae60;
+        }
+
+        .example-btn:hover {
+            background-color: #229954;
+        }
+
         .infographic-flow {
             display: flex;
             justify-content: space-between;
@@ -398,124 +618,32 @@
             margin: 0 0.6rem;
         }
 
-        #resultsTable,
-        #functionListTable {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 1.25rem;
-            background: white;
-            border: 1px solid #ddd;
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        #resultsTable th,
-        #resultsTable td,
-        #functionListTable th,
-        #functionListTable td {
-            border: 1px solid #ddd;
-            padding: 0.75rem;
-            text-align: center;
-            white-space: normal;
-        }
-
-        #resultsTable th,
-        #functionListTable th {
-            background-color: #2c3e50;
+        /* Estilo para el icono en el header */
+        .header-icon-vave {
+            background-color: #9013fe;
             color: white;
-            font-weight: 600;
+            padding: 5px 8px;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 1.2em;
         }
 
-        #resultsTable tr:nth-child(even),
-        #functionListTable tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .result-value {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .badge-success {
-            background-color: #27ae60;
-        }
-
-        .badge-warning {
-            background-color: #f39c12;
-        }
-
-        .badge-danger {
-            background-color: #e74c3c;
-        }
-
-        #loadExampleBtn {
-            background-color: #27ae60;
-        }
-
-        #resetBtn {
-            background-color: #f39c12;
-        }
-
-        #function-input-grid {
-            display: grid;
-            grid-template-columns: 3fr 2fr 2fr auto;
-            gap: 1.25rem;
-            align-items: flex-end;
-            margin-bottom: 1.25rem;
-        }
-
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .slider-value {
-            font-weight: bold;
-            color: #3498db;
+        /* Botones de acción globales */
+        .global-action-buttons {
             text-align: center;
-            margin-top: -0.6rem;
-            margin-bottom: 0.6rem;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
-
-        #addFunctionBtn {
-            background-color: #27ae60;
-            width: 100%;
-            padding: 0.6rem;
-        }
-
-        #addFunctionBtn:hover {
-            background-color: #219653;
-        }
-
-        .remove-btn {
-            background-color: #e74c3c;
-            padding: 5px 10px;
-        }
-
-        .remove-btn:hover {
-            background-color: #c0392b;
+            margin: 1.5rem auto;
+            padding: 0 1.25rem;
+            max-width: 1200px;
         }
 
         /* Ajustes responsivos */
         @media (max-width: 992px) {
-            #function-input-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+            .panels-container {
+                flex-direction: column;
+            }
+
+            .structure-panel {
+                width: 100%;
             }
         }
 
@@ -549,16 +677,6 @@
                 padding: 0.6rem 0.3rem;
                 font-size: 0.8rem;
             }
-        }
-
-        /* Estilo para el icono en el header */
-        .header-icon-vave {
-            background-color: #9013fe;
-            color: white;
-            padding: 5px 8px;
-            border-radius: 6px;
-            margin-right: 10px;
-            font-size: 1.2em;
         }
     </style>
 </head>
@@ -601,6 +719,12 @@
             <p>A Systematic Method for Improving Product Value</p>
         </header>
 
+        <!-- Botones de acción globales -->
+        <div class="global-action-buttons">
+            <button id="loadExampleBtn" class="example-btn"><i class="fas fa-lightbulb"></i> Load Example</button>
+            <button id="resetAllBtn" style="background-color: #f39c12;"><i class="fas fa-redo"></i> Reset All</button>
+        </div>
+
         <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
             <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
@@ -608,11 +732,14 @@
                 <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
                     <i class="fas fa-book"></i> Theory & Info
                 </button>
-                <button class="tab-btn" onclick="switchWizardTab('tab-input')">
-                    <i class="fas fa-edit"></i> VAVE Analysis Tool
+                <button class="tab-btn" onclick="switchWizardTab('tab-structure')">
+                    <i class="fas fa-cogs"></i> Define Structure
                 </button>
-                <button class="tab-btn" onclick="switchWizardTab('tab-results')">
-                    <i class="fas fa-chart-bar"></i> Results
+                <button class="tab-btn" onclick="switchWizardTab('tab-visualize')">
+                    <i class="fas fa-project-diagram"></i> Visualize
+                </button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-vave-analysis')">
+                    <i class="fas fa-calculator"></i> VAVE Analysis
                 </button>
             </nav>
 
@@ -644,16 +771,14 @@
                                     Functions</strong><span>What
                                     does it do?</span></div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                            <div class="flow-step"><i class="fas fa-dollar-sign"></i><strong>2. Assign
-                                    Costs</strong><span>What does
-                                    it cost?</span></div>
+                            <div class="flow-step"><i class="fas fa-cube"></i><strong>2. Define
+                                    Structure</strong><span>Components & Contacts</span></div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                            <div class="flow-step"><i class="fas fa-star"></i><strong>3. Assign Value</strong><span>How
-                                    important is
-                                    it?</span></div>
+                            <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>3. Visualize
+                                    System</strong><span>Network Diagram</span></div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                            <div class="flow-step"><i class="fas fa-balance-scale"></i><strong>4. Analyze &
-                                    Improve</strong><span>Where is the opportunity?</span></div>
+                            <div class="flow-step"><i class="fas fa-balance-scale"></i><strong>4. Analyze
+                                    Value</strong><span>Cost vs. Function</span></div>
                         </div>
                     </div>
 
@@ -676,172 +801,196 @@
                     <div class="container">
                         <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
                         <div class="instructions-box">
-                            <ul>
-                                <li>Enter the overall <strong>Product Name</strong>.</li>
-                                <li>In the "Add New Function" section:
+                            <ol>
+                                <li><strong>Define Structure:</strong> In the "Define Structure" tab:
                                     <ul>
-                                        <li>Type a clear <strong>Function Description</strong>.</li>
-                                        <li>Use the <strong>Cost Slider</strong> to set the cost for that function.</li>
-                                        <li>Use the <strong>Value Score Slider</strong> to rate its importance (1-10).
-                                        </li>
-                                        <li>Click the <strong><i class="fas fa-plus"></i> Add</strong> button to add the
-                                            function to
-                                            the list below.</li>
+                                        <li>Add all components of your system in the "Components" panel</li>
+                                        <li>Define contacts (interfaces) between components</li>
+                                        <li>Define functions for each contact or component</li>
                                     </ul>
                                 </li>
-                                <li>Continue adding all relevant functions for your product. You can remove any function
-                                    using the
-                                    <strong><i class="fas fa-minus-circle"></i></strong> button in its row.
-                                </li>
-                                <li>Click <strong><i class="fas fa-calculator"></i> Analyze Value</strong> to perform
-                                    the
-                                    calculation on the current list of functions.</li>
-                                <li>Use <strong><i class="fas fa-plus"></i> Add to History</strong> to save the result
-                                    for
-                                    comparison.</li>
-                            </ul>
+                                <li><strong>Visualize System:</strong> View the network diagram to understand your
+                                    system structure</li>
+                                <li><strong>VAVE Analysis:</strong> Assign costs and value scores to each function and
+                                    calculate value index</li>
+                                <li><strong>Optimize:</strong> Identify low-value functions for cost reduction or
+                                    functional improvement</li>
+                            </ol>
                         </div>
                     </div>
 
                     <div class="tab-nav-buttons">
-                        <button class="btn-next-tab" onclick="switchWizardTab('tab-input')">Go to VAVE Analysis Tool <i
-                                class="fas fa-arrow-right"></i></button>
+                        <button class="btn-next-tab btn-purple" onclick="switchWizardTab('tab-structure')">Go to Define
+                            Structure <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: VAVE ANALYSIS TOOL -->
-            <div id="tab-input" class="wizard-tab-content">
+            <!-- PESTAÑA 2: DEFINIR ESTRUCTURA -->
+            <div id="tab-structure" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
-                    <div class="calculator-section">
-                        <div class="calculation-block">
-                            <div class="calculation-title">VAVE Analysis Tool</div>
-
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <button id="loadExampleBtn" class="example-btn"><i class="fas fa-file-alt"></i> Load
-                                    Example</button>
-                                <button id="resetBtn" style="background-color: #f39c12;"><i class="fas fa-sync-alt"></i>
-                                    Reset Data</button>
+                    <div class="panels-container">
+                        <div id="componentsPanel" class="structure-panel">
+                            <div class="calculation-title">Components</div>
+                            <div class="form-group">
+                                <label for="componentName"><i class="fas fa-cube"></i> Component Name:</label>
+                                <input type="text" id="componentName" placeholder="Enter component name">
+                                <label>
+                                    <input type="checkbox" id="componentExternal"
+                                        style="width: auto; margin-right: 5px;"> External Component
+                                </label>
+                                <button id="addComponentBtn"><i class="fas fa-plus"></i> Add Component</button>
+                                <button id="clearComponentsBtn"><i class="fas fa-trash"></i> Clear All</button>
                             </div>
+                            <div class="item-list" id="componentsList"></div>
+                        </div>
 
-                            <form id="vaveForm">
-                                <label for="itemName"><i class="fas fa-tag"></i> Item/Product Name:</label>
-                                <input type="text" id="itemName" placeholder="e.g., Product X" required />
-
-                                <hr style="margin: 30px 0; border: 1px solid #eee;">
-
-                                <h3><i class="fas fa-tasks"></i> Product Functions</h3>
-
-                                <div id="function-input-grid">
-                                    <div>
-                                        <label for="functionDescription">Function Description</label>
-                                        <input type="text" id="functionDescription"
-                                            placeholder="e.g., Provide structural support">
-                                    </div>
-                                    <div class="slider-container">
-                                        <label for="functionCost">Cost ($)</label>
-                                        <span id="costValueDisplay" class="slider-value">100</span>
-                                        <input type="range" id="functionCost" min="0" max="500" value="100" step="1">
-                                    </div>
-                                    <div class="slider-container">
-                                        <label for="functionValue">Value Score (1-10)</label>
-                                        <span id="valueScoreDisplay" class="slider-value">5</span>
-                                        <input type="range" id="functionValue" min="1" max="10" value="5" step="1">
-                                    </div>
-                                    <div>
-                                        <label>&nbsp;</label>
-                                        <button type="button" id="addFunctionBtn" title="Add Function"><i
-                                                class="fas fa-plus"></i>
-                                            Add</button>
-                                    </div>
-                                </div>
-
-                                <table id="functionListTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Function Description</th>
-                                            <th>Cost</th>
-                                            <th>Value Score</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-
-                                <div style="text-align: center; margin-top: 25px;">
-                                    <button type="submit"><i class="fas fa-calculator"></i> Analyze Value</button>
-                                </div>
-                            </form>
-
-                            <div id="analysis-results" style="display:none; margin-top: 25px;">
-                                <h3>Analysis Results</h3>
-                                <p><i class="fas fa-money-bill-wave"></i> Total Current Cost: <span id="totalCost"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-star"></i> Total Value Score: <span id="totalValue"
-                                        class="result-value">-</span>
-                                </p>
-                                <p><i class="fas fa-balance-scale"></i> Value Index (Total Value / Total Cost): <span
-                                        id="valueIndex" class="result-value">-</span></p>
-
-                                <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to
-                                    History</button>
+                        <div id="contactsPanel" class="structure-panel">
+                            <div class="calculation-title">Contacts</div>
+                            <div class="form-group">
+                                <label for="contactFrom"><i class="fas fa-arrow-right"></i> From Component:</label>
+                                <select id="contactFrom" disabled>
+                                    <option value="">Select component</option>
+                                </select>
+                                <label for="contactTo"><i class="fas fa-arrow-left"></i> To Component:</label>
+                                <select id="contactTo" disabled>
+                                    <option value="">Select component</option>
+                                </select>
+                                <button id="addContactBtn" disabled><i class="fas fa-plus"></i> Add Contact</button>
+                                <button id="clearContactsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
                             </div>
+                            <div class="item-list" id="contactsList"></div>
+                        </div>
+
+                        <div id="functionsPanel" class="structure-panel">
+                            <div class="calculation-title">Functions</div>
+                            <div class="form-group">
+                                <label for="functionName"><i class="fas fa-bolt"></i> Function Name:</label>
+                                <input type="text" id="functionName" placeholder="Enter function name">
+                                <label for="functionType">Function Type:</label>
+                                <select id="functionType">
+                                    <option value="primary">Primary</option>
+                                    <option value="secondary">Secondary</option>
+                                </select>
+                                <label for="functionContacts"><i class="fas fa-link"></i> Contacts:</label>
+                                <select id="functionContacts" multiple disabled>
+                                </select>
+                                <button id="addFunctionBtn" disabled><i class="fas fa-plus"></i> Add Function</button>
+                                <button id="clearFunctionsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
+                            </div>
+                            <div class="item-list" id="functionsList"></div>
                         </div>
                     </div>
 
                     <div class="tab-nav-buttons">
                         <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
                                 class="fas fa-arrow-left"></i> Back to Theory</button>
-                        <button class="btn-next-tab btn-success" onclick="goToResults()" id="go-to-results-btn"
-                            disabled>Go to Results <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn-next-tab btn-purple" onclick="switchWizardTab('tab-visualize')">Go to
+                            Visualize <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <!-- PESTAÑA 3: RESULTADOS -->
-            <div id="tab-results" class="wizard-tab-content">
+            <!-- PESTAÑA 3: VISUALIZAR -->
+            <div id="tab-visualize" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <div id="network-wrapper">
+                        <img id="networkIcon" src="sigma-exacta-icon.jpg" alt="Sigma Exacta Inverted Logo">
+                        <button id="exportChartBtn" title="Export Chart as JPG"><i class="fas fa-camera"></i></button>
+                        <button id="fitViewBtn" title="Fit to View"><i class="fas fa-compress-arrows-alt"></i></button>
+                        <div id="networkChart">
+                            <div id="network-instruction">Drag nodes to rearrange the layout</div>
+                            <div id="networkCanvas" style="width: 100%; height: 100%;"></div>
+                            <div id="networkLegend"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-nav-buttons">
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-structure')"><i
+                                class="fas fa-arrow-left"></i> Back to Define Structure</button>
+                        <button class="btn-next-tab btn-purple" onclick="switchWizardTab('tab-vave-analysis')">Go to
+                            VAVE Analysis <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PESTAÑA 4: VAVE ANALYSIS -->
+            <div id="tab-vave-analysis" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="calculation-block">
-                        <div class="calculation-title">Results & History</div>
+                        <div class="calculation-title">VAVE Analysis Tool</div>
 
-                        <div id="results-container">
+                        <!-- Botón Generate VAVE Analysis -->
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <button id="generateVAVEValuesBtn"><i class="fas fa-calculator"></i> Generate VAVE
+                                Analysis</button>
+                        </div>
+
+                        <div class="calculation-block">
+                            <h3><i class="fas fa-info-circle"></i> Instructions</h3>
+                            <p>For each function identified in your system, assign:</p>
+                            <ul>
+                                <li><strong>Cost ($):</strong> The estimated cost associated with this function</li>
+                                <li><strong>Value Score (1-10):</strong> How important this function is to the
+                                    customer/system (1=least, 10=most)</li>
+                                <li><strong>Value Index = Value Score / Cost</strong> (Higher is better)</li>
+                            </ul>
+                            <p>Functions with <span class="value-index-low" style="padding: 2px 5px;">low value
+                                    index</span> are candidates for cost reduction or functional improvement.</p>
+                        </div>
+
+                        <div id="vaveTableContainer">
                             <p style="color: #7f8c8d; text-align: center; padding: 2rem;">
                                 <i class="fas fa-info-circle"
                                     style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                                Complete the analysis in the "VAVE Analysis Tool" tab to see results here.
+                                Click "Generate VAVE Analysis" above to start analyzing your functions.
                             </p>
                         </div>
 
-                        <div id="results-summary" style="display: none;">
-                            <h3
-                                style="margin-top: 2rem; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 0.6rem;">
-                                <i class="fas fa-history"></i> Analysis History
-                            </h3>
-                            <table id="resultsTable">
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-tag"></i> Item/Product</th>
-                                        <th><i class="fas fa-list"></i> Functions Analyzed</th>
-                                        <th><i class="fas fa-money-bill-wave"></i> Total Cost</th>
-                                        <th><i class="fas fa-star"></i> Total Value</th>
-                                        <th><i class="fas fa-balance-scale"></i> Value Index</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                        <div id="vaveResults" style="display: none;">
+                            <h3><i class="fas fa-chart-line"></i> Value Analysis Results</h3>
+                            <div class="vave-table-wrapper">
+                                <table id="vaveResultsTable" class="vave-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Function</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Cost ($)</th>
+                                            <th>Value Score (1-10)</th>
+                                            <th>Value Index</th>
+                                            <th>Priority</th>
+                                            <th>Recommendation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vaveResultsBody">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div
+                                style="margin-top: 2rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                                <h4><i class="fas fa-chart-pie"></i> Summary</h4>
+                                <p><strong>Total Cost:</strong> $<span id="totalCostValue">0.00</span></p>
+                                <p><strong>Average Value Index:</strong> <span id="averageValueIndex">0.00</span></p>
+                                <p><strong>Functions with Low Value Index (&lt; 0.1):</strong> <span
+                                        id="lowValueCount">0</span></p>
+                                <p><strong>Functions with High Value Index (&gt; 0.25):</strong> <span
+                                        id="highValueCount">0</span></p>
+                            </div>
 
                             <div class="matrix-actions" style="margin-top: 2rem;">
-                                <button id="exportBtn" disabled><i class="fas fa-file-excel"></i> Export to
+                                <button id="exportVAVEToExcelBtn" disabled><i class="fas fa-file-excel"></i> Export to
                                     Excel</button>
-                                <button onclick="switchWizardTab('tab-input')" style="background-color: #6c757d;"><i
-                                        class="fas fa-edit"></i> Edit Analysis</button>
+                                <button onclick="switchWizardTab('tab-visualize')" style="background-color: #6c757d;"><i
+                                        class="fas fa-edit"></i> Edit Structure</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="tab-nav-buttons">
-                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-input')"><i
-                                class="fas fa-arrow-left"></i> Back to VAVE Analysis Tool</button>
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-visualize')"><i
+                                class="fas fa-arrow-left"></i> Back to Visualize</button>
                         <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory <i
                                 class="fas fa-book"></i></button>
                     </div>
@@ -868,10 +1017,16 @@
         // FUNCIONES GLOBALES PARA LAS TABS
         // ============================================
 
-        // Variables globales para VAVE
-        let lastResult = null;
-        let functionsList = [];
-        let analysisCompleted = false;
+        // Variables globales (similares a FMEA)
+        let components = [];
+        let contacts = [];
+        let functions = [];
+        let network = null;
+        let contactCounter = 0;
+        let primaryFunctionCounter = 0;
+        let secondaryFunctionCounter = 0;
+
+        const functionColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#d35400', '#27ae60'];
 
         // Función para cambiar entre tabs
         function switchWizardTab(tabId) {
@@ -889,61 +1044,12 @@
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Si vamos a la pestaña de resultados, actualizar la vista
-            if (tabId === 'tab-results' && analysisCompleted) {
-                updateResultsView();
+            // Si vamos a la pestaña de visualize, ajustar el gráfico
+            if (tabId === 'tab-visualize' && network) {
+                setTimeout(() => {
+                    network.fit({ animation: true });
+                }, 100);
             }
-        }
-
-        // Función para ir a Results
-        function goToResults() {
-            if (analysisCompleted) {
-                switchWizardTab('tab-results');
-                updateResultsView();
-            } else {
-                alert('Please complete the analysis first in the "VAVE Analysis Tool" tab.');
-            }
-        }
-
-        // Función para actualizar la vista de resultados
-        function updateResultsView() {
-            if (!analysisCompleted) return;
-
-            const resultsContainer = document.getElementById('results-container');
-            const resultsSummary = document.getElementById('results-summary');
-            const exportBtn = document.getElementById('exportBtn');
-
-            if (resultsContainer) {
-                resultsContainer.innerHTML = '';
-                resultsContainer.innerHTML = `
-                    <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-                        <h3 style="margin-top: 0; color: #155724;"><i class="fas fa-chart-line"></i> Latest Analysis</h3>
-                        <p><strong>Product:</strong> ${document.getElementById('itemName').value || 'Not specified'}</p>
-                        <p><strong>Total Cost:</strong> $<span id="display-total-cost">${lastResult?.totalCost?.toFixed(2) || '0.00'}</span></p>
-                        <p><strong>Total Value Score:</strong> <span id="display-total-value">${lastResult?.totalValue?.toFixed(0) || '0'}</span></p>
-                        <p><strong>Value Index:</strong> <span class="badge ${getBadgeClass(lastResult?.valueIndex)}">${lastResult?.valueIndex || '0.0000'}</span></p>
-                    </div>
-                `;
-            }
-
-            // Mostrar resumen de resultados
-            if (resultsSummary) {
-                resultsSummary.style.display = 'block';
-            }
-
-            // Habilitar botón de exportación
-            if (exportBtn) {
-                exportBtn.disabled = false;
-            }
-        }
-
-        // Función para determinar la clase del badge según el valor
-        function getBadgeClass(valueIndex) {
-            if (!valueIndex) return 'badge-warning';
-            const numValue = parseFloat(valueIndex);
-            if (numValue >= 0.25) return 'badge-success';
-            if (numValue < 0.1) return 'badge-danger';
-            return 'badge-warning';
         }
 
         // ============================================
@@ -967,204 +1073,749 @@
                     console.error('Error loading header:', error);
                 });
 
-            // Inicializar controles deslizantes
-            const costSlider = document.getElementById("functionCost");
-            const valueSlider = document.getElementById("functionValue");
-            const costDisplay = document.getElementById("costValueDisplay");
-            const valueDisplay = document.getElementById("valueScoreDisplay");
-
-            if (costSlider && costDisplay) {
-                costSlider.addEventListener('input', () => costDisplay.textContent = costSlider.value);
-            }
-
-            if (valueSlider && valueDisplay) {
-                valueSlider.addEventListener('input', () => valueDisplay.textContent = valueSlider.value);
-            }
-
-            // Manejar agregar funciones
-            const addFunctionBtn = document.getElementById("addFunctionBtn");
-            if (addFunctionBtn) {
-                addFunctionBtn.addEventListener('click', () => {
-                    const description = document.getElementById("functionDescription").value.trim();
-                    if (!description) {
-                        alert("Please enter a function description.");
-                        return;
-                    }
-                    functionsList.push({
-                        id: Date.now(),
-                        description: description,
-                        cost: parseFloat(costSlider.value),
-                        value: parseInt(valueSlider.value)
-                    });
-                    renderFunctionList();
-                    document.getElementById("functionDescription").value = "";
-                    document.getElementById("functionDescription").focus();
-                });
-            }
-
-            // Manejar el formulario de análisis
-            const vaveForm = document.getElementById("vaveForm");
-            if (vaveForm) {
-                vaveForm.addEventListener("submit", function (event) {
-                    event.preventDefault();
-                    analyzeVAVE();
-                });
-            }
-
-            // Botón de ejemplo
-            const loadExampleBtn = document.getElementById("loadExampleBtn");
-            if (loadExampleBtn) {
-                loadExampleBtn.addEventListener("click", function () {
-                    document.getElementById("itemName").value = "Gizmo 5000";
-                    functionsList = [
-                        { id: 1, description: 'Provide power', cost: 120.00, value: 9 },
-                        { id: 2, description: 'Control user input', cost: 75.50, value: 8 },
-                        { id: 3, description: 'Display information', cost: 60.00, value: 7 },
-                        { id: 4, description: 'House components', cost: 40.00, value: 6 },
-                        { id: 5, description: 'Ensure safety', cost: 30.00, value: 9 }
-                    ];
-                    renderFunctionList();
-                });
-            }
-
-            // Botón de reset
-            const resetBtn = document.getElementById("resetBtn");
-            if (resetBtn) {
-                resetBtn.addEventListener("click", function () {
-                    document.getElementById("itemName").value = "";
-                    functionsList = [];
-                    renderFunctionList();
-                    document.getElementById("analysis-results").style.display = "none";
-                    document.getElementById("addBtn").disabled = true;
-                    analysisCompleted = false;
-                    const goToResultsBtn = document.getElementById('go-to-results-btn');
-                    if (goToResultsBtn) goToResultsBtn.disabled = true;
-                });
-            }
-
-            // Botón para agregar a la tabla de historia
-            const addBtn = document.getElementById("addBtn");
-            if (addBtn) {
-                addBtn.addEventListener("click", addToTable);
-            }
-
-            // Botón de exportación
-            const exportBtn = document.getElementById("exportBtn");
-            if (exportBtn) {
-                exportBtn.addEventListener("click", exportExcel);
-            }
+            // Inicializar la herramienta VAVE
+            initVAVE();
         });
 
-        // Función para renderizar la lista de funciones
-        function renderFunctionList() {
-            const tbody = document.querySelector("#functionListTable tbody");
-            if (tbody) {
-                tbody.innerHTML = "";
-                functionsList.forEach(func => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td style="text-align: left;">${func.description}</td>
-                        <td>$${func.cost.toFixed(2)}</td>
-                        <td>${func.value}</td>
-                        <td><button type="button" class="remove-btn" onclick="removeFunction(${func.id})"><i class="fas fa-minus-circle"></i></button></td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-        }
+        // Inicializar la lógica de VAVE
+        function initVAVE() {
+            // Referencias a elementos DOM
+            const componentsList = document.getElementById('componentsList');
+            const contactsList = document.getElementById('contactsList');
+            const functionsList = document.getElementById('functionsList');
+            const contactFromSelect = document.getElementById('contactFrom');
+            const contactToSelect = document.getElementById('contactTo');
+            const functionContactsSelect = document.getElementById('functionContacts');
 
-        // Función para eliminar una función
-        function removeFunction(id) {
-            functionsList = functionsList.filter(func => func.id !== id);
-            renderFunctionList();
-        }
+            // Event listeners para botones globales
+            document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
+            document.getElementById('resetAllBtn').addEventListener('click', resetAll);
 
-        // Función para analizar VAVE
-        function analyzeVAVE() {
-            const itemName = document.getElementById("itemName").value;
-            if (functionsList.length === 0) {
-                alert("Please add at least one function to the list before analyzing.");
-                return;
-            }
-
-            let totalCost = 0;
-            let totalValue = 0;
-            functionsList.forEach(func => {
-                totalCost += func.cost;
-                totalValue += func.value;
+            // Event listeners para botones de estructura
+            document.getElementById('addComponentBtn').addEventListener('click', addComponent);
+            document.getElementById('addContactBtn').addEventListener('click', addContact);
+            document.getElementById('addFunctionBtn').addEventListener('click', addFunction);
+            document.getElementById('generateVAVEValuesBtn').addEventListener('click', generateVAVEAnalysis);
+            document.getElementById('exportChartBtn').addEventListener('click', exportChart);
+            document.getElementById('clearComponentsBtn').addEventListener('click', resetAll);
+            document.getElementById('clearContactsBtn').addEventListener('click', () => {
+                contacts = [];
+                functions = [];
+                contactCounter = 0;
+                primaryFunctionCounter = 0;
+                secondaryFunctionCounter = 0;
+                updateAll();
             });
+            document.getElementById('clearFunctionsBtn').addEventListener('click', () => {
+                functions = [];
+                primaryFunctionCounter = 0;
+                secondaryFunctionCounter = 0;
+                updateAll();
+            });
+            document.getElementById('fitViewBtn').addEventListener('click', () => { if (network) network.fit({ animation: true }); });
+            document.getElementById('exportVAVEToExcelBtn').addEventListener('click', exportVAVEToExcel);
 
-            const valueIndex = totalCost > 0 ? (totalValue / totalCost) : 0;
+            updateAll();
 
-            // Mostrar resultados en la pestaña actual
-            const analysisResults = document.getElementById("analysis-results");
-            if (analysisResults) {
-                document.getElementById("totalCost").textContent = '$' + totalCost.toFixed(2);
-                document.getElementById("totalValue").textContent = totalValue.toFixed(0);
-                document.getElementById("valueIndex").textContent = valueIndex.toFixed(4);
-                analysisResults.style.display = "block";
-                document.getElementById("addBtn").disabled = false;
+            // Función para agregar componente
+            function addComponent() {
+                const name = document.getElementById('componentName').value.trim();
+                if (name) {
+                    const isExternal = document.getElementById('componentExternal').checked;
+                    const newId = components.length > 0 ? Math.max(...components.map(c => c.id)) + 1 : 1;
+                    components.push({ id: newId, name, external: isExternal });
+                    document.getElementById('componentName').value = '';
+                    document.getElementById('componentExternal').checked = false;
+                    updateAll();
+                }
             }
 
-            // Guardar el resultado para la pestaña de resultados
-            lastResult = {
-                itemName,
-                functionsAnalyzed: functionsList.map(f => f.description).join('; '),
-                totalCost,
-                totalValue,
-                valueIndex: valueIndex.toFixed(4)
-            };
-
-            analysisCompleted = true;
-
-            // Habilitar botón para ir a resultados
-            const goToResultsBtn = document.getElementById('go-to-results-btn');
-            if (goToResultsBtn) goToResultsBtn.disabled = false;
-        }
-
-        // Función para agregar a la tabla de historia
-        function addToTable() {
-            if (!lastResult) return;
-            const tbody = document.querySelector("#resultsTable tbody");
-            if (tbody) {
-                const row = document.createElement("tr");
-                const badgeClass = getBadgeClass(lastResult.valueIndex);
-                row.innerHTML = ` 
-                    <td>${lastResult.itemName}</td> 
-                    <td style="text-align: left;">${lastResult.functionsAnalyzed}</td> 
-                    <td>$${lastResult.totalCost.toFixed(2)}</td> 
-                    <td>${lastResult.totalValue.toFixed(0)}</td> 
-                    <td><span class="badge ${badgeClass}">${lastResult.valueIndex}</span></td> 
-                `;
-                tbody.appendChild(row);
-                document.getElementById("addBtn").disabled = true;
-            }
-        }
-
-        // Función para exportar a Excel
-        function exportExcel() {
-            const wb = XLSX.utils.book_new();
-
-            // Hoja de historia
-            const historyTable = document.getElementById("resultsTable");
-            if (historyTable.rows.length > 1) {
-                const historySheet = XLSX.utils.table_to_sheet(historyTable, { sheet: "History" });
-                XLSX.utils.book_append_sheet(wb, historySheet, "Analysis History");
+            // Función para agregar contacto
+            function addContact() {
+                const fromId = parseInt(contactFromSelect.value);
+                const toId = parseInt(contactToSelect.value);
+                if (fromId && toId && fromId !== toId) {
+                    contactCounter++;
+                    const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
+                    contacts.push({ id: newId, from: fromId, to: toId, name: `c${contactCounter}` });
+                    updateAll();
+                }
             }
 
-            // Hoja de funciones actuales
-            if (functionsList.length > 0) {
-                const functionsData = functionsList.map(f => ({
-                    Item: document.getElementById("itemName").value,
-                    Function: f.description,
-                    Cost: f.cost,
-                    'Value Score': f.value
-                }));
-                const functionsSheet = XLSX.utils.json_to_sheet(functionsData);
-                XLSX.utils.book_append_sheet(wb, functionsSheet, "Current Functions");
+            // Función para agregar función
+            function addFunction() {
+                const name = document.getElementById('functionName').value.trim();
+                const type = document.getElementById('functionType').value;
+                const selectedContacts = Array.from(functionContactsSelect.selectedOptions).map(option => parseInt(option.value));
+                if (name && selectedContacts.length > 0) {
+                    const newId = functions.length > 0 ? Math.max(...functions.map(f => f.id)) + 1 : 1;
+                    let funcLabel = '';
+                    if (type === 'primary') {
+                        primaryFunctionCounter++;
+                        funcLabel = `fp${primaryFunctionCounter}`;
+                    } else {
+                        secondaryFunctionCounter++;
+                        funcLabel = `fs${secondaryFunctionCounter}`;
+                    }
+                    functions.push({
+                        id: newId,
+                        name,
+                        type,
+                        contacts: selectedContacts,
+                        label: funcLabel,
+                        cost: 0,
+                        valueScore: 5
+                    });
+                    document.getElementById('functionName').value = '';
+                    updateAll();
+                }
             }
 
-            XLSX.writeFile(wb, "VAVE_Analysis_Sigma_Exacta.xlsx");
+            // Función para actualizar lista de componentes
+            function updateComponentsList() {
+                componentsList.innerHTML = '';
+                components.forEach(component => {
+                    const item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerHTML = `
+                    <div class="item-name">${component.name} ${component.external ? '(External)' : ''}</div>
+                    <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+                    item.querySelector('.delete-btn').addEventListener('click', () => {
+                        contacts = contacts.filter(c => c.from !== component.id && c.to !== component.id);
+                        const contactIds = contacts.map(c => c.id);
+                        functions = functions.filter(f => f.contacts.every(cId => contactIds.includes(cId)));
+                        components = components.filter(c => c.id !== component.id);
+                        updateAll();
+                    });
+                    componentsList.appendChild(item);
+                });
+                document.getElementById('addContactBtn').disabled = components.length < 2;
+            }
+
+            // Función para actualizar lista de contactos
+            function updateContactsList() {
+                contactsList.innerHTML = '';
+                contacts.forEach(contact => {
+                    const from = components.find(c => c.id === contact.from);
+                    const to = components.find(c => c.id === contact.to);
+                    if (from && to) {
+                        const item = document.createElement('div');
+                        item.className = 'item';
+                        item.innerHTML = `
+                        <div class="item-name"><strong>${contact.name}:</strong> ${from.name} → ${to.name}</div>
+                        <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+                        item.querySelector('.delete-btn').addEventListener('click', () => {
+                            functions.forEach(f => { f.contacts = f.contacts.filter(id => id !== contact.id); });
+                            functions = functions.filter(f => f.contacts.length > 0);
+                            contacts = contacts.filter(c => c.id !== contact.id);
+                            updateAll();
+                        });
+                        contactsList.appendChild(item);
+                    }
+                });
+                document.getElementById('clearContactsBtn').disabled = contacts.length === 0;
+            }
+
+            // Función para actualizar lista de funciones
+            function updateFunctionsList() {
+                functionsList.innerHTML = '';
+                functions.forEach(func => {
+                    const item = document.createElement('div');
+                    item.className = 'item function-item';
+                    item.style.borderLeftColor = getFunctionColor(func.id);
+                    const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
+                    const contactNames = funcContacts.map(c => c.name).join(', ');
+                    item.innerHTML = `
+                    <div class="item-name"><strong>${func.label}:</strong> ${func.name} (${func.type})<br><small>Contacts: ${contactNames}</small></div>
+                    <div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+                    item.querySelector('.delete-btn').addEventListener('click', () => {
+                        functions = functions.filter(f => f.id !== func.id);
+                        updateAll();
+                    });
+                    functionsList.appendChild(item);
+                });
+                document.getElementById('addFunctionBtn').disabled = contacts.length === 0;
+                document.getElementById('clearFunctionsBtn').disabled = functions.length === 0;
+            }
+
+            // Función para actualizar todo
+            function updateAll() {
+                updateComponentsList();
+                updateContactsList();
+                updateFunctionsList();
+                updateSelectOptions();
+                updateNetworkVisualization();
+            }
+
+            // Función para actualizar opciones de select
+            function updateSelectOptions() {
+                contactFromSelect.innerHTML = '<option value="">Select component</option>';
+                contactToSelect.innerHTML = '<option value="">Select component</option>';
+                components.forEach(c => {
+                    contactFromSelect.appendChild(new Option(c.name, c.id));
+                    contactToSelect.appendChild(new Option(c.name, c.id));
+                });
+                contactFromSelect.disabled = components.length < 2;
+                contactToSelect.disabled = components.length < 2;
+
+                functionContactsSelect.innerHTML = '';
+                contacts.forEach(contact => {
+                    const from = components.find(c => c.id === contact.from);
+                    const to = components.find(c => c.id === contact.to);
+                    if (from && to) {
+                        functionContactsSelect.appendChild(new Option(`${contact.name}: ${from.name} → ${to.name}`, contact.id));
+                    }
+                });
+                functionContactsSelect.disabled = contacts.length === 0;
+            }
+
+            // Función para obtener color de función
+            function getFunctionColor(id) {
+                return functionColors[(id - 1) % functionColors.length];
+            }
+
+            // Función para cargar ejemplo
+            function loadExample() {
+                resetAll();
+                components = [
+                    { id: 1, name: 'Motor', external: false },
+                    { id: 2, name: 'Gearbox', external: false },
+                    { id: 3, name: 'Controller', external: false },
+                    { id: 4, name: 'Power Supply', external: true },
+                    { id: 5, name: 'Sensor', external: false },
+                    { id: 6, name: 'Actuator', external: false },
+                    { id: 7, name: 'Display Unit', external: false },
+                    { id: 8, name: 'User Interface', external: true }
+                ];
+                contactCounter = 8;
+                contacts = [
+                    { id: 1, from: 1, to: 2, name: 'c1' },
+                    { id: 2, from: 3, to: 1, name: 'c2' },
+                    { id: 3, from: 4, to: 3, name: 'c3' },
+                    { id: 4, from: 5, to: 3, name: 'c4' },
+                    { id: 5, from: 3, to: 6, name: 'c5' },
+                    { id: 6, from: 3, to: 7, name: 'c6' },
+                    { id: 7, from: 8, to: 3, name: 'c7' },
+                    { id: 8, from: 2, to: 6, name: 'c8' }
+                ];
+                primaryFunctionCounter = 3;
+                secondaryFunctionCounter = 1;
+                functions = [
+                    {
+                        id: 1,
+                        name: 'Transmit Power',
+                        type: 'primary',
+                        label: 'fp1',
+                        contacts: [1, 8],
+                        cost: 150,
+                        valueScore: 9
+                    },
+                    {
+                        id: 2,
+                        name: 'Control Speed',
+                        type: 'primary',
+                        label: 'fp2',
+                        contacts: [2, 3, 4],
+                        cost: 200,
+                        valueScore: 8
+                    },
+                    {
+                        id: 3,
+                        name: 'Provide System Status',
+                        type: 'secondary',
+                        label: 'fs1',
+                        contacts: [6, 7],
+                        cost: 75,
+                        valueScore: 5
+                    },
+                    {
+                        id: 4,
+                        name: 'Execute Commands',
+                        type: 'primary',
+                        label: 'fp3',
+                        contacts: [5, 7],
+                        cost: 120,
+                        valueScore: 7
+                    }
+                ];
+                updateAll();
+            }
+
+            // Función para resetear todo
+            function resetAll() {
+                components = [];
+                contacts = [];
+                functions = [];
+                contactCounter = 0;
+                primaryFunctionCounter = 0;
+                secondaryFunctionCounter = 0;
+
+                // Limpiar resultados VAVE
+                const vaveTableContainer = document.getElementById('vaveTableContainer');
+                const vaveResults = document.getElementById('vaveResults');
+                if (vaveTableContainer) {
+                    vaveTableContainer.innerHTML = '<p style="color: #7f8c8d; text-align: center; padding: 2rem;"><i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>Click "Generate VAVE Analysis" above to start analyzing your functions.</p>';
+                }
+                if (vaveResults) {
+                    vaveResults.style.display = 'none';
+                }
+
+                if (network) {
+                    network.destroy();
+                    network = null;
+                }
+                updateAll();
+
+                const networkLegend = document.getElementById('networkLegend');
+                if (networkLegend) networkLegend.innerHTML = '';
+            }
+
+            // Función para generar el diagrama de red
+            function updateNetworkVisualization() {
+                const container = document.getElementById('networkCanvas');
+                if (network) {
+                    network.destroy();
+                }
+
+                if (components.length === 0) {
+                    container.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%; color: #888; font-style: italic;">Add components to visualize the system structure</div>';
+                    return;
+                }
+
+                const INTERNAL_Y_SPACING = 150;
+                const INTERNAL_X_SPACING = 250;
+                const EXTERNAL_Y_OFFSET = 200;
+
+                const nodesData = [];
+                const internalComponents = components.filter(c => !c.external);
+                const externalComponents = components.filter(c => c.external);
+
+                let internal_y_start = 0;
+                internalComponents.forEach((component, i) => {
+                    const x = (i % 2 === 0) ? -INTERNAL_X_SPACING / 2 : INTERNAL_X_SPACING / 2;
+                    const y = internal_y_start + Math.floor(i / 2) * INTERNAL_Y_SPACING;
+                    nodesData.push({ ...component, x, y, fixed: false });
+                });
+
+                const numInternalRows = Math.ceil(internalComponents.length / 2);
+                const internalZoneHeight = (numInternalRows - 1) * INTERNAL_Y_SPACING;
+
+                const external_top_y = internal_y_start - EXTERNAL_Y_OFFSET;
+                const external_bottom_y = internal_y_start + internalZoneHeight + EXTERNAL_Y_OFFSET;
+
+                const topExternals = externalComponents.slice(0, Math.ceil(externalComponents.length / 2));
+                const bottomExternals = externalComponents.slice(Math.ceil(externalComponents.length / 2));
+
+                topExternals.forEach((component, i) => {
+                    const x = (topExternals.length - 1) * -100 + i * 200;
+                    nodesData.push({ ...component, x, y: external_top_y, fixed: false });
+                });
+
+                bottomExternals.forEach((component, i) => {
+                    const x = (bottomExternals.length - 1) * -100 + i * 200;
+                    nodesData.push({ ...component, x, y: external_bottom_y, fixed: false });
+                });
+
+                const visNodes = nodesData.map(c => {
+                    let nodeColor, nodeFont, nodeShape;
+                    const baseFont = { size: 28, face: 'Nunito, sans-serif' };
+
+                    if (c.external) {
+                        nodeColor = { border: '#2c3e50', background: '#ecf0f1' };
+                        nodeFont = { ...baseFont, color: '#2c3e50', weight: '600' };
+                        nodeShape = 'box';
+                    } else {
+                        nodeColor = { border: '#2c3e50', background: '#3498db' };
+                        nodeFont = { ...baseFont, color: '#ffffff', weight: '600' };
+                        nodeShape = 'box';
+                    }
+                    return {
+                        id: c.id, label: c.name, x: c.x, y: c.y, fixed: c.fixed,
+                        color: nodeColor, font: nodeFont, shape: nodeShape, margin: 10
+                    };
+                });
+
+                const edgesData = [];
+
+                contacts.forEach(contact => {
+                    edgesData.push({
+                        id: `c-${contact.id}`, from: contact.from, to: contact.to,
+                        color: '#333333',
+                        width: 1.5,
+                        smooth: { enabled: false }
+                    });
+                });
+
+                functions.forEach(func => {
+                    const funcColor = getFunctionColor(func.id);
+                    func.contacts.forEach(contactId => {
+                        const underlyingContact = contacts.find(c => c.id === contactId);
+                        if (underlyingContact) {
+                            edgesData.push({
+                                id: `f-${func.id}-${contactId}`, from: underlyingContact.from, to: underlyingContact.to,
+                                label: func.label,
+                                color: { color: funcColor, highlight: funcColor },
+                                arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+                                width: 3,
+                                font: { size: 36, face: 'Nunito, sans-serif', color: funcColor, strokeWidth: 5, strokeColor: 'white', weight: '800' },
+                                smooth: { enabled: true, type: 'curvedCW', roundness: 0.2 + (func.id * 0.05) }
+                            });
+                        }
+                    });
+                });
+
+                const data = { nodes: new vis.DataSet(visNodes), edges: new vis.DataSet(edgesData) };
+
+                const options = {
+                    layout: { hierarchical: false },
+                    physics: { enabled: false },
+                    nodes: { borderWidth: 2, shadow: true },
+                    edges: { shadow: true },
+                    interaction: { hover: true, tooltipDelay: 200, dragNodes: true },
+                };
+
+                network = new vis.Network(container, data, options);
+
+                const lineTopY = internal_y_start - (INTERNAL_Y_SPACING / 2);
+                const lineBottomY = internal_y_start + internalZoneHeight + (INTERNAL_Y_SPACING / 2);
+
+                network.on('afterDrawing', function (ctx) {
+                    ctx.save();
+                    ctx.strokeStyle = '#95a5a6';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 10]);
+                    const x_start = -10000;
+                    const x_end = 10000;
+                    ctx.beginPath();
+                    ctx.moveTo(x_start, lineTopY);
+                    ctx.lineTo(x_end, lineTopY);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x_start, lineBottomY);
+                    ctx.lineTo(x_end, lineBottomY);
+                    ctx.stroke();
+                    ctx.restore();
+                });
+
+                network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+
+                let legendHtml = '<div><strong>Function Legend:</strong></div>';
+                if (functions.length > 0) {
+                    functions.forEach(func => {
+                        const color = getFunctionColor(func.id);
+                        legendHtml += `<div><span style="background-color: ${color};"></span>${func.label}: ${func.name}</div>`;
+                    });
+                } else {
+                    legendHtml += '<div>No functions defined.</div>';
+                }
+                const networkLegend = document.getElementById('networkLegend');
+                if (networkLegend) networkLegend.innerHTML = legendHtml;
+            }
+
+            // Función para generar análisis VAVE
+            function generateVAVEAnalysis() {
+                if (functions.length === 0) {
+                    alert('Please define functions first in the "Define Structure" tab.');
+                    return;
+                }
+
+                const vaveTableContainer = document.getElementById('vaveTableContainer');
+                const vaveResults = document.getElementById('vaveResults');
+
+                // Crear la tabla de análisis VAVE
+                let tableHTML = `
+                    <div class="vave-table-wrapper">
+                        <table id="vaveAnalysisTable" class="vave-table">
+                            <thead>
+                                <tr>
+                                    <th>Function ID</th>
+                                    <th>Function Name</th>
+                                    <th>Type</th>
+                                    <th>Contacts</th>
+                                    <th>Cost ($)</th>
+                                    <th>Value Score (1-10)</th>
+                                    <th>Value Index</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                functions.forEach(func => {
+                    const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
+                    const contactNames = funcContacts.map(c => c.name).join(', ');
+
+                    // Calcular valor inicial si no existe
+                    if (func.cost === undefined) func.cost = 0;
+                    if (func.valueScore === undefined) func.valueScore = 5;
+
+                    const valueIndex = func.cost > 0 ? (func.valueScore / func.cost).toFixed(4) : "N/A";
+                    const valueIndexNum = parseFloat(valueIndex) || 0;
+
+                    let priorityClass = '';
+                    let priorityText = '';
+
+                    if (valueIndexNum >= 0.25) {
+                        priorityClass = 'value-index-high';
+                        priorityText = 'High Value';
+                    } else if (valueIndexNum >= 0.1) {
+                        priorityClass = 'value-index-medium';
+                        priorityText = 'Medium Value';
+                    } else {
+                        priorityClass = 'value-index-low';
+                        priorityText = 'Low Value';
+                    }
+
+                    tableHTML += `
+                        <tr>
+                            <td>${func.label}</td>
+                            <td>${func.name}</td>
+                            <td>${func.type}</td>
+                            <td>${contactNames}</td>
+                            <td><input type="number" min="0" step="0.01" value="${func.cost}" class="cost-input" data-id="${func.id}" style="width: 100px;"></td>
+                            <td><input type="number" min="1" max="10" step="1" value="${func.valueScore}" class="value-input" data-id="${func.id}" style="width: 100px;"></td>
+                            <td class="${priorityClass}" id="value-index-${func.id}">${valueIndex}</td>
+                            <td class="${priorityClass}">${priorityText}</td>
+                        </tr>`;
+                });
+
+                tableHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <button id="calculateVAVEValuesBtn"><i class="fas fa-calculator"></i> Calculate Value Index</button>
+                        <button id="listAnalysisBtn" style="background-color: #27ae60;"><i class="fas fa-list"></i> List Analysis</button>
+                    </div>`;
+
+                vaveTableContainer.innerHTML = tableHTML;
+                vaveResults.style.display = 'block';
+
+                // Event listeners para los inputs
+                document.querySelectorAll('.cost-input, .value-input').forEach(input => {
+                    input.addEventListener('input', updateVAVERow);
+                });
+
+                document.getElementById('calculateVAVEValuesBtn').addEventListener('click', calculateAllVAVEValues);
+                document.getElementById('listAnalysisBtn').addEventListener('click', listVAVEAnalysis);
+
+                // Calcular valores iniciales
+                calculateAllVAVEValues();
+            }
+
+            // Función para actualizar una fila de VAVE
+            function updateVAVERow(event) {
+                const input = event.target;
+                const funcId = parseInt(input.dataset.id);
+                const func = functions.find(f => f.id === funcId);
+
+                if (!func) return;
+
+                if (input.classList.contains('cost-input')) {
+                    func.cost = parseFloat(input.value) || 0;
+                } else if (input.classList.contains('value-input')) {
+                    func.valueScore = parseInt(input.value) || 5;
+                }
+
+                calculateVAVERow(funcId);
+            }
+
+            // Función para calcular una fila de VAVE
+            function calculateVAVERow(funcId) {
+                const func = functions.find(f => f.id === funcId);
+                if (!func) return;
+
+                const valueIndexCell = document.getElementById(`value-index-${funcId}`);
+                const row = valueIndexCell.closest('tr');
+                const priorityCell = row.querySelector('td:nth-child(8)');
+
+                const valueIndex = func.cost > 0 ? (func.valueScore / func.cost).toFixed(4) : "N/A";
+                const valueIndexNum = parseFloat(valueIndex) || 0;
+
+                valueIndexCell.textContent = valueIndex;
+                valueIndexCell.className = '';
+                priorityCell.className = '';
+
+                let priorityClass = '';
+                let priorityText = '';
+
+                if (valueIndexNum >= 0.25) {
+                    priorityClass = 'value-index-high';
+                    priorityText = 'High Value';
+                } else if (valueIndexNum >= 0.1) {
+                    priorityClass = 'value-index-medium';
+                    priorityText = 'Medium Value';
+                } else {
+                    priorityClass = 'value-index-low';
+                    priorityText = 'Low Value';
+                }
+
+                valueIndexCell.classList.add(priorityClass);
+                priorityCell.classList.add(priorityClass);
+                priorityCell.textContent = priorityText;
+            }
+
+            // Función para calcular todos los valores VAVE
+            function calculateAllVAVEValues() {
+                functions.forEach(func => {
+                    calculateVAVERow(func.id);
+                });
+
+                updateVAVESummary();
+            }
+
+            // Función para actualizar el resumen VAVE
+            function updateVAVESummary() {
+                let totalCost = 0;
+                let totalValueIndex = 0;
+                let validFunctions = 0;
+                let lowValueCount = 0;
+                let highValueCount = 0;
+
+                functions.forEach(func => {
+                    if (func.cost > 0) {
+                        totalCost += func.cost;
+                        const valueIndex = func.valueScore / func.cost;
+                        totalValueIndex += valueIndex;
+                        validFunctions++;
+
+                        if (valueIndex >= 0.25) {
+                            highValueCount++;
+                        } else if (valueIndex < 0.1) {
+                            lowValueCount++;
+                        }
+                    }
+                });
+
+                const averageValueIndex = validFunctions > 0 ? (totalValueIndex / validFunctions).toFixed(4) : "0.0000";
+
+                document.getElementById('totalCostValue').textContent = totalCost.toFixed(2);
+                document.getElementById('averageValueIndex').textContent = averageValueIndex;
+                document.getElementById('lowValueCount').textContent = lowValueCount;
+                document.getElementById('highValueCount').textContent = highValueCount;
+
+                // Habilitar botón de exportación
+                document.getElementById('exportVAVEToExcelBtn').disabled = false;
+            }
+
+            // Función para listar el análisis VAVE (antes Save Analysis)
+            function listVAVEAnalysis() {
+                calculateAllVAVEValues();
+
+                // Actualizar la tabla de resultados
+                const resultsBody = document.getElementById('vaveResultsBody');
+                resultsBody.innerHTML = '';
+
+                functions.forEach(func => {
+                    const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
+                    const contactNames = funcContacts.map(c => c.name).join(', ');
+
+                    const valueIndex = func.cost > 0 ? (func.valueScore / func.cost).toFixed(4) : "N/A";
+                    const valueIndexNum = parseFloat(valueIndex) || 0;
+
+                    let priorityClass = '';
+                    let priorityText = '';
+                    let recommendation = '';
+
+                    if (valueIndexNum >= 0.25) {
+                        priorityClass = 'value-index-high';
+                        priorityText = 'High';
+                        recommendation = 'Maintain or enhance';
+                    } else if (valueIndexNum >= 0.1) {
+                        priorityClass = 'value-index-medium';
+                        priorityText = 'Medium';
+                        recommendation = 'Consider optimization';
+                    } else {
+                        priorityClass = 'value-index-low';
+                        priorityText = 'Low';
+                        recommendation = 'Investigate for cost reduction or function improvement';
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${func.label}</td>
+                        <td>${func.type}</td>
+                        <td>${func.name}<br><small>Contacts: ${contactNames}</small></td>
+                        <td>$${func.cost.toFixed(2)}</td>
+                        <td>${func.valueScore}</td>
+                        <td class="${priorityClass}">${valueIndex}</td>
+                        <td class="${priorityClass}">${priorityText}</td>
+                        <td>${recommendation}</td>
+                    `;
+                    resultsBody.appendChild(row);
+                });
+
+                alert('VAVE analysis listed successfully!');
+            }
+
+            // Función para exportar a Excel
+            function exportVAVEToExcel() {
+                const wb = XLSX.utils.book_new();
+
+                // Hoja de datos VAVE
+                const vaveData = functions.map(func => {
+                    const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
+                    const contactNames = funcContacts.map(c => c.name).join(', ');
+                    const valueIndex = func.cost > 0 ? (func.valueScore / func.cost).toFixed(4) : "N/A";
+
+                    let priority = '';
+                    if (parseFloat(valueIndex) >= 0.25) {
+                        priority = 'High';
+                    } else if (parseFloat(valueIndex) >= 0.1) {
+                        priority = 'Medium';
+                    } else {
+                        priority = 'Low';
+                    }
+
+                    return {
+                        'Function ID': func.label,
+                        'Function Name': func.name,
+                        'Type': func.type,
+                        'Contacts': contactNames,
+                        'Cost ($)': func.cost,
+                        'Value Score (1-10)': func.valueScore,
+                        'Value Index': valueIndex,
+                        'Priority': priority
+                    };
+                });
+
+                const ws = XLSX.utils.json_to_sheet(vaveData);
+                ws['!cols'] = [
+                    { wch: 10 }, { wch: 25 }, { wch: 10 },
+                    { wch: 20 }, { wch: 10 }, { wch: 10 },
+                    { wch: 12 }, { wch: 10 }
+                ];
+                XLSX.utils.book_append_sheet(wb, ws, "VAVE Analysis");
+
+                // Hoja de resumen
+                const summaryData = [{
+                    'Total Cost': functions.reduce((sum, f) => sum + f.cost, 0),
+                    'Average Value Index': functions.length > 0 ?
+                        (functions.reduce((sum, f) => sum + (f.cost > 0 ? f.valueScore / f.cost : 0), 0) / functions.filter(f => f.cost > 0).length).toFixed(4) : 0,
+                    'Low Value Functions (<0.1)': functions.filter(f => f.cost > 0 && f.valueScore / f.cost < 0.1).length,
+                    'High Value Functions (>0.25)': functions.filter(f => f.cost > 0 && f.valueScore / f.cost >= 0.25).length
+                }];
+
+                const ws2 = XLSX.utils.json_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, ws2, "Summary");
+
+                XLSX.writeFile(wb, "VAVE_Analysis_Sigma_Exacta.xlsx");
+            }
+
+            // Función para exportar el gráfico
+            function exportChart() {
+                const canvas = document.querySelector('#networkCanvas canvas');
+                if (canvas && network) {
+                    const dataURL = canvas.toDataURL('image/jpeg', 1.0);
+                    const link = document.createElement('a');
+                    link.href = dataURL;
+                    link.download = 'vave_structure_chart.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert('The chart is not available to be exported.');
+                }
+            }
         }
 
         // Función para inicializar el menú
