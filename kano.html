@@ -1285,6 +1285,7 @@
                         }
                     }
                 },
+                // MODIFICADO: Función loadExample mejorada con carga dinámica y scroll
                 loadExample: function () {
                     if (this.analyzedFeatures.length > 0) {
                         if (!confirm("Loading example data will replace your current analysis. Continue?")) {
@@ -1306,10 +1307,33 @@
                         { name: 'Useless Feature (Liked/Liked)', func: 0, dysfunc: 0 }
                     ];
 
-                    exampleData.forEach(f => this.addFeatureToList(f.name, f.func, f.dysfunc));
+                    // Cambiar a la pestaña Input & Edit
+                    switchWizardTab('tab-input-edit');
 
-                    // Cambiar a la pestaña de resultados
-                    setTimeout(() => switchWizardTab('tab-results'), 500);
+                    // Cargar datos dinámicamente con un pequeño retraso entre cada uno
+                    const loadExampleStepByStep = async () => {
+                        for (let i = 0; i < exampleData.length; i++) {
+                            const f = exampleData[i];
+                            this.addFeatureToList(f.name, f.func, f.dysfunc);
+
+                            // Pequeño retraso para efecto visual
+                            await new Promise(resolve => setTimeout(resolve, 150));
+                        }
+
+                        // Después de cargar todos los datos, hacer scroll a la tabla
+                        setTimeout(() => {
+                            const tableContainer = document.querySelector('#tab-input-edit .summary-table-container');
+                            if (tableContainer) {
+                                tableContainer.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                            this.showNotification("Example data loaded successfully!");
+                        }, 300);
+                    };
+
+                    loadExampleStepByStep();
                 },
                 // Calcular CS Index
                 calculateCSIndex: function (featuresByCategory) {
@@ -1383,20 +1407,20 @@
                     }
                     return { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) };
                 },
-                // CORRECCIÓN DE CURVAS TEÓRICAS DEL MODELO KANO
+                // CORRECCIÓN DE CURVAS TEÓRICAS DEL MODELO KANO CON OFFSET
                 drawChart: function (featuresByCategory) {
                     if (this.kanoChart) this.kanoChart.destroy();
 
-                    // Generar puntos para las curvas teóricas
+                    // Generar puntos para las curvas teóricas CON OFFSET
                     const datasets = [
-                        // Curva Atractiva (Attractive) - Azul
+                        // Curva Atractiva (Attractive) - Azul - CON OFFSET
                         {
                             type: 'line',
                             data: Array.from({ length: 50 }, (_, i) => {
                                 const x = -1 + (2 / 49) * i;
-                                // Función cuadrática: y = (x+1)^2/4
-                                // En x=-1: y=0, en x=0: y=0.25, en x=1: y=1
-                                return { x: x, y: Math.pow(x + 1, 2) / 4 };
+                                // Función cuadrática con offset: y = 0.5*(x+0.8)^2 + 0.1
+                                // Evita intersección con diagonales y ejes centrales
+                                return { x: x, y: 0.5 * Math.pow(x + 0.8, 2) + 0.1 };
                             }),
                             borderColor: 'rgba(52, 152, 219, 0.5)',
                             borderWidth: 3,
@@ -1414,14 +1438,14 @@
                             borderWidth: 3,
                             pointRadius: 0
                         },
-                        // Curva Must-Be (Basic) - Amarilla
+                        // Curva Must-Be (Basic) - Amarilla - CON OFFSET
                         {
                             type: 'line',
                             data: Array.from({ length: 50 }, (_, i) => {
                                 const x = -1 + (2 / 49) * i;
-                                // Función cuadrática: y = -(1-x)^2/4
-                                // En x=-1: y=-1, en x=0: y=-0.25, en x=1: y=0
-                                return { x: x, y: -Math.pow(1 - x, 2) / 4 };
+                                // Función cuadrática con offset: y = -0.5*(1.2-x)^2 - 0.1
+                                // Evita intersección con diagonales y ejes centrales
+                                return { x: x, y: -0.5 * Math.pow(1.2 - x, 2) - 0.1 };
                             }),
                             borderColor: 'rgba(241, 196, 15, 0.5)',
                             borderWidth: 3,
@@ -1492,16 +1516,17 @@
                                     title: {
                                         display: true,
                                         text: '← Not Fulfilled · Fulfilled →',
-                                        font: { size: 14, color: 'black' }  // Ejes en color negro
+                                        font: { size: 14, weight: 'bold', color: 'black' }
                                     },
                                     grid: {
-                                        color: 'rgba(0, 0, 0, 0.1)', // Color de la cuadrícula
+                                        color: 'rgba(0, 0, 0, 0.05)',
+                                        drawBorder: false,
                                         zeroLineColor: 'black',
-                                        zeroLineWidth: 2
+                                        zeroLineWidth: 4 // Eje vertical central en negrita
                                     },
                                     ticks: {
                                         display: false,
-                                        color: 'black'  // Color de los ticks
+                                        color: 'black'
                                     }
                                 },
                                 y: {
@@ -1511,16 +1536,17 @@
                                     title: {
                                         display: true,
                                         text: '← Dissatisfaction · Satisfaction →',
-                                        font: { size: 14, color: 'black' }  // Ejes en color negro
+                                        font: { size: 14, weight: 'bold', color: 'black' }
                                     },
                                     grid: {
-                                        color: 'rgba(0, 0, 0, 0.1)', // Color de la cuadrícula
+                                        color: 'rgba(0, 0, 0, 0.05)',
+                                        drawBorder: false,
                                         zeroLineColor: 'black',
-                                        zeroLineWidth: 2
+                                        zeroLineWidth: 4 // Eje horizontal central en negrita
                                     },
                                     ticks: {
                                         display: false,
-                                        color: 'black'  // Color de los ticks
+                                        color: 'black'
                                     }
                                 }
                             },
