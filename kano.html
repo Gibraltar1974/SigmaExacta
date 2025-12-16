@@ -997,7 +997,8 @@
                                 <li><strong>Both values near 0:</strong> Features have minimal impact on customer
                                     satisfaction/dissatisfaction.</li>
                                 <li>For optimal results, prioritize features with <strong>high CS+</strong> and
-                                    <strong>low CS-</strong> (more negative).</li>
+                                    <strong>low CS-</strong> (more negative).
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -1462,6 +1463,30 @@
                             borderColor: 'rgba(155, 89, 182, 0.5)',
                             borderWidth: 3,
                             pointRadius: 0
+                        },
+                        // EJE Y (x=0) - Negro grueso (2px) - MODIFICADO
+                        {
+                            type: 'line',
+                            data: [
+                                { x: 0, y: -1.1 },
+                                { x: 0, y: 1.1 }
+                            ],
+                            borderColor: 'black',
+                            borderWidth: 2,  // Cambiado de 10 a 2
+                            pointRadius: 0,
+                            tension: 0
+                        },
+                        // EJE X (y=0) - Negro grueso (2px) - MODIFICADO
+                        {
+                            type: 'line',
+                            data: [
+                                { x: -1.1, y: 0 },
+                                { x: 1.1, y: 0 }
+                            ],
+                            borderColor: 'black',
+                            borderWidth: 2,  // Cambiado de 10 a 2
+                            pointRadius: 0,
+                            tension: 0
                         }
                     ];
 
@@ -1521,12 +1546,26 @@
                                     grid: {
                                         color: 'rgba(0, 0, 0, 0.05)',
                                         drawBorder: false,
-                                        zeroLineColor: 'black',
-                                        zeroLineWidth: 4 // Eje vertical central en negrita
+                                        drawOnChartArea: true,
                                     },
                                     ticks: {
-                                        display: false,
-                                        color: 'black'
+                                        display: true,
+                                        color: 'black',
+                                        font: {
+                                            size: 12,
+                                            weight: 'bold'
+                                        },
+                                        // Valores específicos para el eje X
+                                        callback: function (value) {
+                                            if (value === -1) return "Totally Not Fulfilled";
+                                            if (value === -0.5) return "-0.5";
+                                            if (value === 0) return "Neutral";
+                                            if (value === 0.5) return "0.5";
+                                            if (value === 1) return "Totally Fulfilled";
+                                            return "";
+                                        },
+                                        stepSize: 0.5,
+                                        padding: 10
                                     }
                                 },
                                 y: {
@@ -1541,12 +1580,26 @@
                                     grid: {
                                         color: 'rgba(0, 0, 0, 0.05)',
                                         drawBorder: false,
-                                        zeroLineColor: 'black',
-                                        zeroLineWidth: 4 // Eje horizontal central en negrita
+                                        drawOnChartArea: true,
                                     },
                                     ticks: {
-                                        display: false,
-                                        color: 'black'
+                                        display: true,
+                                        color: 'black',
+                                        font: {
+                                            size: 12,
+                                            weight: 'bold'
+                                        },
+                                        // Valores específicos para el eje Y
+                                        callback: function (value) {
+                                            if (value === -1) return "Totally Dissatisfied";
+                                            if (value === -0.5) return "-0.5";
+                                            if (value === 0) return "Neutral";
+                                            if (value === 0.5) return "0.5";
+                                            if (value === 1) return "Totally Satisfied";
+                                            return "";
+                                        },
+                                        stepSize: 0.5,
+                                        padding: 10
                                     }
                                 }
                             },
@@ -1557,7 +1610,9 @@
                                         title: (c) => c[0].dataset.type === 'scatter' ? c[0].dataset.label : null
                                     }
                                 },
-                                legend: { display: false }
+                                legend: {
+                                    display: false  // LEGEND ELIMINADA
+                                }
                             }
                         }
                     });
