@@ -34,7 +34,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
-    <link rel="canonical" href="httpsa://sigmaexacta.com/cpk_calculator">
+    <link rel="canonical" href="https://sigmaexacta.com/cpk_calculator">
 
     <style>
         /* Estilos de la Página de la Calculadora */
@@ -67,7 +67,7 @@
         .main-header {
             text-align: center;
             padding: 1rem 0;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             border-bottom: 1px solid #ddd;
         }
 
@@ -87,6 +87,54 @@
             margin: 0 auto;
         }
 
+        /* ===== BOTONES DE ACCIÓN GLOBAL ===== */
+        .global-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .global-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .global-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ESTILOS COMO EN KANO.HTML */
+        .global-btn.secondary {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .global-btn.secondary:hover {
+            background-color: #27ad60;
+        }
+
+        .global-btn.danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .global-btn.danger:hover {
+            background-color: #a5281c;
+        }
+
         /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
         .tabs-nav {
             display: flex;
@@ -95,7 +143,6 @@
             overflow-x: auto;
             border-bottom: 2px solid var(--secondary-color);
             margin-bottom: 0;
-            margin-top: 1.5rem;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -200,6 +247,16 @@
         @media (max-width: 768px) {
             .tab-content-wrapper {
                 padding: 1rem;
+            }
+
+            .global-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .global-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -401,12 +458,24 @@
             background-color: #f39c12;
         }
 
+        .button-yellow:hover {
+            background-color: #e67e22;
+        }
+
         .button-green {
             background-color: #27ae60;
         }
 
+        .button-green:hover {
+            background-color: #229954;
+        }
+
         .reset-btn {
             background-color: #e74c3c;
+        }
+
+        .reset-btn:hover {
+            background-color: #c0392b;
         }
 
         .button-group {
@@ -417,8 +486,8 @@
             margin-top: 10px;
         }
 
-        .results-container,
-        .overall-results-container {
+        /* ESTILOS PARA MOSTRAR RESULTADOS DE DIFERENTES DATASETS */
+        .results-container {
             display: flex;
             flex-wrap: wrap;
             gap: 1.25rem;
@@ -427,6 +496,17 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+        }
+
+        .dataset-results-wrapper {
+            display: none;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .dataset-results-wrapper.active {
+            display: flex;
         }
 
         .charts-wrapper {
@@ -444,18 +524,15 @@
             height: 480px;
         }
 
-        #cpkChartCanvas,
-        #overallChartCanvas,
-        #controlChartCanvas,
-        #overallControlChartCanvas {
+        .chart-canvas {
             max-width: 100%;
             max-height: calc(100% - 30px);
         }
 
-        #cpkChart,
-        #overallChartContainer,
-        #controlChartContainer,
-        #overallControlChartContainer {
+        .cpk-chart-container,
+        .overall-chart-container,
+        .control-chart-container,
+        .overall-control-chart-container {
             background: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -480,8 +557,7 @@
             pointer-events: none;
         }
 
-        #results,
-        #overallResults {
+        .results-box {
             background: white;
             padding: 1.25rem;
             border-radius: 8px;
@@ -497,8 +573,7 @@
             flex-grow: 1;
         }
 
-        #results p,
-        #overallResults p {
+        .results-box p {
             margin: 0.5rem 0;
             color: var(--primary-color);
         }
@@ -553,6 +628,11 @@
             padding: 0.3rem 0.6rem;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .remove-dataset-btn:hover {
+            background-color: #c0392b;
         }
 
         .datasets-controls {
@@ -566,6 +646,7 @@
             flex-wrap: wrap;
             gap: 5px;
             margin-bottom: 1rem;
+            margin-top: 1rem;
         }
 
         .dataset-tab {
@@ -574,6 +655,12 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .dataset-tab:hover {
+            background-color: #e2e8f0;
         }
 
         .dataset-tab.active {
@@ -623,17 +710,29 @@
             max-width: 100%;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .overall-results-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            align-items: stretch;
+            margin-top: 1.25rem;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         @media (max-width: 768px) {
 
             .results-container,
-            .overall-results-container {
+            .overall-results-container,
+            .dataset-results-wrapper {
                 flex-direction: column;
             }
 
-            #results,
-            #overallResults {
+            .results-box {
                 width: 100%;
                 min-width: unset;
             }
@@ -686,12 +785,10 @@
             }
         }
     </style>
-
 </head>
 
 <body>
 
-    <div id="header-container"></div>
     <div id="header-container"></div>
 
     <noscript>
@@ -728,16 +825,26 @@
                 distribution plots, and I-Charts for robust analysis.</p>
         </header>
 
+        <!-- BOTONES DE ACCIÓN GLOBAL -->
+        <div class="global-actions">
+            <button class="global-btn secondary" id="globalFillExampleBtn">
+                <i class="fas fa-play-circle"></i> Load Example Data
+            </button>
+            <button class="global-btn danger" id="globalResetDataBtn">
+                <i class="fas fa-sync-alt"></i> Reset All Data
+            </button>
+        </div>
+
         <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
             <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
             <nav class="tabs-nav">
                 <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i>
-                    Theory &
-                    Info</button>
+                    Theory & Info</button>
                 <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i>
-                    Calculator
-                    Tool</button>
+                    Calculator Tool</button>
+                <button class="tab-btn" onclick="switchWizardTab('tab-results')"><i class="fas fa-chart-bar"></i>
+                    Results</button>
                 <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
                     Formulas</button>
             </nav>
@@ -748,78 +855,51 @@
                     <div class="container">
                         <h2><i class="fas fa-question-circle"></i> What is Process Capability (Cp, Cpk)?</h2>
                         <p>Process Capability analysis is a fundamental tool in Statistical Process Control (SPC) used
-                            to
-                            measure
-                            the ability of a process to produce output within specification limits (LSL and USL). It
-                            helps
-                            determine
-                            if a process is <em>capable</em> of consistently meeting customer requirements.</p>
+                            to measure the ability of a process to produce output within specification limits (LSL and
+                            USL). It helps determine if a process is <em>capable</em> of consistently meeting customer
+                            requirements.</p>
                         <p>This analysis uses key indices:</p>
                         <ul>
                             <li><strong>Cp (Process Capability):</strong> Measures the <em>potential</em> capability of
-                                the
-                                process.
-                                It compares the total specification width (USL - LSL) to the natural process variation
-                                (6-sigma),
-                                but it <strong>does not account for centering</strong>. It answers: "Is the process
-                                spread
-                                narrow
-                                enough?"</li>
+                                the process. It compares the total specification width (USL - LSL) to the natural
+                                process variation (6-sigma), but it <strong>does not account for centering</strong>. It
+                                answers: "Is the process spread narrow enough?"</li>
                             <li><strong>Cpk (Process Capability Index):</strong> Measures the <em>actual</em> capability
-                                of the
-                                process. It accounts for <strong>both spread and centering</strong> by comparing the
-                                process
-                                mean to
-                                the nearest specification limit. It answers: "Is the process spread narrow enough AND is
-                                it
-                                running
-                                near the target?"</li>
+                                of the process. It accounts for <strong>both spread and centering</strong> by comparing
+                                the process mean to the nearest specification limit. It answers: "Is the process spread
+                                narrow enough AND is it running near the target?"</li>
                         </ul>
                         <p>Generally, a Cpk value of 1.33 or higher is considered capable for many industries, though
-                            this
-                            requirement can vary.</p>
+                            this requirement can vary.</p>
                     </div>
 
                     <div class="container">
                         <h2><i class="fas fa-history"></i> Brief History of Statistical Process Control (SPC)</h2>
                         <p>The concept of process control is rooted in the work of <strong>Walter A. Shewhart</strong>
-                            at Bell
-                            Labs
-                            in the 1920s. He developed control charts to distinguish between "common cause" variation
-                            (the
-                            natural,
-                            inherent variability of a process) and "special cause" variation (external, unpredictable
-                            events).
-                            This
-                            was the birth of Statistical Process Control (SPC).</p>
+                            at Bell Labs in the 1920s. He developed control charts to distinguish between "common cause"
+                            variation (the natural, inherent variability of a process) and "special cause" variation
+                            (external, unpredictable events). This was the birth of Statistical Process Control (SPC).
+                        </p>
                     </div>
 
                     <div class="container">
                         <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
                         <ol>
                             <li><strong>Enter Process Data and Specifications:</strong> Add one or more datasets using
-                                the "Add
-                                Dataset" button. Fill in measurements for each dataset, along with the common Lower
-                                (LSL), Upper
-                                (USL), and Target values.</li>
+                                the "Add Dataset" button. Fill in measurements for each dataset, along with the common
+                                Lower (LSL), Upper (USL), and Target values.</li>
                             <li><strong>Calculate Results:</strong> Press the <strong>Calculate</strong> button. The
-                                tool will
-                                compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term indices
-                                (Pp, Ppk)
-                                combining all datasets, perform normality tests, and display process distribution plots
-                                and
-                                Individuals Control Charts.</li>
+                                tool will compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term
+                                indices (Pp, Ppk) combining all datasets, perform normality tests, and display process
+                                distribution plots and Individuals Control Charts.</li>
                             <li><strong>Review Results:</strong> Analyze both the individual dataset results and the
-                                overall
-                                performance. Switch between datasets using the tabs to see detailed results for each
-                                one.</li>
+                                overall performance. Switch between datasets using the tabs to see detailed results for
+                                each one.</li>
                             <li><strong>Add or Remove Datasets (Optional):</strong> Use the "Add Dataset" button to
-                                include more
-                                data or the "Remove" button next to each dataset to delete it.</li>
+                                include more data or the "Remove" button next to each dataset to delete it.</li>
                             <li><strong>Export Your Analysis:</strong> Click <strong>Export to Excel</strong> to
-                                download a
-                                spreadsheet containing all individual calculations and the overall performance summary.
-                            </li>
+                                download a spreadsheet containing all individual calculations and the overall
+                                performance summary.</li>
                         </ol>
                     </div>
 
@@ -845,15 +925,14 @@
                                                     class="fas fa-times"></i> Remove</button>
                                         </div>
                                         <textarea class="measurements-input" rows="1"
-                                            placeholder="Enter values or click 'Fill Example'" required></textarea>
+                                            placeholder="Enter values or click 'Load Example' above"
+                                            required></textarea>
                                     </div>
                                 </div>
 
                                 <div class="datasets-controls">
                                     <button type="button" id="addDatasetBtn" class="button-yellow"><i
-                                            class="fas fa-plus"></i>
-                                        Add
-                                        Dataset</button>
+                                            class="fas fa-plus"></i> Add Dataset</button>
                                 </div>
 
                                 <label for="lsl"><i class="fas fa-arrow-down"></i> Lower Specification Limit
@@ -867,165 +946,146 @@
 
                                 <div class="button-group" style="margin-top:0; margin-left:0;">
                                     <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
-                                    <button type="button" id="fillExampleBtn" class="button-yellow"><i
-                                            class="fas fa-lightbulb"></i>
-                                        Fill Example</button>
-                                    <button type="button" id="resetDataBtn" class="reset-btn"><i
-                                            class="fas fa-undo"></i> Reset
-                                        Data</button>
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
+            <!-- PESTAÑA 3: RESULTADOS -->
+            <div id="tab-results" class="wizard-tab-content">
+                <div class="tab-content-wrapper">
+                    <!-- Contenedor de resultados (mostrado dinámicamente) -->
+                    <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
 
-                        <div class="results-container">
-                            <div id="results" style="display:none;">
+                    <div class="results-container">
+                        <div id="results" style="display:none;">
+                            <div class="results-content">
+                                <div class="calculation-title">Short-Term Results</div>
+                                <p><i class="fas fa-chart-line"></i> Mean: <span id="mean" class="result-value">-</span>
+                                </p>
+                                <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
+                                        class="result-value">-</span></p>
+                                <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp" class="result-value">-</span>
+                                </p>
+                                <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
+                                        class="result-value">-</span></p>
+                                <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm" class="result-value">-</span>
+                                </p>
+                                <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
+                                        id="failures_ppm" class="result-value">-</span> ppm</p>
+                                <p><i class="fas fa-percentage"></i> Defective Parts: <span id="defective_percentage"
+                                        class="result-value">-</span>%</p>
+
+                                <div class="normality-results">
+                                    <div class="calculation-title"
+                                        style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality
+                                        Tests</div>
+                                    <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
+                                    <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
+                                    <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
+                            <div id="cpkChart">
+                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
+                                <canvas id="cpkChartCanvas"></canvas>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color"
+                                            style="background-color: #333; border-top: 2px dashed #333;"></div> Mean
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color"
+                                            style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
+                                        Process Limits (±3σ)
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="controlChartContainer">
+                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
+                                <canvas id="controlChartCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calculation-block">
+                        <div class="calculation-title">Overall Performance (Long-Term Analysis)</div>
+
+                        <div class="overall-results-container">
+                            <div id="overallResults" style="display:none;">
                                 <div class="results-content">
-                                    <div class="calculation-title">Short-Term Results</div>
-                                    <p><i class="fas fa-chart-line"></i> Mean: <span id="mean"
+                                    <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
+                                    <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
                                             class="result-value">-</span></p>
-                                    <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
+                                    <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span id="overall_mean"
                                             class="result-value">-</span></p>
-                                    <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp"
+                                    <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev:</b> <span id="overall_dev"
                                             class="result-value">-</span></p>
-                                    <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
-                                            class="result-value">-</span>
-                                    </p>
-                                    <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm"
+                                    <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
                                             class="result-value">-</span></p>
-                                    <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
-                                            id="failures_ppm" class="result-value">-</span> ppm</p>
-                                    <p><i class="fas fa-percentage"></i> Defective Parts: <span
-                                            id="defective_percentage" class="result-value">-</span>%</p>
-
+                                    <p><i class="fas fa-tachometer-alt"></i> <b>Ppk:</b> <span id="overall_ppk"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-exclamation-triangle"></i> <b>Expected Failures:</b> <span
+                                            id="overall_failures" class="result-value">-</span> ppm</p>
+                                    <p><i class="fas fa-percentage"></i> <b>Defective Parts:</b> <span
+                                            id="overall_defective" class="result-value">-</span>%</p>
                                     <div class="normality-results">
                                         <div class="calculation-title"
-                                            style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality
-                                            Tests
-                                        </div>
-                                        <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
-                                        <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
-                                        <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
+                                            style="font-size:1.1em;margin-top:1rem;margin-bottom:.5rem">Overall
+                                            Normality</div>
+                                        <p>Shapiro-Wilk: <span id="overall_shapiro" class="result-value">-</span></p>
+                                        <p>Kolmogorov-Smirnov: <span id="overall_kolmogorov"
+                                                class="result-value">-</span></p>
+                                        <p>Anderson-Darling: <span id="overall_anderson" class="result-value">-</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
-                                <div id="cpkChart">
+                            <div class="charts-wrapper" id="long-term-charts-wrapper" style="display: none;">
+                                <div id="overallChartContainer">
                                     <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
                                         class="chart-watermark">
-                                    <canvas id="cpkChartCanvas"></canvas>
+                                    <canvas id="overallChartCanvas"></canvas>
                                     <div class="chart-legend">
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
                                         </div>
                                         <div class="legend-item">
                                             <div class="legend-color"
-                                                style="background-color: #333; border-top: 2px dashed #333;">
-                                            </div> Mean
+                                                style="background-color: #333; border-top: 2px dashed #333;"></div> Mean
                                         </div>
                                         <div class="legend-item">
                                             <div class="legend-color"
                                                 style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
-                                            Process
-                                            Limits (±3σ)
+                                            Process Limits (±3σ)
                                         </div>
                                     </div>
                                 </div>
-                                <div id="controlChartContainer">
+                                <div id="overallControlChartContainer">
                                     <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
                                         class="chart-watermark">
-                                    <canvas id="controlChartCanvas"></canvas>
+                                    <canvas id="overallControlChartCanvas"></canvas>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="calculation-block">
-                            <div class="calculation-title">Overall Performance (Long-Term Analysis)</div>
-
-                            <div class="overall-results-container">
-                                <div id="overallResults" style="display:none;">
-                                    <div class="results-content">
-                                        <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
-                                        <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
-                                                class="result-value">-</span></p>
-                                        <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span
-                                                id="overall_mean" class="result-value">-</span></p>
-                                        <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev:</b> <span
-                                                id="overall_dev" class="result-value">-</span></p>
-                                        <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
-                                                class="result-value">-</span></p>
-                                        <p><i class="fas fa-tachometer-alt"></i> <b>Ppk:</b> <span id="overall_ppk"
-                                                class="result-value">-</span></p>
-                                        <p><i class="fas fa-exclamation-triangle"></i> <b>Expected Failures:</b> <span
-                                                id="overall_failures" class="result-value">-</span> ppm</p>
-                                        <p><i class="fas fa-percentage"></i> <b>Defective Parts:</b> <span
-                                                id="overall_defective" class="result-value">-</span>%</p>
-                                        <div class="normality-results">
-                                            <div class="calculation-title"
-                                                style="font-size:1.1em;margin-top:1rem;margin-bottom:.5rem">Overall
-                                                Normality
-                                            </div>
-                                            <p>Shapiro-Wilk: <span id="overall_shapiro" class="result-value">-</span>
-                                            </p>
-                                            <p>Kolmogorov-Smirnov: <span id="overall_kolmogorov"
-                                                    class="result-value">-</span>
-                                            </p>
-                                            <p>Anderson-Darling: <span id="overall_anderson"
-                                                    class="result_value">-</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="charts-wrapper" id="long-term-charts-wrapper" style="display: none;">
-                                    <div id="overallChartContainer">
-                                        <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
-                                            class="chart-watermark">
-                                        <canvas id="overallChartCanvas"></canvas>
-                                        <div class="chart-legend">
-                                            <div class="legend-item">
-                                                <div class="legend-color" style="background-color: #e74c3c;"></div>
-                                                LSL/USL
-                                            </div>
-                                            <div class="legend-item">
-                                                <div class="legend-color"
-                                                    style="background-color: #333; border-top: 2px dashed #333;"></div>
-                                                Mean
-                                            </div>
-                                            <div class="legend-item">
-                                                <div class="legend-color"
-                                                    style="background-color: #3498db; border-top: 2px solid #3498db;">
-                                                </div>
-                                                Process
-                                                Limits (±3σ)
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="overallControlChartContainer">
-                                        <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
-                                            class="chart-watermark">
-                                        <canvas id="overallControlChartCanvas"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
-                                <button type="button" id="exportBtn" class="button-green" disabled><i
-                                        class="fas fa-file-excel"></i>
-                                    Export to Excel</button>
-                            </div>
+                        <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
+                            <button type="button" id="exportBtn" class="button-green" disabled><i
+                                    class="fas fa-file-excel"></i> Export to Excel</button>
                         </div>
-                    </div>
-
-                    <div class="tab-nav-buttons">
-                        <button class="btn-next-tab" onclick="switchWizardTab('tab-formulas')">View Formulas <i
-                                class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <!-- PESTAÑA 3: FÓRMULAS -->
+            <!-- PESTAÑA 4: FÓRMULAS -->
             <div id="tab-formulas" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="container">
@@ -1045,14 +1105,13 @@
                             <div class="formula-item">
                                 <h3>Cpk (Centering)</h3>
                                 <div style="font-size: 1rem;">$$ C_{pk} = \min\left( \frac{USL -
-                                    \mu}{3\sigma_{\text{within}}},
-                                    \frac{\mu - LSL}{3\sigma_{\text{within}}} \right) $$</div>
+                                    \mu}{3\sigma_{\text{within}}}, \frac{\mu - LSL}{3\sigma_{\text{within}}} \right)
+                                    $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Cpm (Targeting)</h3>
                                 <div style="font-size: 1rem;">$$ C_{pm} = \frac{USL -
-                                    LSL}{6\sqrt{\sigma_{\text{within}}^2 +
-                                    (\mu - T)^2}} $$</div>
+                                    LSL}{6\sqrt{\sigma_{\text{within}}^2 + (\mu - T)^2}} $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Pp (Performance)</h3>
@@ -1070,18 +1129,15 @@
                             <h3>Capability Legend</h3>
                             <ul>
                                 <li><code>Cp, Pp</code>: Process Capability/Performance - measures potential capability
-                                    if
-                                    process is centered</li>
+                                    if process is centered</li>
                                 <li><code>Cpk, Ppk</code>: Process Capability/Performance Index - accounts for process
-                                    centering
-                                </li>
+                                    centering</li>
                                 <li><code>Cpm</code>: Process Capability Index considering target value</li>
                                 <li><code>LSL, USL</code>: Lower and Upper Specification Limits</li>
                                 <li><code>T</code>: Target value</li>
                                 <li><code>μ</code>: Process mean</li>
                                 <li><code>σ<sub>within</sub></code>: Short-term standard deviation (within-subgroup
-                                    variation)
-                                </li>
+                                    variation)</li>
                                 <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)
                                 </li>
                             </ul>
@@ -1119,9 +1175,115 @@
             const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
+            // Si estamos cambiando a la pestaña de resultados, verificar si hay datos calculados
+            if (tabId === 'tab-results') {
+                // Verificar si el formulario ya ha sido calculado
+                const resultsElement = document.getElementById('results');
+                if (resultsElement && resultsElement.style.display !== 'none') {
+                    // Ya hay resultados calculados, no hacer nada
+                } else {
+                    // No hay resultados, mostrar un mensaje o sugerir calcular
+                    console.log('No results available. Please calculate first.');
+                }
+            }
+
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configurar botones globales
+            const globalFillBtn = document.getElementById('globalFillExampleBtn');
+            const globalResetBtn = document.getElementById('globalResetDataBtn');
+
+            // Crear botones originales dinámicamente (necesarios para el JS)
+            const form = document.getElementById('cpkForm');
+            if (form) {
+                // Crear botón de ejemplo
+                const exampleBtn = document.createElement('button');
+                exampleBtn.type = 'button';
+                exampleBtn.id = 'fillExampleBtn';
+                exampleBtn.className = 'button-yellow';
+                exampleBtn.style.display = 'none';
+                exampleBtn.innerHTML = '<i class="fas fa-play-circle"></i> Fill Example';
+
+                // Crear botón de reset
+                const resetBtn = document.createElement('button');
+                resetBtn.type = 'button';
+                resetBtn.id = 'resetDataBtn';
+                resetBtn.className = 'reset-btn';
+                resetBtn.style.display = 'none';
+                resetBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Reset Data';
+
+                // Añadir botones al formulario
+                const buttonGroup = form.querySelector('.button-group');
+                if (buttonGroup) {
+                    buttonGroup.appendChild(exampleBtn);
+                    buttonGroup.appendChild(resetBtn);
+                }
+
+                // Configurar botones globales para activar los botones originales
+                if (globalFillBtn) {
+                    globalFillBtn.addEventListener('click', function () {
+                        // Cambiar a la pestaña de calculadora
+                        switchWizardTab('tab-tool');
+
+                        // Disparar el clic en el botón de ejemplo original
+                        setTimeout(function () {
+                            exampleBtn.click();
+
+                            // Scroll a la sección de entrada de datos
+                            setTimeout(function () {
+                                const calculatorSection = document.querySelector('#tab-tool .calculator-section');
+                                if (calculatorSection) {
+                                    calculatorSection.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }, 100);
+                        }, 100);
+                    });
+                }
+
+                if (globalResetBtn) {
+                    globalResetBtn.addEventListener('click', function () {
+                        // Disparar el clic en el botón de reset original
+                        resetBtn.click();
+
+                        // Cambiar a la pestaña de calculadora
+                        switchWizardTab('tab-tool');
+
+                        // Ocultar resultados si están mostrándose
+                        const resultsTab = document.getElementById('tab-results');
+                        const resultsContainer = resultsTab.querySelector('.results-container');
+                        const overallContainer = resultsTab.querySelector('.overall-results-container');
+
+                        if (resultsContainer) {
+                            resultsContainer.style.display = 'none';
+                        }
+                        if (overallContainer) {
+                            overallContainer.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Interceptar el formulario para cambiar a la pestaña de resultados
+                form.addEventListener('submit', function (e) {
+                    // Esto se ejecutará después del cálculo en cpk_calculator.js
+                    setTimeout(function () {
+                        // Cambiar a la pestaña de resultados
+                        switchWizardTab('tab-results');
+
+                        // Scroll a la sección de resultados
+                        setTimeout(function () {
+                            const resultsSection = document.querySelector('#tab-results .tab-content-wrapper');
+                            if (resultsSection) {
+                                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }, 100);
+                    }, 500);
+                });
+            }
+        });
     </script>
 
     <!-- Main Calculation and Logic Script -->

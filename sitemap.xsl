@@ -3,7 +3,7 @@
   <xsl:output method="html" indent="yes"/>
 
   <xsl:template match="/">
-    <html lang="es">
+    <html lang="en">
       <head>
         <title>Sitemap | Sigma Exacta</title>
         <style type="text/css">

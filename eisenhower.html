@@ -187,6 +187,52 @@
       margin: 0 auto;
     }
 
+    /* BOTONES PRINCIPALES SOBRE LAS TABS (ESTILO KANO) */
+    .main-action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem auto;
+      flex-wrap: wrap;
+      max-width: 800px;
+    }
+
+    .main-action-buttons button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-action-buttons .btn-example {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .main-action-buttons .btn-example:hover {
+      background-color: #229954;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .main-action-buttons .btn-reset {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .main-action-buttons .btn-reset:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
     /* CONTENIDO DE BLOQUES */
     .container {
       background-color: white;
@@ -348,6 +394,23 @@
       background-color: #d4ac0d;
     }
 
+    /* BOTÓN LIST RESULTS */
+    .btn-list-results {
+      background-color: #9b59b6;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      padding: 0.8rem 1.5rem;
+    }
+
+    .btn-list-results:hover {
+      background-color: #8e44ad;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
     /* MATRIX EISENHOWER */
     .matrix-container {
       display: grid;
@@ -413,6 +476,11 @@
       border-radius: 4px;
       margin-bottom: 0.5rem;
       word-break: break-word;
+    }
+
+    .task-item.readonly {
+      background-color: #f9f9f9;
+      justify-content: flex-start;
     }
 
     .delete-btn {
@@ -500,6 +568,41 @@
       line-height: 1.6;
     }
 
+    /* BOTÓN EXPORT EN RESULTS TAB */
+    .export-section {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px dashed #ddd;
+    }
+
+    .btn-export {
+      background-color: #3498db;
+      margin-top: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      padding: 0.8rem 1.5rem;
+    }
+
+    .btn-export:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* MENSAJE CUANDO NO HAY RESULTADOS */
+    .no-results-message {
+      color: #7f8c8d;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
     /* FOOTER */
     footer {
       padding: 2rem 1.25rem;
@@ -547,6 +650,16 @@
         min-width: 100%;
         margin: 5px 0;
       }
+
+      .main-action-buttons {
+        gap: 0.75rem;
+        margin: 1rem auto;
+      }
+
+      .main-action-buttons button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+      }
     }
 
     @media (max-width: 480px) {
@@ -565,6 +678,17 @@
 
       .calculation-block {
         padding: 1rem;
+      }
+
+      .main-action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .main-action-buttons button {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -609,6 +733,16 @@
         Free Online Urgent-Important Matrix (Eisenhower)
       </h1>
       <p>Focus on what truly matters by organizing tasks by urgency and importance.</p>
+
+      <!-- BOTONES PRINCIPALES (ESTILO KANO) -->
+      <div class="main-action-buttons">
+        <button id="globalLoadExampleBtn" class="btn-example">
+          <i class="fas fa-play-circle"></i> Load Example
+        </button>
+        <button id="globalResetBtn" class="btn-reset">
+          <i class="fas fa-sync-alt"></i> Reset All
+        </button>
+      </div>
     </header>
 
     <!-- CONTENEDOR DE TABS -->
@@ -618,8 +752,11 @@
         <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
           <i class="fas fa-book"></i> Theory & Info
         </button>
-        <button class="tab-btn" onclick="switchWizardTab('tab-build')">
-          <i class="fas fa-th-large"></i> Build & Export
+        <button class="tab-btn" onclick="switchWizardTab('tab-build-edit')">
+          <i class="fas fa-edit"></i> Build & Edit
+        </button>
+        <button class="tab-btn" onclick="switchWizardTab('tab-results')">
+          <i class="fas fa-chart-bar"></i> Results
         </button>
       </nav>
 
@@ -670,29 +807,28 @@
             <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
             <div class="instructions-box">
               <ul>
-                <li><strong>Add Tasks:</strong> In the "Build & Export" tab, type a task description.</li>
-                <li><strong>Assign Quadrant:</strong> Select the appropriate quadrant (Do, Decide, Delegate, or Delete)
-                  from
-                  the dropdown menu.</li>
-                <li><strong>Build:</strong> Click the "Add Task" button to place your task in the matrix.</li>
-                <li><strong>Manage:</strong> As you complete or handle tasks, remove them by clicking the <i
-                    class="fas fa-times-circle" style="color:var(--accent-color)"></i> icon.</li>
+                <li><strong>Add Tasks:</strong> In the "Build & Edit" tab, type a task description and select a
+                  quadrant.</li>
+                <li><strong>Organize:</strong> Drag and drop tasks between quadrants as priorities change.</li>
+                <li><strong>Remove:</strong> Click the <i class="fas fa-times-circle"
+                    style="color:var(--accent-color)"></i> icon to delete tasks.</li>
                 <li><strong>Load Example:</strong> Click "Load Example" to see a pre-filled matrix and understand how it
                   works.</li>
-                <li><strong>Export:</strong> Export your completed matrix to Excel for sharing or documentation.</li>
+                <li><strong>View Results:</strong> Go to the "Results" tab to see your final prioritized matrix and
+                  export it.</li>
               </ul>
             </div>
           </div>
 
           <div class="tab-nav-buttons">
-            <button class="btn-next-tab" onclick="switchWizardTab('tab-build')">Go to Build & Export <i
-                class="fas fa-arrow-right"></i></button>
+            <button class="btn-next-tab" onclick="switchWizardTab('tab-build-edit')">Start Building Matrix
+              <i class="fas fa-arrow-right"></i></button>
           </div>
         </div>
       </div>
 
-      <!-- PESTAÑA 2: CONSTRUIR Y EXPORTAR -->
-      <div id="tab-build" class="wizard-tab-content">
+      <!-- PESTAÑA 2: BUILD & EDIT -->
+      <div id="tab-build-edit" class="wizard-tab-content">
         <div class="tab-content-wrapper">
           <div class="calculator-section">
             <div class="calculation-block">
@@ -711,39 +847,25 @@
 
                 <div style="text-align: center; margin-top: 1.5rem;">
                   <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Add Task</button>
-                  <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-play-circle"></i> Load
-                    Example</button>
-                  <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i> Reset</button>
                 </div>
               </form>
 
               <div class="matrix-container" style="margin-top: 2rem;">
                 <div id="quadrant-do" class="quadrant quadrant-do">
                   <h3><i class="fas fa-exclamation-circle"></i> Do <small>Urgent & Important</small></h3>
-                  <div class="task-list"></div>
+                  <div class="task-list" data-quadrant="quadrant-do"></div>
                 </div>
                 <div id="quadrant-decide" class="quadrant quadrant-decide">
                   <h3><i class="fas fa-calendar-alt"></i> Decide <small>Not Urgent & Important</small></h3>
-                  <div class="task-list"></div>
+                  <div class="task-list" data-quadrant="quadrant-decide"></div>
                 </div>
                 <div id="quadrant-delegate" class="quadrant quadrant-delegate">
                   <h3><i class="fas fa-user-friends"></i> Delegate <small>Urgent & Not Important</small></h3>
-                  <div class="task-list"></div>
+                  <div class="task-list" data-quadrant="quadrant-delegate"></div>
                 </div>
                 <div id="quadrant-delete" class="quadrant quadrant-delete">
                   <h3><i class="fas fa-trash-alt"></i> Delete <small>Not Urgent & Not Important</small></h3>
-                  <div class="task-list"></div>
-                </div>
-              </div>
-
-              <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #3498db;">
-                <div class="calculation-title">Export Your Matrix</div>
-                <p>Once you have organized your tasks, you can download a clean report of your prioritized list for
-                  offline use,
-                  sharing, or documentation. Click the button below to generate an Excel file.</p>
-                <div style="text-align: center; margin-top: 1.5rem;">
-                  <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export Matrix to
-                    Excel</button>
+                  <div class="task-list" data-quadrant="quadrant-delete"></div>
                 </div>
               </div>
             </div>
@@ -752,6 +874,51 @@
           <div class="tab-nav-buttons">
             <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
                 class="fas fa-arrow-left"></i> Back to Theory</button>
+            <button class="btn-next-tab" onclick="switchWizardTab('tab-results')">Go to Results
+              <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: RESULTS -->
+      <div id="tab-results" class="wizard-tab-content">
+        <div class="tab-content-wrapper">
+          <div class="container">
+            <h2><i class="fas fa-chart-bar"></i> Eisenhower Matrix Results</h2>
+            <p>Click the "List Results" button below to display your current matrix from the Build & Edit tab. Once
+              listed, you can export the results to Excel.</p>
+
+            <!-- BOTÓN PARA LISTAR RESULTADOS -->
+            <div style="text-align: center; margin: 2rem 0;">
+              <button id="listResultsBtn" class="btn-list-results">
+                <i class="fas fa-list"></i> List Results
+              </button>
+            </div>
+
+            <!-- CONTENEDOR DE RESULTADOS (inicialmente vacío) -->
+            <div id="resultsContainer">
+              <div class="no-results-message">
+                <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No results listed yet. Click the "List Results" button above to display your matrix.</p>
+              </div>
+            </div>
+
+            <!-- SECCIÓN DE EXPORTACIÓN (inicialmente oculta) -->
+            <div id="exportSection" class="export-section" style="display: none;">
+              <h3><i class="fas fa-file-export"></i> Export Your Matrix</h3>
+              <p>Download a clean report of your prioritized tasks for offline use, sharing, or documentation. Click the
+                button below to generate an Excel file.</p>
+              <button id="exportBtn" class="btn-export">
+                <i class="fas fa-file-excel"></i> Export Matrix to Excel
+              </button>
+            </div>
+          </div>
+
+          <div class="tab-nav-buttons">
+            <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-build-edit')"><i
+                class="fas fa-arrow-left"></i> Back to Build & Edit</button>
+            <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory
+              <i class="fas fa-book"></i></button>
           </div>
         </div>
       </div>
@@ -841,11 +1008,17 @@
       const taskForm = document.getElementById('taskForm');
       const taskInput = document.getElementById('taskInput');
       const quadrantSelect = document.getElementById('quadrantSelect');
-      const loadExampleBtn = document.getElementById('loadExampleBtn');
-      const resetBtn = document.getElementById('resetBtn');
+      const globalLoadExampleBtn = document.getElementById('globalLoadExampleBtn');
+      const globalResetBtn = document.getElementById('globalResetBtn');
+      const listResultsBtn = document.getElementById('listResultsBtn');
       const exportBtn = document.getElementById('exportBtn');
+      const resultsContainer = document.getElementById('resultsContainer');
+      const exportSection = document.getElementById('exportSection');
 
-      // Función para añadir una tarea a un cuadrante específico
+      // Array global para almacenar tareas
+      let tasks = [];
+
+      // Función para añadir una tarea a un cuadrante específico (editable)
       const addTaskToQuadrant = (description, quadrantId) => {
         const taskList = document.querySelector(`#${quadrantId} .task-list`);
 
@@ -860,14 +1033,80 @@
         deleteBtn.innerHTML = '<i class="fas fa-times-circle"></i>';
         deleteBtn.onclick = () => {
           taskItem.remove();
+          // Eliminar de array de tareas
+          tasks = tasks.filter(task => !(task.description === description && task.quadrant === quadrantId));
         };
 
         taskItem.appendChild(taskText);
         taskItem.appendChild(deleteBtn);
         taskList.appendChild(taskItem);
+
+        // Agregar al array de tareas
+        tasks.push({ description, quadrant: quadrantId });
       };
 
-      // Función para añadir tarea desde el formulario (usa el cuadrante seleccionado)
+      // Función para mostrar resultados en la pestaña de Results
+      function displayResults() {
+        if (tasks.length === 0) {
+          resultsContainer.innerHTML = `
+            <div class="no-results-message">
+              <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+              <p>No tasks to display. Please add tasks in the Build & Edit tab first.</p>
+            </div>
+          `;
+          exportSection.style.display = 'none';
+          return;
+        }
+
+        // Crear la matriz de resultados
+        const matrixHTML = `
+          <div class="matrix-container">
+            <div class="quadrant quadrant-do">
+              <h3><i class="fas fa-exclamation-circle"></i> Do <small>Urgent & Important</small></h3>
+              <div class="task-list" id="results-quadrant-do">
+                ${tasks.filter(task => task.quadrant === 'quadrant-do').map(task =>
+          `<div class="task-item readonly"><span>${task.description}</span></div>`
+        ).join('')}
+              </div>
+            </div>
+            <div class="quadrant quadrant-decide">
+              <h3><i class="fas fa-calendar-alt"></i> Decide <small>Not Urgent & Important</small></h3>
+              <div class="task-list" id="results-quadrant-decide">
+                ${tasks.filter(task => task.quadrant === 'quadrant-decide').map(task =>
+          `<div class="task-item readonly"><span>${task.description}</span></div>`
+        ).join('')}
+              </div>
+            </div>
+            <div class="quadrant quadrant-delegate">
+              <h3><i class="fas fa-user-friends"></i> Delegate <small>Urgent & Not Important</small></h3>
+              <div class="task-list" id="results-quadrant-delegate">
+                ${tasks.filter(task => task.quadrant === 'quadrant-delegate').map(task =>
+          `<div class="task-item readonly"><span>${task.description}</span></div>`
+        ).join('')}
+              </div>
+            </div>
+            <div class="quadrant quadrant-delete">
+              <h3><i class="fas fa-trash-alt"></i> Delete <small>Not Urgent & Not Important</small></h3>
+              <div class="task-list" id="results-quadrant-delete">
+                ${tasks.filter(task => task.quadrant === 'quadrant-delete').map(task =>
+          `<div class="task-item readonly"><span>${task.description}</span></div>`
+        ).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+
+        resultsContainer.innerHTML = matrixHTML;
+        exportSection.style.display = 'block';
+
+        // Hacer scroll a los resultados
+        resultsContainer.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+
+      // Función para añadir tarea desde el formulario
       const addTaskFromForm = (description) => {
         const quadrantId = quadrantSelect.value;
         addTaskToQuadrant(description, quadrantId);
@@ -877,7 +1116,17 @@
         document.querySelectorAll('.task-list').forEach(list => {
           list.innerHTML = '';
         });
+        tasks = [];
         taskInput.focus();
+
+        // Limpiar también los resultados si están mostrados
+        resultsContainer.innerHTML = `
+          <div class="no-results-message">
+            <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>No results listed yet. Click the "List Results" button above to display your matrix.</p>
+          </div>
+        `;
+        exportSection.style.display = 'none';
       };
 
       // Evento submit del formulario
@@ -892,7 +1141,7 @@
       });
 
       // Ejemplo COMPLETO con tareas en todos los cuadrantes
-      loadExampleBtn.addEventListener('click', () => {
+      globalLoadExampleBtn.addEventListener('click', () => {
         resetMatrix();
 
         // TAREAS DE EJEMPLO PARA TODOS LOS CUADRANTES
@@ -925,12 +1174,68 @@
         // Añadir todas las tareas de ejemplo
         exampleTasks.forEach(task => addTaskToQuadrant(task.text, task.quadrant));
 
-        // Mostrar mensaje informativo
-        alert('✓ Example matrix loaded with 4 tasks in each quadrant!');
+        // Mostrar notificación
+        showNotification('Example matrix loaded with 4 tasks in each quadrant!');
       });
 
-      resetBtn.addEventListener('click', resetMatrix);
+      globalResetBtn.addEventListener('click', () => {
+        if (tasks.length > 0) {
+          if (confirm("Are you sure you want to reset all tasks? This will remove all tasks from the matrix.")) {
+            resetMatrix();
+            showNotification("Matrix reset successfully");
+          }
+        }
+      });
 
+      // Botón para listar resultados
+      listResultsBtn.addEventListener('click', () => {
+        displayResults();
+        showNotification("Results listed successfully!");
+      });
+
+      // Función para mostrar notificaciones
+      function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: var(--success-color);
+          color: white;
+          padding: 15px 20px;
+          border-radius: 5px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 1000;
+          animation: slideIn 0.3s ease;
+          max-width: 300px;
+          font-weight: 600;
+        `;
+
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.animation = 'fadeOut 0.5s ease';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 3000);
+      }
+
+      // Función para exportar a Excel
       exportBtn.addEventListener('click', () => {
         const quadrantMap = {
           'quadrant-do': 'Do (Urgent & Important)',
@@ -940,19 +1245,15 @@
         };
 
         let data = [];
-        document.querySelectorAll('.quadrant').forEach(quadrantDiv => {
-          const quadrantId = quadrantDiv.id;
-          const quadrantName = quadrantMap[quadrantId];
-          quadrantDiv.querySelectorAll('.task-item span').forEach(taskSpan => {
-            data.push({
-              'Quadrant': quadrantName,
-              'Task': taskSpan.textContent
-            });
+        tasks.forEach(task => {
+          data.push({
+            'Quadrant': quadrantMap[task.quadrant],
+            'Task': task.description
           });
         });
 
         if (data.length === 0) {
-          alert("⚠️ No tasks to export. Please add some tasks first.");
+          showNotification("⚠️ No tasks to export. Please add some tasks first.");
           return;
         }
 
@@ -964,7 +1265,8 @@
         const colWidths = [{ wch: 35 }, { wch: 60 }];
         ws['!cols'] = colWidths;
 
-        XLSX.writeFile(wb, 'Eisenhower_Matrix_Sigma_Exacta.xlsx');
+        XLSX.writeFile(wb, `Eisenhower_Matrix_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        showNotification("Matrix exported successfully!");
       });
 
       // Inicializar con el foco en el input

@@ -34,7 +34,60 @@
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #5856d6;
-            /* Color lila original de Stack Up */
+            --performance-color: #2ecc71;
+            --danger-color: #c0392b;
+            --attractive-color: #3498db;
+            --must-be-color: #f1c40f;
+            --reverse-color: #9b59b6;
+            --indifferent-color: #95a5a6;
+            --questionable-color: #e74c3c;
+            --light-color: #ecf0f1;
+        }
+
+        /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+        .main-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: var(--performance-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #27ad60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #a5281c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
         .tabs-nav {
@@ -44,7 +97,7 @@
             overflow-x: auto;
             border-bottom: 2px solid var(--secondary-color);
             margin-bottom: 0;
-            margin-top: 1.5rem;
+            margin-top: 0.5rem;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -159,6 +212,29 @@
             .wizard-tab-content {
                 padding: 1rem;
             }
+
+            .main-action-buttons {
+                gap: 0.75rem;
+                margin: 1rem auto;
+            }
+
+            .main-action-buttons button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .main-action-buttons button {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         /* Ajuste para que los containers dentro de las pestañas no tengan márgenes excesivos */
@@ -169,12 +245,97 @@
             padding: 0;
             border: none;
         }
+
+        /* CORRECCIÓN: Estilos para que las fórmulas se vean correctamente */
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .formula-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .formula-item h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .formula-item div {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .formula-item p {
+            margin: 0.5rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .triangular-formula div {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Estilos para KaTeX */
+        .katex {
+            font-size: 1.1em !important;
+        }
+
+        .katex-display {
+            margin: 1em 0 !important;
+            overflow: auto hidden;
+        }
+
+        .katex-display>.katex {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .legend {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .legend h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .legend ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            color: #555;
+        }
+
+        .legend li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        code {
+            background-color: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 
 <body>
     <!-- Header container donde se cargará dinámicamente el header -->
-    <div id="header-container"></div>
     <div id="header-container"></div>
 
     <noscript>
@@ -208,6 +369,16 @@
                         class="fas fa-ruler-combined" style="color: white; font-size: 22px;"></i></span> Free Online
                 Tolerance Stack-Up Analysis Calculator</h1>
             <p>Perform tolerance stack-up analysis using arithmetic, probabilistic, and Monte Carlo methods.</p>
+
+            <!-- BOTONES PRINCIPALES -->
+            <div class="main-action-buttons">
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-vial"></i> Load Example
+                </button>
+                <button id="globalResetBtn" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Reset All
+                </button>
+            </div>
         </header>
 
         <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
@@ -216,6 +387,8 @@
                 Info</button>
             <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i> Calculator
                 Tool</button>
+            <button class="tab-btn" onclick="switchWizardTab('tab-results')"><i class="fas fa-chart-bar"></i>
+                Results</button>
             <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
                 Formulas</button>
         </nav>
@@ -395,8 +568,10 @@
                 <div class="tab">
                     <button class="tablinks active" onclick="openTab(event, 'input')"><i class="fas fa-edit"></i> Input
                         Data</button>
-                    <button class="tablinks" onclick="openTab(event, 'results')" id="resultsTab"><i
-                            class="fas fa-chart-bar"></i> Results</button>
+                    <button class="tablinks" onclick="openTab(event, 'analysis-results')" id="resultsTab"><i
+                            class="fas fa-chart-line"></i> Analysis Results</button>
+                    <button class="tablinks" onclick="openTab(event, 'visualization')"><i
+                            class="fas fa-project-diagram"></i> Stack-up Visualization</button>
                 </div>
 
                 <div id="input" class="tabcontent" style="display: block;">
@@ -413,10 +588,6 @@
                         </div>
                         <div class="add-remove-btns">
                             <button onclick="addDimension()"><i class="fas fa-plus"></i> Add Dimension</button>
-                            <button onclick="loadExampleData()" class="button-green"><i class="fas fa-vial"></i> Load
-                                Example</button>
-                            <button onclick="resetData()" class="button-yellow"><i class="fas fa-undo"></i> Reset
-                                Data</button>
                         </div>
                         <div class="montecarlo-input">
                             <label for="sampleSize"><i class="fas fa-chart-pie"></i> Monte Carlo sample size:</label>
@@ -424,20 +595,9 @@
                         </div>
                         <button onclick="calculate()"><i class="fas fa-calculator"></i> Calculate</button>
                     </div>
-                    <div class="visualization-container">
-                        <h3><i class="fas fa-project-diagram"></i> Stack-up Visualization</h3>
-                        <div class="vis-controls">
-                            <label>Orientation:</label>
-                            <button id="vis-horizontal-btn" class="vis-toggle active"
-                                onclick="setVectorOrientation('horizontal')">Horizontal</button>
-                            <button id="vis-vertical-btn" class="vis-toggle"
-                                onclick="setVectorOrientation('vertical')">Vertical</button>
-                        </div>
-                        <canvas id="vectorCanvas"></canvas>
-                    </div>
                 </div>
 
-                <div id="results" class="tabcontent">
+                <div id="analysis-results" class="tabcontent">
                     <h3><i class="fas fa-chart-line"></i> Analysis Results</h3>
                     <div class="results">
                         <div class="result-method">
@@ -471,21 +631,45 @@
                             </div>
                         </div>
                     </div>
-                    <div class="export-section">
-                        <button onclick="listResults()"><i class="fas fa-list"></i> List Results</button>
-                        <button onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                </div>
+
+                <div id="visualization" class="tabcontent">
+                    <h3><i class="fas fa-project-diagram"></i> Stack-up Visualization</h3>
+                    <div class="visualization-container">
+                        <div class="vis-controls">
+                            <label>Orientation:</label>
+                            <button id="vis-horizontal-btn" class="vis-toggle active"
+                                onclick="setVectorOrientation('horizontal')">Horizontal</button>
+                            <button id="vis-vertical-btn" class="vis-toggle"
+                                onclick="setVectorOrientation('vertical')">Vertical</button>
+                        </div>
+                        <canvas id="vectorCanvas"></canvas>
                     </div>
-                    <div id="results-history" style="display: none;"></div>
                 </div>
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchWizardTab('tab-formulas')">View Formulas <i
+                <button class="btn-next-tab" onclick="switchWizardTab('tab-results')">View Detailed Results <i
                         class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <!-- PESTAÑA 3: FÓRMULAS -->
+        <!-- NUEVA PESTAÑA 3: RESULTS -->
+        <div id="tab-results" class="wizard-tab-content">
+            <section class="container">
+                <h2><i class="fas fa-chart-bar"></i> Detailed Results</h2>
+                <p>View and export detailed calculation results and history.</p>
+
+                <div class="export-section" style="margin: 2rem 0;">
+                    <button onclick="listResults()"><i class="fas fa-list"></i> List Results</button>
+                    <button onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                </div>
+
+                <div id="results-history" style="display: none; margin-top: 2rem;"></div>
+            </section>
+        </div>
+
+        <!-- PESTAÑA 4: FÓRMULAS -->
         <div id="tab-formulas" class="wizard-tab-content">
             <section class="container">
                 <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
@@ -641,6 +825,39 @@
 
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Event listeners para los botones globales
+        document.addEventListener('DOMContentLoaded', function () {
+            // Botón global de Load Example
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', function () {
+                loadExampleData();
+                // Cambiar a la pestaña del calculator tool
+                switchWizardTab('tab-tool');
+            });
+
+            // Botón global de Reset All
+            document.getElementById('globalResetBtn').addEventListener('click', function () {
+                if (confirm("Are you sure you want to reset all data? This will remove all dimensions.")) {
+                    resetData();
+                }
+            });
+        });
+
+        // Función para sub-tabs dentro de Calculator Tool
+        function openTab(evt, tabName) {
+            // Ocultar todos los tabcontent
+            document.querySelectorAll(".tabcontent").forEach(el => el.style.display = "none");
+            // Remover clase active de todos los tablinks
+            document.querySelectorAll(".tablinks").forEach(el => el.classList.remove("active"));
+            // Mostrar el tab actual y agregar clase active al botón
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+
+            // Si es la pestaña de input, actualizar visualización
+            if (tabName === 'input' || tabName === 'visualization') {
+                updateVisualization();
+            }
         }
     </script>
 

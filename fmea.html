@@ -89,6 +89,54 @@
       margin: 0 auto;
     }
 
+    /* --- BOTONES PRINCIPALES (AGREGADOS DESPUÉS DEL HEADER) --- */
+    .main-action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem auto 2rem auto;
+      flex-wrap: wrap;
+      max-width: 800px;
+    }
+
+    .main-action-buttons button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-action-buttons .btn-example {
+      background-color: #2ecc71;
+      /* performance-color */
+      color: white;
+    }
+
+    .main-action-buttons .btn-example:hover {
+      background-color: #27ad60;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .main-action-buttons .btn-reset {
+      background-color: #c0392b;
+      /* danger-color */
+      color: white;
+    }
+
+    .main-action-buttons .btn-reset:hover {
+      background-color: #a5281c;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
     /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (TABS) ===== */
     .tabs-nav {
       display: flex;
@@ -203,11 +251,32 @@
       .tab-content-wrapper {
         padding: 1rem;
       }
+
+      .main-action-buttons {
+        gap: 0.75rem;
+        margin: 1rem auto 1.5rem auto;
+      }
+
+      .main-action-buttons button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+      }
     }
 
     @media (max-width: 480px) {
       .tab-content-wrapper {
         padding: 0.75rem;
+      }
+
+      .main-action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .main-action-buttons button {
+        width: 100%;
+        justify-content: center;
       }
     }
 
@@ -719,6 +788,16 @@
       <p class="header-subtitle">A powerful online tool for proactively identifying and mitigating potential failures in
         <strong>Designs (DFMEA)</strong> and <strong>Processes (PFMEA)</strong>.
       </p>
+
+      <!-- BOTONES PRINCIPALES (AGREGADOS AQUÍ) -->
+      <div class="main-action-buttons">
+        <button id="globalLoadExampleBtn" class="btn-example">
+          <i class="fas fa-play-circle"></i> Load Example
+        </button>
+        <button id="globalResetBtn" class="btn-reset">
+          <i class="fas fa-sync-alt"></i> Reset All
+        </button>
+      </div>
     </header>
 
     <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
@@ -828,9 +907,7 @@
           </div>
 
           <div class="calculation-block">
-            <button id="loadExampleBtn" style="background-color: #27ae60;"><i class="fas fa-lightbulb"></i> Load
-              Example</button>
-            <button id="resetAllBtn" style="background-color: #f39c12;"><i class="fas fa-redo"></i> Reset All</button>
+            <!-- Se eliminaron los botones de ejemplo y reset de aquí ya que ahora están arriba -->
           </div>
         </div>
       </div>
@@ -1033,8 +1110,11 @@
       document.getElementById('clearContactsBtn').addEventListener('click', () => { contacts = []; functions = []; contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
       document.getElementById('clearFunctionsBtn').addEventListener('click', () => { functions = []; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
       document.getElementById('fitViewBtn').addEventListener('click', () => { if (network) network.fit({ animation: true }); });
-      document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
-      document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+
+      // Botones globales
+      document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
+      document.getElementById('globalResetBtn').addEventListener('click', resetAll);
+
       updateAll();
     }
 

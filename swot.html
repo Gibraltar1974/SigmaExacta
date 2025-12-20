@@ -228,6 +228,53 @@
             line-height: 1.6;
         }
 
+        /* === MAIN ACTION BUTTONS (ESTILO COMO KANO) === */
+        .main-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto 2rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+            padding: 0 1.25rem;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .block,
         .content-block {
             border: 1px solid #ddd;
@@ -596,16 +643,89 @@
             background-color: #229954;
         }
 
-        .tool-logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* === RESULTADOS ESTILOS === */
+        .results-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            margin-top: 1.5rem;
         }
 
-        .tool-logo[data-color='19'] {
-            background-color: #7b293e;
+        @media (min-width: 850px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .result-category {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-category h3 {
+            color: white;
+            margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+            padding: 1rem 1.5rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .result-category.strengths h3 {
+            background-color: var(--strengths-bg);
+        }
+
+        .result-category.weaknesses h3 {
+            background-color: var(--danger-color);
+        }
+
+        .result-category.opportunities h3 {
+            background-color: var(--secondary-color);
+        }
+
+        .result-category.threats h3 {
+            background-color: var(--warning-color);
+        }
+
+        .result-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .result-list li {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-list li:last-child {
+            border-bottom: none;
+        }
+
+        .result-list li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-right: 0.5rem;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed #eee;
         }
 
         footer {
@@ -663,6 +783,17 @@
                 width: 100%;
                 max-width: 300px;
             }
+
+            .main-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .main-action-buttons button {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -703,6 +834,16 @@
                     objectives.</p>
             </header>
 
+            <!-- MAIN ACTION BUTTONS (ESTILO COMO KANO) -->
+            <div class="main-action-buttons">
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-magic"></i> Load Example
+                </button>
+                <button id="globalResetBtn" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Reset Matrix
+                </button>
+            </div>
+
             <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
             <div class="tabs-container">
                 <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
@@ -712,6 +853,9 @@
                     </button>
                     <button class="tab-btn" onclick="switchWizardTab('tab-matrix')">
                         <i class="fas fa-table-cells"></i> SWOT Matrix
+                    </button>
+                    <button class="tab-btn" onclick="switchWizardTab('tab-results')">
+                        <i class="fas fa-chart-bar"></i> Results
                     </button>
                 </nav>
 
@@ -780,7 +924,8 @@
                                     </li>
                                     <li><strong>Load an example:</strong> If you're unsure where to start, click the
                                         <strong>"Load
-                                            Example"</strong> button to see a filled-out matrix.</li>
+                                            Example"</strong> button to see a filled-out matrix.
+                                    </li>
                                     <li><strong>Manage your list:</strong> Delete any point by clicking the cross icon
                                         (<i class="fas fa-times" style="font-size: 0.8em;"></i>) next to it.</li>
                                     <li><strong>Export your work:</strong> When you're done, click <strong>"Export to
@@ -803,18 +948,7 @@
                     <div class="tab-content-wrapper">
                         <div id="toast-notification"></div>
 
-                        <div class="block">
-                            <div class="controls-container">
-                                <button type="button" id="exampleBtn" class="btn-success"><i class="fas fa-magic"></i>
-                                    Load
-                                    Example</button>
-                                <button type="button" id="resetBtn" class="btn-warning"><i class="fas fa-sync-alt"></i>
-                                    Reset
-                                    Matrix</button>
-                                <button id="exportBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Export to
-                                    Excel</button>
-                            </div>
-                        </div>
+                        <!-- ELIMINADO: Bloque con el botón de exportación -->
 
                         <div class="swot-grid" id="swotGrid">
                             <div class="block">
@@ -865,6 +999,47 @@
                         <div class="tab-nav-buttons">
                             <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-theory')"><i
                                     class="fas fa-arrow-left"></i> Back to Theory</button>
+                            <button class="btn-next-tab" onclick="switchWizardTab('tab-results')">Go to Results <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA 3: RESULTADOS -->
+                <div id="tab-results" class="wizard-tab-content">
+                    <div class="tab-content-wrapper">
+                        <div class="content-block">
+                            <h2><i class="fas fa-chart-bar"></i> SWOT Analysis Results</h2>
+                            <p>View your complete SWOT analysis results. This is a read-only summary of all items you've
+                                added across all categories.</p>
+
+                            <div class="result-actions">
+                                <button id="listResultsBtn" class="btn-success">
+                                    <i class="fas fa-list"></i> List Results
+                                </button>
+                                <button id="exportBtnResults" class="btn-primary">
+                                    <i class="fas fa-file-excel"></i> Export to Excel
+                                </button>
+                            </div>
+
+                            <div id="resultsContainer" class="results-grid">
+                                <!-- Results will be inserted here by JavaScript -->
+                                <div class="no-results-message"
+                                    style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;">
+                                    <i class="fas fa-info-circle"
+                                        style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                    <h3>No Results Yet</h3>
+                                    <p>Click "List Results" to display your SWOT analysis or go to the Matrix tab to add
+                                        items.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-nav-buttons">
+                            <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-matrix')"><i
+                                    class="fas fa-arrow-left"></i> Back to Matrix</button>
+                            <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory <i
+                                    class="fas fa-book"></i></button>
                         </div>
                     </div>
                 </div>
@@ -952,11 +1127,57 @@
             }
         }
 
+        // Función para mostrar resultados en la pestaña de Results
+        function displayResults() {
+            const categories = [
+                { id: 'strengths', name: 'Strengths', icon: 'fa-thumbs-up', colorClass: 'strengths' },
+                { id: 'weaknesses', name: 'Weaknesses', icon: 'fa-thumbs-down', colorClass: 'weaknesses' },
+                { id: 'opportunities', name: 'Opportunities', icon: 'fa-search-plus', colorClass: 'opportunities' },
+                { id: 'threats', name: 'Threats', icon: 'fa-bolt', colorClass: 'threats' }
+            ];
+
+            let resultsHTML = '';
+            let hasData = false;
+
+            categories.forEach(category => {
+                const items = Array.from(document.querySelectorAll(`#${category.id}List .swot-item > span`))
+                    .map(item => item.textContent.trim())
+                    .filter(text => text.length > 0);
+
+                if (items.length > 0) {
+                    hasData = true;
+                    resultsHTML += `
+                        <div class="result-category ${category.colorClass}">
+                            <h3><i class="fas ${category.icon}"></i> ${category.name} (${items.length})</h3>
+                            <ul class="result-list">
+                                ${items.map(item => `<li>${item.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            });
+
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (hasData) {
+                resultsContainer.innerHTML = resultsHTML;
+            } else {
+                resultsContainer.innerHTML = `
+                    <div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;">
+                        <i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3>No Data Available</h3>
+                        <p>No SWOT items found. Add items in the Matrix tab or load an example.</p>
+                    </div>
+                `;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const swotGrid = document.getElementById('swotGrid');
-            const exampleBtn = document.getElementById('exampleBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const exportBtn = document.getElementById('exportBtn');
+            const globalLoadExampleBtn = document.getElementById('globalLoadExampleBtn');
+            const globalResetBtn = document.getElementById('globalResetBtn');
+            const exportBtnResults = document.getElementById('exportBtnResults');
+            const listResultsBtn = document.getElementById('listResultsBtn');
+
             const exampleData = [
                 { category: 'strengths', point: 'Experienced management team' },
                 { category: 'strengths', point: 'Strong brand reputation' },
@@ -967,6 +1188,7 @@
                 { category: 'threats', point: 'New regulations increasing costs' },
                 { category: 'threats', point: 'Intense competition from new entrants' },
             ];
+
             const addEntry = (category, point) => {
                 const listContainer = document.getElementById(`${category}List`);
                 if (!listContainer || !point) return;
@@ -975,41 +1197,143 @@
                 newItem.innerHTML = ` <span>${point.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span> <button class="btn-delete" title="Delete Item"><i class="fas fa-times"></i></button> `;
                 listContainer.appendChild(newItem);
             };
+
             const processAddItem = (category) => {
                 const input = document.getElementById(`${category}-input`);
                 const point = input.value.trim();
-                if (point) { addEntry(category, point); input.value = ''; input.focus(); }
+                if (point) {
+                    addEntry(category, point);
+                    input.value = '';
+                    input.focus();
+                }
             };
-            const loadExample = () => { resetAll(false); exampleData.forEach(ex => { addEntry(ex.category, ex.point); }); showToast('Example data loaded.', 'success'); };
-            const resetAll = (confirmReset = true) => { const doReset = () => { ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => { document.getElementById(`${cat}List`).innerHTML = ''; document.getElementById(`${cat}-input`).value = ''; }); if (confirmReset) showToast('SWOT Matrix has been reset.', 'info'); }; if (confirmReset) { if (confirm('Are you sure you want to reset the entire SWOT matrix? This action cannot be undone.')) { doReset(); } } else { doReset(); } };
-            const showToast = (message, type = 'success') => { const toast = document.getElementById('toast-notification'); toast.textContent = message; toast.className = 'show'; toast.classList.add(type); setTimeout(() => toast.classList.remove('show'), 3000); };
+
+            const loadExample = () => {
+                resetAll(false);
+                exampleData.forEach(ex => {
+                    addEntry(ex.category, ex.point);
+                });
+                showToast('Example data loaded.', 'success');
+                // Cambiar automáticamente a la pestaña de matriz
+                switchWizardTab('tab-matrix');
+                // Actualizar resultados si estamos en la pestaña de resultados
+                if (document.getElementById('tab-results').classList.contains('active')) {
+                    displayResults();
+                }
+            };
+
+            const resetAll = (confirmReset = true) => {
+                const doReset = () => {
+                    ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => {
+                        document.getElementById(`${cat}List`).innerHTML = '';
+                        document.getElementById(`${cat}-input`).value = '';
+                    });
+                    // Limpiar resultados también
+                    const resultsContainer = document.getElementById('resultsContainer');
+                    resultsContainer.innerHTML = `
+                        <div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;">
+                            <i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <h3>No Results Yet</h3>
+                            <p>Click "List Results" to display your SWOT analysis or go to the Matrix tab to add items.</p>
+                        </div>
+                    `;
+                    if (confirmReset) showToast('SWOT Matrix has been reset.', 'info');
+                };
+                if (confirmReset) {
+                    if (confirm('Are you sure you want to reset the entire SWOT matrix? This action cannot be undone.')) {
+                        doReset();
+                    }
+                } else {
+                    doReset();
+                }
+            };
+
+            const showToast = (message, type = 'success') => {
+                const toast = document.getElementById('toast-notification');
+                toast.textContent = message;
+                toast.className = 'show';
+                toast.classList.add(type);
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            };
+
             const exportToExcel = () => {
                 const categories = ['strengths', 'weaknesses', 'opportunities', 'threats'];
                 const headers = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats'];
                 const dataByCategory = {};
                 let hasData = false;
-                categories.forEach(cat => { const items = Array.from(document.querySelectorAll(`#${cat}List .swot-item > span`)); dataByCategory[cat] = items.map(item => item.textContent); if (items.length > 0) hasData = true; });
-                if (!hasData) { alert("There is no data to export."); return; }
+
+                categories.forEach(cat => {
+                    const items = Array.from(document.querySelectorAll(`#${cat}List .swot-item > span`));
+                    dataByCategory[cat] = items.map(item => item.textContent);
+                    if (items.length > 0) hasData = true;
+                });
+
+                if (!hasData) {
+                    alert("There is no data to export.");
+                    return;
+                }
+
                 const maxLength = Math.max(...Object.values(dataByCategory).map(arr => arr.length));
                 const excelRows = [headers];
-                for (let i = 0; i < maxLength; i++) { const row = categories.map(cat => dataByCategory[cat][i] || ''); excelRows.push(row); }
+
+                for (let i = 0; i < maxLength; i++) {
+                    const row = categories.map(cat => dataByCategory[cat][i] || '');
+                    excelRows.push(row);
+                }
+
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(excelRows);
                 ws['!cols'] = headers.map(() => ({ wch: 40 }));
                 XLSX.utils.book_append_sheet(wb, ws, 'SWOT Analysis');
                 XLSX.writeFile(wb, 'SWOT_Analysis_Sigma_Exacta.xlsx');
             };
-            swotGrid.addEventListener('click', (e) => { const addBtn = e.target.closest('.btn-add-item'); if (addBtn) { processAddItem(addBtn.dataset.category); return; } const deleteBtn = e.target.closest('.btn-delete'); if (deleteBtn) { deleteBtn.closest('.swot-item').remove(); showToast('Item deleted.', 'info'); return; } });
-            swotGrid.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('input[type="text"]')) { e.preventDefault(); processAddItem(e.target.dataset.category); } });
-            exampleBtn.addEventListener('click', loadExample);
-            resetBtn.addEventListener('click', () => resetAll(true));
-            exportBtn.addEventListener('click', exportToExcel);
+
+            // Event Listeners
+            swotGrid.addEventListener('click', (e) => {
+                const addBtn = e.target.closest('.btn-add-item');
+                if (addBtn) {
+                    processAddItem(addBtn.dataset.category);
+                    return;
+                }
+                const deleteBtn = e.target.closest('.btn-delete');
+                if (deleteBtn) {
+                    deleteBtn.closest('.swot-item').remove();
+                    showToast('Item deleted.', 'info');
+                    return;
+                }
+            });
+
+            swotGrid.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.matches('input[type="text"]')) {
+                    e.preventDefault();
+                    processAddItem(e.target.dataset.category);
+                }
+            });
+
+            // Botones globales
+            globalLoadExampleBtn.addEventListener('click', loadExample);
+            globalResetBtn.addEventListener('click', () => resetAll(true));
+
+            // Botón de exportación (solo en Results)
+            exportBtnResults.addEventListener('click', exportToExcel);
+
+            // Botón para listar resultados
+            listResultsBtn.addEventListener('click', () => {
+                displayResults();
+                showToast('Results listed successfully.', 'success');
+            });
+
+            // Cuando se cambie a la pestaña de resultados, mostrar automáticamente
+            document.querySelector('button[onclick="switchWizardTab(\'tab-results\')"]').addEventListener('click', () => {
+                // Pequeño retraso para asegurar que la pestaña esté activa
+                setTimeout(displayResults, 100);
+            });
         });
     </script>
 
     <script defer>
         document.addEventListener('DOMContentLoaded', () => {
-            const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/8AADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
+            const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAcX0AAHN9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/AABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/8AADf8AAA1/AAANfwAADX8AAA1/AAANfwAADX8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
             hoverSound.preload = 'auto';
             let audioUnlocked = false;
 

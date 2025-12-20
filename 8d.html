@@ -85,14 +85,17 @@
       --dark-color: #2c3e50;
       --success-color: #27ae60;
       --warning-color: #f39c12;
+      --performance-color: #2ecc71;
+      --danger-color: #c0392b;
       font-size: 16px;
+      --professional-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --professional-border: 1px solid #e1e5e9;
     }
 
     body {
       background-color: #f5f7fa;
       font-family: 'Nunito', sans-serif;
       width: 100%;
-      overflow-x: hidden;
       margin: 0;
       padding: 0;
     }
@@ -108,18 +111,20 @@
 
     .content-container {
       width: 100%;
-      max-width: 1200px;
+      max-width: 100%;
       margin: 0 auto;
       padding: 0 1.25rem;
       box-sizing: border-box;
     }
 
     .header {
-      margin-bottom: 1.25rem;
-      padding: 1.25rem;
+      margin-bottom: 0;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid #ddd;
       text-align: center;
-      background-color: white;
+      background-color: transparent;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .header h1 {
@@ -137,13 +142,144 @@
       max-width: 700px;
     }
 
+    /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+    .main-action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem auto;
+      flex-wrap: wrap;
+      max-width: 800px;
+    }
+
+    .main-action-buttons button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-action-buttons .btn-example {
+      background-color: var(--performance-color);
+      color: white;
+    }
+
+    .main-action-buttons .btn-example:hover {
+      background-color: #27ad60;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .main-action-buttons .btn-reset {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .main-action-buttons .btn-reset:hover {
+      background-color: #a5281c;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+    .tabs-nav {
+      display: flex;
+      background-color: #f1f5f9;
+      border-radius: 8px 8px 0 0;
+      overflow-x: auto;
+      border-bottom: 2px solid var(--secondary-color);
+      margin-bottom: 0;
+      margin-top: 0.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .tab-btn:hover {
+      background-color: #e2e8f0;
+      color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+      background-color: #fff;
+      color: var(--secondary-color);
+      border-bottom-color: var(--secondary-color);
+      border-radius: 8px 8px 0 0;
+      margin-bottom: -2px;
+      border-left: 1px solid #e1e5e9;
+      border-right: 1px solid #e1e5e9;
+      border-top: 1px solid #e1e5e9;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 2rem;
+      background: #fff;
+      border: 1px solid #e1e5e9;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      animation: fadeIn 0.3s ease;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .calculation-block {
-      border: 1px solid #ddd;
+      border: var(--professional-border);
       border-radius: 8px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
       background-color: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--professional-shadow);
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
@@ -184,7 +320,7 @@
     select {
       width: 100%;
       padding: 0.6rem;
-      border: 1px solid #ddd;
+      border: var(--professional-border);
       border-radius: 4px;
       font-size: 1rem;
       margin-bottom: 1rem;
@@ -273,9 +409,9 @@
     #results {
       padding: 1.25rem;
       border-radius: 8px;
-      border: 1px solid #ddd;
+      border: var(--professional-border);
       width: 100%;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--professional-shadow);
       box-sizing: border-box;
       display: none;
     }
@@ -345,6 +481,39 @@
         width: 100%;
         margin: 0.25rem 0;
       }
+
+      .tab-btn {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .main-action-buttons {
+        gap: 0.75rem;
+        margin: 1rem auto;
+      }
+
+      .main-action-buttons button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .main-action-buttons button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .tab-btn {
+        padding: 0.6rem 0.3rem;
+        font-size: 0.8rem;
+      }
     }
 
     /* Print styles */
@@ -371,62 +540,97 @@
     }
 
     /* ===== NUEVOS ESTILOS PARA TABS (WIZARD) ===== */
-    .tabs-nav {
+    .tab-nav-buttons {
       display: flex;
-      background-color: #f1f5f9;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btn-next-tab {
+      background-color: #3498db;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn-next-tab:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .btn-next-tab.btn-prev {
+      background-color: #95a5a6;
+    }
+
+    .btn-next-tab.btn-prev:hover {
+      background-color: #7f8c8d;
+    }
+
+    /* === SUB-TABS PARA 8D FORM === */
+    .sub-tabs-nav {
+      display: flex;
+      background-color: #e8f4fc;
       border-radius: 8px 8px 0 0;
       overflow-x: auto;
-      border-bottom: 2px solid var(--secondary-color);
+      border-bottom: 2px solid var(--primary-color);
       margin-bottom: 0;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
 
-    .tabs-nav::-webkit-scrollbar {
+    .sub-tabs-nav::-webkit-scrollbar {
       display: none;
     }
 
-    .tab-btn {
-      padding: 1rem 1.5rem;
+    .sub-tab-btn {
+      padding: 0.8rem 1rem;
       border: none;
       background: none;
       cursor: pointer;
-      font-weight: 700;
-      color: #64748b;
+      font-weight: 600;
+      color: #4a5568;
       white-space: nowrap;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       transition: all 0.3s;
       border-bottom: 3px solid transparent;
+      font-size: 0.9rem;
     }
 
-    /* === MODIFICACIÓN: Media Query para distribuir pestañas en escritorio === */
-    @media (min-width: 992px) {
-      .tabs-nav {
+    @media (min-width: 768px) {
+      .sub-tabs-nav {
         overflow-x: hidden;
-        /* Elimina scroll en escritorio */
       }
 
-      .tab-btn {
+      .sub-tab-btn {
         flex: 1;
-        /* Ocupar todo el ancho disponible */
         justify-content: center;
-        /* Centrar contenido */
-        padding: 1rem 0.5rem;
-        /* Reducir padding lateral para ajustar mejor */
+        padding: 0.8rem 0.5rem;
       }
     }
 
-    .tab-btn:hover {
-      background-color: #e2e8f0;
+    .sub-tab-btn:hover {
+      background-color: #d1e7ff;
       color: var(--primary-color);
     }
 
-    .tab-btn.active {
+    .sub-tab-btn.active {
       background-color: #fff;
-      color: var(--secondary-color);
-      border-bottom-color: var(--secondary-color);
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
       border-radius: 8px 8px 0 0;
       margin-bottom: -2px;
       border-left: 1px solid #e1e5e9;
@@ -434,9 +638,9 @@
       border-top: 1px solid #e1e5e9;
     }
 
-    .tab-content {
+    .sub-tab-content {
       display: none;
-      padding: 2rem;
+      padding: 1.5rem;
       background: #fff;
       border: 1px solid #e1e5e9;
       border-top: none;
@@ -444,36 +648,35 @@
       animation: fadeIn 0.3s ease;
     }
 
-    .tab-content.active {
+    .sub-tab-content.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(5px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .tab-nav-buttons {
+    .sub-tab-nav-buttons {
       display: flex;
-      justify-content: flex-end;
-      margin-top: 2rem;
+      justify-content: space-between;
+      margin-top: 1.5rem;
       padding-top: 1rem;
       border-top: 1px solid #eee;
     }
 
-    .btn-next-tab {
+    .btn-next-sub-tab,
+    .btn-prev-sub-tab {
       background-color: var(--primary-color);
       color: white;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-prev-sub-tab {
+      background-color: #6c757d;
+    }
+
+    .btn-prev-sub-tab:hover {
+      background-color: #5a6268;
     }
   </style>
 </head>
@@ -529,6 +732,16 @@
           Free Online 8D Problem Solving Tool
         </h1>
         <p class="header-subtitle">A structured methodology for Problem Solving Analysis in 8 Disciplines.</p>
+
+        <!-- BOTONES PRINCIPALES -->
+        <div class="main-action-buttons">
+          <button id="globalLoadExampleBtn" class="btn-example">
+            <i class="fas fa-play-circle"></i> Load Example
+          </button>
+          <button id="globalResetBtn" class="btn-reset">
+            <i class="fas fa-sync-alt"></i> Reset All
+          </button>
+        </div>
       </header>
 
       <!-- Sistema de Tabs -->
@@ -612,137 +825,231 @@
         <div class="calculation-block">
           <div class="calculation-title">8D Problem Solving Form</div>
 
-          <div class="top-button-group">
-            <button type="button" id="loadExampleBtn" class="btn-example"><i class="fas fa-lightbulb"></i> Load
-              Example</button>
-            <button type="button" id="resetBtn" class="btn-reset"><i class="fas fa-undo"></i> Reset Form</button>
-          </div>
+          <!-- Sub-tabs para cada disciplina -->
+          <nav class="sub-tabs-nav">
+            <button class="sub-tab-btn active" onclick="switchSubTab('sub-tab-d0')"><i class="fas fa-users"></i> D0:
+              Team</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d1')"><i class="fas fa-exclamation-triangle"></i>
+              D1: Problem</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d2')"><i class="fas fa-shield-alt"></i> D2:
+              Containment</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d3')"><i class="fas fa-search"></i> D3: Root
+              Cause</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d4')"><i class="fas fa-wrench"></i> D4:
+              Corrective</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d5')"><i class="fas fa-check-circle"></i> D5:
+              Verification</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d6')"><i class="fas fa-cogs"></i> D6:
+              Preventive</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-d7')"><i class="fas fa-trophy"></i> D7:
+              Recognize</button>
+          </nav>
 
           <form id="eightDForm" onsubmit="event.preventDefault();">
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-users"></i> D0: Team Information</div>
-              <label for="teamLeader"><i class="fas fa-user-tie"></i> Team Leader:</label>
-              <input type="text" id="teamLeader" required />
+            <!-- Sub-tab D0: Team Information -->
+            <div id="sub-tab-d0" class="sub-tab-content active">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-users"></i> D0: Team Information</div>
+                <label for="teamLeader"><i class="fas fa-user-tie"></i> Team Leader:</label>
+                <input type="text" id="teamLeader" required />
 
-              <label for="teamMembers"><i class="fas fa-users"></i> Team Members (comma separated):</label>
-              <input type="text" id="teamMembers" required />
+                <label for="teamMembers"><i class="fas fa-users"></i> Team Members (comma separated):</label>
+                <input type="text" id="teamMembers" required />
 
-              <label for="date"><i class="fas fa-calendar-alt"></i> Date:</label>
-              <input type="text" id="date" required />
+                <label for="date"><i class="fas fa-calendar-alt"></i> Date:</label>
+                <input type="text" id="date" required />
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <div></div> <!-- Empty div for spacing -->
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d1')">Next: D1: Problem <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D1: Problem Description</div>
-              <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement:</label>
-              <textarea id="problemStatement" required rows="1"></textarea>
+            <!-- Sub-tab D1: Problem Description -->
+            <div id="sub-tab-d1" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D1: Problem Description</div>
+                <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement:</label>
+                <textarea id="problemStatement" required rows="1"></textarea>
 
-              <label for="issueDescription"><i class="fas fa-bullseye"></i> What is the issue?</label>
-              <textarea id="issueDescription" required rows="1"></textarea>
+                <label for="issueDescription"><i class="fas fa-bullseye"></i> What is the issue?</label>
+                <textarea id="issueDescription" required rows="1"></textarea>
 
-              <label for="location"><i class="fas fa-map-marker-alt"></i> Where does it occur?</label>
-              <textarea id="location" required rows="1"></textarea>
+                <label for="location"><i class="fas fa-map-marker-alt"></i> Where does it occur?</label>
+                <textarea id="location" required rows="1"></textarea>
 
-              <label for="timing"><i class="fas fa-clock"></i> When was it first noticed?</label>
-              <textarea id="timing" required rows="1"></textarea>
+                <label for="timing"><i class="fas fa-clock"></i> When was it first noticed?</label>
+                <textarea id="timing" required rows="1"></textarea>
 
-              <label for="magnitude"><i class="fas fa-ruler-combined"></i> How big is the problem? (Quantity, %
-                affected,
-                etc.)</label>
-              <textarea id="magnitude" required rows="1"></textarea>
+                <label for="magnitude"><i class="fas fa-ruler-combined"></i> How big is the problem? (Quantity, %
+                  affected,
+                  etc.)</label>
+                <textarea id="magnitude" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d0')"><i class="fas fa-arrow-left"></i>
+                  Previous: D0</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d2')">Next: D2: Containment <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-shield-alt"></i> D2: Containment Actions</div>
-              <label for="containmentActions"><i class="fas fa-ban"></i> Immediate containment actions:</label>
-              <textarea id="containmentActions" required rows="1"></textarea>
+            <!-- Sub-tab D2: Containment Actions -->
+            <div id="sub-tab-d2" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-shield-alt"></i> D2: Containment Actions</div>
+                <label for="containmentActions"><i class="fas fa-ban"></i> Immediate containment actions:</label>
+                <textarea id="containmentActions" required rows="1"></textarea>
 
-              <label for="containmentDate"><i class="fas fa-calendar-check"></i> Implementation date:</label>
-              <input type="text" id="containmentDate" required />
+                <label for="containmentDate"><i class="fas fa-calendar-check"></i> Implementation date:</label>
+                <input type="text" id="containmentDate" required />
 
-              <label for="containmentResponsible"><i class="fas fa-user-check"></i> Responsible person:</label>
-              <input type="text" id="containmentResponsible" required />
+                <label for="containmentResponsible"><i class="fas fa-user-check"></i> Responsible person:</label>
+                <input type="text" id="containmentResponsible" required />
 
-              <label for="containmentVerification"><i class="fas fa-check-circle"></i> Effectiveness
-                verification:</label>
-              <textarea id="containmentVerification" required rows="1"></textarea>
+                <label for="containmentVerification"><i class="fas fa-check-circle"></i> Effectiveness
+                  verification:</label>
+                <textarea id="containmentVerification" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d1')"><i class="fas fa-arrow-left"></i>
+                  Previous: D1</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d3')">Next: D3: Root Cause <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-search"></i> D3: Root Cause Analysis</div>
-              <label for="potentialCauses"><i class="fas fa-project-diagram"></i> Potential causes (use 5 Whys,
-                Fishbone,
-                etc.):</label>
-              <textarea id="potentialCauses" required rows="1"></textarea>
+            <!-- Sub-tab D3: Root Cause Analysis -->
+            <div id="sub-tab-d3" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-search"></i> D3: Root Cause Analysis</div>
+                <label for="potentialCauses"><i class="fas fa-project-diagram"></i> Potential causes (use 5 Whys,
+                  Fishbone,
+                  etc.):</label>
+                <textarea id="potentialCauses" required rows="1"></textarea>
 
-              <label for="rootCauseVerification"><i class="fas fa-flask"></i> Root cause verification (tests, data
-                analysis):</label>
-              <textarea id="rootCauseVerification" required rows="1"></textarea>
+                <label for="rootCauseVerification"><i class="fas fa-flask"></i> Root cause verification (tests, data
+                  analysis):</label>
+                <textarea id="rootCauseVerification" required rows="1"></textarea>
 
-              <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s):</label>
-              <textarea id="rootCause" required rows="1"></textarea>
+                <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s):</label>
+                <textarea id="rootCause" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d2')"><i class="fas fa-arrow-left"></i>
+                  Previous: D2</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d4')">Next: D4: Corrective <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-wrench"></i> D4: Corrective Actions</div>
-              <label for="correctiveActions"><i class="fas fa-lightbulb"></i> Proposed corrective actions:</label>
-              <textarea id="correctiveActions" required rows="1"></textarea>
+            <!-- Sub-tab D4: Corrective Actions -->
+            <div id="sub-tab-d4" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-wrench"></i> D4: Corrective Actions</div>
+                <label for="correctiveActions"><i class="fas fa-lightbulb"></i> Proposed corrective actions:</label>
+                <textarea id="correctiveActions" required rows="1"></textarea>
 
-              <label for="correctiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
-              <input type="text" id="correctiveResponsible" required />
+                <label for="correctiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
+                <input type="text" id="correctiveResponsible" required />
 
-              <label for="correctiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
-              <input type="text" id="correctiveDeadline" required />
+                <label for="correctiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
+                <input type="text" id="correctiveDeadline" required />
 
-              <label for="correctiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
-              <textarea id="correctiveVerification" required rows="1"></textarea>
+                <label for="correctiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
+                <textarea id="correctiveVerification" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d3')"><i class="fas fa-arrow-left"></i>
+                  Previous: D3</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d5')">Next: D5: Verification <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-check-circle"></i> D5: Effectiveness Verification</div>
-              <label for="effectivenessData"><i class="fas fa-chart-line"></i> Data showing effectiveness:</label>
-              <textarea id="effectivenessData" required rows="1"></textarea>
+            <!-- Sub-tab D5: Effectiveness Verification -->
+            <div id="sub-tab-d5" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-check-circle"></i> D5: Effectiveness Verification</div>
+                <label for="effectivenessData"><i class="fas fa-chart-line"></i> Data showing effectiveness:</label>
+                <textarea id="effectivenessData" required rows="1"></textarea>
 
-              <label for="verificationDate"><i class="fas fa-calendar-times"></i> Date verified:</label>
-              <input type="text" id="verificationDate" required />
+                <label for="verificationDate"><i class="fas fa-calendar-times"></i> Date verified:</label>
+                <input type="text" id="verificationDate" required />
 
-              <label for="verifiedBy"><i class="fas fa-user-check"></i> Verified by:</label>
-              <input type="text" id="verifiedBy" required />
+                <label for="verifiedBy"><i class="fas fa-user-check"></i> Verified by:</label>
+                <input type="text" id="verifiedBy" required />
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d4')"><i class="fas fa-arrow-left"></i>
+                  Previous: D4</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d6')">Next: D6: Preventive <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-cogs"></i> D6: Preventive Actions</div>
-              <label for="preventiveActions"><i class="fas fa-shield-virus"></i> Actions to prevent recurrence:</label>
-              <textarea id="preventiveActions" required rows="1"></textarea>
+            <!-- Sub-tab D6: Preventive Actions -->
+            <div id="sub-tab-d6" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-cogs"></i> D6: Preventive Actions</div>
+                <label for="preventiveActions"><i class="fas fa-shield-virus"></i> Actions to prevent
+                  recurrence:</label>
+                <textarea id="preventiveActions" required rows="1"></textarea>
 
-              <label for="preventiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
-              <input type="text" id="preventiveResponsible" required />
+                <label for="preventiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
+                <input type="text" id="preventiveResponsible" required />
 
-              <label for="preventiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
-              <input type="text" id="preventiveDeadline" required />
+                <label for="preventiveDeadline"><i class="fas fa-calendar-alt"></i> Implementation deadline:</label>
+                <input type="text" id="preventiveDeadline" required />
 
-              <label for="preventiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
-              <textarea id="preventiveVerification" required rows="1"></textarea>
+                <label for="preventiveVerification"><i class="fas fa-check-square"></i> Verification method:</label>
+                <textarea id="preventiveVerification" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d5')"><i class="fas fa-arrow-left"></i>
+                  Previous: D5</button>
+                <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d7')">Next: D7: Recognize <i
+                    class="fas fa-arrow-right"></i></button>
+              </div>
             </div>
 
-            <div class="discipline-section">
-              <div class="discipline-title"><i class="fas fa-trophy"></i> D7: Congratulate the Team</div>
-              <label for="teamRecognition"><i class="fas fa-award"></i> Team recognition:</label>
-              <textarea id="teamRecognition" required rows="1"></textarea>
+            <!-- Sub-tab D7: Congratulate the Team -->
+            <div id="sub-tab-d7" class="sub-tab-content">
+              <div class="discipline-section">
+                <div class="discipline-title"><i class="fas fa-trophy"></i> D7: Congratulate the Team</div>
+                <label for="teamRecognition"><i class="fas fa-award"></i> Team recognition:</label>
+                <textarea id="teamRecognition" required rows="1"></textarea>
 
-              <label for="lessonsLearned"><i class="fas fa-lightbulb"></i> Lessons learned:</label>
-              <textarea id="lessonsLearned" required rows="1"></textarea>
+                <label for="lessonsLearned"><i class="fas fa-lightbulb"></i> Lessons learned:</label>
+                <textarea id="lessonsLearned" required rows="1"></textarea>
 
-              <label for="knowledgeSharing"><i class="fas fa-share-alt"></i> Knowledge sharing plan:</label>
-              <textarea id="knowledgeSharing" required rows="1"></textarea>
+                <label for="knowledgeSharing"><i class="fas fa-share-alt"></i> Knowledge sharing plan:</label>
+                <textarea id="knowledgeSharing" required rows="1"></textarea>
+              </div>
+
+              <div class="sub-tab-nav-buttons">
+                <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-d6')"><i class="fas fa-arrow-left"></i>
+                  Previous: D6</button>
+                <div></div> <!-- Empty div for spacing -->
+              </div>
             </div>
 
-            <button type="button" id="generateReportBtn"
-              style="background-color: var(--primary-color); width: 100%; padding: 12px; font-size: 1rem;"><i
-                class="fas fa-cogs"></i> Generate Report Summary</button>
+            <!-- ELIMINADO: Botón Generate Report Summary de esta pestaña -->
           </form>
         </div>
 
         <div class="tab-nav-buttons">
+          <button class="btn-next-tab btn-prev" onclick="switchTab('tab-start')"><i class="fas fa-arrow-left"></i>
+            Previous:
+            Info</button>
           <button class="btn-next-tab" onclick="switchTab('tab-report')">Next: Report <i
               class="fas fa-arrow-right"></i></button>
         </div>
@@ -750,19 +1057,50 @@
 
       <!-- Contenido de la pestaña Report -->
       <div id="tab-report" class="tab-content">
-        <div class="calculation-block" id="results">
+        <div class="calculation-block">
           <div class="calculation-title">8D Report Summary</div>
-          <div id="reportSummary"></div>
 
-          <div class="results-actions-group">
-            <button type="button" id="exportBtn" class="btn-export"><i class="fas fa-file-excel"></i> Export Full Report
-              to Excel</button>
-            <button type="button" id="printBtn"><i class="fas fa-print"></i> Print Summary</button>
+          <!-- Botón Generate Report Summary movido aquí -->
+          <div style="text-align: center; margin: 2rem 0;">
+            <button type="button" id="generateReportBtn" style="
+              background-color: var(--primary-color); 
+              color: white;
+              padding: 12px 24px;
+              font-size: 1.1rem;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: inline-flex;
+              align-items: center;
+              gap: 0.5rem;
+              box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            ">
+              <i class="fas fa-cogs"></i> Generate Report Summary
+            </button>
+          </div>
+
+          <div id="results" style="display: none;">
+            <div id="reportSummary"></div>
+
+            <div class="results-actions-group">
+              <button type="button" id="exportBtn" class="btn-export"><i class="fas fa-file-excel"></i> Export Full
+                Report
+                to Excel</button>
+              <button type="button" id="printBtn"><i class="fas fa-print"></i> Print Summary</button>
+            </div>
           </div>
         </div>
 
         <!-- Hidden printable report section -->
         <div id="printable-report" style="display: none;"></div>
+
+        <div class="tab-nav-buttons">
+          <button class="btn-next-tab btn-prev" onclick="switchTab('tab-form')"><i class="fas fa-arrow-left"></i>
+            Previous:
+            Form</button>
+          <div></div> <!-- Empty div for spacing -->
+        </div>
       </div>
     </div>
   </main>
@@ -810,6 +1148,23 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ===== FUNCIÓN PARA CAMBIAR ENTRE SUB-PESTAÑAS =====
+    function switchSubTab(subTabId) {
+      // Quitar clase active de todos los botones y contenidos de sub-tabs
+      document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+
+      // Activar el seleccionado
+      document.getElementById(subTabId).classList.add('active');
+
+      // Activar botón correspondiente (buscando por el onclick)
+      const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Scroll al top suavemente
+      window.scrollTo({ top: document.querySelector('.sub-tabs-nav').offsetTop - 20, behavior: 'smooth' });
+    }
+
     function initializeMenu() {
       // --- JAVASCRIPT PARA LA NAVEGACIÓN ---
       const navToggle = document.getElementById('nav-toggle');
@@ -839,6 +1194,122 @@
       });
     }
 
+    // === FUNCIONES GLOBALES PARA LOS BOTONES PRINCIPALES ===
+    // Función para cargar ejemplo (global)
+    function loadExample() {
+      const today = new Date().toLocaleDateString('en-CA');
+
+      document.getElementById("teamLeader").value = "John Doe";
+      document.getElementById("teamMembers").value = "Jane Smith, Mike Johnson, Sarah Williams, Robert Brown";
+      document.getElementById("date").value = today;
+      document.getElementById("problemStatement").value = "High defect rate in Model X circuit boards during final testing";
+      document.getElementById("issueDescription").value = "Approximately 12% of Model X circuit boards are failing final electrical testing due to short circuits in the power supply section";
+      document.getElementById("location").value = "Production Line 3, Final Testing Station";
+      document.getElementById("timing").value = `First noticed on ${new Date(new Date().setDate(new Date().getDate() - 20)).toLocaleDateString('en-CA')}, defect rate increased over the past 2 weeks`;
+      document.getElementById("magnitude").value = "12% defect rate (120 out of 1000 units), affecting all batches from lot #X2305 onward";
+      document.getElementById("containmentActions").value = "1. Quarantine all affected lots (from lot #X2305 to present).\n2. Implement 100% visual and electrical inspection for the power supply section on all new production.\n3. Stop all shipments of Model X until further notice.";
+      document.getElementById("containmentDate").value = today;
+      document.getElementById("containmentResponsible").value = "Maria Garcia (Quality Manager)";
+      document.getElementById("containmentVerification").value = "Daily audit confirmed that 100% of affected lots are quarantined and no affected product has been shipped since the action was implemented.";
+      document.getElementById("potentialCauses").value = "1. New solder paste formulation.\n2. Reflow oven temperature profile change.\n3. Component supplier change.\n4. Operator training issue.\n\n5 Whys Analysis:\nWhy? -> Short circuits in power section.\nWhy? -> Solder bridges between pins.\nWhy? -> Excessive solder paste application.\nWhy? -> New stencil with larger apertures was used.\nWhy? -> Engineering change was not properly validated before production use.";
+      document.getElementById("rootCauseVerification").value = "1. Process change logs confirm new stencil was introduced on the date the defects started.\n2. Solder paste volume measurements showed a 15% increase compared to the previous stencil.\n3. X-ray inspection of defective units confirmed solder bridges in 90% of cases, consistent with excess solder.";
+      document.getElementById("rootCause").value = "The primary root cause is the implementation of a new stencil design with larger apertures without proper validation. This led to excessive solder paste deposition, causing solder bridges between component pins in the power supply section during the reflow process.";
+      document.getElementById("correctiveActions").value = "1. Immediately revert to the previous, validated stencil design for all Model X production.\n2. Implement a mandatory, cross-functional Engineering Change Control (ECC) procedure for any process or material change.\n3. Update the process validation protocol to include solder paste volume analysis for any stencil changes.\n4. Retrain all process engineers and technicians on the new ECC procedure.";
+      document.getElementById("correctiveResponsible").value = "David Wilson (Process Engineer)";
+      document.getElementById("correctiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 15)).toLocaleDateString('en-CA')}`;
+      document.getElementById("correctiveVerification").value = "1. Monitor final testing defect rate daily for 30 days.\n2. Perform random X-ray sample inspections on 5 units per shift.\n3. Conduct a new Process Capability (Cpk) study on solder paste volume after implementation.";
+      document.getElementById("effectivenessData").value = "After implementing corrective actions:\n- Defect rate dropped from 12% to 0.5% within 3 days and has remained stable.\n- X-ray inspections show no solder bridges in the last 50 sampled units.\n- Process capability (Cpk) for solder paste volume improved to 1.67, indicating a stable and capable process.";
+      document.getElementById("verificationDate").value = `${new Date(new Date().setDate(new Date().getDate() + 20)).toLocaleDateString('en-CA')}`;
+      document.getElementById("verifiedBy").value = "Emma Thompson (Quality Director)";
+      document.getElementById("preventiveActions").value = "1. The new Engineering Change Control (ECC) procedure has been rolled out to all production lines, not just Line 3.\n2. Solder paste volume measurement has been added as a standard in-process check for all product families.\n3. The FMEA for the soldering process has been updated to include 'improper stencil validation' as a potential failure mode with a high RPN, triggering mandatory mitigation actions.\n4. Schedule quarterly process audits to ensure compliance with the new ECC procedure.";
+      document.getElementById("preventiveResponsible").value = "Carlos Rodriguez (Quality Systems Manager)";
+      document.getElementById("preventiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 60)).toLocaleDateString('en-CA')}`;
+      document.getElementById("preventiveVerification").value = "1. Review ECC records monthly to ensure 100% compliance.\n2. Monitor process stability metrics (SPC) for solder paste volume across all lines.\n3. Track defect rates for similar products to ensure the problem does not migrate.";
+      document.getElementById("teamRecognition").value = "The team was publicly recognized in the company-wide monthly meeting for their swift and effective problem-solving. A 'Quality Champion' award was given to the team leader, John Doe.";
+      document.getElementById("lessonsLearned").value = "1. Rigorous validation is non-negotiable for ANY engineering change, regardless of how minor it seems.\n2. Cross-functional review (involving Quality, Production, and Engineering) is essential before implementing any process change.\n3. In-process monitoring systems are key to detecting deviations before they result in a large volume of defective products.";
+      document.getElementById("knowledgeSharing").value = "1. A detailed case study of this 8D was created and added to the company's knowledge base.\n2. The findings were presented to the global engineering team.\n3. The updated FMEA and control plan were shared with other production sites as a best practice.";
+
+      // Update textarea heights
+      const textareas = document.querySelectorAll('textarea');
+      textareas.forEach(textarea => {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+      });
+
+      // Cambiar a la pestaña de Form y al primer subtab
+      switchTab('tab-form');
+      switchSubTab('sub-tab-d0');
+
+      // Mostrar notificación
+      showNotification("Example data loaded successfully!");
+    }
+
+    // Función para resetear herramienta (global)
+    function resetTool() {
+      if (confirm("Are you sure you want to reset all analysis? This will remove all data from the form.")) {
+        document.getElementById("eightDForm").reset();
+
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+          textarea.style.height = 'auto';
+        });
+
+        const resultsDiv = document.getElementById("results");
+        if (resultsDiv) {
+          resultsDiv.style.display = "none";
+        }
+
+        // Cambiar a la pestaña de Form y al primer subtab
+        switchTab('tab-form');
+        switchSubTab('sub-tab-d0');
+
+        // Mostrar notificación
+        showNotification("Analysis reset successfully");
+      }
+    }
+
+    // Función para mostrar notificaciones (como en Kano)
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: var(--performance-color);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+        font-weight: 600;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 500);
+      }, 3000);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
       // --- Auto-growing textarea logic ---
       const textareas = document.querySelectorAll('textarea');
@@ -847,13 +1318,13 @@
         textarea.style.height = (textarea.scrollHeight) + 'px';
       }
       textareas.forEach(textarea => {
-        textarea.addEventListener('input', function () { autoGrow(textarea); }, false);
+        textarea.addEventListener('input', function () {
+          autoGrow(textarea);
+        }, false);
         if (textarea.value) autoGrow(textarea);
       });
 
       // --- Main 8D tool application logic ---
-      const loadExampleBtn = document.getElementById("loadExampleBtn");
-      const resetBtn = document.getElementById("resetBtn");
       const generateReportBtn = document.getElementById("generateReportBtn");
       const exportBtn = document.getElementById("exportBtn");
       const printBtn = document.getElementById("printBtn");
@@ -861,70 +1332,11 @@
       const reportSummaryDiv = document.getElementById("reportSummary");
       const printableReportDiv = document.getElementById("printable-report");
 
-      // MODIFICACIÓN: Cuando se genera el reporte, cambiar a la pestaña de reporte
-      function generateReportSummaryWithTabSwitch() {
-        generateReportSummary();
-        switchTab('tab-report');
-      }
+      // MODIFICACIÓN: Botones globales ya están conectados arriba (funciones globales)
+      document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
+      document.getElementById('globalResetBtn').addEventListener('click', resetTool);
 
-      if (loadExampleBtn) {
-        loadExampleBtn.addEventListener("click", function () {
-          const today = new Date().toLocaleDateString('en-CA');
-
-          document.getElementById("teamLeader").value = "John Doe";
-          document.getElementById("teamMembers").value = "Jane Smith, Mike Johnson, Sarah Williams, Robert Brown";
-          document.getElementById("date").value = today;
-          document.getElementById("problemStatement").value = "High defect rate in Model X circuit boards during final testing";
-          document.getElementById("issueDescription").value = "Approximately 12% of Model X circuit boards are failing final electrical testing due to short circuits in the power supply section";
-          document.getElementById("location").value = "Production Line 3, Final Testing Station";
-          document.getElementById("timing").value = `First noticed on ${new Date(new Date().setDate(new Date().getDate() - 20)).toLocaleDateString('en-CA')}, defect rate increased over the past 2 weeks`;
-          document.getElementById("magnitude").value = "12% defect rate (120 out of 1000 units), affecting all batches from lot #X2305 onward";
-          document.getElementById("containmentActions").value = "1. Quarantine all affected lots (from lot #X2305 to present).\n2. Implement 100% visual and electrical inspection for the power supply section on all new production.\n3. Stop all shipments of Model X until further notice.";
-          document.getElementById("containmentDate").value = today;
-          document.getElementById("containmentResponsible").value = "Maria Garcia (Quality Manager)";
-          document.getElementById("containmentVerification").value = "Daily audit confirmed that 100% of affected lots are quarantined and no affected product has been shipped since the action was implemented.";
-          document.getElementById("potentialCauses").value = "1. New solder paste formulation.\n2. Reflow oven temperature profile change.\n3. Component supplier change.\n4. Operator training issue.\n\n5 Whys Analysis:\nWhy? -> Short circuits in power section.\nWhy? -> Solder bridges between pins.\nWhy? -> Excessive solder paste application.\nWhy? -> New stencil with larger apertures was used.\nWhy? -> Engineering change was not properly validated before production use.";
-          document.getElementById("rootCauseVerification").value = "1. Process change logs confirm new stencil was introduced on the date the defects started.\n2. Solder paste volume measurements showed a 15% increase compared to the previous stencil.\n3. X-ray inspection of defective units confirmed solder bridges in 90% of cases, consistent with excess solder.";
-          document.getElementById("rootCause").value = "The primary root cause is the implementation of a new stencil design with larger apertures without proper validation. This led to excessive solder paste deposition, causing solder bridges between component pins in the power supply section during the reflow process.";
-          document.getElementById("correctiveActions").value = "1. Immediately revert to the previous, validated stencil design for all Model X production.\n2. Implement a mandatory, cross-functional Engineering Change Control (ECC) procedure for any process or material change.\n3. Update the process validation protocol to include solder paste volume analysis for any stencil changes.\n4. Retrain all process engineers and technicians on the new ECC procedure.";
-          document.getElementById("correctiveResponsible").value = "David Wilson (Process Engineer)";
-          document.getElementById("correctiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 15)).toLocaleDateString('en-CA')}`;
-          document.getElementById("correctiveVerification").value = "1. Monitor final testing defect rate daily for 30 days.\n2. Perform random X-ray sample inspections on 5 units per shift.\n3. Conduct a new Process Capability (Cpk) study on solder paste volume after implementation.";
-          document.getElementById("effectivenessData").value = "After implementing corrective actions:\n- Defect rate dropped from 12% to 0.5% within 3 days and has remained stable.\n- X-ray inspections show no solder bridges in the last 50 sampled units.\n- Process capability (Cpk) for solder paste volume improved to 1.67, indicating a stable and capable process.";
-          document.getElementById("verificationDate").value = `${new Date(new Date().setDate(new Date().getDate() + 20)).toLocaleDateString('en-CA')}`;
-          document.getElementById("verifiedBy").value = "Emma Thompson (Quality Director)";
-          document.getElementById("preventiveActions").value = "1. The new Engineering Change Control (ECC) procedure has been rolled out to all production lines, not just Line 3.\n2. Solder paste volume measurement has been added as a standard in-process check for all product families.\n3. The FMEA for the soldering process has been updated to include 'improper stencil validation' as a potential failure mode with a high RPN, triggering mandatory mitigation actions.\n4. Schedule quarterly process audits to ensure compliance with the new ECC procedure.";
-          document.getElementById("preventiveResponsible").value = "Carlos Rodriguez (Quality Systems Manager)";
-          document.getElementById("preventiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 60)).toLocaleDateString('en-CA')}`;
-          document.getElementById("preventiveVerification").value = "1. Review ECC records monthly to ensure 100% compliance.\n2. Monitor process stability metrics (SPC) for solder paste volume across all lines.\n3. Track defect rates for similar products to ensure the problem does not migrate.";
-          document.getElementById("teamRecognition").value = "The team was publicly recognized in the company-wide monthly meeting for their swift and effective problem-solving. A 'Quality Champion' award was given to the team leader, John Doe.";
-          document.getElementById("lessonsLearned").value = "1. Rigorous validation is non-negotiable for ANY engineering change, regardless of how minor it seems.\n2. Cross-functional review (involving Quality, Production, and Engineering) is essential before implementing any process change.\n3. In-process monitoring systems are key to detecting deviations before they result in a large volume of defective products.";
-          document.getElementById("knowledgeSharing").value = "1. A detailed case study of this 8D was created and added to the company's knowledge base.\n2. The findings were presented to the global engineering team.\n3. The updated FMEA and control plan were shared with other production sites as a best practice.";
-
-          // Update textarea heights
-          textareas.forEach(textarea => autoGrow(textarea));
-        });
-      }
-
-      if (resetBtn) {
-        resetBtn.addEventListener("click", function () {
-          document.getElementById("eightDForm").reset();
-          textareas.forEach(textarea => {
-            textarea.style.height = 'auto';
-          });
-          resultsDiv.style.display = "none";
-          // Volver a la pestaña de formulario después de resetear
-          switchTab('tab-form');
-        });
-      }
-
-      function getReportData() {
-        const ids = ["teamLeader", "teamMembers", "date", "problemStatement", "issueDescription", "location", "timing", "magnitude", "containmentActions", "containmentDate", "containmentResponsible", "containmentVerification", "potentialCauses", "rootCauseVerification", "rootCause", "correctiveActions", "correctiveResponsible", "correctiveDeadline", "correctiveVerification", "effectivenessData", "verificationDate", "verifiedBy", "preventiveActions", "preventiveResponsible", "preventiveDeadline", "preventiveVerification", "teamRecognition", "lessonsLearned", "knowledgeSharing"];
-        const data = {};
-        ids.forEach(id => data[id] = document.getElementById(id).value);
-        return data;
-      }
-
+      // MODIFICACIÓN: Cuando se genera el reporte, mostrar los resultados en la misma pestaña
       function generateReportSummary() {
         if (!document.getElementById('eightDForm').checkValidity()) {
           document.getElementById('eightDForm').reportValidity();
@@ -948,6 +1360,8 @@
 
         if (resultsDiv) {
           resultsDiv.style.display = "block";
+          // Hacer scroll hacia los resultados
+          resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // Also update printable report
@@ -955,10 +1369,13 @@
           const headerTitle = document.querySelector('.header h1').innerText;
           printableReportDiv.innerHTML = `<h1>${headerTitle} - Report Summary</h1>${summaryHTML}`;
         }
+
+        // Mostrar notificación
+        showNotification("Report generated successfully!");
       }
 
       if (generateReportBtn) {
-        generateReportBtn.addEventListener("click", generateReportSummaryWithTabSwitch);
+        generateReportBtn.addEventListener("click", generateReportSummary);
       }
 
       if (printBtn) {
@@ -1007,7 +1424,17 @@
           ws['!cols'] = [{ wch: 30 }, { wch: 30 }, { wch: 80 }];
           XLSX.utils.book_append_sheet(wb, ws, "8D Report");
           XLSX.writeFile(wb, "8D_Report_Sigma_Exacta.xlsx");
+
+          // Mostrar notificación
+          showNotification("Report exported to Excel successfully!");
         });
+      }
+
+      function getReportData() {
+        const ids = ["teamLeader", "teamMembers", "date", "problemStatement", "issueDescription", "location", "timing", "magnitude", "containmentActions", "containmentDate", "containmentResponsible", "containmentVerification", "potentialCauses", "rootCauseVerification", "rootCause", "correctiveActions", "correctiveResponsible", "correctiveDeadline", "correctiveVerification", "effectivenessData", "verificationDate", "verifiedBy", "preventiveActions", "preventiveResponsible", "preventiveDeadline", "preventiveVerification", "teamRecognition", "lessonsLearned", "knowledgeSharing"];
+        const data = {};
+        ids.forEach(id => data[id] = document.getElementById(id).value);
+        return data;
       }
     });
   </script>

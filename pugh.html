@@ -22,6 +22,11 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
+        :root {
+            --performance-color: #2ecc71;
+            --danger-color: #c0392b;
+        }
+
         body {
             background-color: #f5f7fa;
             margin: 0;
@@ -52,6 +57,23 @@
             margin-top: 0.5rem;
             margin-bottom: 0.5rem;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tool-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.8rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #27ae60;
         }
 
         .main-header p {
@@ -60,6 +82,52 @@
             font-size: 1.1rem;
             max-width: 700px;
             margin: 0 auto;
+        }
+
+        /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+        .main-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: var(--performance-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #27ad60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #a5281c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
         .container {
@@ -203,6 +271,16 @@
                 padding: 0.75rem 0.5rem;
                 font-size: 0.9rem;
             }
+
+            .main-action-buttons {
+                gap: 0.75rem;
+                margin: 1rem auto;
+            }
+
+            .main-action-buttons button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -213,6 +291,17 @@
             .tab-btn {
                 padding: 0.6rem 0.3rem;
                 font-size: 0.8rem;
+            }
+
+            .main-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .main-action-buttons button {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -548,21 +637,22 @@
     <main class="main-content-wrapper">
         <header class="main-header">
             <h1>
-                <i style="
-                    display: inline-flex; 
-                    align-items: center; 
-                    justify-content: center; 
-                    width: 1.5em; 
-                    height: 1.5em; 
-                    background-color: #27ae60; 
-                    color: white; 
-                    border-radius: 4px; 
-                    font-size: 1.1em;
-                    margin-right: 0.25em;
-                " class="fas fa-project-diagram"></i>
+                <div class="tool-logo" title="Pugh Matrix">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
                 Free Online Pugh Matrix Evaluating Tool (Decision Matrix)
             </h1>
             <p>Systematically evaluate and select the best concept from a list of alternatives.</p>
+
+            <!-- BOTONES PRINCIPALES (AGREGADOS) -->
+            <div class="main-action-buttons">
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-play-circle"></i> Load Example
+                </button>
+                <button id="globalResetBtn" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Reset All
+                </button>
+            </div>
         </header>
 
         <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
@@ -992,6 +1082,143 @@
             }
         }
 
+        // Funciones para los botones globales
+        function loadExampleData() {
+            const criteriaList = document.getElementById('criteria-list');
+            const conceptsList = document.getElementById('concepts-list');
+
+            if (!criteriaList || !conceptsList) return;
+
+            // Cambiar a la pestaña de entrada de datos
+            switchWizardTab('tab-input');
+
+            // Cargar datos de ejemplo
+            const exampleCriteria = ['Manufacturing Cost', 'Weight', 'Durability & Strength', 'Appearance', 'Ease of Assembly'];
+            const exampleConcepts = ['Standard Plastic Case', 'Machined Aluminum Case', '3D Printed Case'];
+
+            // Limpiar listas existentes
+            criteriaList.innerHTML = '';
+            conceptsList.innerHTML = '';
+
+            // Agregar criterios de ejemplo
+            exampleCriteria.forEach((criterion, i) => {
+                const div = document.createElement('div');
+                div.className = 'input-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="Criterion ${i + 1}" value="${criterion}" required>
+                    <button type="button" class="action-button remove-btn" title="Remove Item">-</button>
+                `;
+                criteriaList.appendChild(div);
+            });
+
+            // Agregar conceptos de ejemplo
+            exampleConcepts.forEach((concept, i) => {
+                const div = document.createElement('div');
+                div.className = 'input-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="Concept ${i + 1}" value="${concept}" required>
+                    <button type="button" class="action-button remove-btn" title="Remove Item">-</button>
+                `;
+                conceptsList.appendChild(div);
+            });
+
+            // Actualizar datos
+            validateDataInput();
+            saveInputData();
+
+            // Mostrar notificación
+            showNotification("Example data loaded successfully!");
+        }
+
+        function resetAllData() {
+            if (confirm('Are you sure you want to reset all data? This will clear all criteria, concepts, and the matrix.')) {
+                const criteriaList = document.getElementById('criteria-list');
+                const conceptsList = document.getElementById('concepts-list');
+
+                if (criteriaList) criteriaList.innerHTML = '';
+                if (conceptsList) conceptsList.innerHTML = '';
+
+                criteriaData = [];
+                conceptsData = [];
+                matrixGenerated = false;
+                matrixData = null;
+
+                validateDataInput();
+                saveInputData();
+
+                // Limpiar matriz
+                const matrixContainer = document.getElementById('matrix-container');
+                if (matrixContainer) {
+                    matrixContainer.innerHTML = `<p style="color: #7f8c8d; text-align: center; padding: 2rem;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Click "Generate Matrix" to create your Pugh Matrix.
+                    </p>`;
+                }
+
+                // Limpiar resultados
+                const resultsContainer = document.getElementById('results-matrix-container');
+                if (resultsContainer) {
+                    resultsContainer.innerHTML = `<p style="color: #7f8c8d; text-align: center; padding: 2rem;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Complete the matrix in the "Data Input & Matrix" tab to see results here.
+                    </p>`;
+                }
+
+                const resultsSummary = document.getElementById('results-summary');
+                if (resultsSummary) resultsSummary.style.display = 'none';
+
+                // Deshabilitar botón de exportación
+                const exportBtn = document.getElementById('exportBtn');
+                if (exportBtn) exportBtn.disabled = true;
+
+                // Cambiar a pestaña de entrada
+                switchWizardTab('tab-input');
+
+                showNotification("All data has been reset.");
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: var(--performance-color);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                font-weight: 600;
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
         // ============================================
         // CÓDIGO PRINCIPAL CUANDO EL DOM ESTÁ LISTO
         // ============================================
@@ -1015,6 +1242,18 @@
                 .catch(error => {
                     console.error('Error loading header:', error);
                 });
+
+            // Configurar botones globales
+            const globalLoadExampleBtn = document.getElementById('globalLoadExampleBtn');
+            const globalResetBtn = document.getElementById('globalResetBtn');
+
+            if (globalLoadExampleBtn) {
+                globalLoadExampleBtn.addEventListener('click', loadExampleData);
+            }
+
+            if (globalResetBtn) {
+                globalResetBtn.addEventListener('click', resetAllData);
+            }
 
             // LÓGICA DE LA MATRIZ DE PUGH
             const criteriaList = document.getElementById('criteria-list');
@@ -1098,28 +1337,7 @@
             }
 
             if (clearDataBtn) {
-                clearDataBtn.addEventListener('click', () => {
-                    if (confirm('Are you sure you want to clear all data?')) {
-                        if (criteriaList) criteriaList.innerHTML = '';
-                        if (conceptsList) conceptsList.innerHTML = '';
-                        criteriaData = [];
-                        conceptsData = [];
-                        matrixGenerated = false;
-                        matrixData = null;
-                        validateDataInput();
-                        saveInputData();
-                        const goToResultsBtn = document.getElementById('go-to-results-btn');
-                        if (goToResultsBtn) goToResultsBtn.disabled = true;
-                        // Limpiar también la matriz si existe
-                        const matrixContainer = document.getElementById('matrix-container');
-                        if (matrixContainer) {
-                            matrixContainer.innerHTML = `<p style="color: #7f8c8d; text-align: center; padding: 2rem;">
-                                <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                                Click "Generate Matrix" to create your Pugh Matrix.
-                            </p>`;
-                        }
-                    }
-                });
+                clearDataBtn.addEventListener('click', resetAllData);
             }
 
             if (generateMatrixBtn) {

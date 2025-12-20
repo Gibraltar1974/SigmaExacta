@@ -102,6 +102,52 @@
             margin: 0 auto;
         }
 
+        /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+        .main-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
         .tabs-nav {
             display: flex;
@@ -216,6 +262,16 @@
                 padding: 0.75rem 0.5rem;
                 font-size: 0.9rem;
             }
+
+            .main-action-buttons {
+                gap: 0.75rem;
+                margin: 1rem auto;
+            }
+
+            .main-action-buttons button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -226,6 +282,17 @@
             .tab-btn {
                 padding: 0.6rem 0.3rem;
                 font-size: 0.8rem;
+            }
+
+            .main-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .main-action-buttons button {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -671,6 +738,16 @@
             <p>Diagnose your organization's maturity level using a holistic performance framework.</p>
         </header>
 
+        <!-- BOTONES PRINCIPALES -->
+        <div class="main-action-buttons">
+            <button id="globalLoadExampleBtn" class="btn-example">
+                <i class="fas fa-bolt"></i> Load Example Data
+            </button>
+            <button id="globalResetBtn" class="btn-reset">
+                <i class="fas fa-undo"></i> Reset All Scores
+            </button>
+        </div>
+
         <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
             <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
@@ -762,7 +839,8 @@
                         <p>Click on each criterion below to expand and evaluate your organization's performance. Use the
                             sliders to assign scores (0-100%) for each sub-criterion.</p>
 
-                        <div style="text-align:center; margin-bottom: 1.5rem;">
+                        <!-- Botones ocultos para mantener compatibilidad con el código existente -->
+                        <div style="display: none;">
                             <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-bolt"></i>
                                 Load Example
                                 Data</button>
@@ -907,7 +985,7 @@
 
         // Función para inicializar la navegación
         function initNavigation() {
-            const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAdX0AAHV9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/ABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/wAADf8AAA1/AAANfwAADX8AAA1/AAANfwAADf8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
+            const hoverSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAZGF0YQQAAAAAAAC/AAABAAAA//8AAnIseAABAHwAAU5/AABXfgAAS34AAEd+AABJfgAATX4AAFV+AABXfgAAVH4AAFN+AABTfgAAS34AAE9+AABVfgAAUX4AAEN+AABAfQAAP30AAD59AAA/fQAAQ30AAEd9AABLfQAAUn0AAGB9AABsfQAAe30AAH59AACAfQAAf30AAHx9AAB1fQAAdX0AAHV9AAB1fQAAdX0AAHJ9AABxPQAAeD4AAHc/AAB2PwAAcj8AAHI/AABxPwAAcT8AAHE/AABwPwAAcD8AAHA/AABvPwAAcD8AAHA/AABvPwAAaz0AAG4/AABsPwAAZj8AAGQ/AABiPwAAZD8AAGI/ABhPwAAYT8AAGI/AABiPwAAYT8AAGM/AABlPwAAaD8AAGs/AABuPwAAbj8AAG0/AABsPwAAbD8AAGs/AABoPwAAZD8AAGM/AABkPwAAZz8AAGg/AABrPwAAbT8AAHA/AABzPwAAcz8AAHM/AABzPwAAcT8AAHE/AABxPwAAcD8AAHA/AABwPwAAbj8AAGs/AABpPwAAaD8AAGc/AABhPwAAYD8AAF8/AABePwAAXT8AAFw/AABbPwAAWj8AAFk/AABYPwAAWj8AAFk/AABZPwAAWT8AAFk/AABYPwAAVT8AAFI/AABPPwAATD8AAEk/AABGPwAAQz8AAEA/AAA+PwAAO/wAADf8AAA1/AAANfwAADX8AAA1/AAANfwAADf8AAA2/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA4/AAAOPwAADj8AAA4/AAA4/AAAOPwAADj8AAA4/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AAAN/wAADf8AAA3/AA');
             hoverSound.preload = 'auto';
             let audioUnlocked = false;
             function unlockAudio() {
@@ -1064,6 +1142,14 @@
             });
         }
         function setupEventListeners() {
+            // Usar los nuevos botones globales
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
+            document.getElementById('globalResetBtn').addEventListener('click', resetAll);
+
+            // Mantener compatibilidad con los botones existentes (ocultos)
+            document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
+            document.getElementById('resetBtn').addEventListener('click', resetAll);
+
             document.getElementById('assessmentAccordion').addEventListener('click', e => {
                 const header = e.target.closest('.accordion-header');
                 if (header) {
@@ -1072,8 +1158,6 @@
                     body.style.display = body.style.display === 'block' ? 'none' : 'block';
                 }
             });
-            document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
-            document.getElementById('resetBtn').addEventListener('click', resetAll);
             document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
             document.getElementById('exportJpgBtn').addEventListener('click', exportToJpg);
         }

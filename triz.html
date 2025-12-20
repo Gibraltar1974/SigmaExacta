@@ -119,10 +119,6 @@
                 border-top: 1px solid #eee;
             }
 
-            .navigation .nav-menu .nav-link {
-                color: #333;
-            }
-
             .navigation .nav-menu.show-menu {
                 display: flex;
             }
@@ -203,7 +199,9 @@
 
         .main-content-wrapper {
             padding: 1.25rem;
-            max-width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .header {
@@ -231,6 +229,52 @@
             color: #4a5568;
             margin: 0;
             font-weight: 400;
+        }
+
+        /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+        .main-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #27ad60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
         .content-block {
@@ -485,6 +529,8 @@
         footer {
             padding: 2rem 1.25rem;
             text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .disclaimer-note {
@@ -492,9 +538,11 @@
             padding: 0 1rem;
             font-size: .8rem;
             color: #777;
-            max-width: 800px;
+            max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
+            text-align: left;
+            line-height: 1.6;
         }
 
         /* ===== MEJORAS PARA MÓVILES EN RESULTADOS ===== */
@@ -1422,7 +1470,7 @@
             stroke-width: 1;
         }
 
-        /* ===== NUEVOS ESTILOS PARA TABS (WIZARD) ===== */
+        /* ===== NUEVA ESTRUCTURA DE TABS ===== */
         .tabs-nav {
             display: flex;
             background-color: #f1f5f9;
@@ -1451,23 +1499,8 @@
             gap: 0.5rem;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
-        }
-
-        /* === MODIFICACIÓN: Media Query para distribuir pestañas en escritorio === */
-        @media (min-width: 992px) {
-            .tabs-nav {
-                overflow-x: hidden;
-                /* Elimina scroll en escritorio */
-            }
-
-            .tab-btn {
-                flex: 1;
-                /* Ocupar todo el ancho disponible */
-                justify-content: center;
-                /* Centrar contenido */
-                padding: 1rem 0.5rem;
-                /* Reducir padding lateral para ajustar mejor */
-            }
+            flex: 1;
+            justify-content: center;
         }
 
         .tab-btn:hover {
@@ -1512,9 +1545,77 @@
             }
         }
 
+        /* ===== SUB-TOOLS NAVIGATION ===== */
+        .subtools-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 0 1rem;
+        }
+
+        .subtool-btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #e1e5e9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .subtool-btn:hover {
+            border-color: var(--secondary-color);
+            background-color: #e3f2fd;
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtool-btn.active {
+            border-color: var(--secondary-color);
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .subtool-btn i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .subtools-nav {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.3rem;
+            }
+
+            .subtool-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.7rem 1rem;
+            }
+        }
+
+        /* ===== TOOL CONTENT CONTAINER ===== */
+        .tool-content-container {
+            display: none;
+        }
+
+        .tool-content-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
         .tab-nav-buttons {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 1px solid #eee;
@@ -1527,6 +1628,10 @@
             align-items: center;
             gap: 0.5rem;
         }
+
+        .btn-next-tab:hover {
+            background-color: #1a252f;
+        }
     </style>
 </head>
 
@@ -1538,40 +1643,34 @@
             <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Free Online Inventive Problem
                 Solving (TRIZ) Tool</h1>
             <p class="header-subtitle">A data-driven method for systematic innovation and invention.</p>
+
+            <!-- BOTONES PRINCIPALES -->
+            <div class="main-action-buttons">
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-play-circle"></i> Load Example
+                </button>
+                <button id="globalResetBtn" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Reset All
+                </button>
+            </div>
         </header>
 
+        <!-- PESTAÑAS PRINCIPALES -->
         <nav class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start &
-                Info</button>
-            <button class="tab-btn" onclick="switchTab('tab-ldst')"><i class="fas fa-project-diagram"></i> 1. LDST
-                Analysis</button>
-            <button class="tab-btn" onclick="switchTab('tab-define')"><i class="fas fa-tasks"></i> 2. Define
-                Problem</button>
-            <button class="tab-btn" onclick="switchTab('tab-ifr')"><i class="fas fa-rocket"></i> 3. Formulate
-                IFR</button>
-            <button class="tab-btn" onclick="switchTab('tab-contradiction')"><i class="fas fa-exchange-alt"></i> 4.
-                Contradiction</button>
-            <button class="tab-btn" onclick="switchTab('tab-sufield')"><i class="fas fa-atom"></i> 5. Su-Field
-                Analysis</button>
-            <button class="tab-btn" onclick="switchTab('tab-solve')"><i class="fas fa-calculator"></i> 6. Solve &
-                Report</button>
+            <button class="tab-btn active" onclick="switchMainTab('tab-start')">
+                <i class="fas fa-info-circle"></i> Start & Info
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('tab-tools')">
+                <i class="fas fa-tools"></i> TRIZ Tools
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('tab-solve')">
+                <i class="fas fa-calculator"></i> Solve & Report
+            </button>
         </nav>
 
+        <!-- CONTENIDO PESTAÑA 1: START & INFO -->
         <div id="tab-start" class="tab-content active">
-
             <div class="content-block">
-                <div
-                    style="text-align: center; margin-bottom: 20px; padding: 20px; background: #f1f5f9; border-radius: 8px;">
-                    <h3 style="margin-top:0;">Start Here</h3>
-                    <p>Load a pre-defined example to populate all tabs instantly, or reset to start fresh.</p>
-                    <button class="btn-success" onclick="loadExampleAndGo()"><i class="fas fa-magic"></i> Load Next
-                        Example & Fill All Tabs</button>
-                    <button class="btn-warning" onclick="resetTool()"><i class="fas fa-sync-alt"></i> Reset
-                        Tool</button>
-                    <p style="margin-top:10px;"><strong>Status:</strong> <span id="current-example-description">No
-                            example loaded.</span></p>
-                </div>
-
                 <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
                 <div class="instructions-box">
                     <ul>
@@ -1579,7 +1678,8 @@
                             Problem Solving," is a systematic, data-driven methodology for innovation developed by
                             <strong>Genrich Altshuller</strong> and his colleagues. Unlike traditional brainstorming
                             approaches, TRIZ is based on analyzing patterns in millions of patents to identify universal
-                            principles of invention that transcend specific industries and technologies.</li>
+                            principles of invention that transcend specific industries and technologies.
+                        </li>
                         <li>The core premise of TRIZ is that most inventive problems contain inherent
                             <strong>contradictions</strong> - situations where improving one parameter of a system
                             inevitably worsens another. By systematically identifying and resolving these contradictions
@@ -1654,7 +1754,8 @@
                             one parameter of a system causes another parameter to worsen. For example, making a car
                             stronger typically makes it heavier. These contradictions are resolved using the
                             <strong>Contradiction Matrix</strong> and <strong>40 Inventive Principles</strong>, which
-                            provide specific guidance on how to overcome the trade-off.</li>
+                            provide specific guidance on how to overcome the trade-off.
+                        </li>
                         <li><strong>40 Inventive Principles</strong><br>The 40 Principles represent the most common
                             patterns of invention found across all technical fields, from Segmentation and Asymmetry to
                             Phase Transitions and Composite Materials. Each principle provides concrete strategies for
@@ -1668,7 +1769,8 @@
                             parameter requires opposite states or properties. For example, a coffee cup needs to be hot
                             to keep coffee warm but cool to hold comfortably. These are resolved using
                             <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System
-                            Level) that allow the contradictory requirements to be satisfied simultaneously.</li>
+                            Level) that allow the contradictory requirements to be satisfied simultaneously.
+                        </li>
                         <li><strong>Su-Field Analysis</strong><br>Developed from Altshuller's work on substance-field
                             modeling, Su-Field analysis represents any technical system as interactions between three
                             fundamental elements:
@@ -1692,12 +1794,14 @@
                 <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li><strong>Load Example:</strong> Click "Load Next Example" above to populate all tabs with
+                        <li><strong>Load Example:</strong> Click "Load Example" above to populate all tools with
                             sample data.</li>
-                        <li><strong>Step 1 - LDST Analysis:</strong> Select a fundamental law of technical system
-                            development to get strategic guidance.</li>
-                        <li><strong>Step 2 - Define Problem:</strong> Describe the system, its primary useful function,
+                        <li><strong>Go to TRIZ Tools:</strong> Navigate to the "TRIZ Tools" tab to access all
+                            problem-solving tools.</li>
+                        <li><strong>Step 1 - Define Problem:</strong> Describe the system, its primary useful function,
                             and main drawback in simple, clear terms.</li>
+                        <li><strong>Step 2 - LDST Analysis:</strong> Select a fundamental law of technical system
+                            development to get strategic guidance.</li>
                         <li><strong>Step 3 - Formulate Ideal Final Result (IFR):</strong> Define the ideal solution
                             where the system performs its function without the drawback, costs, or harmful effects.</li>
                         <li><strong>Step 4 - Identify the Core Contradiction:</strong> Select whether it's a technical
@@ -1713,11 +1817,11 @@
                     </ul>
 
                     <div class="infographic-flow">
-                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>1. LDST
-                                Analysis</strong><span>Apply fundamental laws of technical systems</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-tasks"></i><strong>2. Define
+                        <div class="flow-step"><i class="fas fa-tasks"></i><strong>1. Define
                                 Problem</strong><span>Analyze the system and its drawback</span></div>
+                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>2. LDST
+                                Analysis</strong><span>Apply fundamental laws of technical systems</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                         <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. Formulate
                                 IFR</strong><span>Define the Ideal Final Result</span></div>
@@ -1733,325 +1837,360 @@
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-ldst')">Next Step: LDST <i
+                <button class="btn-next-tab" onclick="switchMainTab('tab-tools')">Go to TRIZ Tools <i
                         class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <div id="tab-ldst" class="tab-content">
-            <div class="solver-step" id="step-ldst">
-                <h3><i class="fas fa-project-diagram"></i> Step 1: Laws of Development of Technical Systems (LDST)</h3>
-                <p>Select the life cycle stage of your system to get the most relevant development laws according to
-                    Altshuller's classical framework.</p>
-
-                <div class="form-group">
-                    <label for="lifecycle-stage">System Life Cycle Stage:</label>
-                    <select id="lifecycle-stage" onchange="updateLDSTRecommendations()">
-                        <option value="birth">Birth (Introduction Phase)</option>
-                        <option value="growth">Growth Phase</option>
-                        <option value="maturity">Maturity Phase</option>
-                        <option value="decline">Decline Phase</option>
-                        <option value="transition">Transition to New System</option>
-                    </select>
-                </div>
-
-                <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide All
-                        LDST Laws</button>
-                </div>
-
-                <div id="laws-table-container" class="hidden">
-                    <div class="content-block">
-                        <h4><i class="fas fa-graduation-cap"></i> Laws of Development of Technical Systems (LDST)</h4>
-                        <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
-                            Source: Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution
-                            of Inventive Problems.
-                        </p>
-                        <div style="overflow-x: auto;">
-                            <table class="trends-table">
-                                <thead>
-                                    <tr>
-                                        <th>Law #</th>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Key Principles</th>
-                                        <th>Examples</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr id="law-1">
-                                        <td><i class="fas fa-cube"></i> 1</td>
-                                        <td>System Integrity</td>
-                                        <td>System must have all essential parts and minimal connections</td>
-                                        <td>Completeness, Conductivity, Coordination</td>
-                                        <td>Combustion engine, writing system</td>
-                                    </tr>
-                                    <tr id="law-2">
-                                        <td><i class="fas fa-bolt"></i> 2</td>
-                                        <td>Energy Conductivity</td>
-                                        <td>Energy must flow unobstructed through all parts</td>
-                                        <td>Eliminate intermediaries, Increase conductivity</td>
-                                        <td>Copper wires, gears, fiber optics</td>
-                                    </tr>
-                                    <tr id="law-3">
-                                        <td><i class="fas fa-music"></i> 3</td>
-                                        <td>Harmony</td>
-                                        <td>Parts coordinated in rhythm, frequency and structure</td>
-                                        <td>Synchronization, Resonance</td>
-                                        <td>4-stroke engine, multi-core processors</td>
-                                    </tr>
-                                    <tr id="law-4" class="recommended-trend">
-                                        <td><i class="fas fa-rocket"></i> 4</td>
-                                        <td>Ideality</td>
-                                        <td>More functions with fewer resources and complexity</td>
-                                        <td>Self-service, Multiple functions</td>
-                                        <td>Smartphones, electric vehicles</td>
-                                    </tr>
-                                    <tr id="law-5">
-                                        <td><i class="fas fa-tachometer-alt"></i> 5</td>
-                                        <td>Uneven Development</td>
-                                        <td>Parts develop at different rates creating contradictions</td>
-                                        <td>Identify lagging subsystems</td>
-                                        <td>Processors vs memory, batteries vs screens</td>
-                                    </tr>
-                                    <tr id="law-6">
-                                        <td><i class="fas fa-expand-arrows-alt"></i> 6</td>
-                                        <td>Transition to Supersystem</td>
-                                        <td>Systems integrate into larger supersystems</td>
-                                        <td>Integration, Expansion</td>
-                                        <td>Internet, integrated transport</td>
-                                    </tr>
-                                    <tr id="law-7">
-                                        <td><i class="fas fa-atom"></i> 7</td>
-                                        <td>Transition to Micro-Level</td>
-                                        <td>Development moves to microstructural levels and fields</td>
-                                        <td>Fragmentation, Field utilization</td>
-                                        <td>Transistors → nanochips, tools → nanobots</td>
-                                    </tr>
-                                    <tr id="law-8">
-                                        <td><i class="fas fa-magnet"></i> 8</td>
-                                        <td>Increased S-Field Complexity</td>
-                                        <td>Evolution toward greater field and substance complexity</td>
-                                        <td>Add new fields, Combine fields</td>
-                                        <td>Mechanical → electrical → quantum</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        <!-- CONTENIDO PESTAÑA 2: TRIZ TOOLS -->
+        <div id="tab-tools" class="tab-content">
+            <!-- NAVEGACIÓN DE SUB-HERRAMIENTAS -->
+            <div class="subtools-nav">
+                <button class="subtool-btn active" onclick="switchTool('tool-define')">
+                    <i class="fas fa-tasks"></i> 2. Define Problem
+                </button>
+                <button class="subtool-btn" onclick="switchTool('tool-ldst')">
+                    <i class="fas fa-project-diagram"></i> 1. LDST Analysis
+                </button>
+                <button class="subtool-btn" onclick="switchTool('tool-ifr')">
+                    <i class="fas fa-rocket"></i> 3. Formulate IFR
+                </button>
+                <button class="subtool-btn" onclick="switchTool('tool-contradiction')">
+                    <i class="fas fa-exchange-alt"></i> 4. Contradiction
+                </button>
+                <button class="subtool-btn" onclick="switchTool('tool-sufield')">
+                    <i class="fas fa-atom"></i> 5. Su-Field Analysis
+                </button>
             </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-define')">Next Step: Define Problem <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <div id="tab-define" class="tab-content">
-            <div class="solver-step" id="step-1">
-                <h3><i class="fas fa-tasks"></i> Step 2: Define the Problem</h3>
-                <div class="form-group"><label for="problem-system">System/Object to improve?</label><input type="text"
-                        id="problem-system" placeholder="e.g., A coffee mug"></div>
-                <div class="form-group"><label for="problem-function">Primary useful function?</label><input type="text"
-                        id="problem-function" placeholder="e.g., To hold hot liquid"></div>
-                <div class="form-group"><label for="problem-harm">Main drawback?</label><input type="text"
-                        id="problem-harm" placeholder="e.g., Burns the hand"></div>
-            </div>
-
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-ifr')">Next Step: Formulate IFR <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <div id="tab-ifr" class="tab-content">
-            <div class="solver-step" id="step-2">
-                <h3><i class="fas fa-rocket"></i> Step 3: Formulate Ideal Final Result (IFR)</h3>
-                <div class="form-group"><label for="ifr-formulation">The system <strong>itself</strong> performs the
-                        function without the drawback:</label><textarea id="ifr-formulation"
-                        placeholder="e.g., The coffee mug itself holds hot liquid and protects the hand."></textarea>
-                </div>
-            </div>
-
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-contradiction')">Next Step: Contradiction <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <div id="tab-contradiction" class="tab-content">
-            <div class="solver-step" id="step-3">
-                <h3><i class="fas fa-exchange-alt"></i> Step 4: Identify the Core Contradiction</h3>
-
-                <div class="form-group radio-group">
-                    <label><input type="radio" name="contradiction-type" value="technical"
-                            onchange="toggleContradictionForms()"> <strong>Technical Contradiction:</strong> Improving
-                        one feature makes another worse.</label>
-                    <label><input type="radio" name="contradiction-type" value="physical"
-                            onchange="toggleContradictionForms()"> <strong>Physical Contradiction:</strong> One feature
-                        needs opposite properties.</label>
-                </div>
-
-                <div id="matrix-version-selector-container" class="matrix-version-selector hidden">
+            <!-- CONTENIDO HERRAMIENTA 1: DEFINE PROBLEM -->
+            <div id="tool-define" class="tool-content-container active">
+                <div class="solver-step">
+                    <h3><i class="fas fa-tasks"></i> 2. Define the Problem</h3>
                     <div class="form-group">
-                        <label for="matrix-version">TRIZ Matrix Version:</label>
-                        <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
-                            <label>
-                                <input type="radio" name="matrix-version" value="classic" checked
-                                    onchange="changeMatrixVersion()">
-                                <strong>Classic Matrix</strong> (39 parameters, 40 principles)
-                            </label>
-                            <label>
-                                <input type="radio" name="matrix-version" value="2003" onchange="changeMatrixVersion()">
-                                <strong>2003 Matrix</strong> (48 parameters, 40 principles)
-                            </label>
-                        </div>
-                        <div class="matrix-version-info" id="matrix-version-info">
-                            Using Classic TRIZ Matrix - The original 39x39 matrix. Altshuller, G. S. (1950-1980). 40
-                            Principles: TRIZ Keys to Technical Innovation o The Innovation Algorithm: TRIZ, Systematic
-                            Innovation and Technical Creativity.
-                        </div>
+                        <label for="problem-system">System/Object to improve?</label>
+                        <input type="text" id="problem-system" placeholder="e.g., A coffee mug">
                     </div>
-                </div>
-
-                <div id="technical-solver-block" class="hidden">
-                    <div class="matrix-toggle">
-                        <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i> Show/Hide
-                            Contradiction Matrix</button>
-                    </div>
-
-                    <div id="dropdown-view">
-                        <div class="form-group"><label for="improving-feature">Feature to Improve:</label><select
-                                id="improving-feature"></select></div>
-                        <div class="form-group"><label for="worsening-feature">Feature that Worsens:</label><select
-                                id="worsening-feature"></select></div>
-                    </div>
-
-                    <div id="matrix-view" class="hidden">
-                        <p><strong>Click on a cell to select improving (row) and worsening (column) features. Hover your
-                                cursor over the cell to see more information</strong></p>
-                        <div class="matrix-container">
-                            <table class="matrix-table" id="contradiction-matrix">
-                            </table>
-                        </div>
-                        <div style="margin-top: 10px;">
-                            <strong>Selected:</strong>
-                            <span id="selected-improving">None</span> →
-                            <span id="selected-worsening">None</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="physical-solver-block" class="hidden">
                     <div class="form-group">
-                        <label for="conflicting-parameter">Parameter with conflicting requirements?</label>
-                        <input type="text" id="conflicting-parameter" placeholder="e.g., Temperature, Size, Visibility">
+                        <label for="problem-function">Primary useful function?</label>
+                        <input type="text" id="problem-function" placeholder="e.g., To hold hot liquid">
+                    </div>
+                    <div class="form-group">
+                        <label for="problem-harm">Main drawback?</label>
+                        <input type="text" id="problem-harm" placeholder="e.g., Burns the hand">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO HERRAMIENTA 2: LDST ANALYSIS -->
+            <div id="tool-ldst" class="tool-content-container">
+                <div class="solver-step">
+                    <h3><i class="fas fa-project-diagram"></i> 1. Laws of Development of Technical Systems (LDST)</h3>
+                    <p>Select the life cycle stage of your system to get the most relevant development laws according to
+                        Altshuller's classical framework.</p>
+
+                    <div class="form-group">
+                        <label for="lifecycle-stage">System Life Cycle Stage:</label>
+                        <select id="lifecycle-stage" onchange="updateLDSTRecommendations();">
+                            <option value="birth">Birth (Introduction Phase)</option>
+                            <option value="growth">Growth Phase</option>
+                            <option value="maturity">Maturity Phase</option>
+                            <option value="decline">Decline Phase</option>
+                            <option value="transition">Transition to New System</option>
+                        </select>
                     </div>
 
-                    <div class="solver-step" id="physical-step-1">
-                        <h4><i class="fas fa-cogs"></i> Step 1: Analyze Functions & Define OZ/OT</h4>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn-success" onclick="toggleLawsTable()"><i class="fas fa-table"></i> Show/Hide
+                            All
+                            LDST Laws</button>
+                    </div>
+
+                    <div id="laws-table-container" class="hidden">
+                        <div class="content-block">
+                            <h4><i class="fas fa-graduation-cap"></i> Laws of Development of Technical Systems (LDST)
+                            </h4>
+                            <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
+                                Source: Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the
+                                Solution
+                                of Inventive Problems.
+                            </p>
+                            <div style="overflow-x: auto;">
+                                <table class="trends-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Law #</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Key Principles</th>
+                                            <th>Examples</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="law-1">
+                                            <td><i class="fas fa-cube"></i> 1</td>
+                                            <td>System Integrity</td>
+                                            <td>System must have all essential parts and minimal connections</td>
+                                            <td>Completeness, Conductivity, Coordination</td>
+                                            <td>Combustion engine, writing system</td>
+                                        </tr>
+                                        <tr id="law-2">
+                                            <td><i class="fas fa-bolt"></i> 2</td>
+                                            <td>Energy Conductivity</td>
+                                            <td>Energy must flow unobstructed through all parts</td>
+                                            <td>Eliminate intermediaries, Increase conductivity</td>
+                                            <td>Copper wires, gears, fiber optics</td>
+                                        </tr>
+                                        <tr id="law-3">
+                                            <td><i class="fas fa-music"></i> 3</td>
+                                            <td>Harmony</td>
+                                            <td>Parts coordinated in rhythm, frequency and structure</td>
+                                            <td>Synchronization, Resonance</td>
+                                            <td>4-stroke engine, multi-core processors</td>
+                                        </tr>
+                                        <tr id="law-4" class="recommended-trend">
+                                            <td><i class="fas fa-rocket"></i> 4</td>
+                                            <td>Ideality</td>
+                                            <td>More functions with fewer resources and complexity</td>
+                                            <td>Self-service, Multiple functions</td>
+                                            <td>Smartphones, electric vehicles</td>
+                                        </tr>
+                                        <tr id="law-5">
+                                            <td><i class="fas fa-tachometer-alt"></i> 5</td>
+                                            <td>Uneven Development</td>
+                                            <td>Parts develop at different rates creating contradictions</td>
+                                            <td>Identify lagging subsystems</td>
+                                            <td>Processors vs memory, batteries vs screens</td>
+                                        </tr>
+                                        <tr id="law-6">
+                                            <td><i class="fas fa-expand-arrows-alt"></i> 6</td>
+                                            <td>Transition to Supersystem</td>
+                                            <td>Systems integrate into larger supersystems</td>
+                                            <td>Integration, Expansion</td>
+                                            <td>Internet, integrated transport</td>
+                                        </tr>
+                                        <tr id="law-7">
+                                            <td><i class="fas fa-atom"></i> 7</td>
+                                            <td>Transition to Micro-Level</td>
+                                            <td>Development moves to microstructural levels and fields</td>
+                                            <td>Fragmentation, Field utilization</td>
+                                            <td>Transistors → nanochips, tools → nanobots</td>
+                                        </tr>
+                                        <tr id="law-8">
+                                            <td><i class="fas fa-magnet"></i> 8</td>
+                                            <td>Increased S-Field Complexity</td>
+                                            <td>Evolution toward greater field and substance complexity</td>
+                                            <td>Add new fields, Combine fields</td>
+                                            <td>Mechanical → electrical → quantum</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO HERRAMIENTA 3: FORMULATE IFR -->
+            <div id="tool-ifr" class="tool-content-container">
+                <div class="solver-step">
+                    <h3><i class="fas fa-rocket"></i> 3. Formulate Ideal Final Result (IFR)</h3>
+                    <div class="form-group">
+                        <label for="ifr-formulation">The system <strong>itself</strong> performs the
+                            function without the drawback:</label>
+                        <textarea id="ifr-formulation"
+                            placeholder="e.g., The coffee mug itself holds hot liquid and protects the hand."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO HERRAMIENTA 4: CONTRADICTION -->
+            <div id="tool-contradiction" class="tool-content-container">
+                <div class="solver-step">
+                    <h3><i class="fas fa-exchange-alt"></i> 4. Identify the Core Contradiction</h3>
+
+                    <div class="form-group radio-group">
+                        <label><input type="radio" name="contradiction-type" value="technical"
+                                onchange="toggleContradictionForms();"> <strong>Technical
+                                Contradiction:</strong> Improving
+                            one feature makes another worse.</label>
+                        <label><input type="radio" name="contradiction-type" value="physical"
+                                onchange="toggleContradictionForms();"> <strong>Physical
+                                Contradiction:</strong> One feature
+                            needs opposite properties.</label>
+                    </div>
+
+                    <div id="matrix-version-selector-container" class="matrix-version-selector hidden">
                         <div class="form-group">
-                            <label>Define Operational Zones/Times (OZ/OT):</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="oz-definition" value="spatial"
-                                        onchange="updatePhysicalStrategy()"> Spatial Zones (different locations)</label>
-                                <label><input type="radio" name="oz-definition" value="temporal"
-                                        onchange="updatePhysicalStrategy()"> Temporal Zones (different times)</label>
-                                <label><input type="radio" name="oz-definition" value="conditional"
-                                        onchange="updatePhysicalStrategy()"> Conditional Zones (different
-                                    conditions)</label>
-                                <label><input type="radio" name="oz-definition" value="system"
-                                        onchange="updatePhysicalStrategy()"> System Levels (different system
-                                    hierarchies)</label>
+                            <label for="matrix-version">TRIZ Matrix Version:</label>
+                            <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label>
+                                    <input type="radio" name="matrix-version" value="classic" checked
+                                        onchange="changeMatrixVersion();">
+                                    <strong>Classic Matrix</strong> (39 parameters, 40 principles)
+                                </label>
+                                <label>
+                                    <input type="radio" name="matrix-version" value="2003"
+                                        onchange="changeMatrixVersion();">
+                                    <strong>2003 Matrix</strong> (48 parameters, 40 principles)
+                                </label>
+                            </div>
+                            <div class="matrix-version-info" id="matrix-version-info">
+                                Using Classic TRIZ Matrix - The original 39x39 matrix. Altshuller, G. S. (1950-1980). 40
+                                Principles: TRIZ Keys to Technical Innovation o The Innovation Algorithm: TRIZ,
+                                Systematic
+                                Innovation and Technical Creativity.
                             </div>
                         </div>
                     </div>
 
-                    <div class="solver-step hidden" id="physical-step-2">
-                        <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Interaction</h4>
-                        <div class="form-group">
-                            <label>Do the Operational Zones/Times intersect?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="oz-intersection" value="intersect"
-                                        onchange="updatePhysicalStrategy()"> Yes, OZ/OT INTERSECT (Use Satisfy
-                                    strategy)</label>
-                                <label><input type="radio" name="oz-intersection" value="no-intersect"
-                                        onchange="updatePhysicalStrategy()"> No, OZ/OT do NOT intersect (Use Bypass
-                                    strategy)</label>
+                    <div id="technical-solver-block" class="hidden">
+                        <div class="matrix-toggle">
+                            <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i>
+                                Show/Hide
+                                Contradiction Matrix</button>
+                        </div>
+
+                        <div id="dropdown-view">
+                            <div class="form-group"><label for="improving-feature">Feature to Improve:</label><select
+                                    id="improving-feature"></select></div>
+                            <div class="form-group"><label for="worsening-feature">Feature that Worsens:</label><select
+                                    id="worsening-feature"></select></div>
+                        </div>
+
+                        <div id="matrix-view" class="hidden">
+                            <p><strong>Click on a cell to select improving (row) and worsening (column) features. Hover
+                                    your
+                                    cursor over the cell to see more information</strong></p>
+                            <div class="matrix-container">
+                                <table class="matrix-table" id="contradiction-matrix">
+                                </table>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>Selected:</strong>
+                                <span id="selected-improving">None</span> →
+                                <span id="selected-worsening">None</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="solver-step hidden" id="physical-step-3">
-                        <h4><i class="fas fa-object-group"></i> Step 3: Choose Separation Method</h4>
+                    <div id="physical-solver-block" class="hidden">
                         <div class="form-group">
-                            <label>Select separation method:</label>
-                            <div class="radio-group" id="separation-methods">
+                            <label for="conflicting-parameter">Parameter with conflicting requirements?</label>
+                            <input type="text" id="conflicting-parameter"
+                                placeholder="e.g., Temperature, Size, Visibility">
+                        </div>
+
+                        <div class="solver-step" id="physical-step-1">
+                            <h4><i class="fas fa-cogs"></i> Step 1: Analyze Functions & Define OZ/OT</h4>
+                            <div class="form-group">
+                                <label>Define Operational Zones/Times (OZ/OT):</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="oz-definition" value="spatial"
+                                            onchange="updatePhysicalStrategy();"> Spatial Zones (different
+                                        locations)</label>
+                                    <label><input type="radio" name="oz-definition" value="temporal"
+                                            onchange="updatePhysicalStrategy();"> Temporal Zones
+                                        (different times)</label>
+                                    <label><input type="radio" name="oz-definition" value="conditional"
+                                            onchange="updatePhysicalStrategy();"> Conditional Zones
+                                        (different
+                                        conditions)</label>
+                                    <label><input type="radio" name="oz-definition" value="system"
+                                            onchange="updatePhysicalStrategy();"> System Levels (different
+                                        system
+                                        hierarchies)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="solver-step hidden" id="physical-step-2">
+                            <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Interaction</h4>
+                            <div class="form-group">
+                                <label>Do the Operational Zones/Times intersect?</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="oz-intersection" value="intersect"
+                                            onchange="updatePhysicalStrategy();"> Yes, OZ/OT INTERSECT
+                                        (Use Satisfy
+                                        strategy)</label>
+                                    <label><input type="radio" name="oz-intersection" value="no-intersect"
+                                            onchange="updatePhysicalStrategy();"> No, OZ/OT do NOT
+                                        intersect (Use Bypass
+                                        strategy)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="solver-step hidden" id="physical-step-3">
+                            <h4><i class="fas fa-object-group"></i> Step 3: Choose Separation Method</h4>
+                            <div class="form-group">
+                                <label>Select separation method:</label>
+                                <div class="radio-group" id="separation-methods">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="principles-toggle-container"
+                            style="display: none; text-align: center; margin: 1rem 0;">
+                            <button type="button" class="btn-success" onclick="togglePrinciplesTable()">
+                                <i class="fas fa-table"></i> Show/Hide Physical Contradiction Principles
+                            </button>
+                        </div>
+
+                        <div class="hidden" id="principles-table-container">
+                            <div class="content-block">
+                                <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles
+                                    Reference
+                                </h4>
+                                <div id="principles-table-content">
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="form-group" id="principles-toggle-container"
-                        style="display: none; text-align: center; margin: 1rem 0;">
-                        <button type="button" class="btn-success" onclick="togglePrinciplesTable()">
-                            <i class="fas fa-table"></i> Show/Hide Physical Contradiction Principles
+            <!-- CONTENIDO HERRAMIENTA 5: SU-FIELD ANALYSIS -->
+            <div id="tool-sufield" class="tool-content-container">
+                <div class="solver-step">
+                    <h3><i class="fas fa-atom"></i> 5. Su-Field Analysis</h3>
+                    <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system can
+                        have
+                        its own problem type.</p>
+
+                    <div id="sufield-systems-container">
+                    </div>
+
+                    <div class="form-group" style="margin-top: 10px;">
+                        <button type="button" class="btn-success" onclick="addSuFieldSystem()"><i
+                                class="fas fa-plus"></i>
+                            Add Su-Field System</button>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px; text-align: center;">
+                        <button type="button" class="btn-success" onclick="toggleSolutionsMatrix()">
+                            <i class="fas fa-table"></i> Show/Hide 76 Standard Solutions Matrix
                         </button>
                     </div>
 
-                    <div class="hidden" id="principles-table-container">
-                        <div class="content-block">
-                            <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles Reference
-                            </h4>
-                            <div id="principles-table-content">
-                            </div>
+                    <div id="solutions-matrix-container" class="hidden">
+                        <div id="solutions-matrix-content">
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-sufield')">Next Step: Su-Field Analysis <i
+                <button class="btn-next-tab" onclick="switchMainTab('tab-solve')">Go to Solve & Report <i
                         class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <div id="tab-sufield" class="tab-content">
-            <div class="solver-step" id="step-4">
-                <h3><i class="fas fa-atom"></i> Step 5: Su-Field Analysis</h3>
-                <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system can have
-                    its own problem type.</p>
-
-                <div id="sufield-systems-container">
-                </div>
-
-                <div class="form-group" style="margin-top: 10px;">
-                    <button type="button" class="btn-success" onclick="addSuFieldSystem()"><i class="fas fa-plus"></i>
-                        Add Su-Field System</button>
-                </div>
-
-                <div class="form-group" style="margin-top: 20px; text-align: center;">
-                    <button type="button" class="btn-success" onclick="toggleSolutionsMatrix()">
-                        <i class="fas fa-table"></i> Show/Hide 76 Standard Solutions Matrix
-                    </button>
-                </div>
-
-                <div id="solutions-matrix-container" class="hidden">
-                    <div id="solutions-matrix-content">
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-solve')">Next Step: Solve & Report <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
+        <!-- CONTENIDO PESTAÑA 3: SOLVE & REPORT -->
         <div id="tab-solve" class="tab-content">
             <div class="solver-step" style="text-align: center; padding: 30px;">
                 <h2 style="color: var(--secondary-color);">Ready to Generate Solution?</h2>
-                <p>This will gather all data from LDST, Definition, Contradictions, and Su-Field analysis.</p>
+                <p>This will gather all data from Define, LDST, IFR, Contradictions, and Su-Field analysis.</p>
                 <button id="solve-button" onclick="solveProblem()"
                     style="max-width: 400px; margin: 0 auto; display: inline-block;">
                     <i class="fas fa-calculator"></i> Solve Problem & Generate Report
@@ -2059,6 +2198,11 @@
             </div>
 
             <div id="results-container" class="hidden"></div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-next-tab" onclick="switchMainTab('tab-start')">Back to Start & Info <i
+                        class="fas fa-arrow-left"></i></button>
+            </div>
         </div>
 
     </main>
@@ -2084,45 +2228,94 @@
     <script src="trizconstants.js"></script>
 
     <script>
-        // ===== LOGICA DE PESTAÑAS =====
-        function switchTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos
+        // ===== VARIABLES GLOBALES =====
+        let problemData = {};
+        let exampleIndex = 0;
+        let improvingFeatureIndex = null;
+        let worseningFeatureIndex = null;
+        let currentMatrixVersion = 'classic';
+        let currentRecommendedLaws = ['law4'];
+
+        // Variables para el flujo de contradicciones físicas
+        let physicalStrategyFlow = {
+            step1: false,
+            step2: false,
+            step3: false,
+            selectedStrategy: null,
+            selectedMethod: null
+        };
+
+        // ===== FUNCIONES DE NAVEGACIÓN =====
+        function switchMainTab(tabId) {
+            // Quitar clase active de todos los botones y contenidos principales
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // Activar el seleccionado
+            // Activar el contenido seleccionado
             document.getElementById(tabId).classList.add('active');
 
-            // Activar botón correspondiente (buscando por el onclick)
-            const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchMainTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
+
+            // Si estamos en la pestaña de herramientas, asegurar que se muestra la primera herramienta
+            if (tabId === 'tab-tools') {
+                switchTool('tool-define');
+            }
 
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ===== MODIFICACION LOAD EXAMPLE PARA POPULAR TODO DE UNA VEZ =====
-        function loadExampleAndGo() {
-            loadExample(); // Llama a la función original que rellena los campos
-            // Opcional: Si quieres llevar al usuario a la primera pestaña de trabajo
-            // switchTab('tab-define'); 
+        function switchTool(toolId) {
+            // Quitar clase active de todos los botones de subtools
+            document.querySelectorAll('.subtool-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Quitar clase active de todos los contenidos de herramientas
+            document.querySelectorAll('.tool-content-container').forEach(content => content.classList.remove('active'));
+
+            // Activar el botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchTool('${toolId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Activar el contenido correspondiente
+            const toolContent = document.getElementById(toolId);
+            if (toolContent) {
+                toolContent.classList.add('active');
+            }
+
+            // Scroll al top de la herramienta
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ===== CARGAR HEADER DINÁMICAMENTE (MANTENIDO) =====
+        // ===== CARGAR HEADER DINÁMICAMENTE =====
         document.addEventListener('DOMContentLoaded', function () {
             // Cargar el header desde header.html
             fetch('header.html')
                 .then(response => response.text())
                 .then(data => {
-                    // Insertar el contenido del header en el contenedor
                     document.getElementById('header-container').innerHTML = data;
-
-                    // Inicializar el menú después de cargar el header
                     initNavigationMenu();
                 })
                 .catch(error => console.error('Error loading header:', error));
 
             init(); // Inicializar tool
+
+            // Asignar eventos a los botones globales
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExampleAndGo);
+            document.getElementById('globalResetBtn').addEventListener('click', resetTool);
+
+            // Verificar que todos los archivos JS se hayan cargado correctamente
+            setTimeout(() => {
+                console.log('TRIZ files loaded:');
+                console.log('- trizcontradiction.js:', typeof trizContradictionMatrix !== 'undefined');
+                console.log('- trizcontradiction2003.js:', typeof trizContradictionMatrix2003 !== 'undefined');
+                console.log('- physicalcontradictionprinciples1993.js:', typeof physicalContradictionPrinciples !== 'undefined');
+                console.log('- 76principlestriz.js:', typeof trizStandardSolutions !== 'undefined');
+                console.log('- sufield-diagrams.js:', typeof updateSuFieldDiagram !== 'undefined');
+                console.log('- ldst.js:', typeof lifecycleToLdstMapping !== 'undefined');
+                console.log('- trizconstants.js:', typeof examples !== 'undefined');
+            }, 500);
         });
 
         // ===== INICIALIZAR EL MENÚ DE NAVEGACIÓN =====
@@ -2157,25 +2350,143 @@
             }
         }
 
-        // ===== GESTIÓN DE VERSIONES DE MATRIZ TRIZ =====
-        let currentMatrixVersion = 'classic'; // 'classic' or '2003'
+        // ===== FUNCIONES DE INICIALIZACIÓN =====
+        function init() {
+            populateDropdowns();
+            createContradictionMatrix();
 
+            // Inicializar LDST
+            setTimeout(() => {
+                updateLDSTRecommendations();
+            }, 100);
+
+            // Agregar sistema Su-Field con un pequeño delay para asegurar que el DOM esté listo
+            setTimeout(() => {
+                addSuFieldSystem();
+            }, 150);
+        }
+
+        // ===== FUNCIONES DE EJEMPLO Y RESET =====
+        function loadExampleAndGo() {
+            loadExample();
+        }
+
+        function resetTool() {
+            problemData = {};
+            document.querySelectorAll('input[type="text"], textarea, select').forEach(el => {
+                if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+            });
+            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+
+            // Reset specific elements
+            document.getElementById('technical-solver-block').classList.add('hidden');
+            document.getElementById('physical-solver-block').classList.add('hidden');
+            document.getElementById('matrix-version-selector-container').classList.add('hidden');
+            document.getElementById('lifecycle-stage').value = 'birth';
+            document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
+
+            // Reset physical strategy flow
+            physicalStrategyFlow = {
+                step1: false,
+                step2: false,
+                step3: false,
+                selectedStrategy: null,
+                selectedMethod: null
+            };
+
+            // Reset physical steps UI
+            document.getElementById('physical-step-2').classList.add('hidden');
+            document.getElementById('physical-step-3').classList.add('hidden');
+            document.getElementById('principles-toggle-container').style.display = 'none';
+            document.getElementById('principles-table-container').classList.add('hidden');
+            document.getElementById('separation-methods').innerHTML = '';
+
+            clearResults();
+
+            // Reset matrix selection
+            improvingFeatureIndex = null;
+            worseningFeatureIndex = null;
+            document.getElementById('selected-improving').textContent = 'None';
+            document.getElementById('selected-worsening').textContent = 'None';
+            updateMatrixDisplay();
+
+            // Reset Su-Field systems
+            document.getElementById('sufield-systems-container').innerHTML = '';
+
+            // Usar setTimeout para agregar el sistema después de limpiar
+            setTimeout(() => {
+                addSuFieldSystem();
+            }, 50);
+
+            // Reset solutions matrix
+            document.getElementById('solutions-matrix-container').classList.add('hidden');
+
+            // Reset LDST
+            updateLDSTRecommendations();
+
+            // Volver a la pestaña inicial
+            switchMainTab('tab-start');
+        }
+
+        // ===== FUNCIONES DE LDST =====
+        function updateLDSTRecommendations() {
+            const lifecycleStage = document.getElementById('lifecycle-stage').value;
+            currentRecommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
+            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
+
+            let recommendationElement = document.getElementById('ldst-recommendation-info');
+            if (!recommendationElement) {
+                const lifecycleSelect = document.getElementById('lifecycle-stage');
+                recommendationElement = document.createElement('div');
+                recommendationElement.id = 'ldst-recommendation-info';
+                recommendationElement.style.marginTop = '10px';
+                recommendationElement.style.fontStyle = 'italic';
+                recommendationElement.style.color = '#666';
+                lifecycleSelect.parentNode.appendChild(recommendationElement);
+            }
+
+            recommendationElement.textContent =
+                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
+
+            updateLawsTable();
+        }
+
+        function updateLawsTable() {
+            for (let i = 1; i <= 8; i++) {
+                const lawElement = document.getElementById(`law-${i}`);
+                if (lawElement) {
+                    lawElement.classList.remove('recommended-trend');
+                }
+            }
+
+            currentRecommendedLaws.forEach(lawId => {
+                const lawNumber = lawId.replace('law', '');
+                const selectedLawElement = document.getElementById(`law-${lawNumber}`);
+                if (selectedLawElement) {
+                    selectedLawElement.classList.add('recommended-trend');
+                }
+            });
+        }
+
+        function toggleLawsTable() {
+            const container = document.getElementById('laws-table-container');
+            container.classList.toggle('hidden');
+        }
+
+        // ===== FUNCIONES DE MATRIZ TRIZ =====
         function changeMatrixVersion() {
             const selectedVersion = document.querySelector('input[name="matrix-version"]:checked').value;
             currentMatrixVersion = selectedVersion;
 
-            // Actualizar la interfaz según la versión seleccionada
             populateDropdowns();
             createContradictionMatrix();
 
-            // Limpiar selecciones anteriores
             improvingFeatureIndex = null;
             worseningFeatureIndex = null;
             updateMatrixDisplay();
             updateSelectedFeatures();
             clearResults();
 
-            // Mostrar información sobre la versión seleccionada
             const versionInfo = document.getElementById('matrix-version-info');
             if (currentMatrixVersion === 'classic') {
                 versionInfo.textContent = "Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles. Altshuller, G. S. (1950-1980). 40 Principles: TRIZ Keys to Technical Innovation o The Innovation Algorithm: TRIZ, Systematic Innovation and Technical Creativity.";
@@ -2184,7 +2495,6 @@
             }
         }
 
-        // CORRECCIÓN: Usar la matriz correcta según la versión seleccionada
         function getCurrentMatrix() {
             return currentMatrixVersion === 'classic' ? trizContradictionMatrix : trizContradictionMatrix2003;
         }
@@ -2197,7 +2507,6 @@
             return getCurrentMatrix().principles;
         }
 
-        // MODIFICAR: Función para obtener principios según la matriz seleccionada
         function getContradictionPrinciples(improvingFeature, worseningFeature) {
             const matrix = getCurrentMatrix().matrix;
             if (matrix[improvingFeature] && matrix[improvingFeature][worseningFeature]) {
@@ -2222,24 +2531,7 @@
             return "Unknown Feature";
         }
 
-        let problemData = {};
-        let exampleIndex = 0;
-        let improvingFeatureIndex = null;
-        let worseningFeatureIndex = null;
-
-        // Variables para el flujo de contradicciones físicas
-        let physicalStrategyFlow = {
-            step1: false,
-            step2: false,
-            step3: false,
-            selectedStrategy: null,
-            selectedMethod: null
-        };
-
-        // Variables para LDST
-        let currentRecommendedLaws = ['law4']; // Por defecto
-
-        // MODIFICACIÓN: Función centralizada para limpiar resultados
+        // ===== FUNCIONES DE INTERFAZ =====
         function clearResults() {
             const resultsDiv = document.getElementById('results-container');
             if (resultsDiv && !resultsDiv.classList.contains('hidden')) {
@@ -2248,124 +2540,7 @@
             }
         }
 
-        function init() {
-            populateDropdowns();
-            createContradictionMatrix();
-            addSuFieldSystem(); // Add one empty Su-Field system by default
-
-            // MODIFICACIÓN: Inicializar LDST después de que se carguen todos los scripts
-            setTimeout(() => {
-                updateLDSTRecommendations();
-            }, 100);
-        }
-
-        // ===== FUNCIÓN ACTUALIZADA PARA RECOMENDACIONES LDST =====
-        function updateLDSTRecommendations() {
-            const lifecycleStage = document.getElementById('lifecycle-stage').value;
-            currentRecommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
-            const recommendationText = lifecycleRecommendations[lifecycleStage] || "";
-
-            // Buscar o crear el elemento de recomendación
-            let recommendationElement = document.getElementById('ldst-recommendation-info');
-            if (!recommendationElement) {
-                // Si no existe, crearlo y añadirlo después del selector
-                const lifecycleSelect = document.getElementById('lifecycle-stage');
-                recommendationElement = document.createElement('div');
-                recommendationElement.id = 'ldst-recommendation-info';
-                recommendationElement.style.marginTop = '10px';
-                recommendationElement.style.fontStyle = 'italic';
-                recommendationElement.style.color = '#666';
-                lifecycleSelect.parentNode.appendChild(recommendationElement);
-            }
-
-            recommendationElement.textContent =
-                `Selected for ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}: ${recommendationText}`;
-
-            updateLawsTable();
-        }
-
-        function updateLawsTable() {
-            // Reset todas las filas - SOLO si existen
-            for (let i = 1; i <= 8; i++) {
-                const lawElement = document.getElementById(`law-${i}`);
-                if (lawElement) {
-                    lawElement.classList.remove('recommended-trend');
-                }
-            }
-
-            // Resaltar las leyes recomendadas - SOLO si existen
-            currentRecommendedLaws.forEach(lawId => {
-                const lawNumber = lawId.replace('law', '');
-                const selectedLawElement = document.getElementById(`law-${lawNumber}`);
-                if (selectedLawElement) {
-                    selectedLawElement.classList.add('recommended-trend');
-                }
-            });
-        }
-
-        function toggleLawsTable() {
-            const container = document.getElementById('laws-table-container');
-            container.classList.toggle('hidden');
-        }
-
-        function resetTool() {
-            problemData = {};
-            document.querySelectorAll('input[type="text"], textarea, select').forEach(el => {
-                if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
-            });
-            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
-            document.getElementById('technical-solver-block').classList.add('hidden');
-            document.getElementById('physical-solver-block').classList.add('hidden');
-            document.getElementById('matrix-version-selector-container').classList.add('hidden');
-
-            // Resetear el selector de fase de vida
-            document.getElementById('lifecycle-stage').value = 'birth';
-
-            // Restablecer la versión de matriz a clásica
-            document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
-            changeMatrixVersion();
-
-            // Reset physical strategy flow
-            physicalStrategyFlow = {
-                step1: false,
-                step2: false,
-                step3: false,
-                selectedStrategy: null,
-                selectedMethod: null
-            };
-
-            // Reset physical steps UI
-            document.getElementById('physical-step-2').classList.add('hidden');
-            document.getElementById('physical-step-3').classList.add('hidden');
-            document.getElementById('principles-toggle-container').style.display = 'none';
-            document.getElementById('principles-table-container').classList.add('hidden');
-            document.getElementById('separation-methods').innerHTML = '';
-
-            clearResults(); // MODIFICACIÓN: Usar la función centralizada
-
-            // Reset matrix selection
-            improvingFeatureIndex = null;
-            worseningFeatureIndex = null;
-            document.getElementById('selected-improving').textContent = 'None';
-            document.getElementById('selected-worsening').textContent = 'None';
-            updateMatrixDisplay();
-
-            // Reset Su-Field systems
-            document.getElementById('sufield-systems-container').innerHTML = '';
-            addSuFieldSystem(); // Add one empty system
-
-            // Reset solutions matrix
-            document.getElementById('solutions-matrix-container').classList.add('hidden');
-
-            // Reset LDST
-            updateLDSTRecommendations();
-
-            // Volver a la pestaña inicial
-            switchTab('tab-start');
-        }
-
         function loadExample() {
-            // Limpiar solo los campos necesarios
             clearResults();
             document.getElementById('problem-system').value = '';
             document.getElementById('problem-function').value = '';
@@ -2373,13 +2548,11 @@
             document.getElementById('ifr-formulation').value = '';
             document.getElementById('conflicting-parameter').value = '';
 
-            // Limpiar selecciones de contradicciones físicas
             const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
             physicalRadios.forEach(radio => {
                 radio.checked = false;
             });
 
-            // Reset physical strategy flow
             physicalStrategyFlow = {
                 step1: false,
                 step2: false,
@@ -2388,20 +2561,15 @@
                 selectedMethod: null
             };
 
-            // Ocultar pasos físicos
             document.getElementById('physical-step-2').classList.add('hidden');
             document.getElementById('physical-step-3').classList.add('hidden');
 
             const currentExample = examples[exampleIndex];
 
-            // Cargar valores del ejemplo actual
             document.getElementById('problem-system').value = currentExample.system;
             document.getElementById('problem-function').value = currentExample.function;
             document.getElementById('problem-harm').value = currentExample.harm;
             document.getElementById('ifr-formulation').value = currentExample.ifr;
-
-            // Actualizar descripción del ejemplo
-            document.getElementById('current-example-description').textContent = currentExample.description;
 
             const radio = document.querySelector(`input[name="contradiction-type"][value="${currentExample.contradictionType}"]`);
             if (radio) {
@@ -2420,7 +2588,6 @@
             } else {
                 document.getElementById('conflicting-parameter').value = currentExample.conflictingParameter;
 
-                // Step 1: OZ Definition
                 if (currentExample.ozDefinition) {
                     const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.ozDefinition}"]`);
                     if (ozDefinitionRadio) {
@@ -2429,7 +2596,6 @@
                     }
                 }
 
-                // Step 2: OZ Intersection
                 if (currentExample.ozIntersection) {
                     const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.ozIntersection}"]`);
                     if (ozIntersectionRadio) {
@@ -2438,63 +2604,59 @@
                     }
                 }
 
-                // Step 3: Separation Method - CORRECCIÓN AQUÍ
                 if (currentExample.separationMethod) {
                     const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.separationMethod}"]`);
                     if (separationMethodRadio) {
                         separationMethodRadio.checked = true;
-                        // ANTES: updatePhysicalStrategy(); (Esto borraba la selección)
-                        // AHORA: handleSeparationMethodChange(); (Esto guarda la selección sin borrar)
                         handleSeparationMethodChange();
                     }
                 }
             }
 
-            // Load Su-Field systems
             if (currentExample.sufield && currentExample.sufield.systems) {
                 document.getElementById('sufield-systems-container').innerHTML = '';
+
+                // Agregar sistemas con delays escalonados
                 currentExample.sufield.systems.forEach((system, index) => {
                     addSuFieldSystem();
-                    const systemContainer = document.getElementById('sufield-systems-container').lastElementChild;
-                    systemContainer.querySelector('.sufield-object').value = system.object || '';
-                    systemContainer.querySelector('.sufield-tool').value = system.tool || '';
-                    systemContainer.querySelector('.sufield-field').value = system.field || '';
-                    systemContainer.querySelector('.sufield-type').value = system.type || 'insufficient';
 
-                    updateSuFieldDiagram(systemContainer);
+                    setTimeout(() => {
+                        const systemContainer = document.getElementById('sufield-systems-container').lastElementChild;
+                        if (systemContainer) {
+                            systemContainer.querySelector('.sufield-object').value = system.object || '';
+                            systemContainer.querySelector('.sufield-tool').value = system.tool || '';
+                            systemContainer.querySelector('.sufield-field').value = system.field || '';
+                            systemContainer.querySelector('.sufield-type').value = system.type || 'insufficient';
+
+                            updateSuFieldDiagram(systemContainer);
+                        }
+                    }, 50 * (index + 1)); // Delay escalonado para cada sistema
                 });
             }
 
-            // Set LDST lifecycle stage
             if (currentExample.lifecycleStage) {
                 document.getElementById('lifecycle-stage').value = currentExample.lifecycleStage;
                 updateLDSTRecommendations();
             }
 
-            // Incrementar el índice para el próximo ejemplo
             exampleIndex = (exampleIndex + 1) % examples.length;
         }
 
-        // MODIFICACIÓN: Función actualizada para mostrar/ocultar elementos según el tipo de contradicción
         function toggleContradictionForms() {
-            clearResults(); // MODIFICACIÓN: Limpiar al cambiar de tipo
+            clearResults();
             const type = document.querySelector('input[name="contradiction-type"]:checked')?.value;
 
-            // Mostrar/ocultar elementos según el tipo de contradicción
             if (type === 'technical') {
-                // Mostrar elementos para contradicciones técnicas
                 document.getElementById('matrix-version-selector-container').classList.remove('hidden');
                 document.getElementById('technical-solver-block').classList.remove('hidden');
                 document.getElementById('physical-solver-block').classList.add('hidden');
                 document.getElementById('principles-toggle-container').style.display = 'none';
             } else if (type === 'physical') {
-                // Mostrar elementos para contradicciones físicas
                 document.getElementById('matrix-version-selector-container').classList.add('hidden');
                 document.getElementById('technical-solver-block').classList.add('hidden');
                 document.getElementById('physical-solver-block').classList.remove('hidden');
                 document.getElementById('principles-toggle-container').style.display = 'block';
 
-                // Reset physical strategy flow when switching to physical
                 physicalStrategyFlow = {
                     step1: false,
                     step2: false,
@@ -2503,13 +2665,11 @@
                     selectedMethod: null
                 };
 
-                // Reset physical steps UI
                 document.getElementById('physical-step-2').classList.add('hidden');
                 document.getElementById('physical-step-3').classList.add('hidden');
                 document.getElementById('principles-table-container').classList.add('hidden');
                 document.getElementById('separation-methods').innerHTML = '';
 
-                // Reset all radio buttons in physical section
                 const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
                 physicalRadios.forEach(radio => {
                     radio.checked = false;
@@ -2517,34 +2677,27 @@
             }
         }
 
-        // CORRECCIÓN: Función mejorada para actualizar estrategias físicas
         function updatePhysicalStrategy() {
             clearResults();
 
-            // Paso 1: Verificar definición de OZ/OT
             const ozDefinition = document.querySelector('input[name="oz-definition"]:checked');
             if (ozDefinition) {
                 document.getElementById('physical-step-2').classList.remove('hidden');
                 physicalStrategyFlow.step1 = true;
 
-                // Paso 2: Verificar intersección OZ/OT
                 const ozIntersection = document.querySelector('input[name="oz-intersection"]:checked');
                 if (ozIntersection) {
                     document.getElementById('physical-step-3').classList.remove('hidden');
                     physicalStrategyFlow.step2 = true;
 
-                    // Determinar estrategia general
                     if (ozIntersection.value === 'intersect') {
                         physicalStrategyFlow.selectedStrategy = 'satisfy';
                     } else {
                         physicalStrategyFlow.selectedStrategy = 'bypass';
                     }
 
-                    // Generar opciones de separación según la estrategia
                     generateSeparationMethods(physicalStrategyFlow.selectedStrategy);
 
-                    // Paso 3: Verificar método de separación seleccionado - CORREGIDO
-                    // Usar un setTimeout para asegurar que los radio buttons se hayan renderizado
                     setTimeout(() => {
                         const separationMethod = document.querySelector('input[name="separation-method"]:checked');
                         if (separationMethod) {
@@ -2567,57 +2720,46 @@
                 physicalStrategyFlow.step3 = false;
             }
 
-            // CORRECCIÓN: El botón de la tabla de principios está SIEMPRE visible en contradicciones físicas
             document.getElementById('principles-toggle-container').style.display = 'block';
         }
 
-        // CORRECCIÓN: Generar métodos de separación según la estrategia
         function generateSeparationMethods(strategy) {
             const container = document.getElementById('separation-methods');
-
-            // Limpiar contenedor
             container.innerHTML = '';
 
             let methodsHTML = '';
 
             if (strategy === 'satisfy') {
-                // Estrategia Satisfy - Métodos de separación
                 methodsHTML = `
-                <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange()"> Separation in Space</label>
-                <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange()"> Separation in Time</label>
-                <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange()"> Separation in Relation</label>
-                <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange()"> Separation in System Level</label>
-                <label><input type="radio" name="separation-method" value="satisfyContradictoryDemands" onchange="handleSeparationMethodChange()"> Satisfy Contradictory Demands</label>
+                <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange();"> Separation in Space</label>
+                <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange();"> Separation in Time</label>
+                <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange();"> Separation in Relation</label>
+                <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange();"> Separation in System Level</label>
+                <label><input type="radio" name="separation-method" value="satisfyContradictoryDemands" onchange="handleSeparationMethodChange();"> Satisfy Contradictory Demands</label>
             `;
             } else {
-                // Estrategia Bypass
                 methodsHTML = `
-                <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange()"> Bypass Contradictory Demands</label>
+                <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange();"> Bypass Contradictory Demands</label>
             `;
             }
 
             container.innerHTML = methodsHTML;
         }
 
-        // CORRECCIÓN: Nueva función para manejar cambios en los métodos de separación
         function handleSeparationMethodChange() {
             const separationMethod = document.querySelector('input[name="separation-method"]:checked');
             if (separationMethod) {
                 physicalStrategyFlow.step3 = true;
                 physicalStrategyFlow.selectedMethod = separationMethod.value;
-
-                // Ocultar la tabla de principios si estaba visible
                 document.getElementById('principles-table-container').classList.add('hidden');
             } else {
                 physicalStrategyFlow.step3 = false;
             }
         }
 
-        // CORRECCIÓN: Generar tabla completa con TODOS los principios de contradicciones físicas
         function generatePrinciplesTable() {
             const container = document.getElementById('principles-table-content');
 
-            // MODIFICACIÓN: Se ha dividido la frase en dos párrafos para separar la fuente.
             let html = `
         <p style="margin-bottom: 0.5rem; font-style: italic;">
             This table shows all physical contradiction resolution strategies and their associated inventive principles.
@@ -2627,7 +2769,6 @@
         </p>
     `;
 
-            // Iterar sobre TODAS las estrategias del archivo JS
             for (const [method, strategy] of Object.entries(physicalContradictionPrinciples)) {
                 html += `
         <div class="physical-strategy-guide">
@@ -2669,13 +2810,11 @@
             container.innerHTML = html;
         }
 
-        // CORRECCIÓN: Mostrar/ocultar tabla de principios
         function togglePrinciplesTable() {
             const tableContainer = document.getElementById('principles-table-container');
             const isVisible = !tableContainer.classList.contains('hidden');
 
             if (!isVisible) {
-                // Generar la tabla si no está visible
                 generatePrinciplesTable();
                 tableContainer.classList.remove('hidden');
             } else {
@@ -2683,13 +2822,11 @@
             }
         }
 
-        // ===== NUEVAS FUNCIONES PARA LA MATRIZ DE SOLUCIONES ESTÁNDAR =====
         function toggleSolutionsMatrix() {
             const matrixContainer = document.getElementById('solutions-matrix-container');
             const isVisible = !matrixContainer.classList.contains('hidden');
 
             if (!isVisible) {
-                // Generar la matriz si no está visible
                 renderSolutionsMatrix();
                 matrixContainer.classList.remove('hidden');
             } else {
@@ -2697,11 +2834,9 @@
             }
         }
 
-        // Función para renderizar la matriz completa de soluciones
         function renderSolutionsMatrix() {
             const container = document.getElementById('solutions-matrix-content');
 
-            // MODIFICACIÓN: Se ha separado el título, la descripción y la fuente en párrafos distintos.
             let html = `
         <div class="content-block">
             <h4><i class="fas fa-th-list"></i> Classic 76 Standard Solutions Matrix</h4>
@@ -2727,14 +2862,12 @@
                     <tbody>
     `;
 
-            // Recorrer todas las soluciones estándar
             for (const className in trizStandardSolutions) {
                 const solutionClass = trizStandardSolutions[className];
 
                 for (const solutionId in solutionClass.solutions) {
                     const solution = solutionClass.solutions[solutionId];
 
-                    // Determinar para qué tipos de problemas se recomienda esta solución
                     const isInsufficient = solutionMap.insufficient.includes(solutionId);
                     const isHarmful = solutionMap.harmful.includes(solutionId);
                     const isDifficult = solutionMap.difficult.includes(solutionId);
@@ -2788,7 +2921,6 @@
 
             const features = getCurrentFeatures();
 
-            // CORRECCIÓN 1: Cambiar el orden - Filas: Desired, Columnas: Worsening
             let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
             for (let i = 0; i < features.length; i++) {
                 headerRow += `<th title="${features[i]}">${i + 1}</th>`;
@@ -2796,16 +2928,13 @@
             headerRow += '</tr>';
             matrixTable.innerHTML += headerRow;
 
-            // CORRECCIÓN 1: Cambiar el orden - Filas: Desired, Columnas: Worsening
             for (let i = 0; i < features.length; i++) {
                 let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
                 for (let j = 0; j < features.length; j++) {
                     const cellClass = getCellClass(i, j);
-                    // CORRECCIÓN: Usar índices correctos (i+1, j+1) para la matriz
                     const principles = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
                     const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
 
-                    // CORRECCIÓN 2: Añadir tooltip con nombres de principios
                     const principleNames = principles && principles.length > 0
                         ? principles.map(p => getPrincipleName(p)).join(', ')
                         : 'No principles recommended';
@@ -2832,11 +2961,10 @@
         }
 
         function selectMatrixCell(row, col) {
-            clearResults(); // MODIFICACIÓN: Limpiar al seleccionar celda
+            clearResults();
             improvingFeatureIndex = row;
             worseningFeatureIndex = col;
 
-            // CORRECCIÓN: Actualizar los dropdowns para mantener consistencia
             document.getElementById('improving-feature').value = row;
             document.getElementById('worsening-feature').value = col;
 
@@ -2861,21 +2989,104 @@
 
             if (improvingFeatureIndex !== null) {
                 improvingSpan.textContent = `${improvingFeatureIndex + 1}: ${features[improvingFeatureIndex]}`;
-                improvingSpan.title = features[improvingFeatureIndex]; // CORRECCIÓN 2: Añadir tooltip
+                improvingSpan.title = features[improvingFeatureIndex];
             } else {
                 improvingSpan.textContent = 'None';
             }
 
             if (worseningFeatureIndex !== null) {
                 worseningSpan.textContent = `${worseningFeatureIndex + 1}: ${features[worseningFeatureIndex]}`;
-                worseningSpan.title = features[worseningFeatureIndex]; // CORRECCIÓN 2: Añadir tooltip
+                worseningSpan.title = features[worseningFeatureIndex];
             } else {
                 worseningSpan.textContent = 'None';
             }
         }
 
+        function populateDropdowns() {
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+
+            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+
+            const features = getCurrentFeatures();
+
+            features.forEach((param, index) => {
+                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
+                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
+            });
+
+            improvingFeatureIndex = null;
+            worseningFeatureIndex = null;
+        }
+
+        // ===== FUNCIONES DE SU-FIELD =====
+        function addSuFieldSystem() {
+            const container = document.getElementById('sufield-systems-container');
+            const systemCount = container.children.length + 1;
+
+            const systemHTML = `
+                <div class="sufield-system">
+                    <div class="sufield-system-header">
+                        <div class="sufield-system-title">System ${systemCount}</div>
+                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+                    <div class="sufield-system-fields">
+                        <div class="form-group">
+                            <label for="sufield-object-${systemCount}">Object (S1):</label>
+                            <input type="text" class="sufield-object" id="sufield-object-${systemCount}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-tool-${systemCount}">Tool (S2):</label>
+                            <input type="text" class="sufield-tool" id="sufield-tool-${systemCount}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-field-${systemCount}">Field (F):</label>
+                            <input type="text" class="sufield-field" id="sufield-field-${systemCount}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sufield-type-${systemCount}">Problem Type:</label>
+                        <select class="sufield-type" id="sufield-type-${systemCount}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                            <option value="insufficient">Insufficient interaction</option>
+                            <option value="harmful">Harmful interaction</option>
+                            <option value="difficult">Difficult to control</option>
+                            <option value="missing">Missing interaction</option>
+                            <option value="excessive">Excessive interaction</option>
+                            <option value="inefficient">Inefficient interaction</option>
+                        </select>
+                    </div>
+                    <div class="sufield-triangle-container" id="sufield-diagram-${systemCount}">
+                        <!-- Diagram will be generated here -->
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', systemHTML);
+
+            // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+            setTimeout(() => {
+                const newSystem = container.lastElementChild;
+                updateSuFieldDiagram(newSystem);
+            }, 10);
+        }
+
+        function removeSuFieldSystem(button) {
+            const system = button.closest('.sufield-system');
+            if (system && document.querySelectorAll('.sufield-system').length > 1) {
+                system.remove();
+                // Renumber remaining systems
+                const systems = document.querySelectorAll('.sufield-system');
+                systems.forEach((sys, index) => {
+                    sys.querySelector('.sufield-system-title').textContent = `System ${index + 1}`;
+                });
+            }
+        }
+
+        // ===== FUNCIONES DE SOLUCIÓN =====
         function solveProblem() {
-            // MODIFICACIÓN: Limpiar los resultados anteriores al inicio de la función
             clearResults();
 
             problemData = {};
@@ -2884,7 +3095,7 @@
             problemData.harm = document.getElementById('problem-harm').value;
             problemData.ifr = document.getElementById('ifr-formulation').value;
 
-            // Agregar datos LDST - MODIFICADO: Usar todas las leyes recomendadas
+            // LDST data
             const lifecycleStage = document.getElementById('lifecycle-stage').value;
             const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
 
@@ -2903,18 +3114,15 @@
 
             const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
             if (!selectedType) {
-                alert('Please select a contradiction type in Step 4.');
+                alert('Please select a contradiction type in the Contradiction tool.');
                 return;
             }
             problemData.contradictionType = selectedType.value;
 
             if (problemData.contradictionType === 'technical') {
-                // CORRECCIÓN: Usar siempre los valores actuales de los dropdowns
-                // ya que pueden haber cambiado después de una selección de matriz
                 let improvingIndex = parseInt(document.getElementById('improving-feature').value);
                 let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
 
-                // Si no hay selección en dropdowns, usar la selección de matriz
                 if (isNaN(improvingIndex) || improvingIndex < 0) {
                     improvingIndex = improvingFeatureIndex;
                 }
@@ -2922,10 +3130,9 @@
                     worseningIndex = worseningFeatureIndex;
                 }
 
-                // Validación final
                 if (improvingIndex === null || worseningIndex === null ||
                     improvingIndex < 0 || worseningIndex < 0) {
-                    alert('Please select an improving and a worsening feature.');
+                    alert('Please select an improving and a worsening feature in the Contradiction tool.');
                     return;
                 }
 
@@ -2934,7 +3141,6 @@
                     return;
                 }
 
-                // CORRECCIÓN: Actualizar las variables globales con la selección actual
                 improvingFeatureIndex = improvingIndex;
                 worseningFeatureIndex = worseningIndex;
 
@@ -2942,15 +3148,13 @@
                 problemData.improvingFeature = features[improvingIndex];
                 problemData.worseningFeature = features[worseningIndex];
 
-                // CORRECCIÓN: Usar índices correctos (sumar 1) para la matriz
                 const improvingKey = (improvingIndex + 1).toString();
                 const worseningKey = (worseningIndex + 1).toString();
                 const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
 
                 problemData.recommendedPrinciples = (principlesList || []).map(id => {
-                    // Asegurarse de que el principio existe en nuestro objeto
                     return principles[id] ? { ...principles[id], id } : null;
-                }).filter(p => p !== null); // Filtrar principios nulos
+                }).filter(p => p !== null);
 
             } else {
                 const parameter = document.getElementById('conflicting-parameter').value;
@@ -2960,7 +3164,6 @@
                 }
                 problemData.conflictingParameter = parameter;
 
-                // Verificar que se haya completado el flujo
                 if (!physicalStrategyFlow.step3) {
                     alert('Please complete all steps for the Physical Contradiction analysis.');
                     return;
@@ -2987,7 +3190,6 @@
                 const field = systemElement.querySelector('.sufield-field').value;
                 const type = systemElement.querySelector('.sufield-type').value;
 
-                // Get standard solutions for this problem type
                 const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
                     ? getRecommendedStandardSolutions(type)
                     : [];
@@ -3005,18 +3207,15 @@
             displayResults();
         }
 
-        // ===== FUNCIÓN displayResults CORREGIDA =====
         function displayResults() {
             const resultsDiv = document.getElementById('results-container');
-            // MODIFICACIÓN: La limpieza ya se hizo al inicio de solveProblem()
             let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
 
-            // Agregar información LDST - MODIFICADO: Mostrar todas las leyes recomendadas
+            // LDST Analysis
             html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
         <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
         <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
 
-            // Mostrar todas las leyes recomendadas
             problemData.ldst.recommendedLaws.forEach(law => {
                 html += `
             <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
@@ -3030,7 +3229,6 @@
             html += `
         <div class="tese-trends-icons">`;
 
-            // Generar iconos para todas las leyes recomendadas
             problemData.ldst.recommendedLaws.forEach(law => {
                 law.principles.forEach(principle => {
                     html += `
@@ -3050,6 +3248,7 @@
         </p>
     </div>`;
 
+            // Problem Summary
             html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
 
             if (problemData.contradictionType === 'technical') {
@@ -3071,7 +3270,6 @@
             } else {
                 html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
 
-                // MODIFICACIÓN 2: Mostrar estrategia y principios solo en resultados para contradicciones físicas
                 const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
                 if (strategy) {
                     html += `<div class="physical-strategy-guide">
@@ -3085,11 +3283,12 @@
             }
             html += `</div>`;
 
-            // MODIFICACIÓN: Mover el mensaje de la versión de la matriz aquí
+            // Matrix Version
             html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
         <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
     </div>`;
 
+            // Recommended Principles
             html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
 
             if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
@@ -3112,19 +3311,16 @@
             }
             html += `</div>`;
 
-            // Display Su-Field systems and solutions
+            // Su-Field Analysis
             if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
                 html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
 
                 problemData.sufield.systems.forEach((system, index) => {
-                    // Solo mostrar sistemas que tengan al menos un campo rellenado
                     if (system.object || system.tool || system.field) {
                         html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
 
-                        // Mostrar el diagrama Su-Field usando la función centralizada - CORREGIDO
                         html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
 
-                        // Crear contenedores para los diagramas de problema y solución
                         const problemDiagramId = `problem-diagram-${index}`;
                         const solutionDiagramId = `solution-diagram-${index}`;
 
@@ -3144,7 +3340,6 @@
                     </div>
                 `;
 
-                        // Show problem type with visual indicator
                         html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
                     <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
                     <div>
@@ -3154,7 +3349,6 @@
                 </div>`;
 
                         if (system.standardSolutions && system.standardSolutions.length > 0) {
-                            // Group solutions by class
                             const solutionsByClass = {};
                             system.standardSolutions.forEach(solution => {
                                 if (!solutionsByClass[solution.class]) {
@@ -3163,7 +3357,6 @@
                                 solutionsByClass[solution.class].push(solution);
                             });
 
-                            // Display solutions by class with explanations
                             for (const [className, solutions] of Object.entries(solutionsByClass)) {
                                 const classIcon = classIcons[className] || 'fa-cube';
                                 html += `<div class="standard-solution-visual">`;
@@ -3179,7 +3372,6 @@
                                 html += `<h6>Recommended Standard Solutions:</h6>`;
 
                                 solutions.forEach(solution => {
-                                    // MODIFICACIÓN 4: Usar iconos específicos para soluciones estándar
                                     const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
                                     html += `
                                 <div class="solution-card">
@@ -3211,13 +3403,12 @@
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
 
-            // DESPUÉS de insertar el HTML, llamar a las funciones para dibujar los diagramas
+            // Dibujar diagramas Su-Field
             problemData.sufield.systems.forEach((system, index) => {
                 if (system.object || system.tool || system.field) {
                     const problemDiagramId = `problem-diagram-${index}`;
                     const solutionDiagramId = `solution-diagram-${index}`;
 
-                    // Dibujar diagrama del problema usando la función centralizada
                     updateProblemDiagramInSolution(problemDiagramId, {
                         objectText: system.object,
                         toolText: system.tool,
@@ -3225,7 +3416,6 @@
                         problemType: system.type
                     });
 
-                    // Dibujar diagrama de la solución usando la función centralizada
                     updateSolutionDiagram(
                         solutionDiagramId,
                         system.object,
@@ -3253,7 +3443,7 @@
             ws_data.push([`Matrix Version: ${currentMatrixVersion === 'classic' ? 'Classic (39 parameters)' : '2003 (48 parameters)'}`]);
             ws_data.push([]);
 
-            // Agregar datos LDST
+            // LDST
             ws_data.push(["Laws of Development of Technical Systems (LDST)"]);
             ws_data.push(["Life Cycle Stage", document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text]);
             ws_data.push(["Recommended Laws"]);
@@ -3297,7 +3487,7 @@
 
             if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
                 problemData.sufield.systems.forEach((system, index) => {
-                    if (system.object || system.tool || system.field) { // Solo exportar sistemas con datos
+                    if (system.object || system.tool || system.field) {
                         ws_data.push([]);
                         ws_data.push([`System ${index + 1}`]);
                         ws_data.push(["Object (S1)", system.object]);
@@ -3324,27 +3514,6 @@
             XLSX.writeFile(wb, `TRIZ_Report_Sigma_Exacta_${dateStr}.xlsx`);
         }
 
-        function populateDropdowns() {
-            const improvingSelect = document.getElementById('improving-feature');
-            const worseningSelect = document.getElementById('worsening-feature');
-
-            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
-            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
-
-            const features = getCurrentFeatures();
-
-            features.forEach((param, index) => {
-                // CORRECCIÓN 2: Añadir tooltips a las opciones del dropdown
-                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
-                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
-            });
-
-            // CORRECCIÓN: Resetear las selecciones globales
-            improvingFeatureIndex = null;
-            worseningFeatureIndex = null;
-        }
-
-        // Función auxiliar para ejemplos de contradicciones físicas
         function getPhysicalContradictionExample(relationship) {
             const examples = {
                 separationInSpace: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",

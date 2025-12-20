@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&amp;display=swap" rel="stylesheet" />
     <link href="styles.css" rel="stylesheet" />
     <style>
-        /* ===== ESTILOS PARA TABS (WIZARD) - MEJORADOS PARA RESPONSIVIDAD ===== */
+        /* ===== ESTILOS PARA TABS PRINCIPALES ===== */
         .tabs-nav {
             display: flex;
             background-color: #f1f5f9;
@@ -76,7 +76,6 @@
             text-overflow: ellipsis;
         }
 
-        /* En escritorio, distribuir uniformemente */
         @media (min-width: 768px) {
             .tab-btn {
                 flex: 1;
@@ -93,7 +92,6 @@
             }
         }
 
-        /* En móvil muy pequeño */
         @media (max-width: 480px) {
             .tab-btn {
                 padding: 0.7rem 0.6rem;
@@ -122,7 +120,55 @@
             border-top: 1px solid #e1e5e9;
         }
 
-        .tab-content {
+        /* ===== ESTILOS PARA SUBTABS DENTRO DE PDCA TOOL ===== */
+        .subtabs-nav {
+            display: flex;
+            background-color: #f8fafc;
+            border-radius: 6px 6px 0 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #cbd5e1;
+            margin-bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .subtab-btn {
+            padding: 0.7rem 0.9rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            flex-shrink: 0;
+            font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+            box-sizing: border-box;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .subtab-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+        }
+
+        .subtab-btn.active {
+            background-color: #fff;
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+            border-radius: 6px 6px 0 0;
+            margin-bottom: -2px;
+            border-left: 1px solid #e1e5e9;
+            border-right: 1px solid #e1e5e9;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .subtab-content {
             display: none;
             padding: 1.5rem;
             background: #fff;
@@ -134,15 +180,26 @@
             box-sizing: border-box;
         }
 
-        @media (max-width: 768px) {
-            .tab-content {
-                padding: 1rem;
-            }
+        .subtab-content.active {
+            display: block;
         }
 
-        @media (max-width: 480px) {
+        /* ===== CONTENIDO DE LAS TABS ===== */
+        .tab-content {
+            display: none;
+            padding: 0;
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
             .tab-content {
-                padding: 0.8rem;
+                padding: 0;
             }
         }
 
@@ -162,34 +219,190 @@
             }
         }
 
-        .tab-nav-buttons {
+        /* ===== BOTONES PRINCIPALES (ESTILO KANO) ===== */
+        .main-action-buttons {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem auto 2rem auto;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+
+        .main-action-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-action-buttons .btn-example {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-example:hover {
+            background-color: #27ad60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-reset {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-reset:hover {
+            background-color: #a5281c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== ESTILOS GENERALES ===== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                font-size: 14px;
+            }
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Nunito', sans-serif;
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .main-content-wrapper {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 1.25rem;
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content-wrapper {
+                padding: 0.8rem;
+            }
+        }
+
+        .header {
+            margin-bottom: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .btn-next-tab {
-            background-color: var(--primary-color);
-            color: white;
-            display: inline-flex;
+        .header h1 {
+            color: var(--primary-color);
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 0.5rem 0;
+            font-weight: 800;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
-            font-size: 0.9rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            text-align: center;
+            width: 100%;
         }
 
-        @media (max-width: 480px) {
-            .btn-next-tab {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.85rem;
+        .header .header-subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 400;
+            padding: 0 1rem;
+        }
+
+        /* ===== CONTENIDO DE LAS SUBTABS ===== */
+        .content-block {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
+        }
+
+        @media (max-width: 768px) {
+            .content-block {
+                padding: 1.25rem;
             }
         }
 
-        /* --- Estilos para la RUEDA ESTÁTICA (que es solo ilustrativa) --- */
+        @media (max-width: 480px) {
+            .content-block {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .content-block h2 {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.6rem;
+            font-weight: 800;
+            overflow-wrap: break-word;
+        }
+
+        .content-block h2 .fas {
+            margin-right: 0.75rem;
+        }
+
+        .instructions-box ul {
+            margin: 0.6rem 0 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .instructions-box li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+            overflow-wrap: break-word;
+        }
+
+        /* ===== RUEDA PDCA ===== */
         .pdca-wheel-container {
             display: flex;
             justify-content: center;
@@ -400,285 +613,7 @@
             animation-duration: 5s;
         }
 
-        /* --- Estilos para el contenedor de resultados (Tabla de resumen) --- */
-        #results-container {
-            border: 2px solid var(--success-color);
-            background-color: #f8fef8;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-top: 1.5rem;
-            overflow-x: auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        @media (max-width: 768px) {
-            #results-container {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #results-container {
-                padding: 0.8rem;
-            }
-        }
-
-        #results-container h3 {
-            color: var(--success-color);
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 1rem;
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-        }
-
-        .pdca-summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            table-layout: auto;
-            min-width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .pdca-summary-table {
-                display: block;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-
-        .pdca-summary-table th,
-        .pdca-summary-table td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-            word-wrap: break-word;
-        }
-
-        @media (max-width: 768px) {
-
-            .pdca-summary-table th,
-            .pdca-summary-table td {
-                padding: 8px;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-
-            .pdca-summary-table th,
-            .pdca-summary-table td {
-                padding: 6px;
-                font-size: 0.85rem;
-            }
-        }
-
-        .pdca-summary-table th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 800;
-            vertical-align: top;
-            min-width: 100px;
-        }
-
-        .pdca-summary-table td:nth-child(2) {
-            font-weight: 600;
-            min-width: 120px;
-            background-color: #f1f1f1;
-        }
-
-        .pdca-summary-table td:nth-child(3) {
-            min-width: 200px;
-            white-space: pre-wrap;
-            vertical-align: top;
-        }
-
-        .phase-row {
-            background-color: #eaf4ff;
-            border-bottom: 3px solid var(--secondary-color);
-        }
-
-        .results-actions {
-            margin-top: 1.25rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid #eee;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* --- Estilos generales --- */
-        .main-tool-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0;
-            margin-right: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .main-tool-logo {
-                width: 40px;
-                height: 40px;
-                font-size: 1.4rem;
-                margin-right: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-tool-logo {
-                width: 35px;
-                height: 35px;
-                font-size: 1.2rem;
-                margin-right: 8px;
-            }
-        }
-
-        .main-tool-logo[data-color='9'] {
-            background-color: #7ed321;
-        }
-
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            font-size: 16px;
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                font-size: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            :root {
-                font-size: 14px;
-            }
-        }
-
-        body {
-            background-color: #f5f7fa;
-            font-family: 'Nunito', sans-serif;
-            color: #333;
-            margin: 0;
-            overflow-x: hidden;
-            width: 100%;
-        }
-
-        .main-content-wrapper {
-            max-width: 100%;
-            margin: 20px auto;
-            padding: 1.25rem;
-            box-sizing: border-box;
-            width: 100%;
-            overflow-x: hidden;
-        }
-
-        @media (max-width: 768px) {
-            .main-content-wrapper {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-content-wrapper {
-                padding: 0.8rem;
-            }
-        }
-
-        .header {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .header h1 {
-            color: var(--primary-color);
-            font-size: clamp(1.2rem, 4vw, 1.8rem);
-            margin: 0.5rem 0;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            text-align: center;
-            width: 100%;
-        }
-
-        .header .header-subtitle {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            color: #7f8c8d;
-            margin: 0;
-            font-weight: 400;
-            padding: 0 1rem;
-        }
-
-        .content-block {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            box-sizing: border-box;
-            overflow-wrap: break-word;
-        }
-
-        @media (max-width: 768px) {
-            .content-block {
-                padding: 1.25rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .content-block {
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-        }
-
-        .content-block h2 {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            margin-top: 0;
-            margin-bottom: 1.25rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.6rem;
-            font-weight: 800;
-            overflow-wrap: break-word;
-        }
-
-        .content-block h2 .fas {
-            margin-right: 0.75rem;
-        }
-
-        .instructions-box ul {
-            margin: 0.6rem 0 0 0;
-            padding-left: 1.25rem;
-        }
-
-        .instructions-box li {
-            margin-bottom: 0.5rem;
-            line-height: 1.6;
-            overflow-wrap: break-word;
-        }
-
+        /* ===== FORMULARIOS PDCA ===== */
         .cycle-step {
             border: 1px solid #eee;
             border-radius: 8px;
@@ -799,10 +734,157 @@
             background-color: #2980b9;
         }
 
-        .hidden {
-            display: none;
+        /* ===== TAB NAVIGATION BUTTONS ===== */
+        .tab-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            width: 100%;
+            box-sizing: border-box;
         }
 
+        .btn-next-tab {
+            background-color: var(--secondary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .btn-next-tab {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .btn-prev-tab {
+            background-color: #95a5a6;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-prev-tab:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* ===== RESULTS CONTAINER ===== */
+        #results-container {
+            border: 2px solid var(--success-color);
+            background-color: #f8fef8;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            #results-container {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #results-container {
+                padding: 0.8rem;
+            }
+        }
+
+        #results-container h3 {
+            color: var(--success-color);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        }
+
+        .pdca-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            table-layout: auto;
+            min-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .pdca-summary-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        .pdca-summary-table th,
+        .pdca-summary-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 768px) {
+
+            .pdca-summary-table th,
+            .pdca-summary-table td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .pdca-summary-table th,
+            .pdca-summary-table td {
+                padding: 6px;
+                font-size: 0.85rem;
+            }
+        }
+
+        .pdca-summary-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 800;
+            vertical-align: top;
+            min-width: 100px;
+        }
+
+        .pdca-summary-table td:nth-child(2) {
+            font-weight: 600;
+            min-width: 120px;
+            background-color: #f1f1f1;
+        }
+
+        .pdca-summary-table td:nth-child(3) {
+            min-width: 200px;
+            white-space: pre-wrap;
+            vertical-align: top;
+        }
+
+        .phase-row {
+            background-color: #eaf4ff;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .results-actions {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* ===== FOOTER ===== */
         footer[role="contentinfo"] {
             padding: 2rem 1.25rem;
             max-width: 1400px;
@@ -829,6 +911,46 @@
             text-align: left;
             width: 100%;
             box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .main-tool-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-tool-logo {
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+                margin-right: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-tool-logo {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+                margin-right: 8px;
+            }
+        }
+
+        .main-tool-logo[data-color='9'] {
+            background-color: #7ed321;
         }
     </style>
 </head>
@@ -872,22 +994,23 @@
             </p>
         </header>
 
-        <!-- BARRA DE PESTAÑAS (WIZARD) -->
+        <!-- BOTONES PRINCIPALES (ESTILO KANO) -->
+        <div class="main-action-buttons">
+            <button id="globalLoadExampleBtn" class="btn-example">
+                <i class="fas fa-play-circle"></i> Load Example
+            </button>
+            <button id="globalResetBtn" class="btn-reset">
+                <i class="fas fa-sync-alt"></i> Reset All
+            </button>
+        </div>
+
+        <!-- BARRA DE PESTAÑAS PRINCIPALES (3 TABS) -->
         <nav class="tabs-nav">
             <button class="tab-btn active" onclick="switchTab('tab-start')">
                 <i class="fas fa-info-circle"></i> <span class="tab-text">Start & Info</span>
             </button>
-            <button class="tab-btn" onclick="switchTab('tab-plan')">
-                <i class="fas fa-clipboard-list"></i> <span class="tab-text">1. Plan</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab-do')">
-                <i class="fas fa-cogs"></i> <span class="tab-text">2. Do</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab-check')">
-                <i class="fas fa-chart-line"></i> <span class="tab-text">3. Check</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab-act')">
-                <i class="fas fa-bullhorn"></i> <span class="tab-text">4. Act</span>
+            <button class="tab-btn" onclick="switchTab('tab-pdca-tool')">
+                <i class="fas fa-tools"></i> <span class="tab-text">PDCA Tool</span>
             </button>
             <button class="tab-btn" onclick="switchTab('tab-report')">
                 <i class="fas fa-file-alt"></i> <span class="tab-text">Report</span>
@@ -897,23 +1020,6 @@
         <!-- PESTAÑA 1: START & INFO -->
         <div id="tab-start" class="tab-content active">
             <div class="content-block">
-                <div
-                    style="text-align: center; margin-bottom: 20px; padding: 20px; background: #f1f5f9; border-radius: 8px; width: 100%; box-sizing: border-box;">
-                    <h3 style="margin-top:0; font-size: clamp(1.1rem, 3vw, 1.3rem);">Start Here</h3>
-                    <p style="margin-bottom: 15px;">Load a pre‑defined example to populate all tabs instantly, or reset
-                        to start fresh.</p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-                        <button class="btn-success" onclick="loadExampleAndGo()">
-                            <i class="fas fa-magic"></i> Load Example & Fill All Tabs
-                        </button>
-                        <button class="btn-warning" onclick="resetTool()">
-                            <i class="fas fa-sync-alt"></i> Reset Tool
-                        </button>
-                    </div>
-                    <p style="margin-top:15px;"><strong>Status:</strong> <span id="current-example-description">No
-                            example loaded.</span></p>
-                </div>
-
                 <h2><i class="fas fa-question-circle"></i> What is the PDCA Cycle?</h2>
                 <p>The <strong>PDCA Cycle</strong> (Plan‑Do‑Check‑Act), also known as the Deming Wheel or Shewhart
                     Cycle, is
@@ -972,10 +1078,10 @@
                 <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li><strong>Load Example:</strong> Click "Load Example & Fill All Tabs" above to populate all
-                            tabs with sample data.</li>
-                        <li><strong>Follow the Steps:</strong> Work through each tab (Plan, Do, Check, Act) to document
-                            your improvement project.</li>
+                        <li><strong>Load Example:</strong> Click "Load Example" above to populate all tabs with sample
+                            data.</li>
+                        <li><strong>Follow the Steps:</strong> Work through each phase (Plan, Do, Check, Act) in the
+                            PDCA Tool tab to document your improvement project.</li>
                         <li><strong>Generate Report:</strong> Click "Generate PDCA Report" on the Report tab to create a
                             consolidated summary.</li>
                         <li><strong>Export:</strong> Once the report is generated, you can export it to an Excel file
@@ -985,117 +1091,143 @@
             </div>
 
             <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-plan')">Next Step: Plan <i
+                <button class="btn-next-tab" onclick="switchTab('tab-pdca-tool')">Start PDCA Tool <i
                         class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <!-- PESTAÑA 2: PLAN -->
-        <div id="tab-plan" class="tab-content">
-            <div class="content-block">
-                <h2><i class="fas fa-clipboard-list"></i> Phase 1: Plan</h2>
-                <div class="cycle-step" id="step-1">
-                    <h3><i class="fas fa-clipboard-list"></i> Plan Phase</h3>
-                    <div class="form-group">
-                        <label for="plan-problem">Problem/Opportunity Statement:</label>
-                        <textarea id="plan-problem"
-                            placeholder="e.g., Customer support call times are too long, averaging 12 minutes."></textarea>
+        <!-- PESTAÑA 2: PDCA TOOL (CON SUBTABS) -->
+        <div id="tab-pdca-tool" class="tab-content">
+            <!-- NAVEGACIÓN DE SUBTABS -->
+            <nav class="subtabs-nav">
+                <button class="subtab-btn active" onclick="switchSubTab('subtab-plan')">
+                    <i class="fas fa-clipboard-list"></i> <span>1. Plan</span>
+                </button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-do')">
+                    <i class="fas fa-cogs"></i> <span>2. Do</span>
+                </button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-check')">
+                    <i class="fas fa-chart-line"></i> <span>3. Check</span>
+                </button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-act')">
+                    <i class="fas fa-bullhorn"></i> <span>4. Act</span>
+                </button>
+            </nav>
+
+            <!-- SUBTAB 1: PLAN -->
+            <div id="subtab-plan" class="subtab-content active">
+                <div class="content-block">
+                    <h2><i class="fas fa-clipboard-list"></i> Phase 1: Plan</h2>
+                    <div class="cycle-step">
+                        <h3><i class="fas fa-clipboard-list"></i> Plan Phase</h3>
+                        <div class="form-group">
+                            <label for="plan-problem">Problem/Opportunity Statement:</label>
+                            <textarea id="plan-problem"
+                                placeholder="e.g., Customer support call times are too long, averaging 12 minutes."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="plan-goal">Goal/Hypothesis (What do you expect to happen?):</label>
+                            <textarea id="plan-goal"
+                                placeholder="e.g., By implementing a new call script, we will reduce the average call time by 15% to 10 minutes or less within one month."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="plan-actions">Action Plan (What steps will you take?):</label>
+                            <textarea id="plan-actions"
+                                placeholder="e.g., 1. Develop new script. 2. Train a pilot group of 5 agents. 3. Monitor their call times for 1 week."></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="plan-goal">Goal/Hypothesis (What do you expect to happen?):</label>
-                        <textarea id="plan-goal"
-                            placeholder="e.g., By implementing a new call script, we will reduce the average call time by 15% to 10 minutes or less within one month."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="plan-actions">Action Plan (What steps will you take?):</label>
-                        <textarea id="plan-actions"
-                            placeholder="e.g., 1. Develop new script. 2. Train a pilot group of 5 agents. 3. Monitor their call times for 1 week."></textarea>
-                    </div>
+                </div>
+
+                <div class="tab-nav-buttons">
+                    <button class="btn-next-tab" onclick="switchSubTab('subtab-do')">Next: Do Phase <i
+                            class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-do')">Next Step: Do <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
+            <!-- SUBTAB 2: DO -->
+            <div id="subtab-do" class="subtab-content">
+                <div class="content-block">
+                    <h2><i class="fas fa-cogs"></i> Phase 2: Do</h2>
+                    <div class="cycle-step">
+                        <h3><i class="fas fa-cogs"></i> Do Phase</h3>
+                        <div class="form-group">
+                            <label for="do-execution">What was executed? (Record actions taken):</label>
+                            <textarea id="do-execution"
+                                placeholder="e.g., The new script was developed and deployed. Five agents from Team B were trained on the new script on Monday. They used the script for all calls from Tuesday to Friday."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="do-problems">What problems or unexpected observations occurred?:</label>
+                            <textarea id="do-problems"
+                                placeholder="e.g., Some veteran agents initially resisted the change, finding the script too rigid. One part of the script for 'billing issues' was found to be confusing for customers."></textarea>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- PESTAÑA 3: DO -->
-        <div id="tab-do" class="tab-content">
-            <div class="content-block">
-                <h2><i class="fas fa-cogs"></i> Phase 2: Do</h2>
-                <div class="cycle-step" id="step-2">
-                    <h3><i class="fas fa-cogs"></i> Do Phase</h3>
-                    <div class="form-group">
-                        <label for="do-execution">What was executed? (Record actions taken):</label>
-                        <textarea id="do-execution"
-                            placeholder="e.g., The new script was developed and deployed. Five agents from Team B were trained on the new script on Monday. They used the script for all calls from Tuesday to Friday."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="do-problems">What problems or unexpected observations occurred?:</label>
-                        <textarea id="do-problems"
-                            placeholder="e.g., Some veteran agents initially resisted the change, finding the script too rigid. One part of the script for 'billing issues' was found to be confusing for customers."></textarea>
-                    </div>
+                <div class="tab-nav-buttons">
+                    <button class="btn-prev-tab" onclick="switchSubTab('subtab-plan')"><i class="fas fa-arrow-left"></i>
+                        Back to Plan</button>
+                    <button class="btn-next-tab" onclick="switchSubTab('subtab-check')">Next: Check Phase <i
+                            class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-check')">Next Step: Check <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
+            <!-- SUBTAB 3: CHECK -->
+            <div id="subtab-check" class="subtab-content">
+                <div class="content-block">
+                    <h2><i class="fas fa-chart-line"></i> Phase 3: Check</h2>
+                    <div class="cycle-step">
+                        <h3><i class="fas fa-chart-line"></i> Check Phase</h3>
+                        <div class="form-group">
+                            <label for="check-data">Data &amp; Results (What did the metrics show?):</label>
+                            <textarea id="check-data"
+                                placeholder="e.g., Average call time for the pilot group was 9.5 minutes, an 18% reduction. Customer satisfaction scores for the pilot group remained stable (no change)."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="check-analysis">Analysis (Did the results match the hypothesis?):</label>
+                            <textarea id="check-analysis"
+                                placeholder="e.g., The results exceeded the goal. The script was effective in reducing call time without negatively impacting customer satisfaction. The confusing 'billing' section needs to be addressed."></textarea>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- PESTAÑA 4: CHECK -->
-        <div id="tab-check" class="tab-content">
-            <div class="content-block">
-                <h2><i class="fas fa-chart-line"></i> Phase 3: Check</h2>
-                <div class="cycle-step" id="step-3">
-                    <h3><i class="fas fa-chart-line"></i> Check Phase</h3>
-                    <div class="form-group">
-                        <label for="check-data">Data &amp; Results (What did the metrics show?):</label>
-                        <textarea id="check-data"
-                            placeholder="e.g., Average call time for the pilot group was 9.5 minutes, an 18% reduction. Customer satisfaction scores for the pilot group remained stable (no change)."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="check-analysis">Analysis (Did the results match the hypothesis?):</label>
-                        <textarea id="check-analysis"
-                            placeholder="e.g., The results exceeded the goal. The script was effective in reducing call time without negatively impacting customer satisfaction. The confusing 'billing' section needs to be addressed."></textarea>
-                    </div>
+                <div class="tab-nav-buttons">
+                    <button class="btn-prev-tab" onclick="switchSubTab('subtab-do')"><i class="fas fa-arrow-left"></i>
+                        Back to Do</button>
+                    <button class="btn-next-tab" onclick="switchSubTab('subtab-act')">Next: Act Phase <i
+                            class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-act')">Next Step: Act <i
-                        class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 5: ACT -->
-        <div id="tab-act" class="tab-content">
-            <div class="content-block">
-                <h2><i class="fas fa-bullhorn"></i> Phase 4: Act</h2>
-                <div class="cycle-step" id="step-4">
-                    <h3><i class="fas fa-bullhorn"></i> Act Phase</h3>
-                    <div class="form-group">
-                        <label for="act-conclusions">Conclusions &amp; Learnings:</label>
-                        <textarea id="act-conclusions"
-                            placeholder="e.g., The new script is a viable solution for reducing call times. Allowing for minor flexibility in the script could improve adoption among veteran agents."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="act-next">Next Steps (Standardize, Adjust, or begin a new cycle?):</label>
-                        <textarea id="act-next"
-                            placeholder="e.g., 1. Adjust the 'billing issues' part of the script based on feedback. 2. Standardize the revised script and roll it out to all support agents. 3. Start a new PDCA cycle to improve the first-call resolution rate."></textarea>
+            <!-- SUBTAB 4: ACT -->
+            <div id="subtab-act" class="subtab-content">
+                <div class="content-block">
+                    <h2><i class="fas fa-bullhorn"></i> Phase 4: Act</h2>
+                    <div class="cycle-step">
+                        <h3><i class="fas fa-bullhorn"></i> Act Phase</h3>
+                        <div class="form-group">
+                            <label for="act-conclusions">Conclusions &amp; Learnings:</label>
+                            <textarea id="act-conclusions"
+                                placeholder="e.g., The new script is a viable solution for reducing call times. Allowing for minor flexibility in the script could improve adoption among veteran agents."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="act-next">Next Steps (Standardize, Adjust, or begin a new cycle?):</label>
+                            <textarea id="act-next"
+                                placeholder="e.g., 1. Adjust the 'billing issues' part of the script based on feedback. 2. Standardize the revised script and roll it out to all support agents. 3. Start a new PDCA cycle to improve the first-call resolution rate."></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="tab-nav-buttons">
-                <button class="btn-next-tab" onclick="switchTab('tab-report')">Next Step: Report <i
-                        class="fas fa-arrow-right"></i></button>
+                <div class="tab-nav-buttons">
+                    <button class="btn-prev-tab" onclick="switchSubTab('subtab-check')"><i
+                            class="fas fa-arrow-left"></i>
+                        Back to Check</button>
+                    <button class="btn-next-tab" onclick="switchTab('tab-report')">Go to Report <i
+                            class="fas fa-file-alt"></i></button>
+                </div>
             </div>
         </div>
 
-        <!-- PESTAÑA 6: REPORT -->
+        <!-- PESTAÑA 3: REPORT -->
         <div id="tab-report" class="tab-content">
             <div class="content-block">
                 <h2><i class="fas fa-file-alt"></i> Generate PDCA Report</h2>
@@ -1110,6 +1242,13 @@
                 </div>
 
                 <div id="results-container" class="hidden"></div>
+            </div>
+
+            <div class="tab-nav-buttons">
+                <button class="btn-prev-tab" onclick="switchTab('tab-pdca-tool')"><i class="fas fa-arrow-left"></i> Back
+                    to PDCA Tool</button>
+                <button class="btn-next-tab" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Back to
+                    Start & Info</button>
             </div>
         </div>
 
@@ -1127,9 +1266,12 @@
     </footer>
 
     <script>
-        // ===== LOGICA DE PESTAÑAS =====
+        // ===== VARIABLES GLOBALES =====
+        let cycleData = {};
+
+        // ===== FUNCIONES DE NAVEGACIÓN =====
         function switchTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos
+            // Quitar clase active de todos los botones y contenidos principales
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
@@ -1149,16 +1291,31 @@
             });
         }
 
-        // ===== FUNCIÓN PARA CARGAR EJEMPLO EN TODAS LAS PESTAÑAS =====
-        function loadExampleAndGo() {
-            loadExample();
-            // Ir a la primera pestaña de contenido
-            switchTab('tab-plan');
+        function switchSubTab(subTabId) {
+            // Quitar clase active de todos los botones y contenidos de subtabs
+            document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.subtab-content').forEach(content => content.classList.remove('active'));
+
+            // Activar el seleccionado
+            document.getElementById(subTabId).classList.add('active');
+
+            // Activar botón correspondiente
+            const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Scroll al top suavemente
+            const subtabContainer = document.querySelector('.subtab-content.active');
+            if (subtabContainer) {
+                subtabContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Actualizar textareas
+            document.querySelectorAll('textarea').forEach(textarea => {
+                autoResizeTextarea(textarea);
+            });
         }
 
-        // ===== VARIABLES Y FUNCIONES EXISTENTES (MODIFICADAS PARA TABS) =====
-        let cycleData = {};
-
+        // ===== FUNCIONES DE INICIALIZACIÓN =====
         function initializePage() {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
@@ -1195,6 +1352,10 @@
                 textarea.addEventListener('input', function () { autoResizeTextarea(this); });
                 autoResizeTextarea(textarea);
             });
+
+            // Botones globales
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
+            document.getElementById('globalResetBtn').addEventListener('click', resetTool);
         }
 
         // Cargar el header y luego inicializar la página
@@ -1213,22 +1374,40 @@
             textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
+        // ===== FUNCIONES DE LA HERRAMIENTA =====
         function resetTool() {
+            if (cycleData && Object.keys(cycleData).length > 0) {
+                if (!confirm("Are you sure you want to reset all data? This will clear all entered information.")) {
+                    return;
+                }
+            }
+
             cycleData = {};
             document.querySelectorAll('textarea').forEach(el => {
                 el.value = '';
                 autoResizeTextarea(el);
             });
             document.getElementById('results-container').classList.add('hidden');
-            document.getElementById('current-example-description').textContent = 'No example loaded.';
-            document.getElementById('plan-problem').focus();
+            document.getElementById('results-container').innerHTML = '';
 
-            // Volver a la pestaña inicial
+            // Ir a la pestaña inicial
             switchTab('tab-start');
+
+            // Mostrar notificación
+            showNotification("All data has been reset successfully!");
         }
 
         function loadExample() {
+            if (cycleData && Object.keys(cycleData).length > 0) {
+                if (!confirm("Loading example data will replace your current work. Do you want to continue?")) {
+                    return;
+                }
+            }
+
+            // Reset primero
             resetTool();
+
+            // Llenar con datos de ejemplo
             document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes, which leads to lower customer satisfaction and higher costs.";
             document.getElementById('plan-goal').value = "By implementing a new streamlined call script and providing targeted training, we will reduce the average call handling time by 15% (to 10.2 minutes or less) within one month, without decreasing the customer satisfaction score.";
             document.getElementById('plan-actions').value = "1. Analyze top 5 call reasons to create a streamlined script (Week 1).\n2. Select a pilot group of 5 agents for training (Week 2).\n3. Train the pilot group on the new script (Week 2).\n4. Monitor the pilot group's call times and CSAT scores for two weeks (Weeks 3-4).";
@@ -1239,8 +1418,58 @@
             document.getElementById('act-conclusions').value = "The streamlined script is an effective method for reducing call handling time. The key learning is that while a script provides structure, a small degree of flexibility is necessary for experienced agents to handle complex cases effectively.";
             document.getElementById('act-next').value = "1. (Standardize) Roll out the revised, slightly more flexible script to all customer support agents, with mandatory training.\n2. (Adjust) Update the standard operating procedure (SOP) to reflect the new process.\n3. (New Cycle) Begin a new PDCA cycle to tackle the 'first-call resolution rate', which was identified as the next key improvement area during analysis.";
 
+            // Actualizar textareas
             document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
-            document.getElementById('current-example-description').textContent = 'Example loaded: "Reducing Customer Support Call Times"';
+
+            // Ir a la pestaña PDCA Tool
+            switchTab('tab-pdca-tool');
+
+            // Mostrar notificación
+            showNotification("Example data loaded successfully! You can now explore the PDCA phases.");
+        }
+
+        function showNotification(message) {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: var(--success-color);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                font-weight: 600;
+            `;
+
+            // Animación CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
         }
 
         function generateReport() {
@@ -1268,7 +1497,11 @@
                 alert('Please fill in at least the "Plan" phase to generate a report.');
                 return;
             }
+
             displayResults();
+
+            // Ir a la pestaña de reporte
+            switchTab('tab-report');
         }
 
         function displayResults() {
@@ -1379,6 +1612,8 @@
 
             const dateStr = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `PDCA_Report_Sigma_Exacta_${dateStr}.xlsx`);
+
+            showNotification("Report exported to Excel successfully!");
         }
     </script>
 </body>
