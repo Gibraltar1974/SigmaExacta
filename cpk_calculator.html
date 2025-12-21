@@ -10,13 +10,11 @@
     <meta name="keywords"
         content="Open source, Free software, SigmaExacta, capability index calculator, cpk calculator, process capability, normality check, cp, cpk, cpm, pp, ppk, six sigma, spc tool, control chart, i-chart, lsl, usl, normal distribution plot, normality tests, Shapiro-Wilk, Anderson-Darling, Kolmogorov-Smirnov">
 
-    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- KaTeX for Math Formulas -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
@@ -26,7 +24,6 @@
         integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
 
-    <!-- Fonts and Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -825,7 +822,6 @@
                 distribution plots, and I-Charts for robust analysis.</p>
         </header>
 
-        <!-- BOTONES DE ACCIÓN GLOBAL -->
         <div class="global-actions">
             <button class="global-btn secondary" id="globalFillExampleBtn">
                 <i class="fas fa-play-circle"></i> Load Example Data
@@ -835,9 +831,7 @@
             </button>
         </div>
 
-        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
-            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
             <nav class="tabs-nav">
                 <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i>
                     Theory & Info</button>
@@ -849,7 +843,6 @@
                     Formulas</button>
             </nav>
 
-            <!-- PESTAÑA 1: TEORÍA -->
             <div id="tab-theory" class="wizard-tab-content active">
                 <div class="tab-content-wrapper">
                     <div class="container">
@@ -910,7 +903,6 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA -->
             <div id="tab-tool" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="calculator-section">
@@ -953,10 +945,8 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 3: RESULTADOS -->
             <div id="tab-results" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
-                    <!-- Contenedor de resultados (mostrado dinámicamente) -->
                     <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
 
                     <div class="results-container">
@@ -1085,7 +1075,6 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 4: FÓRMULAS -->
             <div id="tab-formulas" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="container">
@@ -1161,7 +1150,6 @@
         </div>
     </footer>
 
-    <!-- Script para funcionalidad de Tabs Wizard -->
     <script>
         function switchWizardTab(tabId) {
             // Quitar clase active de todos los botones y contenidos de wizard
@@ -1270,6 +1258,17 @@
                 form.addEventListener('submit', function (e) {
                     // Esto se ejecutará después del cálculo en cpk_calculator.js
                     setTimeout(function () {
+                        // Aseguramos que los contenedores sean visibles (por si se ocultaron con Reset)
+                        const resultsContainer = document.querySelector('.results-container');
+                        const overallContainer = document.querySelector('.overall-results-container');
+
+                        if (resultsContainer) {
+                            resultsContainer.style.display = 'flex';
+                        }
+                        if (overallContainer) {
+                            overallContainer.style.display = 'flex';
+                        }
+
                         // Cambiar a la pestaña de resultados
                         switchWizardTab('tab-results');
 
@@ -1286,7 +1285,6 @@
         });
     </script>
 
-    <!-- Main Calculation and Logic Script -->
     <script src="cpk_calculator.js"></script>
 
 </body>
