@@ -51,10 +51,12 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            width: 100vw;
+            max-width: 100vw;
         }
 
         .main-content-wrapper {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 1.25rem;
             width: 100%;
@@ -242,6 +244,18 @@
 
         /* Ajuste para pantallas móviles */
         @media (max-width: 768px) {
+            .main-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tabs-container {
+                margin: 0 -0.75rem;
+                width: calc(100% + 1.5rem);
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+
             .tab-content-wrapper {
                 padding: 1rem;
             }
@@ -258,6 +272,15 @@
         }
 
         @media (max-width: 480px) {
+            .main-content-wrapper {
+                padding: 0.5rem;
+            }
+
+            .tabs-container {
+                margin: 0 -0.5rem;
+                width: calc(100% + 1rem);
+            }
+
             .tab-content-wrapper {
                 padding: 0.75rem;
             }
@@ -302,6 +325,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             box-sizing: border-box;
+            max-width: 100%;
         }
 
         .container:first-child {
@@ -401,6 +425,19 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             width: 100%;
             box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+
+            .container,
+            .calculation-block {
+                border-radius: 0;
+                margin-top: 1rem;
+                box-shadow: none;
+                border-left: none;
+                border-right: none;
+            }
         }
 
         .calculation-title {
@@ -430,6 +467,7 @@
             box-sizing: border-box;
             transition: border 0.3s, box-shadow 0.3s;
             font-family: 'Nunito', sans-serif;
+            max-width: 100%;
         }
 
         textarea {
@@ -500,6 +538,7 @@
             width: 100%;
             flex-wrap: wrap;
             gap: 1.25rem;
+            max-width: 100%;
         }
 
         .dataset-results-wrapper.active {
@@ -519,11 +558,14 @@
 
         .charts-wrapper>div {
             height: 480px;
+            width: 100%;
+            position: relative;
         }
 
         .chart-canvas {
-            max-width: 100%;
-            max-height: calc(100% - 30px);
+            max-width: 100% !important;
+            width: 100% !important;
+            height: auto !important;
         }
 
         .cpk-chart-container,
@@ -543,6 +585,7 @@
             align-items: center;
         }
 
+        /* MARCA DE AGUA EN CADA GRÁFICO - CORREGIDO */
         .chart-watermark {
             position: absolute;
             top: 10px;
@@ -550,8 +593,9 @@
             width: 60px;
             height: auto;
             filter: invert(1);
-            opacity: 0.6;
+            opacity: 0.15;
             pointer-events: none;
+            z-index: 10;
         }
 
         .results-box {
@@ -638,12 +682,14 @@
             margin-bottom: 1rem;
         }
 
+        /* PESTAÑAS DE DATASETS Y OVERALL */
         .dataset-tabs {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
             margin-bottom: 1rem;
             margin-top: 1rem;
+            width: 100%;
         }
 
         .dataset-tab {
@@ -654,6 +700,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .dataset-tab:hover {
@@ -664,6 +711,21 @@
             background-color: var(--secondary-color);
             color: white;
             border-color: var(--secondary-color);
+        }
+
+        .dataset-tab.overall-tab {
+            background-color: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .dataset-tab.overall-tab:hover {
+            background-color: #229954;
+        }
+
+        .dataset-tab.overall-tab.active {
+            background-color: #1e8449;
+            border-color: #1e8449;
         }
 
         .anderson-formula {
@@ -719,6 +781,18 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+        }
+
+        /* CONTENEDOR PARA RESULTADOS OVERALL */
+        #overall-results-wrapper {
+            display: none;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        #overall-results-wrapper.active {
+            display: flex;
         }
 
         @media (max-width: 768px) {
@@ -779,6 +853,20 @@
             .button-group button {
                 margin: 5px 0;
                 width: 100%;
+            }
+
+            .charts-wrapper>div {
+                height: 350px;
+            }
+
+            .container,
+            .calculation-block {
+                padding: 1rem;
+            }
+
+            .dataset-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
             }
         }
     </style>
@@ -947,8 +1035,10 @@
 
             <div id="tab-results" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
+                    <!-- Pestañas para datasets y overall -->
                     <div id="datasetTabsContainer" class="dataset-tabs" style="display: none;"></div>
 
+                    <!-- Contenedor para resultados del dataset activo -->
                     <div class="results-container">
                         <div id="results" style="display:none;">
                             <div class="results-content">
@@ -1151,6 +1241,7 @@
     </footer>
 
     <script>
+        // Función para cambiar entre pestañas del wizard
         function switchWizardTab(tabId) {
             // Quitar clase active de todos los botones y contenidos de wizard
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1163,125 +1254,95 @@
             const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
-            // Si estamos cambiando a la pestaña de resultados, verificar si hay datos calculados
-            if (tabId === 'tab-results') {
-                // Verificar si el formulario ya ha sido calculado
-                const resultsElement = document.getElementById('results');
-                if (resultsElement && resultsElement.style.display !== 'none') {
-                    // Ya hay resultados calculados, no hacer nada
-                } else {
-                    // No hay resultados, mostrar un mensaje o sugerir calcular
-                    console.log('No results available. Please calculate first.');
-                }
-            }
-
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
-            // Configurar botones globales
+            // Configurar botones globales para activar los botones originales
             const globalFillBtn = document.getElementById('globalFillExampleBtn');
             const globalResetBtn = document.getElementById('globalResetDataBtn');
-
-            // Crear botones originales dinámicamente (necesarios para el JS)
             const form = document.getElementById('cpkForm');
-            if (form) {
-                // Crear botón de ejemplo
-                const exampleBtn = document.createElement('button');
-                exampleBtn.type = 'button';
-                exampleBtn.id = 'fillExampleBtn';
-                exampleBtn.className = 'button-yellow';
-                exampleBtn.style.display = 'none';
-                exampleBtn.innerHTML = '<i class="fas fa-play-circle"></i> Fill Example';
 
-                // Crear botón de reset
-                const resetBtn = document.createElement('button');
-                resetBtn.type = 'button';
-                resetBtn.id = 'resetDataBtn';
-                resetBtn.className = 'reset-btn';
-                resetBtn.style.display = 'none';
-                resetBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Reset Data';
+            // Crear botones ocultos para que el script original funcione
+            const fillExampleBtn = document.createElement('button');
+            fillExampleBtn.id = 'fillExampleBtn';
+            fillExampleBtn.style.display = 'none';
 
-                // Añadir botones al formulario
-                const buttonGroup = form.querySelector('.button-group');
-                if (buttonGroup) {
-                    buttonGroup.appendChild(exampleBtn);
-                    buttonGroup.appendChild(resetBtn);
-                }
+            const resetDataBtn = document.createElement('button');
+            resetDataBtn.id = 'resetDataBtn';
+            resetDataBtn.style.display = 'none';
 
-                // Configurar botones globales para activar los botones originales
-                if (globalFillBtn) {
-                    globalFillBtn.addEventListener('click', function () {
-                        // Cambiar a la pestaña de calculadora
-                        switchWizardTab('tab-tool');
+            // Añadir botones ocultos al body
+            document.body.appendChild(fillExampleBtn);
+            document.body.appendChild(resetDataBtn);
 
-                        // Disparar el clic en el botón de ejemplo original
-                        setTimeout(function () {
-                            exampleBtn.click();
+            if (globalFillBtn && fillExampleBtn) {
+                globalFillBtn.addEventListener('click', function () {
+                    // Cambiar a la pestaña de calculadora
+                    switchWizardTab('tab-tool');
 
-                            // Scroll a la sección de entrada de datos
-                            setTimeout(function () {
-                                const calculatorSection = document.querySelector('#tab-tool .calculator-section');
-                                if (calculatorSection) {
-                                    calculatorSection.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            }, 100);
-                        }, 100);
-                    });
-                }
-
-                if (globalResetBtn) {
-                    globalResetBtn.addEventListener('click', function () {
-                        // Disparar el clic en el botón de reset original
-                        resetBtn.click();
-
-                        // Cambiar a la pestaña de calculadora
-                        switchWizardTab('tab-tool');
-
-                        // Ocultar resultados si están mostrándose
-                        const resultsTab = document.getElementById('tab-results');
-                        const resultsContainer = resultsTab.querySelector('.results-container');
-                        const overallContainer = resultsTab.querySelector('.overall-results-container');
-
-                        if (resultsContainer) {
-                            resultsContainer.style.display = 'none';
-                        }
-                        if (overallContainer) {
-                            overallContainer.style.display = 'none';
-                        }
-                    });
-                }
-
-                // Interceptar el formulario para cambiar a la pestaña de resultados
-                form.addEventListener('submit', function (e) {
-                    // Esto se ejecutará después del cálculo en cpk_calculator.js
+                    // Disparar el clic en el botón de ejemplo original
                     setTimeout(function () {
-                        // Aseguramos que los contenedores sean visibles (por si se ocultaron con Reset)
-                        const resultsContainer = document.querySelector('.results-container');
-                        const overallContainer = document.querySelector('.overall-results-container');
+                        fillExampleBtn.click();
 
-                        if (resultsContainer) {
-                            resultsContainer.style.display = 'flex';
-                        }
-                        if (overallContainer) {
-                            overallContainer.style.display = 'flex';
-                        }
+                        // Scroll a la sección de entrada de datos
+                        setTimeout(function () {
+                            const calculatorSection = document.querySelector('#tab-tool .calculator-section');
+                            if (calculatorSection) {
+                                calculatorSection.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }, 100);
+                    }, 100);
+                });
+            }
 
+            if (globalResetBtn && resetDataBtn) {
+                globalResetBtn.addEventListener('click', function () {
+                    // Disparar el clic en el botón de reset original
+                    resetDataBtn.click();
+
+                    // Cambiar a la pestaña de calculadora
+                    switchWizardTab('tab-tool');
+                });
+            }
+
+            // Modificar el formulario para que al calcular cambie a la pestaña de resultados
+            if (form) {
+                // Guardar el event listener original
+                const originalSubmit = form.onsubmit;
+
+                // Añadir nuestro propio event listener
+                form.addEventListener('submit', function (e) {
+                    // Esperar un momento para que el cálculo se complete
+                    setTimeout(function () {
                         // Cambiar a la pestaña de resultados
                         switchWizardTab('tab-results');
 
                         // Scroll a la sección de resultados
                         setTimeout(function () {
-                            const resultsSection = document.querySelector('#tab-results .tab-content-wrapper');
-                            if (resultsSection) {
-                                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                            const resultsTab = document.getElementById('tab-results');
+                            if (resultsTab) {
+                                resultsTab.scrollIntoView({ behavior: 'smooth' });
                             }
                         }, 100);
-                    }, 500);
+                    }, 300);
                 });
             }
+
+            // Asegurar que los gráficos tengan la marca de agua correctamente posicionada
+            setTimeout(function () {
+                document.querySelectorAll('.charts-wrapper > div').forEach(container => {
+                    if (!container.querySelector('.chart-watermark')) {
+                        const watermark = document.createElement('img');
+                        watermark.src = 'sigma-exacta-icon.jpg';
+                        watermark.alt = 'SigmaExacta Watermark';
+                        watermark.className = 'chart-watermark';
+                        container.appendChild(watermark);
+                    }
+                });
+            }, 1000);
         });
     </script>
 
