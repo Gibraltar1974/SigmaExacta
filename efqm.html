@@ -53,7 +53,6 @@
             background-color: #f5f7fa;
             line-height: 1.6;
             -webkit-text-size-adjust: 100%;
-            /* Prevenir auto-zoom en iOS */
             width: 100%;
             overflow-x: hidden;
         }
@@ -473,14 +472,11 @@
             margin-right: 15px;
             vertical-align: middle;
             cursor: pointer;
-            /* Base styles for custom range input */
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
-            /* Remove default background */
         }
 
-        /* Pista (Track) styles (Default grey background) */
         .score-slider::-webkit-slider-runnable-track {
             width: 100%;
             height: 6px;
@@ -495,17 +491,14 @@
             border-radius: 3px;
         }
 
-        /* Pomo (Thumb/Handle) styles - Usa la variable --slider-color de JavaScript */
         .score-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             margin-top: -5px;
-            /* Ajuste para centrar verticalmente */
             height: 16px;
             width: 16px;
             border-radius: 50%;
             background: var(--slider-color, var(--secondary-color));
-            /* Color de la categoría */
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
             transition: background-color 0.3s;
         }
@@ -515,7 +508,6 @@
             width: 16px;
             border-radius: 50%;
             background: var(--slider-color, var(--secondary-color));
-            /* Color de la categoría */
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
             border: none;
             transition: background-color 0.3s;
@@ -528,14 +520,11 @@
             text-align: right;
         }
 
-        /* ===== CORRECCIÓN DE OVERFLOW DEFINITIVA CON CSS GRID Y MINMAX ===== */
         .results-dashboard {
             display: grid;
-            /* Se redujo el mínimo a 250px para máxima compatibilidad móvil */
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             align-items: center;
-            /* Centrar verticalmente para mejor estética del radar */
         }
 
         #chart-wrapper {
@@ -606,38 +595,27 @@
             margin: 0.75rem 0 1rem 0;
         }
 
-        /* --- ESTILOS MODIFICADOS PARA EL ICONO EFQM EN H1 (30% más grande y cuadrado redondeado) --- */
         .efqm-h1-icon {
-            /* Estilos del botón verde (replicando data-color='20' de index.html) */
             display: inline-flex;
             justify-content: center;
             align-items: center;
             width: 50px;
-            /* Aumentado 30% */
             height: 50px;
-            /* Aumentado 30% */
             border-radius: 8px;
-            /* Cuadrado con esquinas redondeadas */
             background-color: #27ae60;
-            /* Color verde de data-color='20' en index.html */
             color: white;
-            /* Icono blanco (medalla) */
             font-size: 2.0rem;
-            /* Aumentado 30% para que el icono se vea mejor */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             margin-right: 12px;
-            /* Espacio entre el icono y el texto del H1 */
             vertical-align: middle;
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         .efqm-h1-icon:hover {
             background-color: #1e8449;
-            /* Verde más oscuro al pasar el ratón */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* Estilos para los botones de navegación entre pestañas */
         .tab-nav-buttons {
             display: flex;
             justify-content: space-between;
@@ -684,7 +662,6 @@
             background-color: #229954;
         }
 
-        /* Botones de acción en la pestaña de resultados */
         .results-actions {
             display: flex;
             gap: 10px;
@@ -693,11 +670,72 @@
             width: 100%;
             justify-content: center;
         }
+
+        /* ===== ESTILOS NUEVOS PARA LA TABLA DE RESULTADOS ===== */
+        .detailed-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .detailed-results-table th,
+        .detailed-results-table td {
+            padding: 10px;
+            border: 1px solid #eee;
+            text-align: left;
+        }
+
+        .criteria-header-row {
+            color: white;
+            font-weight: bold;
+        }
+
+        .sub-criteria-row:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .score-cell {
+            text-align: center !important;
+            font-weight: bold;
+            width: 80px;
+        }
+
+        /* NUEVO: Estilo para ocultar resultados */
+        .results-hidden {
+            display: none !important;
+        }
+
+        /* NUEVO: Estilo para mostrar mensaje cuando los resultados están ocultos */
+        .hidden-results-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #7f8c8d;
+            font-style: italic;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            margin: 2rem 0;
+            background-color: #f9f9f9;
+        }
+
+        .hidden-results-message i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .hidden-results-message h3 {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .hidden-results-message p {
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Contenedor donde se cargará el header dinámicamente -->
     <div id="header-container"></div>
 
     <noscript>
@@ -738,7 +776,6 @@
             <p>Diagnose your organization's maturity level using a holistic performance framework.</p>
         </header>
 
-        <!-- BOTONES PRINCIPALES -->
         <div class="main-action-buttons">
             <button id="globalLoadExampleBtn" class="btn-example">
                 <i class="fas fa-bolt"></i> Load Example Data
@@ -748,9 +785,7 @@
             </button>
         </div>
 
-        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
-            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
             <nav class="tabs-nav">
                 <button class="tab-btn active" onclick="switchWizardTab('tab-theory')">
                     <i class="fas fa-book"></i> Theory & Info
@@ -763,7 +798,6 @@
                 </button>
             </nav>
 
-            <!-- PESTAÑA 1: TEORÍA -->
             <div id="tab-theory" class="wizard-tab-content active">
                 <div class="tab-content-wrapper">
                     <div class="block">
@@ -831,7 +865,6 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: ENTRADA DE DATOS Y EVALUACIÓN -->
             <div id="tab-input" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="block">
@@ -839,7 +872,6 @@
                         <p>Click on each criterion below to expand and evaluate your organization's performance. Use the
                             sliders to assign scores (0-100%) for each sub-criterion.</p>
 
-                        <!-- Botones ocultos para mantener compatibilidad con el código existente -->
                         <div style="display: none;">
                             <button type="button" id="loadExampleBtn" class="btn-success"><i class="fas fa-bolt"></i>
                                 Load Example
@@ -859,74 +891,101 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 3: RESULTADOS Y EXPORTACIÓN -->
             <div id="tab-results" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
-                    <div class="block">
-                        <div class="block-title"><i class="fas fa-chart-line"></i> Results Dashboard</div>
+                    <!-- CONTENEDOR PRINCIPAL DE RESULTADOS (se ocultará inicialmente) -->
+                    <div id="results-container" class="results-hidden">
+                        <div class="block">
+                            <div class="block-title"><i class="fas fa-chart-line"></i> Results Dashboard</div>
 
-                        <div class="results-dashboard" id="results-block">
-                            <div id="score-summary">
-                                <div class="block-title"><i class="fas fa-sitemap"></i> Foundations: <span
-                                        id="foundations_score" class="result-value">-</span> / 200 pts</div>
-                                <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Logo" class="summary-logo">
-                                <p><i class="fas fa-cogs"></i> Processes: <span id="processes_score"
-                                        class="result-value">-</span> / 400
-                                    pts</p>
-                                <p><i class="fas fa-trophy"></i> Outcomes: <span id="outcomes_score"
-                                        class="result-value">-</span> / 400
-                                    pts</p>
-                                <hr>
-                                <p style="font-size: 1.2em; font-weight: bold;">Total Score: <span id="total_score"
-                                        class="result-value">-</span> / 1000</p>
-                                <p>Maturity Level: <span id="maturity_level" class="badge">-</span></p>
+                            <div class="results-dashboard" id="results-block">
+                                <div id="score-summary">
+                                    <div class="block-title"><i class="fas fa-sitemap"></i> Foundations: <span
+                                            id="foundations_score" class="result-value">-</span> / 200 pts</div>
+                                    <img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Logo" class="summary-logo">
+                                    <p><i class="fas fa-cogs"></i> Processes: <span id="processes_score"
+                                            class="result-value">-</span> / 400
+                                        pts</p>
+                                    <p><i class="fas fa-trophy"></i> Outcomes: <span id="outcomes_score"
+                                            class="result-value">-</span> / 400
+                                        pts</p>
+                                    <hr>
+                                    <p style="font-size: 1.2em; font-weight: bold;">Total Score: <span id="total_score"
+                                            class="result-value">-</span> / 1000</p>
+                                    <p>Maturity Level: <span id="maturity_level" class="badge">-</span></p>
+                                </div>
+                                <div id="chart-wrapper">
+                                    <canvas id="excellenceChart"></canvas>
+                                </div>
                             </div>
-                            <div id="chart-wrapper">
-                                <canvas id="excellenceChart"></canvas>
+                        </div>
+
+                        <div class="block" id="analysis-block">
+                            <div class="block-title"><i class="fas fa-lightbulb"></i> Automated Analysis</div>
+                            <div class="results-dashboard">
+                                <div class="analysis-section">
+                                    <h4><i class="fas fa-star" style="color:var(--success-color);"></i> Key Strengths
+                                    </h4>
+                                    <ul id="strengths-list">
+                                        <li>Complete the assessment to see analysis.</li>
+                                    </ul>
+                                </div>
+                                <div class="analysis-section">
+                                    <h4><i class="fas fa-lightbulb" style="color:var(--warning-color);"></i>
+                                        Opportunities
+                                        for
+                                        Improvement</h4>
+                                    <ul id="ofis-list">
+                                        <li>Complete the assessment to see analysis.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="block" id="notes-block">
+                            <div class="block-title"><i class="fas fa-pen-alt"></i> Notes & Action Plan</div>
+                            <p>Use the space below to write down your reflections, key findings, or next steps.</p>
+                            <textarea id="actionPlan"
+                                placeholder="e.g., Action: Review stakeholder engagement strategy (Criterion 3). Owner: John Doe. Deadline: Q3."></textarea>
+                        </div>
+
+                        <div class="block" id="detailed-results-view" style="display: none;">
+                            <div class="block-title"><i class="fas fa-list-ol"></i> Detailed Score Breakdown</div>
+                            <div id="detailed-results-content">
                             </div>
                         </div>
                     </div>
 
-                    <div class="block" id="analysis-block">
-                        <div class="block-title"><i class="fas fa-lightbulb"></i> Automated Analysis</div>
-                        <div class="results-dashboard">
-                            <div class="analysis-section">
-                                <h4><i class="fas fa-star" style="color:var(--success-color);"></i> Key Strengths</h4>
-                                <ul id="strengths-list">
-                                    <li>Complete the assessment to see analysis.</li>
-                                </ul>
-                            </div>
-                            <div class="analysis-section">
-                                <h4><i class="fas fa-lightbulb" style="color:var(--warning-color);"></i> Opportunities
-                                    for
-                                    Improvement</h4>
-                                <ul id="ofis-list">
-                                    <li>Complete the assessment to see analysis.</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <!-- MENSAJE CUANDO LOS RESULTADOS ESTÁN OCULTOS -->
+                    <div class="hidden-results-message" id="hidden-results-message">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Results Hidden</h3>
+                        <p>Click "Show Results" to view your assessment results, analysis, and action plan.</p>
                     </div>
 
-                    <div class="block" id="notes-block">
-                        <div class="block-title"><i class="fas fa-pen-alt"></i> Notes & Action Plan</div>
-                        <p>Use the space below to write down your reflections, key findings, or next steps.</p>
-                        <textarea id="actionPlan"
-                            placeholder="e.g., Action: Review stakeholder engagement strategy (Criterion 3). Owner: John Doe. Deadline: Q3."></textarea>
-                    </div>
-
+                    <!-- BOTONES DE ACCIÓN (siempre visibles) -->
                     <div class="block" style="text-align: center;">
                         <div class="results-actions">
-                            <button id="exportExcelBtn"><i class="fas fa-file-excel"></i> Export Excellence Report to
-                                Excel</button>
-                            <button id="exportJpgBtn"><i class="fas fa-file-image"></i> Export Results to JPG</button>
+                            <button id="listResultsBtn" style="background-color: #8e44ad;">
+                                <i class="fas fa-eye"></i> Show Results
+                            </button>
+
+                            <button id="exportExcelBtn">
+                                <i class="fas fa-file-excel"></i> Export Excellence Report to Excel
+                            </button>
+                            <button id="exportJpgBtn">
+                                <i class="fas fa-file-image"></i> Export Results to JPG
+                            </button>
                         </div>
                     </div>
 
                     <div class="tab-nav-buttons">
-                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-input')"><i
-                                class="fas fa-arrow-left"></i> Back to Data Input & Assessment</button>
-                        <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">Back to Theory <i
-                                class="fas fa-book"></i></button>
+                        <button class="btn-next-tab btn-prev" onclick="switchWizardTab('tab-input')">
+                            <i class="fas fa-arrow-left"></i> Back to Data Input & Assessment
+                        </button>
+                        <button class="btn-next-tab" onclick="switchWizardTab('tab-theory')">
+                            Back to Theory <i class="fas fa-book"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1037,11 +1096,14 @@
         ];
         let criteriaData;
         let excellenceChart;
+        let resultsVisible = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             resetAll();
             initializeChart();
             setupEventListeners();
         });
+
         function renderAccordion() {
             const accordionContainer = document.getElementById('assessmentAccordion');
             accordionContainer.innerHTML = '';
@@ -1077,6 +1139,7 @@
             });
             attachSliderListeners();
         }
+
         function attachSliderListeners() {
             document.querySelectorAll('.score-slider').forEach(slider => {
                 slider.oninput = (e) => {
@@ -1089,6 +1152,7 @@
                 };
             });
         }
+
         function initializeChart() {
             const ctx = document.getElementById('excellenceChart').getContext('2d');
 
@@ -1141,6 +1205,7 @@
                 }
             });
         }
+
         function setupEventListeners() {
             // Usar los nuevos botones globales
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
@@ -1149,6 +1214,9 @@
             // Mantener compatibilidad con los botones existentes (ocultos)
             document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
             document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+            // LISTENER PARA EL NUEVO BOTÓN
+            document.getElementById('listResultsBtn').addEventListener('click', toggleResultsVisibility);
 
             document.getElementById('assessmentAccordion').addEventListener('click', e => {
                 const header = e.target.closest('.accordion-header');
@@ -1161,6 +1229,7 @@
             document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
             document.getElementById('exportJpgBtn').addEventListener('click', exportToJpg);
         }
+
         function updateUI() {
             let foundationsScore = 0, processesScore = 0, outcomesScore = 0, totalScore = 0;
             criteriaData.forEach((c, i) => {
@@ -1192,6 +1261,7 @@
             excellenceChart.update();
             generateAnalysis();
         }
+
         function generateAnalysis() {
             const sortedCriteria = [...criteriaData].sort((a, b) => b.score - a.score);
             const strengths = sortedCriteria.slice(0, 3).filter(c => c.score > 60);
@@ -1205,96 +1275,341 @@
                 ? ofis.map(c => `<li><i class="fas fa-arrow-alt-circle-up" style="color:var(--warning-color);"></i>${c.name.split('. ')[1]} (${c.score.toFixed(0)}%)</li>`).join('')
                 : '<li>No significant opportunities identified yet.</li>';
         }
+
         function resetAll() {
             criteriaData = JSON.parse(JSON.stringify(exampleDataTemplate));
             criteriaData.forEach(c => { c.subCriteria.forEach(sub => sub.score = 0); });
             document.getElementById('actionPlan').value = '';
             renderAccordion();
-            if (excellenceChart) { updateUI(); }
+
+            // Asegurar que los resultados estén ocultos
+            document.getElementById('results-container').classList.add('results-hidden');
+            document.getElementById('hidden-results-message').style.display = 'block';
+            document.getElementById('listResultsBtn').innerHTML = '<i class="fas fa-eye"></i> Show Results';
+            document.getElementById('listResultsBtn').style.backgroundColor = '#8e44ad';
+            resultsVisible = false;
+
+            if (excellenceChart) {
+                updateUI();
+            }
         }
+
         function loadExample() {
             criteriaData = JSON.parse(JSON.stringify(exampleDataTemplate));
             document.getElementById('actionPlan').value = "Example Action Plan:\n1. Review stakeholder feedback process (Criterion 3) to better capture insights.\n2. Launch a pilot project to improve process efficiency (Criterion 4).\n3. Communicate strategic goals more clearly to all teams (Criterion 1).";
             renderAccordion();
             updateUI();
+
+            // Asegurar que los resultados estén ocultos
+            document.getElementById('results-container').classList.add('results-hidden');
+            document.getElementById('hidden-results-message').style.display = 'block';
+            document.getElementById('listResultsBtn').innerHTML = '<i class="fas fa-eye"></i> Show Results';
+            document.getElementById('listResultsBtn').style.backgroundColor = '#8e44ad';
+            resultsVisible = false;
+
+            // Cambiar a la pestaña de input
+            switchWizardTab('tab-input');
+
+            // Esperar un momento para que se renderice la pestaña y hacer scroll
+            setTimeout(() => {
+                const accordion = document.getElementById('assessmentAccordion');
+                accordion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
+        // FUNCION PARA MOSTRAR/OCULTAR RESULTADOS
+        function toggleResultsVisibility() {
+            const container = document.getElementById('results-container');
+            const hiddenMessage = document.getElementById('hidden-results-message');
+            const listResultsBtn = document.getElementById('listResultsBtn');
+
+            if (!resultsVisible) {
+                // Mostrar TODO el contenido de resultados
+                container.classList.remove('results-hidden');
+                hiddenMessage.style.display = 'none';
+
+                // Mostrar también la tabla detallada
+                document.getElementById('detailed-results-view').style.display = 'block';
+                updateDetailedTable();
+
+                // Cambiar el texto del botón
+                listResultsBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Results';
+                listResultsBtn.style.backgroundColor = '#34495e';
+                resultsVisible = true;
+
+                // Scroll a los resultados
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                // Ocultar TODO el contenido de resultados
+                container.classList.add('results-hidden');
+                hiddenMessage.style.display = 'block';
+
+                // Ocultar también la tabla detallada
+                document.getElementById('detailed-results-view').style.display = 'none';
+
+                // Cambiar el texto del botón
+                listResultsBtn.innerHTML = '<i class="fas fa-eye"></i> Show Results';
+                listResultsBtn.style.backgroundColor = '#8e44ad';
+                resultsVisible = false;
+
+                // Scroll al mensaje
+                hiddenMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // FUNCIÓN AUXILIAR PARA ACTUALIZAR TABLA DETALLADA
+        function updateDetailedTable() {
+            const content = document.getElementById('detailed-results-content');
+            let html = '<table class="detailed-results-table">';
+
+            criteriaData.forEach(c => {
+                const totalScore = c.subCriteria.reduce((sum, sub) => sum + sub.score, 0) / c.subCriteria.length;
+
+                html += `
+                    <tr class="criteria-header-row" style="background-color: ${c.color};">
+                        <td colspan="2">
+                            ${c.name} <span style="float:right;">${totalScore.toFixed(1)}%</span>
+                        </td>
+                    </tr>
+                `;
+
+                c.subCriteria.forEach(sub => {
+                    html += `
+                        <tr class="sub-criteria-row">
+                            <td>${sub.q}</td>
+                            <td class="score-cell">${sub.score}%</td>
+                        </tr>
+                    `;
+                });
+            });
+
+            html += '</table>';
+            content.innerHTML = html;
+        }
+
+        // FUNCIÓN MEJORADA PARA EXPORTAR A EXCEL
         function exportToExcel() {
+            // Si los resultados no están visibles, mostrarlos primero
+            if (!resultsVisible) {
+                toggleResultsVisibility();
+                // Esperar un momento para que se rendericen los resultados
+                setTimeout(exportExcelWithData, 300);
+            } else {
+                exportExcelWithData();
+            }
+        }
+
+        function exportExcelWithData() {
             const wb = XLSX.utils.book_new();
+
+            // HOJA 1: RESUMEN
             const summaryData = [
-                ["Pillar", "Score", "Max Score"],
-                ["Foundations", parseFloat(document.getElementById('foundations_score').textContent), 300],
-                ["Processes", parseFloat(document.getElementById('processes_score').textContent), 300],
+                ["ORGANIZATIONAL MATURITY ASSESSMENT REPORT", "", "", "", ""],
+                ["Generated by Sigma Exacta", "", "", "", ""],
+                ["Date:", new Date().toLocaleDateString(), "", "", ""],
+                ["", "", "", "", ""],
+                ["PILLAR", "SCORE", "MAX SCORE", "PERCENTAGE", "RATING"],
+                ["Foundations", parseFloat(document.getElementById('foundations_score').textContent), 200],
+                ["Processes", parseFloat(document.getElementById('processes_score').textContent), 400],
                 ["Outcomes", parseFloat(document.getElementById('outcomes_score').textContent), 400],
-                ["TOTAL", parseFloat(document.getElementById('total_score').textContent), 1000]
+                ["TOTAL", parseFloat(document.getElementById('total_score').textContent), 1000],
+                ["", "", "", "", ""],
+                ["MATURITY LEVEL", document.getElementById('maturity_level').textContent, "", "", ""],
+                ["", "", "", "", ""],
+                ["KEY STRENGTHS", "", "", "", ""]
             ];
+
+            // Añadir fortalezas
+            const strengths = document.querySelectorAll('#strengths-list li');
+            strengths.forEach(li => {
+                const text = li.textContent.replace('●', '').trim();
+                if (text && text !== "Complete the assessment to see analysis.") {
+                    summaryData.push([text, "", "", "", ""]);
+                }
+            });
+
+            summaryData.push(["", "", "", "", ""], ["OPPORTUNITIES FOR IMPROVEMENT", "", "", "", ""]);
+
+            // Añadir oportunidades
+            const ofis = document.querySelectorAll('#ofis-list li');
+            ofis.forEach(li => {
+                const text = li.textContent.replace('●', '').trim();
+                if (text && text !== "Complete the assessment to see analysis." && text !== "No significant opportunities identified yet.") {
+                    summaryData.push([text, "", "", "", ""]);
+                }
+            });
+
+            // Calcular porcentajes y ratings
+            for (let i = 5; i <= 8; i++) {
+                if (summaryData[i] && summaryData[i][1] !== undefined) {
+                    const score = summaryData[i][1];
+                    const max = summaryData[i][2];
+                    const percentage = max > 0 ? ((score / max) * 100).toFixed(1) + "%" : "0%";
+                    summaryData[i][3] = percentage;
+
+                    // Añadir rating
+                    if (i === 8) { // Total
+                        const totalScore = score;
+                        let rating = '';
+                        if (totalScore < 300) rating = 'Getting Started';
+                        else if (totalScore < 500) rating = 'Developing';
+                        else if (totalScore < 700) rating = 'Mature';
+                        else rating = 'Role Model';
+                        summaryData[i][4] = rating;
+                    } else {
+                        summaryData[i][4] = (score / max) >= 0.7 ? 'Good' : (score / max) >= 0.5 ? 'Fair' : 'Needs Improvement';
+                    }
+                }
+            }
+
             const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
-            ws1['!cols'] = [{ wch: 20 }, { wch: 10 }, { wch: 10 }];
+            ws1['!cols'] = [{ wch: 35 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }];
+
+            // Formatear celdas
+            ws1['A1'].s = { font: { bold: true, size: 16 }, alignment: { horizontal: 'center' } };
+            ws1['A2'].s = { font: { italic: true }, alignment: { horizontal: 'center' } };
+
+            // Fusionar celdas para el título
+            ws1['!merges'] = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }
+            ];
+
             XLSX.utils.book_append_sheet(wb, ws1, "Summary");
 
-            // Captura el gráfico como Base64
-            const chartBase64 = excellenceChart.toBase64Image();
-
-            // Inserta la imagen en la hoja de cálculo
-            if (!ws1['!images']) ws1['!images'] = [];
-            ws1['!images'].push({
-                name: 'ExcellenceChart.png',
-                data: chartBase64, // Pasa la cadena base64 directamente
-                tl: { col: 4, row: 1 },
-                br: { col: 12, row: 15 }
-            });
-
+            // HOJA 2: PUNTUACIONES DETALLADAS
             const detailedData = [];
-            detailedData.push(["Criterion", "Sub-Criterion / Question", "Score (%)"]);
+            detailedData.push(["CRITERION", "SUB-CRITERION / QUESTION", "SCORE (%)", "WEIGHT", "POINTS"]);
+
             criteriaData.forEach(c => {
-                detailedData.push([c.name, "OVERALL SCORE", c.score.toFixed(1)]);
-                c.subCriteria.forEach(sub => { detailedData.push(["", sub.q, sub.score]); });
+                const totalScore = c.subCriteria.reduce((sum, sub) => sum + sub.score, 0) / c.subCriteria.length;
+                const points = (totalScore / 100) * c.weight;
+
+                detailedData.push([c.name, "OVERALL SCORE", totalScore.toFixed(1), c.weight, points.toFixed(1)]);
+
+                c.subCriteria.forEach(sub => {
+                    detailedData.push(["", sub.q, sub.score, "", ""]);
+                });
+
                 detailedData.push([]);
             });
+
             const ws2 = XLSX.utils.aoa_to_sheet(detailedData);
-            ws2['!cols'] = [{ wch: 40 }, { wch: 60 }, { wch: 10 }];
+            ws2['!cols'] = [{ wch: 40 }, { wch: 60 }, { wch: 12 }, { wch: 12 }, { wch: 12 }];
             XLSX.utils.book_append_sheet(wb, ws2, "Detailed Scores");
-            const notesData = [["Notes & Action Plan"], [document.getElementById('actionPlan').value || "No notes entered."]];
+
+            // HOJA 3: PLAN DE ACCIÓN
+            const notesData = [
+                ["NOTES & ACTION PLAN"],
+                [""],
+                [document.getElementById('actionPlan').value || "No notes entered."],
+                [""],
+                ["", "", "", "", ""],
+                ["ASSESSMENT PROFILE CHART", "", "", "", ""],
+                ["", "", "", "", ""]
+            ];
+
             const ws3 = XLSX.utils.aoa_to_sheet(notesData);
             ws3['!cols'] = [{ wch: 100 }];
-            XLSX.utils.book_append_sheet(wb, ws3, "Notes");
 
-            XLSX.writeFile(wb, "Business_Excellence_Report_Sigma_Exacta.xlsx");
+            // Formatear celdas
+            ws3['A1'].s = { font: { bold: true, size: 14 } };
+            ws3['A6'].s = { font: { bold: true } };
+
+            XLSX.utils.book_append_sheet(wb, ws3, "Action Plan");
+
+            // HOJA 4: GRÁFICO
+            const chartData = [["Organizational Excellence Profile"]];
+            const ws4 = XLSX.utils.aoa_to_sheet(chartData);
+            ws4['!cols'] = [{ wch: 30 }];
+
+            // Convertir gráfico a imagen base64
+            const chartBase64 = excellenceChart.toBase64Image();
+
+            // Nota: XLSX.js no soporta imágenes directamente, pero podemos agregar la imagen como un objeto
+            // En versiones más recientes, se puede usar el complemento de imágenes
+            // Para este ejemplo, crearemos una hoja de cálculo simple
+
+            // Crear una hoja con datos del gráfico
+            const chartPoints = [["Criterion", "Score (%)"]];
+            criteriaData.forEach(c => {
+                const totalScore = c.subCriteria.reduce((sum, sub) => sum + sub.score, 0) / c.subCriteria.length;
+                chartPoints.push([c.shortName, totalScore.toFixed(1)]);
+            });
+
+            const wsChart = XLSX.utils.aoa_to_sheet(chartPoints);
+            wsChart['!cols'] = [{ wch: 20 }, { wch: 15 }];
+            XLSX.utils.book_append_sheet(wb, wsChart, "Chart Data");
+
+            // EXPORTAR
+            XLSX.writeFile(wb, `Organizational_Maturity_Assessment_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            // Mostrar mensaje de éxito
+            alert("Report exported successfully! The Excel file contains 4 sheets: Summary, Detailed Scores, Action Plan, and Chart Data.");
         }
 
         function exportToJpg() {
-            const resultsContainer = document.getElementById('results-block');
-            const analysisContainer = document.getElementById('analysis-block');
-            const notesContainer = document.getElementById('notes-block');
+            // Si los resultados no están visibles, mostrarlos primero
+            if (!resultsVisible) {
+                toggleResultsVisibility();
+                // Esperar un momento para que se rendericen los resultados
+                setTimeout(exportJpgWithData, 300);
+            } else {
+                exportJpgWithData();
+            }
+        }
 
+        function exportJpgWithData() {
+            const resultsContainer = document.getElementById('results-container');
+
+            // Crear un contenedor temporal para la captura
             const tempContainer = document.createElement('div');
             tempContainer.style.background = 'white';
             tempContainer.style.padding = '20px';
-            tempContainer.style.width = '700px';
+            tempContainer.style.width = '800px';
+            tempContainer.style.maxWidth = '90%';
+            tempContainer.style.margin = '0 auto';
             tempContainer.style.fontFamily = 'Nunito, sans-serif';
             tempContainer.style.lineHeight = '1.6';
             tempContainer.style.color = '#333';
             tempContainer.style.position = 'absolute';
             tempContainer.style.left = '-9999px';
+            tempContainer.style.top = '0';
 
-            tempContainer.appendChild(resultsContainer.cloneNode(true));
-            tempContainer.appendChild(analysisContainer.cloneNode(true));
-            tempContainer.appendChild(notesContainer.cloneNode(true));
+            // Clonar el contenido de resultados
+            const clone = resultsContainer.cloneNode(true);
+            clone.classList.remove('results-hidden');
+            tempContainer.appendChild(clone);
+
+            // Agregar encabezado
+            const header = document.createElement('div');
+            header.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #3498db;">
+                    <h1 style="color: #2c3e50; margin: 0 0 10px 0;">Organizational Maturity Assessment</h1>
+                    <p style="color: #7f8c8d; margin: 0;">Generated by Sigma Exacta - ${new Date().toLocaleDateString()}</p>
+                </div>
+            `;
+            tempContainer.insertBefore(header, tempContainer.firstChild);
 
             document.body.appendChild(tempContainer);
 
             html2canvas(tempContainer, {
                 scale: 2,
                 logging: false,
-                useCORS: true
+                useCORS: true,
+                backgroundColor: '#ffffff'
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
-                link.download = 'Organizational_Assessment_Report.jpg';
+                link.download = `Organizational_Assessment_${new Date().toISOString().split('T')[0]}.jpg`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
 
+                document.body.removeChild(tempContainer);
+            }).catch(error => {
+                console.error('Error exporting to JPG:', error);
+                alert('Error exporting to JPG. Please try again.');
                 document.body.removeChild(tempContainer);
             });
         }
