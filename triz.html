@@ -3057,7 +3057,7 @@
                             <option value="inefficient">Inefficient interaction</option>
                         </select>
                     </div>
-                    <div class="sufield-triangle-container" id="sufield-diagram-${systemId}">
+                    <div class="sufield-triangle-container sufield-system-diagram" id="sufield-diagram-${systemId}">
                         </div>
                 </div>
             `;
@@ -3198,6 +3198,20 @@
             const resultsDiv = document.getElementById('results-container');
             let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
 
+            // PROBLEM DEFINITION (New Section)
+            html += `<div class="solver-step">
+                <h4><i class="fas fa-tasks"></i> Problem Definition</h4>
+                <p><strong>System:</strong> ${problemData.system}</p>
+                <p><strong>Primary Function:</strong> ${problemData.function}</p>
+                <p><strong>Main Drawback:</strong> ${problemData.harm}</p>
+            </div>`;
+
+            // IDEAL FINAL RESULT (New Section)
+            html += `<div class="solver-step">
+                <h4><i class="fas fa-rocket"></i> Ideal Final Result (IFR)</h4>
+                <p><strong>Formulation:</strong> ${problemData.ifr}</p>
+            </div>`;
+
             // LDST Analysis
             html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
         <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
@@ -3235,8 +3249,8 @@
         </p>
     </div>`;
 
-            // Problem Summary
-            html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Problem Summary</h4><p><strong>System:</strong> ${problemData.system || 'N/A'}</p>`;
+            // Problem Summary (Contradiction)
+            html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Contradiction Summary</h4>`;
 
             if (problemData.contradictionType === 'technical') {
                 html += `<div class="contradiction-visual">
