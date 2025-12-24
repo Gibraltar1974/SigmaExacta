@@ -1644,10 +1644,9 @@
                 Solving (TRIZ) Tool</h1>
             <p class="header-subtitle">A data-driven method for systematic innovation and invention.</p>
 
-            <!-- BOTONES PRINCIPALES -->
             <div class="main-action-buttons">
                 <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-play-circle"></i> Load Example
+                    <i class="fas fa-play-circle"></i> Load Next Example
                 </button>
                 <button id="globalResetBtn" class="btn-reset">
                     <i class="fas fa-sync-alt"></i> Reset All
@@ -1655,7 +1654,6 @@
             </div>
         </header>
 
-        <!-- PESTAÑAS PRINCIPALES -->
         <nav class="tabs-nav">
             <button class="tab-btn active" onclick="switchMainTab('tab-start')">
                 <i class="fas fa-info-circle"></i> Start & Info
@@ -1668,7 +1666,6 @@
             </button>
         </nav>
 
-        <!-- CONTENIDO PESTAÑA 1: START & INFO -->
         <div id="tab-start" class="tab-content active">
             <div class="content-block">
                 <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
@@ -1842,9 +1839,7 @@
             </div>
         </div>
 
-        <!-- CONTENIDO PESTAÑA 2: TRIZ TOOLS -->
         <div id="tab-tools" class="tab-content">
-            <!-- NAVEGACIÓN DE SUB-HERRAMIENTAS -->
             <div class="subtools-nav">
                 <button class="subtool-btn active" onclick="switchTool('tool-define')">
                     <i class="fas fa-tasks"></i> 2. Define Problem
@@ -1863,7 +1858,6 @@
                 </button>
             </div>
 
-            <!-- CONTENIDO HERRAMIENTA 1: DEFINE PROBLEM -->
             <div id="tool-define" class="tool-content-container active">
                 <div class="solver-step">
                     <h3><i class="fas fa-tasks"></i> 2. Define the Problem</h3>
@@ -1882,7 +1876,6 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO HERRAMIENTA 2: LDST ANALYSIS -->
             <div id="tool-ldst" class="tool-content-container">
                 <div class="solver-step">
                     <h3><i class="fas fa-project-diagram"></i> 1. Laws of Development of Technical Systems (LDST)</h3>
@@ -1991,7 +1984,6 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO HERRAMIENTA 3: FORMULATE IFR -->
             <div id="tool-ifr" class="tool-content-container">
                 <div class="solver-step">
                     <h3><i class="fas fa-rocket"></i> 3. Formulate Ideal Final Result (IFR)</h3>
@@ -2004,7 +1996,6 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO HERRAMIENTA 4: CONTRADICTION -->
             <div id="tool-contradiction" class="tool-content-container">
                 <div class="solver-step">
                     <h3><i class="fas fa-exchange-alt"></i> 4. Identify the Core Contradiction</h3>
@@ -2150,7 +2141,6 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO HERRAMIENTA 5: SU-FIELD ANALYSIS -->
             <div id="tool-sufield" class="tool-content-container">
                 <div class="solver-step">
                     <h3><i class="fas fa-atom"></i> 5. Su-Field Analysis</h3>
@@ -2186,7 +2176,6 @@
             </div>
         </div>
 
-        <!-- CONTENIDO PESTAÑA 3: SOLVE & REPORT -->
         <div id="tab-solve" class="tab-content">
             <div class="solver-step" style="text-align: center; padding: 30px;">
                 <h2 style="color: var(--secondary-color);">Ready to Generate Solution?</h2>
@@ -2235,6 +2224,7 @@
         let worseningFeatureIndex = null;
         let currentMatrixVersion = 'classic';
         let currentRecommendedLaws = ['law4'];
+        let globalSuFieldCounter = 0; // Added global counter to avoid duplicate IDs
 
         // Variables para el flujo de contradicciones físicas
         let physicalStrategyFlow = {
@@ -2369,6 +2359,8 @@
         // ===== FUNCIONES DE EJEMPLO Y RESET =====
         function loadExampleAndGo() {
             loadExample();
+            switchMainTab('tab-tools');
+            switchTool('tool-define');
         }
 
         function resetTool() {
@@ -2412,6 +2404,7 @@
 
             // Reset Su-Field systems
             document.getElementById('sufield-systems-container').innerHTML = '';
+            globalSuFieldCounter = 0;
 
             // Usar setTimeout para agregar el sistema después de limpiar
             setTimeout(() => {
@@ -2615,13 +2608,14 @@
 
             if (currentExample.sufield && currentExample.sufield.systems) {
                 document.getElementById('sufield-systems-container').innerHTML = '';
+                globalSuFieldCounter = 0; // Reset counter
 
                 // Agregar sistemas con delays escalonados
                 currentExample.sufield.systems.forEach((system, index) => {
                     addSuFieldSystem();
 
                     setTimeout(() => {
-                        const systemContainer = document.getElementById('sufield-systems-container').lastElementChild;
+                        const systemContainer = document.getElementById('sufield-systems-container').children[index];
                         if (systemContainer) {
                             systemContainer.querySelector('.sufield-object').value = system.object || '';
                             systemContainer.querySelector('.sufield-tool').value = system.tool || '';
@@ -3023,33 +3017,38 @@
         // ===== FUNCIONES DE SU-FIELD =====
         function addSuFieldSystem() {
             const container = document.getElementById('sufield-systems-container');
-            const systemCount = container.children.length + 1;
+            // Use global counter to ensure unique IDs, avoiding the 'null' error on element removal
+            globalSuFieldCounter++;
+            const systemId = globalSuFieldCounter;
+
+            // Note: The UI label will be sequential based on current DOM elements
+            const uiLabelIndex = container.children.length + 1;
 
             const systemHTML = `
                 <div class="sufield-system">
                     <div class="sufield-system-header">
-                        <div class="sufield-system-title">System ${systemCount}</div>
+                        <div class="sufield-system-title">System ${uiLabelIndex}</div>
                         <button type="button" class="btn-warning" onclick="removeSuFieldSystem(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
                             <i class="fas fa-times"></i> Remove
                         </button>
                     </div>
                     <div class="sufield-system-fields">
                         <div class="form-group">
-                            <label for="sufield-object-${systemCount}">Object (S1):</label>
-                            <input type="text" class="sufield-object" id="sufield-object-${systemCount}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                            <label for="sufield-object-${systemId}">Object (S1):</label>
+                            <input type="text" class="sufield-object" id="sufield-object-${systemId}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
                         </div>
                         <div class="form-group">
-                            <label for="sufield-tool-${systemCount}">Tool (S2):</label>
-                            <input type="text" class="sufield-tool" id="sufield-tool-${systemCount}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                            <label for="sufield-tool-${systemId}">Tool (S2):</label>
+                            <input type="text" class="sufield-tool" id="sufield-tool-${systemId}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
                         </div>
                         <div class="form-group">
-                            <label for="sufield-field-${systemCount}">Field (F):</label>
-                            <input type="text" class="sufield-field" id="sufield-field-${systemCount}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                            <label for="sufield-field-${systemId}">Field (F):</label>
+                            <input type="text" class="sufield-field" id="sufield-field-${systemId}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="sufield-type-${systemCount}">Problem Type:</label>
-                        <select class="sufield-type" id="sufield-type-${systemCount}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        <label for="sufield-type-${systemId}">Problem Type:</label>
+                        <select class="sufield-type" id="sufield-type-${systemId}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
                             <option value="insufficient">Insufficient interaction</option>
                             <option value="harmful">Harmful interaction</option>
                             <option value="difficult">Difficult to control</option>
@@ -3058,9 +3057,8 @@
                             <option value="inefficient">Inefficient interaction</option>
                         </select>
                     </div>
-                    <div class="sufield-triangle-container" id="sufield-diagram-${systemCount}">
-                        <!-- Diagram will be generated here -->
-                    </div>
+                    <div class="sufield-triangle-container" id="sufield-diagram-${systemId}">
+                        </div>
                 </div>
             `;
 
@@ -3069,15 +3067,17 @@
             // Usar setTimeout para asegurar que el DOM esté completamente renderizado
             setTimeout(() => {
                 const newSystem = container.lastElementChild;
-                updateSuFieldDiagram(newSystem);
-            }, 10);
+                if (newSystem) {
+                    updateSuFieldDiagram(newSystem);
+                }
+            }, 50);
         }
 
         function removeSuFieldSystem(button) {
             const system = button.closest('.sufield-system');
             if (system && document.querySelectorAll('.sufield-system').length > 1) {
                 system.remove();
-                // Renumber remaining systems
+                // Renumber remaining systems UI labels only
                 const systems = document.querySelectorAll('.sufield-system');
                 systems.forEach((sys, index) => {
                     sys.querySelector('.sufield-system-title').textContent = `System ${index + 1}`;
@@ -3088,12 +3088,13 @@
         // ===== FUNCIONES DE SOLUCIÓN =====
         function solveProblem() {
             clearResults();
+            console.log("Generating report...");
 
             problemData = {};
-            problemData.system = document.getElementById('problem-system').value;
-            problemData.function = document.getElementById('problem-function').value;
-            problemData.harm = document.getElementById('problem-harm').value;
-            problemData.ifr = document.getElementById('ifr-formulation').value;
+            problemData.system = document.getElementById('problem-system').value || "Not specified";
+            problemData.function = document.getElementById('problem-function').value || "Not specified";
+            problemData.harm = document.getElementById('problem-harm').value || "Not specified";
+            problemData.ifr = document.getElementById('ifr-formulation').value || "Not specified";
 
             // LDST data
             const lifecycleStage = document.getElementById('lifecycle-stage').value;
@@ -3113,95 +3114,81 @@
             };
 
             const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
-            if (!selectedType) {
-                alert('Please select a contradiction type in the Contradiction tool.');
-                return;
-            }
-            problemData.contradictionType = selectedType.value;
+            // Allow execution even if contradiction type is not selected
+            problemData.contradictionType = selectedType ? selectedType.value : null;
+            problemData.recommendedPrinciples = [];
 
             if (problemData.contradictionType === 'technical') {
                 let improvingIndex = parseInt(document.getElementById('improving-feature').value);
                 let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
 
-                if (isNaN(improvingIndex) || improvingIndex < 0) {
-                    improvingIndex = improvingFeatureIndex;
+                if (isNaN(improvingIndex) || improvingIndex < 0) improvingIndex = improvingFeatureIndex;
+                if (isNaN(worseningIndex) || worseningIndex < 0) worseningIndex = worseningFeatureIndex;
+
+                if (improvingIndex !== null && worseningIndex !== null && improvingIndex >= 0 && worseningIndex >= 0) {
+                    improvingFeatureIndex = improvingIndex;
+                    worseningFeatureIndex = worseningIndex;
+
+                    const features = getCurrentFeatures();
+                    problemData.improvingFeature = features[improvingIndex];
+                    problemData.worseningFeature = features[worseningIndex];
+
+                    const improvingKey = (improvingIndex + 1).toString();
+                    const worseningKey = (worseningIndex + 1).toString();
+                    const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
+
+                    problemData.recommendedPrinciples = (principlesList || []).map(id => {
+                        return principles[id] ? { ...principles[id], id } : null;
+                    }).filter(p => p !== null);
+                } else {
+                    problemData.improvingFeature = "Not selected";
+                    problemData.worseningFeature = "Not selected";
                 }
-                if (isNaN(worseningIndex) || worseningIndex < 0) {
-                    worseningIndex = worseningFeatureIndex;
-                }
 
-                if (improvingIndex === null || worseningIndex === null ||
-                    improvingIndex < 0 || worseningIndex < 0) {
-                    alert('Please select an improving and a worsening feature in the Contradiction tool.');
-                    return;
-                }
-
-                if (improvingIndex === worseningIndex) {
-                    alert('Please select two different features for the technical contradiction.');
-                    return;
-                }
-
-                improvingFeatureIndex = improvingIndex;
-                worseningFeatureIndex = worseningIndex;
-
-                const features = getCurrentFeatures();
-                problemData.improvingFeature = features[improvingIndex];
-                problemData.worseningFeature = features[worseningIndex];
-
-                const improvingKey = (improvingIndex + 1).toString();
-                const worseningKey = (worseningIndex + 1).toString();
-                const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
-
-                problemData.recommendedPrinciples = (principlesList || []).map(id => {
-                    return principles[id] ? { ...principles[id], id } : null;
-                }).filter(p => p !== null);
-
-            } else {
+            } else if (problemData.contradictionType === 'physical') {
                 const parameter = document.getElementById('conflicting-parameter').value;
-                if (!parameter) {
-                    alert('Please specify the conflicting parameter for the Physical Contradiction.');
-                    return;
+                problemData.conflictingParameter = parameter || "Not specified";
+
+                if (physicalStrategyFlow.step3 && physicalStrategyFlow.selectedMethod) {
+                    problemData.ozRelationship = physicalStrategyFlow.selectedMethod;
+                    problemData.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
+
+                    const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
+                    problemData.recommendedPrinciples = strategy.principles.map(p => ({
+                        id: p.number,
+                        name: p.name,
+                        desc: p.description,
+                        example: p.example
+                    }));
+                } else {
+                    problemData.ozRelationship = null;
                 }
-                problemData.conflictingParameter = parameter;
-
-                if (!physicalStrategyFlow.step3) {
-                    alert('Please complete all steps for the Physical Contradiction analysis.');
-                    return;
-                }
-
-                problemData.ozRelationship = physicalStrategyFlow.selectedMethod;
-                problemData.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
-
-                const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
-                problemData.recommendedPrinciples = strategy.principles.map(p => ({
-                    id: p.number,
-                    name: p.name,
-                    desc: p.description,
-                    example: p.example
-                }));
             }
 
             // Collect Su-Field systems
             problemData.sufield = { systems: [] };
             const systemElements = document.getElementsByClassName('sufield-system');
-            for (let systemElement of systemElements) {
-                const object = systemElement.querySelector('.sufield-object').value;
-                const tool = systemElement.querySelector('.sufield-tool').value;
-                const field = systemElement.querySelector('.sufield-field').value;
-                const type = systemElement.querySelector('.sufield-type').value;
 
-                const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
-                    ? getRecommendedStandardSolutions(type)
-                    : [];
+            if (systemElements.length > 0) {
+                for (let systemElement of systemElements) {
+                    const object = systemElement.querySelector('.sufield-object').value;
+                    const tool = systemElement.querySelector('.sufield-tool').value;
+                    const field = systemElement.querySelector('.sufield-field').value;
+                    const type = systemElement.querySelector('.sufield-type').value;
 
-                problemData.sufield.systems.push({
-                    object: object,
-                    tool: tool,
-                    field: field,
-                    type: type,
-                    suggestion: sufieldSolutions[type] || "No specific suggestion available.",
-                    standardSolutions: standardSolutions
-                });
+                    const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
+                        ? getRecommendedStandardSolutions(type)
+                        : [];
+
+                    problemData.sufield.systems.push({
+                        object: object,
+                        tool: tool,
+                        field: field,
+                        type: type,
+                        suggestion: sufieldSolutions[type] || "No specific suggestion available.",
+                        standardSolutions: standardSolutions
+                    });
+                }
             }
 
             displayResults();
@@ -3267,19 +3254,23 @@
                 <p>${problemData.worseningFeature}</p>
             </div>
         </div>`;
-            } else {
+            } else if (problemData.contradictionType === 'physical') {
                 html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
 
-                const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
-                if (strategy) {
-                    html += `<div class="physical-strategy-guide">
-                <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
-                <div class="strategy-description">${strategy.description}</div>
-                <div class="strategy-example">
-                    <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
-                </div>
-            </div>`;
+                if (problemData.ozRelationship) {
+                    const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
+                    if (strategy) {
+                        html += `<div class="physical-strategy-guide">
+                    <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
+                    <div class="strategy-description">${strategy.description}</div>
+                    <div class="strategy-example">
+                        <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
+                    </div>
+                </div>`;
+                    }
                 }
+            } else {
+                html += `<p><em>No specific contradiction type was fully defined.</em></p>`;
             }
             html += `</div>`;
 
@@ -3307,12 +3298,12 @@
             `;
                 });
             } else {
-                html += '<p>No specific principles are commonly recommended for this combination. Consider a different framing of the problem.</p>';
+                html += '<p>No specific principles are recommended based on the current inputs. Ensure you have selected contradiction parameters or complete the physical contradiction analysis steps.</p>';
             }
             html += `</div>`;
 
             // Su-Field Analysis
-            if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+            if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
                 html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
 
                 problemData.sufield.systems.forEach((system, index) => {
@@ -3404,26 +3395,32 @@
             resultsDiv.classList.remove('hidden');
 
             // Dibujar diagramas Su-Field
-            problemData.sufield.systems.forEach((system, index) => {
-                if (system.object || system.tool || system.field) {
-                    const problemDiagramId = `problem-diagram-${index}`;
-                    const solutionDiagramId = `solution-diagram-${index}`;
+            if (problemData.sufield && problemData.sufield.systems) {
+                problemData.sufield.systems.forEach((system, index) => {
+                    if (system.object || system.tool || system.field) {
+                        const problemDiagramId = `problem-diagram-${index}`;
+                        const solutionDiagramId = `solution-diagram-${index}`;
 
-                    updateProblemDiagramInSolution(problemDiagramId, {
-                        objectText: system.object,
-                        toolText: system.tool,
-                        fieldType: system.field,
-                        problemType: system.type
-                    });
+                        if (typeof updateProblemDiagramInSolution === 'function') {
+                            updateProblemDiagramInSolution(problemDiagramId, {
+                                objectText: system.object,
+                                toolText: system.tool,
+                                fieldType: system.field,
+                                problemType: system.type
+                            });
+                        }
 
-                    updateSolutionDiagram(
-                        solutionDiagramId,
-                        system.object,
-                        system.tool,
-                        system.field
-                    );
-                }
-            });
+                        if (typeof updateSolutionDiagram === 'function') {
+                            updateSolutionDiagram(
+                                solutionDiagramId,
+                                system.object,
+                                system.tool,
+                                system.field
+                            );
+                        }
+                    }
+                });
+            }
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
@@ -3447,10 +3444,12 @@
             ws_data.push(["Laws of Development of Technical Systems (LDST)"]);
             ws_data.push(["Life Cycle Stage", document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text]);
             ws_data.push(["Recommended Laws"]);
-            problemData.ldst.recommendedLaws.forEach(law => {
-                ws_data.push(["", law.name]);
-                ws_data.push(["", "Related Principles", law.principles.join(', ')]);
-            });
+            if (problemData.ldst && problemData.ldst.recommendedLaws) {
+                problemData.ldst.recommendedLaws.forEach(law => {
+                    ws_data.push(["", law.name]);
+                    ws_data.push(["", "Related Principles", law.principles.join(', ')]);
+                });
+            }
             ws_data.push([]);
 
             ws_data.push(["Problem Definition"]);
@@ -3478,14 +3477,16 @@
             ws_data.push(["Recommended Inventive Principles (from Contradiction)"]);
             ws_data.push(["Principle ID", "Name", "Description"]);
 
-            problemData.recommendedPrinciples.forEach(p => {
-                ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
-            });
+            if (problemData.recommendedPrinciples) {
+                problemData.recommendedPrinciples.forEach(p => {
+                    ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+                });
+            }
 
             ws_data.push([]);
             ws_data.push(["Su-Field Analysis"]);
 
-            if (problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+            if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
                 problemData.sufield.systems.forEach((system, index) => {
                     if (system.object || system.tool || system.field) {
                         ws_data.push([]);
