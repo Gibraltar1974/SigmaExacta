@@ -1202,17 +1202,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- BOTÓN PARA GENERAR -->
-                        <div style="margin-top: 2rem; text-align: center;">
-                            <button id="generateQfdBtn" style="padding: 1rem 2rem; font-size: 1.1rem;">
-                                <i class="fas fa-home"></i> Generate House of Quality Matrix
-                            </button>
-                            <p style="margin-top: 0.5rem; color: #777; font-size: 0.9rem;">
-                                <i class="fas fa-lightbulb"></i> Make sure you've entered data in all sections before
-                                generating the matrix.
-                            </p>
-                        </div>
                     </div>
 
                     <div class="tab-nav-buttons">
@@ -1227,6 +1216,28 @@
             <!-- PESTAÑA 3: RESULTADOS Y MATRIZ -->
             <div id="tab-results" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
+                    <!-- Sección para generar la matriz -->
+                    <div class="content-block" id="generate-section">
+                        <h2><i class="fas fa-cogs"></i> Generate House of Quality</h2>
+                        <p>When you've finished entering all data in the Input Data tab, click below to generate the
+                            House of Quality matrix.</p>
+
+                        <div style="text-align: center; margin: 2rem 0;">
+                            <button id="generateQfdBtn" style="padding: 1rem 2rem; font-size: 1.1rem; margin: 0 auto;">
+                                <i class="fas fa-home"></i> Generate House of Quality Matrix
+                            </button>
+                            <p style="margin-top: 0.5rem; color: #777; font-size: 0.9rem;">
+                                <i class="fas fa-lightbulb"></i> Make sure you've entered data in all sections before
+                                generating.
+                            </p>
+                        </div>
+
+                        <div class="info-box">
+                            <p><i class="fas fa-info-circle"></i> Need to edit your data? Go back to the <strong>Input
+                                    Data</strong> tab using the navigation button below.</p>
+                        </div>
+                    </div>
+
                     <div id="qfdMatrix" class="content-block" style="display: none;">
                         <div class="tool-header">
                             <h2><i class="fas fa-table"></i> House of Quality Matrix</h2>
@@ -1238,8 +1249,7 @@
                             <div style="text-align: center; padding: 3rem; color: #777;">
                                 <i class="fas fa-home" style="font-size: 3rem; margin-bottom: 1rem;"></i>
                                 <h3>House of Quality Matrix Not Generated Yet</h3>
-                                <p>Go to the <strong>Input Data</strong> tab, enter your requirements and
-                                    specifications, then click "Generate House of Quality Matrix".</p>
+                                <p>Click the "Generate House of Quality Matrix" button above to create your matrix.</p>
                             </div>
                         </div>
                     </div>
@@ -1303,7 +1313,6 @@
         </div>
     </footer>
 
-    <!-- El JavaScript se mantiene igual -->
     <script>
         // Función para cambiar entre tabs principales (como en kano)
         function switchQfdTab(tabId) {
@@ -1573,32 +1582,46 @@
                 }
             });
 
-            // Generar matriz QFD
+            // Generar matriz QFD - ACTUALIZADO
             document.getElementById('generateQfdBtn').addEventListener('click', () => {
                 if (customerRequirements.length === 0) {
                     showToast('Please add at least one customer requirement.', 'info');
+                    switchQfdTab('tab-input');
                     switchInputTab('customer-needs');
                     return;
                 }
 
                 if (technicalRequirements.length === 0) {
                     showToast('Please add at least one technical specification.', 'info');
+                    switchQfdTab('tab-input');
                     switchInputTab('technical-specs');
                     return;
                 }
 
                 generateQfdMatrix();
                 calculatePriorities();
+
+                // Ocultar la sección de generar y mostrar la matriz
+                document.getElementById('generate-section').style.display = 'none';
                 document.getElementById('qfdMatrix').style.display = 'block';
 
-                // Cambiar a la pestaña de resultados
-                switchQfdTab('tab-results');
-
                 showToast('House of Quality matrix generated successfully!', 'success');
+
+                // Hacer scroll a la matriz generada
+                setTimeout(() => {
+                    document.getElementById('qfdMatrix').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }, 300);
             });
 
-            // Botón para volver a input data
+            // Botón para volver a input data - ACTUALIZADO
             document.getElementById('backToInputBtn').addEventListener('click', () => {
+                // Mostrar nuevamente la sección de generar
+                document.getElementById('generate-section').style.display = 'block';
+                document.getElementById('qfdMatrix').style.display = 'none';
+
+                // Cambiar a la pestaña de input
                 switchQfdTab('tab-input');
             });
 
@@ -1607,7 +1630,7 @@
                 window.print();
             });
 
-            // Cargar ejemplo
+            // Cargar ejemplo - MODIFICADO PARA HACER SCROLL A INPUT DATA
             document.getElementById('loadExampleBtn').addEventListener('click', loadExample);
 
             // Resetear todo
@@ -1879,7 +1902,10 @@
                 updateRelationshipControls();
                 updateCorrelationControls();
 
+                // Mostrar sección de generar y ocultar matriz
+                document.getElementById('generate-section').style.display = 'block';
                 document.getElementById('qfdMatrix').style.display = 'none';
+
                 document.querySelector('#priorityTable tbody').innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align: center; padding: 2rem; color: #777;">
@@ -1893,7 +1919,7 @@
             }
         }
 
-        // Cargar ejemplo
+        // Cargar ejemplo - MODIFICADO PARA HACER SCROLL A INPUT DATA
         function loadExample() {
             customerRequirements = [
                 { id: 'cr_1', text: "Easy to use", importance: 5 },
@@ -1942,7 +1968,17 @@
             updateCorrelationControls();
 
             showToast('Example data loaded successfully! You can now generate the House of Quality matrix.', 'success');
+
+            // CAMBIO 1: Cambiar a la pestaña Input Data y hacer scroll
+            switchQfdTab('tab-input');
             switchInputTab('customer-needs');
+
+            // Scroll suave al inicio de la pestaña Input Data
+            setTimeout(() => {
+                document.querySelector('.tabs-container').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 100);
         }
 
         // Exportar a Excel

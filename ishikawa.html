@@ -851,10 +851,9 @@
             </h1>
             <p class="header-subtitle">A Visual Tool for Root Cause Analysis</p>
 
-            <!-- BOTONES PRINCIPALES - Igual que kano.html -->
             <div class="main-action-buttons">
                 <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-play-circle"></i> Load Example
+                    <i class="fas fa-play-circle"></i> Load Next Example
                 </button>
                 <button id="globalResetBtn" class="btn-reset">
                     <i class="fas fa-sync-alt"></i> Reset All
@@ -862,9 +861,7 @@
             </div>
         </header>
 
-        <!-- CONTENEDOR DE TABS CON FONDO BLANCO -->
         <div class="tabs-container">
-            <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
             <nav class="tabs-nav">
                 <button class="tab-btn active" data-tab="tab-theory">
                     <i class="fas fa-book"></i> Theory & Info
@@ -877,7 +874,6 @@
                 </button>
             </nav>
 
-            <!-- PESTAÑA 1: TEORÍA -->
             <div id="tab-theory" class="wizard-tab-content active">
                 <div class="tab-content-wrapper">
                     <div class="content-block">
@@ -943,7 +939,8 @@
                             <li><strong>Generate Diagram:</strong> Click "Generate Diagram". The tool will create a
                                 visual fishbone
                                 diagram based on your input.</li>
-                            <li><strong>Use Helper Buttons:</strong> Click "Load Example" to see a pre-filled diagram
+                            <li><strong>Use Helper Buttons:</strong> Click "Load Next Example" to see a pre-filled
+                                diagram
                                 for guidance,
                                 or "Reset Data" to clear all fields and start fresh.</li>
                             <li><strong>Export Your Work:</strong> Once your diagram is complete, you can export it as a
@@ -959,10 +956,8 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 2: ENTRADA DE DATOS -->
             <div id="tab-input" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
-                    <!-- Sub-Tabs Navigation -->
                     <nav class="sub-tabs-nav">
                         <button class="sub-tab-btn active" data-subtab="subtab-problem">
                             <i class="fas fa-bug"></i> Problem Statement
@@ -988,7 +983,6 @@
                     </nav>
 
                     <div class="sub-tabs-container">
-                        <!-- Sub-Tab 1: Problem Statement -->
                         <div id="subtab-problem" class="sub-tab-content active">
                             <div class="calculation-block">
                                 <div class="calculation-title">Define Your Problem</div>
@@ -999,18 +993,11 @@
                                         required />
                                     <p class="instruction-text">Enter the main problem or effect you want to analyze.
                                         This will appear at the "head" of the fishbone diagram.</p>
-
-                                    <div class="button-group">
-                                        <button type="button" id="exampleBtn" class="success"><i
-                                                class="fas fa-lightbulb"></i> Load Example</button>
-                                        <button type="button" id="resetBtn" class="warning"><i class="fas fa-redo"></i>
-                                            Reset Data</button>
-                                    </div>
+                                    <!-- Botones eliminados aquí -->
                                 </form>
                             </div>
                         </div>
 
-                        <!-- Sub-Tabs for each category will be dynamically populated -->
                     </div>
 
                     <div class="tab-nav-buttons">
@@ -1022,7 +1009,6 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 3: DIAGRAMA -->
             <div id="tab-diagram" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="content-block">
@@ -1259,10 +1245,11 @@
             });
 
             // Event listeners para los botones originales (mantener compatibilidad)
-            document.getElementById("exampleBtn").addEventListener("click", function () {
-                loadExample('manufacturing');
-            });
-            document.getElementById("resetBtn").addEventListener("click", () => resetData(true));
+            // NOTA: Los botones originales han sido eliminados del HTML, así que estas líneas ya no son necesarias
+            // document.getElementById("exampleBtn").addEventListener("click", function () {
+            //     loadExample('manufacturing');
+            // });
+            // document.getElementById("resetBtn").addEventListener("click", () => resetData(true));
 
             document.getElementById("generateDiagramBtn").addEventListener("click", generateIshikawa);
             document.getElementById("exportBtn").addEventListener("click", exportToExcel);
@@ -2218,8 +2205,17 @@
                 // Mostrar notificación
                 showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} example loaded successfully!`);
 
-                // Ir a la pestaña del diagrama
-                setTimeout(() => switchWizardTab('tab-diagram'), 500);
+                // CAMBIO: Ir a input en lugar de diagrama
+                switchWizardTab('tab-input');
+                switchSubTab('subtab-problem');
+
+                setTimeout(() => {
+                    const problemInput = document.getElementById("problem");
+                    if (problemInput) {
+                        problemInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        problemInput.focus();
+                    }
+                }, 100);
             }
         }
 
