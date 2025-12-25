@@ -681,6 +681,44 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .results-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+            min-height: 46px;
+            justify-content: center;
+        }
+
+        #listResultsBtn {
+            background-color: var(--secondary-color);
+        }
+
+        #listResultsBtn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .results-display-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-display-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
         footer {
             padding: 2rem 1.25rem;
             max-width: 1400px;
@@ -1011,24 +1049,24 @@
             <!-- PESTAÑA 3: RESULTS -->
             <div id="tab-results" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
-                    <!-- TABLA DE RESULTADOS (READ-ONLY) -->
+                    <!-- BOTONES DE ACCIÓN -->
                     <div class="block">
                         <h2><i class="fas fa-chart-line"></i> Scorecard Results</h2>
-                        <div id="resultsTableContainer">
-                            <!-- Aquí se cargarán los resultados dinámicamente -->
-                            <div class="no-data-message">No metrics added yet. Go to the Scorecard Builder tab to add
-                                metrics.</div>
+                        <p>Click the button below to generate a read-only report of all your metrics. You can also
+                            export the full scorecard to Excel.</p>
+                        <div class="results-actions">
+                            <button id="listResultsBtn" class="btn-primary">
+                                <i class="fas fa-list"></i> List Results
+                            </button>
+                            <button id="exportBtn" class="btn-success">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE EXPORTACIÓN -->
-                    <div class="export-section">
-                        <h3><i class="fas fa-file-export"></i> Export Complete Scorecard</h3>
-                        <p>Download a comprehensive report of your Strategic Scorecard including all metrics across all
-                            perspectives for offline use or sharing with your team.</p>
-                        <button id="exportBtn" class="btn-export">
-                            <i class="fas fa-file-excel"></i> Export Full Scorecard to Excel
-                        </button>
+                    <!-- CONTENEDOR DE RESULTADOS (inicialmente oculto) -->
+                    <div id="resultsDisplayContainer" class="results-display-container">
+                        <!-- Aquí se cargarán los resultados dinámicamente -->
                     </div>
 
                     <div class="tab-nav-buttons">
@@ -1070,9 +1108,9 @@
             const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
-            // Si estamos en la pestaña de Results, actualizar la vista
+            // Si estamos en la pestaña de Results, ocultamos los resultados
             if (tabId === 'tab-results') {
-                updateResultsView();
+                document.getElementById('resultsDisplayContainer').classList.remove('show');
             }
 
             // Scroll al top suavemente
@@ -1081,7 +1119,7 @@
 
         // Función para actualizar la vista de resultados
         function updateResultsView() {
-            const resultsContainer = document.getElementById('resultsTableContainer');
+            const resultsContainer = document.getElementById('resultsDisplayContainer');
             const perspectives = ['financial', 'customer', 'internal', 'learning'];
             let hasData = false;
             let html = '';
@@ -1144,6 +1182,13 @@
             }
 
             resultsContainer.innerHTML = html;
+        }
+
+        // Función para listar los resultados (se llama al hacer clic en el botón "List Results")
+        function listResults() {
+            updateResultsView();
+            document.getElementById('resultsDisplayContainer').classList.add('show');
+            showToast('Results generated successfully!', 'success');
         }
 
         // Funciones auxiliares
@@ -1235,6 +1280,7 @@
             const customObjectiveInput = document.getElementById('customObjective');
             const customMeasureInput = document.getElementById('customMeasure');
             const exportBtn = document.getElementById('exportBtn');
+            const listResultsBtn = document.getElementById('listResultsBtn');
             const allInputs = Array.from(bscForm.querySelectorAll('input, select, textarea'));
 
             const kpiData = {
@@ -1354,27 +1400,31 @@
                 });
             };
 
-            // Función mejorada para cargar un ejemplo completo
+            // Función mejorada y optimizada para cargar un ejemplo completo
             const loadExample = () => {
                 // Primero resetear todo
                 resetAll(true);
 
-                // Agregar todos los ejemplos
+                // Cambiar a la pestaña Scorecard Builder inmediatamente
+                switchWizardTab('tab-builder');
+
+                // Agregar todos los ejemplos de forma más eficiente
+                let delay = 0;
+
                 exampleData.forEach((ex, index) => {
+                    // Usar setTimeout para evitar bloqueo del UI, pero con intervalos más cortos
                     setTimeout(() => {
                         // Configurar el formulario con cada ejemplo
                         perspectiveSelect.value = ex.perspective;
-                        perspectiveSelect.dispatchEvent(new Event('change'));
+                        updateObjectiveDropdown();
 
-                        // Esperar un momento para que se actualicen los dropdowns
+                        // Pequeña pausa para asegurar que los dropdowns se actualicen
                         setTimeout(() => {
                             objectiveSelect.value = ex.objective;
-                            objectiveSelect.dispatchEvent(new Event('change'));
+                            updateMeasureDropdown();
 
                             setTimeout(() => {
                                 measureSelect.value = ex.measure;
-                                measureSelect.dispatchEvent(new Event('change'));
-
                                 document.getElementById('target').value = ex.target;
                                 document.getElementById('actual').value = ex.actual;
                                 document.getElementById('initiative').value = ex.initiative;
@@ -1391,17 +1441,18 @@
                                     updateObjectiveDropdown();
                                     validateForm();
                                 }
-                            }, 100);
-                        }, 100);
-                    }, index * 300); // Espaciar las adiciones para mejor visualización
+                            }, 10); // Reducido de 100ms a 10ms
+                        }, 10); // Reducido de 100ms a 10ms
+                    }, delay);
+
+                    // Incrementar el delay solo ligeramente para cada ejemplo
+                    delay += 80; // Reducido de 300ms a 80ms
                 });
 
-                // Mostrar mensaje
+                // Mostrar mensaje después de un tiempo razonable
                 setTimeout(() => {
                     showToast('Complete example loaded with metrics across all perspectives!', 'success');
-                    // Cambiar a la pestaña de resultados
-                    setTimeout(() => switchWizardTab('tab-results'), 500);
-                }, exampleData.length * 300 + 500);
+                }, delay + 100); // Reducido de +500ms a +100ms
             };
 
             const resetAll = (silent = false) => {
@@ -1412,7 +1463,8 @@
                 updateObjectiveDropdown();
                 validateForm();
                 updateSummaries();
-                updateResultsView();
+                // Ocultar los resultados
+                document.getElementById('resultsDisplayContainer').classList.remove('show');
                 if (!silent) {
                     showToast('Scorecard has been reset.', 'info');
                 }
@@ -1432,7 +1484,8 @@
                     if (confirm('Are you sure you want to delete this metric?')) {
                         deleteBtn.closest('tr').remove();
                         updateSummaries();
-                        updateResultsView();
+                        // Ocultar resultados si están mostrándose
+                        document.getElementById('resultsDisplayContainer').classList.remove('show');
                         showToast('Metric deleted.', 'info');
                     }
                 }
@@ -1484,13 +1537,15 @@
             // Botón de exportación
             exportBtn.addEventListener('click', exportToExcel);
 
+            // Botón para listar resultados
+            listResultsBtn.addEventListener('click', listResults);
+
             // Manejo de eliminación de métricas
             document.addEventListener('click', handleActionClick);
 
             // Inicializar
             updateObjectiveDropdown();
             validateForm();
-            updateResultsView();
         });
     </script>
 </body>
