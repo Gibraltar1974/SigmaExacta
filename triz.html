@@ -13,12 +13,16 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Include Mermaid.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
     <style>
         /* ===== ESTILOS ORIGINALES (MANTENIDOS) ===== */
@@ -1551,14 +1555,26 @@
             background-color: #e8f4fc;
             border-radius: 8px 8px 0 0;
             overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f5f9;
+            -webkit-overflow-scrolling: touch;
             border-bottom: 2px solid var(--primary-color);
             margin-bottom: 0;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            padding-bottom: 5px;
         }
 
         .sub-tabs-nav::-webkit-scrollbar {
-            display: none;
+            height: 8px;
+        }
+
+        .sub-tabs-nav::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .sub-tabs-nav::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 4px;
         }
 
         .sub-tab-btn {
@@ -1575,15 +1591,17 @@
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
             font-size: 0.9rem;
+            flex-shrink: 0;
+            min-width: fit-content;
         }
 
         @media (min-width: 768px) {
             .sub-tabs-nav {
-                overflow-x: hidden;
+                overflow-x: auto;
             }
 
             .sub-tab-btn {
-                flex: 1;
+                flex: 0 0 auto;
                 justify-content: center;
                 padding: 0.8rem 0.5rem;
             }
@@ -1675,6 +1693,269 @@
         .btn-next-tab:hover {
             background-color: #1a252f;
         }
+
+        /* ===== ESTILOS ESPECÍFICOS PARA FUNCTION ANALYSIS ===== */
+        .panels-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .panel-half {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .calculation-block {
+            border: var(--professional-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            box-shadow: var(--professional-shadow);
+        }
+
+        .calculation-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .item-list {
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0.5rem;
+        }
+
+        .item-entry {
+            padding: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-entry:last-child {
+            border-bottom: none;
+        }
+
+        .item-tag {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .mermaid-container {
+            width: 100%;
+            min-height: 300px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            overflow: auto;
+        }
+
+        .mermaid {
+            text-align: center;
+        }
+
+        /* Estilos específicos para los nodos del diagrama Mermaid */
+        .mermaid .node.system rect {
+            fill: #dceeff !important;
+            stroke: #82b6ff !important;
+        }
+
+        .mermaid .node.supersystem polygon {
+            fill: #ffe6cc !important;
+            stroke: #d79b00 !important;
+        }
+
+        .mermaid .node.target rect {
+            fill: #ffffcc !important;
+            stroke: #d6b656 !important;
+            rx: 15px !important;
+            ry: 15px !important;
+        }
+
+        /* Estilos para las líneas */
+        .mermaid .edgePath path {
+            stroke-width: 2px;
+        }
+
+        .mermaid .edgeLabel {
+            background-color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        /* ===== NUEVOS ESTILOS PARA DIAGRAM LEGEND ===== */
+        .diagram-legend {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        .legend-title {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .legend-color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-line-sample {
+            width: 40px;
+            height: 2px;
+            flex-shrink: 0;
+        }
+
+        .legend-shape-sample {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ===== ESTILOS PARA 9 WINDOWS ===== */
+        .nine-windows-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .nine-windows-table {
+            min-width: 600px;
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .nine-windows-table td {
+            border: 1px solid #ddd;
+        }
+
+        .nine-windows-table tr:first-child td:first-child {
+            border: none;
+            background: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .nine-windows-table {
+                font-size: 0.8rem;
+            }
+
+            .nine-windows-table textarea {
+                height: 70px;
+                font-size: 0.8rem;
+            }
+
+            .nine-windows-table td {
+                padding: 3px !important;
+            }
+        }
+
+        /* ===== ESTILOS PARA NUEVA FUNCTION ANALYSIS ===== */
+        .small-note {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .interaction-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .interaction-matrix th,
+        .interaction-matrix td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .interaction-matrix th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+        }
+
+        .interaction-checkbox {
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        /* ===== CORRECCIONES PARA LA TABLA DE INTERACCIÓN (STEP 3) ===== */
+        .interaction-matrix tbody tr:hover,
+        .interaction-matrix tbody tr:hover td {
+            background-color: #e3f2fd;
+        }
+
+        /* Resaltar toda la fila y columna al hacer hover en una celda */
+        .interaction-matrix td:hover,
+        .interaction-matrix th:hover {
+            background-color: #e3f2fd !important;
+        }
+
+        .interaction-matrix td:hover~td,
+        .interaction-matrix th:hover~th {
+            background-color: #e3f2fd !important;
+        }
+
+        /* Asegurar que los encabezados tengan el mismo color que el step 4 */
+        .interaction-matrix thead th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        .interaction-matrix tbody th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        /* Clase para resaltar fila y columna */
+        .highlight-row,
+        .highlight-col {
+            background-color: #e3f2fd !important;
+        }
     </style>
 </head>
 
@@ -1710,6 +1991,7 @@
         </nav>
 
         <div id="tab-start" class="tab-content active">
+            <!-- Contenido de la pestaña Start & Info (sin cambios) -->
             <div class="content-block">
                 <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
                 <div class="instructions-box">
@@ -1811,6 +2093,18 @@
                             <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System
                             Level) that allow the contradictory requirements to be satisfied simultaneously.
                         </li>
+                        <li><strong>9 Windows (System Operator)</strong><br>The 9 Windows tool analyzes systems across
+                            three time dimensions (past, present, future) and three system levels (sub-system, system,
+                            super-system). This structured thinking framework helps identify opportunities for
+                            innovation, anticipate future developments, and understand system evolution patterns. By
+                            considering all nine perspectives, innovators can break psychological inertia and discover
+                            solutions that might be missed when focusing only on the present system state.</li>
+                        <li><strong>Function Analysis</strong><br>Function Analysis is a systematic method to map all
+                            interactions between components in a system. Each function is analyzed for its usefulness,
+                            harmfulness, or neutrality, and evaluated for performance (normal, insufficient, excessive).
+                            This creates a comprehensive model of the system that reveals problematic interactions,
+                            identifies opportunities for improvement, and provides a foundation for applying TRIZ
+                            solution tools effectively.</li>
                         <li><strong>Su-Field Analysis</strong><br>Developed from Altshuller's work on substance-field
                             modeling, Su-Field analysis represents any technical system as interactions between three
                             fundamental elements:
@@ -1826,6 +2120,11 @@
                             systems to simplification strategies. This systematic approach ensures that even complex
                             system interactions can be analyzed and improved methodically.
                         </li>
+                        <li><strong>Knowledge Effects (Upcoming Feature)</strong><br>This advanced tool will leverage
+                            scientific and engineering effects databases to suggest physical, chemical, or biological
+                            phenomena that can be applied to solve specific problems. By connecting problems with known
+                            scientific effects, innovators can discover breakthrough solutions based on proven
+                            principles from physics, chemistry, biology, and other scientific disciplines.</li>
                     </ul>
                 </div>
             </div>
@@ -1844,14 +2143,20 @@
                             development to get strategic guidance.</li>
                         <li><strong>Step 3 - Formulate Ideal Final Result (IFR):</strong> Define the ideal solution
                             where the system performs its function without the drawback, costs, or harmful effects.</li>
-                        <li><strong>Step 4 - Identify the Core Contradiction:</strong> Select whether it's a technical
-                            contradiction (improving one feature worsens another) or physical contradiction (one feature
-                            needs opposite properties). Use the matrix or separation principles accordingly.</li>
-                        <li><strong>Step 5 - Su-Field Analysis:</strong> Model the problem as interactions between
+                        <li><strong>Step 4 - 9 Windows Analysis:</strong> Analyze the system across three time
+                            dimensions (past, present, future) and three system levels (sub-system, system,
+                            super-system) to identify innovation opportunities.</li>
+                        <li><strong>Step 5 - Function Analysis:</strong> Map all interactions between system components
+                            to identify problematic functions and improvement opportunities.</li>
+                        <li><strong>Step 6 - Technical Contradiction:</strong> Identify when improving one feature makes
+                            another worse. Use the contradiction matrix to find inventive principles.</li>
+                        <li><strong>Step 7 - Physical Contradiction:</strong> Identify when one feature needs opposite
+                            properties. Use separation principles to resolve.</li>
+                        <li><strong>Step 8 - Su-Field Analysis:</strong> Model the problem as interactions between
                             substances (S1, S2) and fields (F). Identify the problem type and get standard solutions.
                         </li>
                         <li><strong>Generate Solutions:</strong> Click "Solve Problem & Generate Report" on the final
-                            tab to receive inventive principles tailored to your contradiction.</li>
+                            tab to receive inventive principles tailored to your contradictions.</li>
                         <li><strong>Export:</strong> Once the report is generated, you can export it to Excel for your
                             records and further analysis.</li>
                     </ul>
@@ -1866,10 +2171,19 @@
                         <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. Formulate
                                 IFR</strong><span>Define the Ideal Final Result</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>4. Identify
-                                Contradiction</strong><span>Find the core technical or physical conflict</span></div>
+                        <div class="flow-step"><i class="fas fa-window-restore"></i><strong>4. 9 Windows
+                            </strong><span>Analyze system across time and levels</span></div>
                         <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-atom"></i><strong>5. Su-Field
+                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>5. Function
+                                Analysis</strong><span>Map all system interactions</span></div>
+                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>6. Technical
+                                Contradiction</strong><span>Improving one feature worsens another</span></div>
+                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>7. Physical
+                                Contradiction</strong><span>One feature needs opposite properties</span></div>
+                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="flow-step"><i class="fas fa-atom"></i><strong>8. Su-Field
                                 Analysis</strong><span>Model system interactions and apply standard solutions</span>
                         </div>
                     </div>
@@ -1885,31 +2199,40 @@
         <div id="tab-tools" class="tab-content">
             <div class="content-block">
                 <h2><i class="fas fa-tools"></i> TRIZ Problem-Solving Tools</h2>
-                <p>Navigate through the 5-step TRIZ methodology using the tabs below:</p>
+                <p>Navigate through the 8-step TRIZ methodology using the tabs below:</p>
 
-                <!-- Sub-tabs para cada herramienta (usando el formato de 8d.html) -->
+                <!-- Sub-tabs para cada herramienta -->
                 <nav class="sub-tabs-nav">
                     <button class="sub-tab-btn active" onclick="switchSubTab('sub-tab-define')">
-                        <i class="fas fa-tasks"></i> 2. Define Problem
+                        <i class="fas fa-tasks"></i> 1. Define Problem
                     </button>
                     <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-ldst')">
-                        <i class="fas fa-project-diagram"></i> 1. LDST Analysis
+                        <i class="fas fa-project-diagram"></i> 2. LDST Analysis
                     </button>
                     <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-ifr')">
                         <i class="fas fa-rocket"></i> 3. Formulate IFR
                     </button>
-                    <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-contradiction')">
-                        <i class="fas fa-exchange-alt"></i> 4. Contradiction
+                    <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-nine-windows')">
+                        <i class="fas fa-window-restore"></i> 4. 9 Windows
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-fee')">
+                        <i class="fas fa-project-diagram"></i> 5. Function Analysis
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-technical')">
+                        <i class="fas fa-exchange-alt"></i> 6. Technical Contradiction
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-physical')">
+                        <i class="fas fa-exchange-alt"></i> 7. Physical Contradiction
                     </button>
                     <button class="sub-tab-btn" onclick="switchSubTab('sub-tab-sufield')">
-                        <i class="fas fa-atom"></i> 5. Su-Field Analysis
+                        <i class="fas fa-atom"></i> 8. Su-Field Analysis
                     </button>
                 </nav>
 
                 <!-- Sub-tab 1: Define Problem -->
                 <div id="sub-tab-define" class="sub-tab-content active">
                     <div class="solver-step">
-                        <h3><i class="fas fa-tasks"></i> 2. Define the Problem</h3>
+                        <h3><i class="fas fa-tasks"></i> 1. Define the Problem</h3>
                         <div class="form-group">
                             <label for="problem-system">System/Object to improve?</label>
                             <input type="text" id="problem-system" placeholder="e.g., A coffee mug">
@@ -1934,7 +2257,7 @@
                 <!-- Sub-tab 2: LDST Analysis -->
                 <div id="sub-tab-ldst" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-project-diagram"></i> 1. Laws of Development of Technical Systems (LDST)
+                        <h3><i class="fas fa-project-diagram"></i> 2. Laws of Development of Technical Systems (LDST)
                         </h3>
                         <p>Select the life cycle stage of your system to get the most relevant development laws
                             according to
@@ -2068,28 +2391,295 @@
                         <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-ldst')"><i
                                 class="fas fa-arrow-left"></i>
                             Previous: LDST Analysis</button>
-                        <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-contradiction')">Next:
-                            Contradiction <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-nine-windows')">Next: 9 Windows
+                            <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <!-- Sub-tab 4: Contradiction -->
-                <div id="sub-tab-contradiction" class="sub-tab-content">
+                <!-- Sub-tab 4: 9 Windows -->
+                <div id="sub-tab-nine-windows" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-exchange-alt"></i> 4. Identify the Core Contradiction</h3>
+                        <h3><i class="fas fa-window-restore"></i> 4. 9 Windows Analysis</h3>
+                        <p>Analyze the system in three time dimensions (past, present, future) and three system levels
+                            (sub-system, system, super-system).</p>
 
-                        <div class="form-group radio-group">
-                            <label><input type="radio" name="contradiction-type" value="technical"
-                                    onchange="toggleContradictionForms();"> <strong>Technical
-                                    Contradiction:</strong> Improving
-                                one feature makes another worse.</label>
-                            <label><input type="radio" name="contradiction-type" value="physical"
-                                    onchange="toggleContradictionForms();"> <strong>Physical
-                                    Contradiction:</strong> One feature
-                                needs opposite properties.</label>
+                        <div class="nine-windows-container">
+                            <!-- Tabla de 9 Windows -->
+                            <table class="nine-windows-table">
+                                <tr>
+                                    <td style="width: 80px; border: none;"></td>
+                                    <td
+                                        style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">
+                                        Past</td>
+                                    <td
+                                        style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">
+                                        Present</td>
+                                    <td
+                                        style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">
+                                        Future</td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                        Super-System
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-super-past" rows="3"
+                                            placeholder="e.g., Manufacturing plant, Raw materials"
+                                            style="width: 100%; height: 100px; background: #f0f7ff; border: 1px solid #a0c8ff;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-super-present" rows="3"
+                                            placeholder="e.g., Road, Gravity, Weather"
+                                            style="width: 100%; height: 100px; background: #f0f7ff; border: 1px solid #a0c8ff;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-super-future" rows="3"
+                                            placeholder="e.g., Recycling center, Scrap yard"
+                                            style="width: 100%; height: 100px; background: #f0f7ff; border: 1px solid #a0c8ff;"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
+                                        System
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-system-past" rows="3"
+                                            placeholder="e.g., Metal tubes, Welding process"
+                                            style="width: 100%; height: 100px; background: #f0fff0; border: 1px solid #a0d0a0;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-system-present" rows="3"
+                                            placeholder="e.g., Bicycle Frame"
+                                            style="width: 100%; height: 100px; background: #f0fff0; border: 1px solid #a0d0a0;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-system-future" rows="3"
+                                            placeholder="e.g., Rusted frame, Broken frame"
+                                            style="width: 100%; height: 100px; background: #f0fff0; border: 1px solid #a0d0a0;"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                        Sub-System
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-sub-past" rows="3"
+                                            placeholder="e.g., Molten metal, Ore"
+                                            style="width: 100%; height: 100px; background: #fff0f0; border: 1px solid #ffa0a0;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-sub-present" rows="3"
+                                            placeholder="e.g., Tubes, Welds, Paint"
+                                            style="width: 100%; height: 100px; background: #fff0f0; border: 1px solid #ffa0a0;"></textarea>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <textarea id="nine-windows-sub-future" rows="3"
+                                            placeholder="e.g., Corroded metal, Flaking paint"
+                                            style="width: 100%; height: 100px; background: #fff0f0; border: 1px solid #ffa0a0;"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
+                                <strong>Color Guide:</strong>
+                                <span style="color: #0066cc;">Super-System (Blue)</span> |
+                                <span style="color: #009900;">System (Green)</span> |
+                                <span style="color: #cc0000;">Sub-System (Red)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-nav-buttons">
+                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-ifr')"><i
+                                class="fas fa-arrow-left"></i> Previous: Formulate IFR</button>
+                        <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-fee')">Next: Function Analysis
+                            <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 5: Function Analysis -->
+                <div id="sub-tab-fee" class="sub-tab-content">
+                    <div class="solver-step">
+                        <h3><i class="fas fa-project-diagram"></i> 5. Function Analysis</h3>
+                        <p>Analyze the system through 5 systematic steps: Define main function, identify components,
+                            analyze interactions, create function table, and visualize the model.</p>
+
+                        <!-- Step 1: Main Function -->
+                        <div class="calculation-block" style="margin-top: 20px;">
+                            <div class="calculation-title">Step 1: Main Function</div>
+                            <div class="form-group">
+                                <label for="main-function">What is the main function?</label>
+                                <input type="text" id="main-function" placeholder="e.g., To hold hot liquid"
+                                    onchange="updateFunctionAnalysis()">
+                            </div>
+                            <div class="form-group">
+                                <label for="target-component">What is the target component?</label>
+                                <input type="text" id="target-component" placeholder="e.g., Liquid"
+                                    onchange="updateFunctionAnalysis()">
+                            </div>
                         </div>
 
-                        <div id="matrix-version-selector-container" class="matrix-version-selector hidden">
+                        <!-- Step 2: Component Analysis -->
+                        <div class="calculation-block" style="margin-top: 20px;">
+                            <div class="calculation-title">Step 2: Component Analysis</div>
+
+                            <div style="margin-bottom: 15px; padding: 10px; background: #f0f7ff; border-radius: 5px;">
+                                <p><strong>Target Component:</strong> <span id="target-component-display">Not
+                                        defined</span></p>
+                                <p><strong>Main Function:</strong> <span id="main-function-display">Not defined</span>
+                                </p>
+                            </div>
+
+                            <div class="panels-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem;">
+                                <!-- System Components -->
+                                <div class="panel-half" style="flex: 1; min-width: 300px;">
+                                    <h4>System Components:</h4>
+                                    <p class="small-note">Components are parts with mass and fields.</p>
+                                    <div class="form-group" style="display: flex; gap: 10px;">
+                                        <input type="text" id="system-component-input" placeholder="e.g., Handle, Wall"
+                                            style="flex: 1;">
+                                        <button class="btn-success" onclick="addSystemComponent()">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="item-list" id="system-components-list"></div>
+                                </div>
+
+                                <!-- Supersystem Components -->
+                                <div class="panel-half" style="flex: 1; min-width: 300px;">
+                                    <h4>Supersystem Components:</h4>
+                                    <p class="small-note">Components are parts with mass and fields.</p>
+                                    <div class="form-group" style="display: flex; gap: 10px;">
+                                        <input type="text" id="supersystem-component-input"
+                                            placeholder="e.g., Air, Hand, Table" style="flex: 1;">
+                                        <button class="btn-success" onclick="addSupersystemComponent()">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="item-list" id="supersystem-components-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Interaction Analysis -->
+                        <div class="calculation-block" style="margin-top: 20px;">
+                            <div class="calculation-title">Step 3: Interaction Analysis</div>
+                            <p>Which components are in contact with the others, touch each other?</p>
+
+                            <div id="interaction-matrix-container" style="overflow-x: auto; margin-top: 15px;">
+                                <p><em>Define components in Step 2 first to see the interaction matrix.</em></p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Functional Analysis (Tabular) -->
+                        <div class="calculation-block" style="margin-top: 20px;">
+                            <div class="calculation-title">Step 4: Functional Analysis (Tabular)</div>
+
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <button class="btn-success" onclick="addFunctionRow()">
+                                    <i class="fas fa-plus"></i> Add Function Row
+                                </button>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table class="trends-table" id="function-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Component (function carrier)</th>
+                                            <th>Action (Verb)</th>
+                                            <th>Target (Object of the Function)</th>
+                                            <th>Category<br>(U=useful, H=harmful)</th>
+                                            <th>Perform. level<br>(I=insufficient, E=excessive, N=normal)</th>
+                                            <th>Comment</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="function-table-body">
+                                        <!-- Rows will be added dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Function Model Diagram -->
+                        <div class="calculation-block" style="margin-top: 20px;">
+                            <div class="calculation-title">Step 5: Function Model Diagram</div>
+
+                            <div class="mermaid-container" id="faMermaidPreview">
+                                <div class="mermaid">
+                                    graph LR;
+                                    A[Define Components] --> B[Define Functions] --> C[Diagram will appear here]
+                                </div>
+                            </div>
+
+                            <!-- Legend for the diagram -->
+                            <div class="diagram-legend">
+                                <h5 class="legend-title">Diagram Legend</h5>
+                                <div class="legend-grid">
+                                    <div class="legend-item">
+                                        <div class="legend-color-box"
+                                            style="background: #dceeff; border: 2px solid #82b6ff;"></div>
+                                        <span>System Component</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color-box"
+                                            style="background: #ffe6cc; border: 2px solid #d79b00; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                                        </div>
+                                        <span>Supersystem Component (Hexagon)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color-box"
+                                            style="background: #ffffcc; border: 2px solid #d6b656; border-radius: 10px;">
+                                        </div>
+                                        <span>Target Component (Rounded)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-line-sample" style="background: #000; height: 2px;"></div>
+                                        <span>Useful Function (Normal)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-line-sample" style="border: 1px dashed #000; height: 2px;">
+                                        </div>
+                                        <span>Useful Function (Insufficient)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-line-sample" style="background: #000; height: 3px;"></div>
+                                        <span>Useful Function (Excessive)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-line-sample" style="background: #e74c3c; height: 3px;"></div>
+                                        <span>Harmful Function</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-line-sample" style="border: 1px dashed #999; height: 2px;">
+                                        </div>
+                                        <span>Neutral Function</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-nav-buttons">
+                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-nine-windows')"><i
+                                class="fas fa-arrow-left"></i> Previous: 9 Windows</button>
+                        <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-technical')">Next: Technical
+                            Contradiction
+                            <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 6: Technical Contradiction -->
+                <div id="sub-tab-technical" class="sub-tab-content">
+                    <div class="solver-step">
+                        <h3><i class="fas fa-exchange-alt"></i> 6. Technical Contradiction</h3>
+                        <p>Improving one feature makes another worse. Use the contradiction matrix to find inventive
+                            principles.</p>
+
+                        <div class="matrix-version-selector">
                             <div class="form-group">
                                 <label for="matrix-version">TRIZ Matrix Version:</label>
                                 <div class="radio-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -2114,7 +2704,7 @@
                             </div>
                         </div>
 
-                        <div id="technical-solver-block" class="hidden">
+                        <div id="technical-solver-block">
                             <div class="matrix-toggle">
                                 <button class="btn-success" onclick="toggleMatrixView()"><i class="fas fa-table"></i>
                                     Show/Hide
@@ -2144,8 +2734,24 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div id="physical-solver-block" class="hidden">
+                    <div class="sub-tab-nav-buttons">
+                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-fee')"><i
+                                class="fas fa-arrow-left"></i>
+                            Previous: Function Analysis</button>
+                        <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-physical')">Next: Physical
+                            Contradiction <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 7: Physical Contradiction -->
+                <div id="sub-tab-physical" class="sub-tab-content">
+                    <div class="solver-step">
+                        <h3><i class="fas fa-exchange-alt"></i> 7. Physical Contradiction</h3>
+                        <p>One feature needs opposite properties. Use separation principles to resolve.</p>
+
+                        <div id="physical-solver-block">
                             <div class="form-group">
                                 <label for="conflicting-parameter">Parameter with conflicting requirements?</label>
                                 <input type="text" id="conflicting-parameter"
@@ -2221,18 +2827,18 @@
                     </div>
 
                     <div class="sub-tab-nav-buttons">
-                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-ifr')"><i
+                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-technical')"><i
                                 class="fas fa-arrow-left"></i>
-                            Previous: Formulate IFR</button>
+                            Previous: Technical Contradiction</button>
                         <button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-sufield')">Next: Su-Field
                             Analysis <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <!-- Sub-tab 5: Su-Field Analysis -->
+                <!-- Sub-tab 8: Su-Field Analysis -->
                 <div id="sub-tab-sufield" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-atom"></i> 5. Su-Field Analysis</h3>
+                        <h3><i class="fas fa-atom"></i> 8. Su-Field Analysis</h3>
                         <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system
                             can
                             have
@@ -2260,9 +2866,9 @@
                     </div>
 
                     <div class="sub-tab-nav-buttons">
-                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-contradiction')"><i
+                        <button class="btn-prev-sub-tab" onclick="switchSubTab('sub-tab-physical')"><i
                                 class="fas fa-arrow-left"></i>
-                            Previous: Contradiction</button>
+                            Previous: Physical Contradiction</button>
                         <div></div> <!-- Empty div for spacing -->
                     </div>
                 </div>
@@ -2281,7 +2887,10 @@
         <div id="tab-solve" class="tab-content">
             <div class="solver-step" style="text-align: center; padding: 30px;">
                 <h2 style="color: var(--secondary-color);">Ready to Generate Solution?</h2>
-                <p>This will gather all data from Define, LDST, IFR, Contradictions, and Su-Field analysis.</p>
+                <p>This will gather all data from Define, LDST, IFR, 9 Windows, Function Analysis, Technical
+                    Contradiction, Physical Contradiction, and
+                    Su-Field
+                    analysis.</p>
                 <button id="solve-button" onclick="solveProblem()"
                     style="max-width: 400px; margin: 0 auto; display: inline-block;">
                     <i class="fas fa-calculator"></i> Solve Problem & Generate Report
@@ -2359,7 +2968,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // NUEVA FUNCIÓN: Para cambiar entre sub-tabs (similar a 8d.html)
+        // NUEVA FUNCIÓN: Para cambiar entre sub-tabs
         function switchSubTab(subTabId) {
             // Quitar clase active de todos los botones de sub-tabs
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -2373,6 +2982,13 @@
             const subTabContent = document.getElementById(subTabId);
             if (subTabContent) {
                 subTabContent.classList.add('active');
+
+                // Si estamos en la sub-tab de Function Analysis, actualizar el diagrama Mermaid
+                if (subTabId === 'sub-tab-fee') {
+                    setTimeout(() => {
+                        updateFunctionDiagram();
+                    }, 100);
+                }
             }
 
             // Scroll al top de la sub-tab
@@ -2399,6 +3015,31 @@
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExampleAndGo);
             document.getElementById('globalResetBtn').addEventListener('click', resetTool);
 
+            // Inicializar Mermaid para Function Analysis
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: false, // Cambiado a false para control manual
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis'
+                    },
+                    gantt: {
+                        useMaxWidth: true,
+                        barHeight: 20,
+                        fontSize: 12
+                    },
+                    sequence: {
+                        useMaxWidth: true,
+                        diagramMarginX: 50,
+                        diagramMarginY: 10,
+                        boxTextMargin: 5
+                    }
+                });
+            }
+
             // Verificar que todos los archivos JS se hayan cargado correctamente
             setTimeout(() => {
                 console.log('TRIZ files loaded:');
@@ -2410,6 +3051,9 @@
                 console.log('- ldst.js:', typeof lifecycleToLdstMapping !== 'undefined');
                 console.log('- trizconstants.js:', typeof examples !== 'undefined');
             }, 500);
+
+            // Inicializar Function Analysis
+            initFunctionAnalysis();
         });
 
         // ===== INICIALIZAR EL MENÚ DE NAVEGACIÓN =====
@@ -2476,7 +3120,6 @@
 
             // Reset specific elements
             document.getElementById('technical-solver-block').classList.add('hidden');
-            document.getElementById('physical-solver-block').classList.add('hidden');
             document.getElementById('matrix-version-selector-container').classList.add('hidden');
             document.getElementById('lifecycle-stage').value = 'birth';
             document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
@@ -2497,6 +3140,17 @@
             document.getElementById('principles-table-container').classList.add('hidden');
             document.getElementById('separation-methods').innerHTML = '';
 
+            // Reset 9 Windows fields
+            document.getElementById('nine-windows-super-past').value = '';
+            document.getElementById('nine-windows-super-present').value = '';
+            document.getElementById('nine-windows-super-future').value = '';
+            document.getElementById('nine-windows-system-past').value = '';
+            document.getElementById('nine-windows-system-present').value = '';
+            document.getElementById('nine-windows-system-future').value = '';
+            document.getElementById('nine-windows-sub-past').value = '';
+            document.getElementById('nine-windows-sub-present').value = '';
+            document.getElementById('nine-windows-sub-future').value = '';
+
             clearResults();
 
             // Reset matrix selection
@@ -2510,16 +3164,19 @@
             document.getElementById('sufield-systems-container').innerHTML = '';
             globalSuFieldCounter = 0;
 
-            // Usar setTimeout para agregar el sistema después de limpiar
-            setTimeout(() => {
-                addSuFieldSystem();
-            }, 50);
-
             // Reset solutions matrix
             document.getElementById('solutions-matrix-container').classList.add('hidden');
 
             // Reset LDST
             updateLDSTRecommendations();
+
+            // Reset Function Analysis
+            resetFunctionAnalysis();
+
+            // Usar setTimeout para agregar el sistema después de limpiar
+            setTimeout(() => {
+                addSuFieldSystem();
+            }, 50);
 
             // Volver a la pestaña inicial
             switchMainTab('tab-start');
@@ -2669,46 +3326,73 @@
             document.getElementById('problem-harm').value = currentExample.harm;
             document.getElementById('ifr-formulation').value = currentExample.ifr;
 
-            const radio = document.querySelector(`input[name="contradiction-type"][value="${currentExample.contradictionType}"]`);
-            if (radio) {
-                radio.checked = true;
-                radio.dispatchEvent(new Event('change'));
-            }
+            // Cargar ambos tipos de contradicción
+            // Technical Contradiction
+            if (currentExample.technicalContradiction) {
+                const improvingIndex = currentExample.technicalContradiction.improvingFeature - 1;
+                const worseningIndex = currentExample.technicalContradiction.worseningFeature - 1;
 
-            if (currentExample.contradictionType === 'technical') {
-                document.getElementById('improving-feature').value = currentExample.improvingFeature;
-                document.getElementById('worsening-feature').value = currentExample.worseningFeature;
+                document.getElementById('improving-feature').value = improvingIndex;
+                document.getElementById('worsening-feature').value = worseningIndex;
 
-                improvingFeatureIndex = currentExample.improvingFeature;
-                worseningFeatureIndex = currentExample.worseningFeature;
+                improvingFeatureIndex = improvingIndex;
+                worseningFeatureIndex = worseningIndex;
                 updateMatrixDisplay();
                 updateSelectedFeatures();
-            } else {
-                document.getElementById('conflicting-parameter').value = currentExample.conflictingParameter;
+            }
 
-                if (currentExample.ozDefinition) {
-                    const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.ozDefinition}"]`);
+            // Physical Contradiction
+            if (currentExample.physicalContradiction) {
+                document.getElementById('conflicting-parameter').value = currentExample.physicalContradiction.conflictingParameter;
+
+                if (currentExample.physicalContradiction.ozDefinition) {
+                    const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.physicalContradiction.ozDefinition}"]`);
                     if (ozDefinitionRadio) {
                         ozDefinitionRadio.checked = true;
                         updatePhysicalStrategy();
                     }
                 }
 
-                if (currentExample.ozIntersection) {
-                    const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.ozIntersection}"]`);
+                if (currentExample.physicalContradiction.ozIntersection) {
+                    const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.physicalContradiction.ozIntersection}"]`);
                     if (ozIntersectionRadio) {
                         ozIntersectionRadio.checked = true;
                         updatePhysicalStrategy();
                     }
                 }
 
-                if (currentExample.separationMethod) {
-                    const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.separationMethod}"]`);
+                if (currentExample.physicalContradiction.separationMethod) {
+                    const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.physicalContradiction.separationMethod}"]`);
                     if (separationMethodRadio) {
                         separationMethodRadio.checked = true;
                         handleSeparationMethodChange();
                     }
                 }
+            }
+
+            // Load 9 Windows data
+            if (currentExample.nineWindows) {
+                document.getElementById('nine-windows-super-past').value = currentExample.nineWindows.superPast || '';
+                document.getElementById('nine-windows-super-present').value = currentExample.nineWindows.superPresent || '';
+                document.getElementById('nine-windows-super-future').value = currentExample.nineWindows.superFuture || '';
+                document.getElementById('nine-windows-system-past').value = currentExample.nineWindows.systemPast || '';
+                document.getElementById('nine-windows-system-present').value = currentExample.nineWindows.systemPresent || '';
+                document.getElementById('nine-windows-system-future').value = currentExample.nineWindows.systemFuture || '';
+                document.getElementById('nine-windows-sub-past').value = currentExample.nineWindows.subPast || '';
+                document.getElementById('nine-windows-sub-present').value = currentExample.nineWindows.subPresent || '';
+                document.getElementById('nine-windows-sub-future').value = currentExample.nineWindows.subFuture || '';
+            }
+
+            // Load Function Analysis data
+            if (currentExample.functionAnalysis) {
+                // Load Function Analysis from the example data
+                loadFunctionAnalysisExample(currentExample.functionAnalysis);
+            }
+
+            // Load classification data if available
+            if (currentExample.classifications) {
+                // Store for later use if needed
+                problemData.classifications = currentExample.classifications;
             }
 
             if (currentExample.sufield && currentExample.sufield.systems) {
@@ -2739,41 +3423,6 @@
             }
 
             exampleIndex = (exampleIndex + 1) % examples.length;
-        }
-
-        function toggleContradictionForms() {
-            clearResults();
-            const type = document.querySelector('input[name="contradiction-type"]:checked')?.value;
-
-            if (type === 'technical') {
-                document.getElementById('matrix-version-selector-container').classList.remove('hidden');
-                document.getElementById('technical-solver-block').classList.remove('hidden');
-                document.getElementById('physical-solver-block').classList.add('hidden');
-                document.getElementById('principles-toggle-container').style.display = 'none';
-            } else if (type === 'physical') {
-                document.getElementById('matrix-version-selector-container').classList.add('hidden');
-                document.getElementById('technical-solver-block').classList.add('hidden');
-                document.getElementById('physical-solver-block').classList.remove('hidden');
-                document.getElementById('principles-toggle-container').style.display = 'block';
-
-                physicalStrategyFlow = {
-                    step1: false,
-                    step2: false,
-                    step3: false,
-                    selectedStrategy: null,
-                    selectedMethod: null
-                };
-
-                document.getElementById('physical-step-2').classList.add('hidden');
-                document.getElementById('physical-step-3').classList.add('hidden');
-                document.getElementById('principles-table-container').classList.add('hidden');
-                document.getElementById('separation-methods').innerHTML = '';
-
-                const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
-                physicalRadios.forEach(radio => {
-                    radio.checked = false;
-                });
-            }
         }
 
         function updatePhysicalStrategy() {
@@ -3022,7 +3671,7 @@
 
             let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
             for (let i = 0; i < features.length; i++) {
-                headerRow += `<th title="${features[i]}">${i + 1}</th>`;
+                headerRow += `<th title="${features[i]}">${features[i].split(':')[0]}</th>`;
             }
             headerRow += '</tr>';
             matrixTable.innerHTML += headerRow;
@@ -3081,26 +3730,6 @@
             });
         }
 
-        function updateSelectedFeatures() {
-            const features = getCurrentFeatures();
-            const improvingSpan = document.getElementById('selected-improving');
-            const worseningSpan = document.getElementById('selected-worsening');
-
-            if (improvingFeatureIndex !== null) {
-                improvingSpan.textContent = `${improvingFeatureIndex + 1}: ${features[improvingFeatureIndex]}`;
-                improvingSpan.title = features[improvingFeatureIndex];
-            } else {
-                improvingSpan.textContent = 'None';
-            }
-
-            if (worseningFeatureIndex !== null) {
-                worseningSpan.textContent = `${worseningFeatureIndex + 1}: ${features[worseningFeatureIndex]}`;
-                worseningSpan.title = features[worseningFeatureIndex];
-            } else {
-                worseningSpan.textContent = 'None';
-            }
-        }
-
         function populateDropdowns() {
             const improvingSelect = document.getElementById('improving-feature');
             const worseningSelect = document.getElementById('worsening-feature');
@@ -3111,12 +3740,32 @@
             const features = getCurrentFeatures();
 
             features.forEach((param, index) => {
-                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
-                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${index + 1}: ${param}</option>`;
+                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
+                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
             });
 
             improvingFeatureIndex = null;
             worseningFeatureIndex = null;
+        }
+
+        function updateSelectedFeatures() {
+            const features = getCurrentFeatures();
+            const improvingSpan = document.getElementById('selected-improving');
+            const worseningSpan = document.getElementById('selected-worsening');
+
+            if (improvingFeatureIndex !== null) {
+                improvingSpan.textContent = features[improvingFeatureIndex];
+                improvingSpan.title = features[improvingFeatureIndex];
+            } else {
+                improvingSpan.textContent = 'None';
+            }
+
+            if (worseningFeatureIndex !== null) {
+                worseningSpan.textContent = features[worseningFeatureIndex];
+                worseningSpan.title = features[worseningFeatureIndex];
+            } else {
+                worseningSpan.textContent = 'None';
+            }
         }
 
         // ===== FUNCIONES DE SU-FIELD =====
@@ -3190,6 +3839,564 @@
             }
         }
 
+        // ===== NUEVAS FUNCIONES PARA FUNCTION ANALYSIS =====
+
+        // Variables para Function Analysis
+        let functionAnalysisData = {
+            mainFunction: '',
+            targetComponent: '',
+            systemComponents: [],
+            supersystemComponents: [],
+            interactions: {},
+            functions: []
+        };
+
+        // Inicializar Function Analysis
+        function initFunctionAnalysis() {
+            updateFunctionAnalysis();
+        }
+
+        // Reset Function Analysis
+        function resetFunctionAnalysis() {
+            functionAnalysisData = {
+                mainFunction: '',
+                targetComponent: '',
+                systemComponents: [],
+                supersystemComponents: [],
+                interactions: {},
+                functions: []
+            };
+
+            document.getElementById('main-function').value = '';
+            document.getElementById('target-component').value = '';
+            document.getElementById('system-component-input').value = '';
+            document.getElementById('supersystem-component-input').value = '';
+            document.getElementById('function-table-body').innerHTML = '';
+
+            updateFunctionAnalysis();
+        }
+
+        // Actualizar datos de Function Analysis
+        function updateFunctionAnalysis() {
+            // Actualizar main function y target component
+            functionAnalysisData.mainFunction = document.getElementById('main-function').value;
+            functionAnalysisData.targetComponent = document.getElementById('target-component').value;
+
+            // Actualizar displays
+            document.getElementById('target-component-display').textContent =
+                functionAnalysisData.targetComponent || 'Not defined';
+            document.getElementById('main-function-display').textContent =
+                functionAnalysisData.mainFunction || 'Not defined';
+
+            // Actualizar matriz de interacciones
+            updateInteractionMatrix();
+
+            // Actualizar diagrama
+            updateFunctionDiagram();
+        }
+
+        // Añadir componente del sistema
+        function addSystemComponent() {
+            const input = document.getElementById('system-component-input');
+            const component = input.value.trim();
+
+            if (component && !functionAnalysisData.systemComponents.includes(component)) {
+                functionAnalysisData.systemComponents.push(component);
+                updateComponentLists();
+                input.value = '';
+                updateInteractionMatrix();
+                updateFunctionDiagram();
+            }
+        }
+
+        // Añadir componente del supersistema
+        function addSupersystemComponent() {
+            const input = document.getElementById('supersystem-component-input');
+            const component = input.value.trim();
+
+            if (component && !functionAnalysisData.supersystemComponents.includes(component)) {
+                functionAnalysisData.supersystemComponents.push(component);
+                updateComponentLists();
+                input.value = '';
+                updateInteractionMatrix();
+                updateFunctionDiagram();
+            }
+        }
+
+        // Eliminar componente del sistema
+        function removeSystemComponent(component) {
+            functionAnalysisData.systemComponents = functionAnalysisData.systemComponents.filter(c => c !== component);
+            updateComponentLists();
+            updateInteractionMatrix();
+            updateFunctionDiagram();
+        }
+
+        // Eliminar componente del supersistema
+        function removeSupersystemComponent(component) {
+            functionAnalysisData.supersystemComponents = functionAnalysisData.supersystemComponents.filter(c => c !== component);
+            updateComponentLists();
+            updateInteractionMatrix();
+            updateFunctionDiagram();
+        }
+
+        // Actualizar listas de componentes en la UI
+        function updateComponentLists() {
+            // Actualizar lista de componentes del sistema
+            const systemList = document.getElementById('system-components-list');
+            systemList.innerHTML = '';
+
+            functionAnalysisData.systemComponents.forEach(component => {
+                const div = document.createElement('div');
+                div.className = 'item-entry';
+                div.innerHTML = `
+                    <span>${component}</span>
+                    <button class="btn-warning" onclick="removeSystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                systemList.appendChild(div);
+            });
+
+            // Actualizar lista de componentes del supersistema
+            const supersystemList = document.getElementById('supersystem-components-list');
+            supersystemList.innerHTML = '';
+
+            functionAnalysisData.supersystemComponents.forEach(component => {
+                const div = document.createElement('div');
+                div.className = 'item-entry';
+                div.innerHTML = `
+                    <span>${component}</span>
+                    <button class="btn-warning" onclick="removeSupersystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                supersystemList.appendChild(div);
+            });
+        }
+
+        // CORRECCIÓN DEL HOVER: Actualizar matriz de interacciones con hover que no permanece
+        function updateInteractionMatrix() {
+            const container = document.getElementById('interaction-matrix-container');
+
+            // Combinar todos los componentes (target está en supersistema)
+            const allComponents = [
+                ...functionAnalysisData.systemComponents,
+                ...functionAnalysisData.supersystemComponents,
+                functionAnalysisData.targetComponent
+            ].filter(c => c); // Filtrar componentes vacíos
+
+            if (allComponents.length < 2) {
+                container.innerHTML = '<p><em>Define at least 2 components in Step 2 to see the interaction matrix.</em></p>';
+                return;
+            }
+
+            // Crear tabla de interacciones con encabezados de color azul oscuro
+            let html = `
+                <table class="interaction-matrix" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Components</th>
+            `;
+
+            // Encabezados de columnas con fondo azul oscuro
+            allComponents.forEach(component => {
+                html += `<th>${component}</th>`;
+            });
+
+            html += `</tr></thead><tbody>`;
+
+            // Filas de la matriz
+            allComponents.forEach(rowComponent => {
+                html += `<tr><th>${rowComponent}</th>`;
+
+                allComponents.forEach(colComponent => {
+                    if (rowComponent === colComponent) {
+                        html += `<td style="background: #f0f0f0; text-align: center;">-</td>`;
+                    } else {
+                        const interactionId = `${rowComponent}-${colComponent}`;
+                        const reverseInteractionId = `${colComponent}-${rowComponent}`;
+                        const isChecked = functionAnalysisData.interactions[interactionId] ||
+                            functionAnalysisData.interactions[reverseInteractionId] || false;
+
+                        html += `
+                            <td style="text-align: center;">
+                                <input type="checkbox" id="${interactionId}" 
+                                       ${isChecked ? 'checked' : ''}
+                                       onchange="toggleInteraction('${rowComponent}', '${colComponent}')"
+                                       class="interaction-checkbox">
+                            </td>
+                        `;
+                    }
+                });
+
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            html += `<p style="margin-top: 10px; font-style: italic;">Check boxes where components are in contact or touch each other.</p>`;
+
+            container.innerHTML = html;
+
+            // CORRECCIÓN DEL HOVER: Event listeners mejorados
+            const table = container.querySelector('.interaction-matrix');
+            if (table) {
+                let currentRow = null;
+                let currentCol = null;
+
+                const clearHighlights = () => {
+                    if (currentRow) {
+                        currentRow.classList.remove('highlight-row');
+                        currentRow = null;
+                    }
+                    if (currentCol) {
+                        currentCol.forEach(cell => cell.classList.remove('highlight-col'));
+                        currentCol = null;
+                    }
+                };
+
+                const cells = table.querySelectorAll('td, th');
+                cells.forEach(cell => {
+                    cell.addEventListener('mouseenter', function () {
+                        clearHighlights();
+
+                        const row = this.parentNode;
+                        const cellIndex = Array.from(row.children).indexOf(this);
+
+                        // Resaltar toda la fila
+                        row.classList.add('highlight-row');
+                        currentRow = row;
+
+                        // Resaltar toda la columna
+                        const colCells = [];
+                        const allRows = table.querySelectorAll('tr');
+                        allRows.forEach(r => {
+                            if (r.children[cellIndex]) {
+                                r.children[cellIndex].classList.add('highlight-col');
+                                colCells.push(r.children[cellIndex]);
+                            }
+                        });
+                        currentCol = colCells;
+                    });
+
+                    cell.addEventListener('mouseleave', clearHighlights);
+                });
+            }
+        }
+
+        // Alternar interacción entre componentes
+        function toggleInteraction(component1, component2) {
+            const interactionId = `${component1}-${component2}`;
+            const reverseInteractionId = `${component2}-${component1}`;
+            const checkbox = document.getElementById(interactionId);
+
+            if (checkbox) {
+                functionAnalysisData.interactions[interactionId] = checkbox.checked;
+                functionAnalysisData.interactions[reverseInteractionId] = checkbox.checked;
+
+                // También actualizar el checkbox inverso si existe
+                const reverseCheckbox = document.getElementById(reverseInteractionId);
+                if (reverseCheckbox && reverseCheckbox.checked !== checkbox.checked) {
+                    reverseCheckbox.checked = checkbox.checked;
+                }
+
+                updateFunctionDiagram();
+            }
+        }
+
+        // Añadir fila a la tabla de funciones
+        function addFunctionRow() {
+            const tableBody = document.getElementById('function-table-body');
+
+            // Obtener todos los componentes disponibles
+            const allComponents = [
+                ...functionAnalysisData.systemComponents,
+                ...functionAnalysisData.supersystemComponents,
+                functionAnalysisData.targetComponent
+            ].filter(c => c);
+
+            if (allComponents.length === 0) {
+                alert('Please define components in Step 2 first.');
+                return;
+            }
+
+            // Crear opciones para los selectores de componentes
+            const componentOptions = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            const rowId = 'function-row-' + Date.now();
+            const row = document.createElement('tr');
+            row.id = rowId;
+            row.innerHTML = `
+                <td>
+                    <select class="function-carrier" style="width: 100%;">
+                        <option value="">Select...</option>
+                        ${componentOptions}
+                    </select>
+                </td>
+                <td><input type="text" class="function-action" placeholder="e.g., holds, heats" style="width: 100%;"></td>
+                <td>
+                    <select class="function-target" style="width: 100%;">
+                        <option value="">Select...</option>
+                        ${componentOptions}
+                    </select>
+                </td>
+                <td>
+                    <select class="function-category" style="width: 100%;">
+                        <option value="U">Useful (U)</option>
+                        <option value="H">Harmful (H)</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="function-performance" style="width: 100%;">
+                        <option value="N">Normal (N)</option>
+                        <option value="I">Insufficient (I)</option>
+                        <option value="E">Excessive (E)</option>
+                    </select>
+                </td>
+                <td><input type="text" class="function-comment" placeholder="Optional comment" style="width: 100%;"></td>
+                <td>
+                    <button class="btn-warning" onclick="removeFunctionRow('${rowId}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+            // Añadir evento para actualizar el diagrama cuando se modifique la fila
+            row.querySelectorAll('select, input').forEach(element => {
+                element.addEventListener('change', updateFunctionDiagram);
+                element.addEventListener('input', updateFunctionDiagram);
+            });
+
+            updateFunctionDiagram();
+        }
+
+        // Eliminar fila de función
+        function removeFunctionRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+                updateFunctionDiagram();
+            }
+        }
+
+        // Actualizar diagrama de funciones
+        function updateFunctionDiagram() {
+            // Recopilar todas las funciones de la tabla
+            const functionRows = document.querySelectorAll('#function-table-body tr');
+            functionAnalysisData.functions = [];
+
+            functionRows.forEach(row => {
+                const carrier = row.querySelector('.function-carrier')?.value;
+                const action = row.querySelector('.function-action')?.value;
+                const target = row.querySelector('.function-target')?.value;
+                const category = row.querySelector('.function-category')?.value;
+                const performance = row.querySelector('.function-performance')?.value;
+                const comment = row.querySelector('.function-comment')?.value;
+
+                if (carrier && action && target) {
+                    functionAnalysisData.functions.push({
+                        carrier,
+                        action,
+                        target,
+                        category: category === 'U' ? 'useful' : 'harmful',
+                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
+                        comment
+                    });
+                }
+            });
+
+            // Generar código Mermaid
+            const code = generateFunctionDiagramCode(functionAnalysisData.functions);
+            const container = document.getElementById('faMermaidPreview');
+
+            // Limpiar y renderizar nuevo diagrama
+            container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+            // Re-inicializar Mermaid
+            if (typeof mermaid !== 'undefined') {
+                try {
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    window.mermaidTimeout = setTimeout(() => {
+                        mermaid.init({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'basis'
+                            }
+                        }, container.querySelectorAll('.mermaid'));
+                    }, 100);
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                    container.innerHTML = `
+                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                            <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
+                            <p><strong>Function Analysis Diagram</strong></p>
+                            <p>Add functions to the table to see the diagram</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Generar código Mermaid para el diagrama de funciones
+        function generateFunctionDiagramCode(functions) {
+            if (functions.length === 0) {
+                return 'graph LR;\n    A[Define Functions] --> B[Diagram will appear here]';
+            }
+
+            let lines = [];
+
+            // Definir estilos para nodos
+            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
+            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
+            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
+
+            // Identificar todos los componentes únicos
+            const allComponents = new Set();
+            functions.forEach(func => {
+                allComponents.add(func.carrier);
+                allComponents.add(func.target);
+            });
+
+            // Determinar tipo de cada componente
+            const componentTypes = {};
+            Array.from(allComponents).forEach(component => {
+                if (component === functionAnalysisData.targetComponent) {
+                    componentTypes[component] = 'target';
+                } else if (functionAnalysisData.systemComponents.includes(component)) {
+                    componentTypes[component] = 'system';
+                } else {
+                    componentTypes[component] = 'supersystem';
+                }
+            });
+
+            // Crear nodos con formas apropiadas
+            Object.entries(componentTypes).forEach(([component, type]) => {
+                let shapeStart = '[';
+                let shapeEnd = ']';
+                let className = 'system';
+
+                if (type === 'supersystem') {
+                    shapeStart = '{{';
+                    shapeEnd = '}}';
+                    className = 'supersystem';
+                } else if (type === 'target') {
+                    shapeStart = '([';
+                    shapeEnd = '])';
+                    className = 'target';
+                }
+
+                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
+                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
+            });
+
+            // Crear aristas (conexiones) con estilos basados en propiedades
+            functions.forEach((func, index) => {
+                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
+                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
+
+                let arrow = '-->';
+                let linkStyle = '';
+
+                // Determinar estilo de flecha basado en categoría y rendimiento
+                if (func.category === 'useful') {
+                    if (func.performance === 'insufficient') {
+                        arrow = '-.->';
+                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
+                    } else if (func.performance === 'excessive') {
+                        arrow = '==>';
+                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    } else {
+                        arrow = '-->';
+                    }
+                } else if (func.category === 'harmful') {
+                    arrow = '==>';
+                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
+                }
+
+                // Añadir la arista
+                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+
+                // Añadir estilo de enlace si está especificado
+                if (linkStyle) {
+                    lines.push(`    ${linkStyle}`);
+                }
+            });
+
+            return 'graph LR\n' + lines.join('\n');
+        }
+
+        // Cargar ejemplo en Function Analysis
+        function loadFunctionAnalysisExample(exampleData) {
+                // Limpiar tabla de funciones
+                document.getElementById('function-table-body').innerHTML = '';
+
+                // Resetear datos de Function Analysis
+                functionAnalysisData = {
+                    mainFunction: '',
+                    targetComponent: '',
+                    systemComponents: [],
+                    supersystemComponents: [],
+                    interactions: {},
+                    functions: []
+                };
+
+                if (exampleData) {
+                    // Si se proporciona exampleData, usarlo
+                    document.getElementById('main-function').value = exampleData.mainFunction || '';
+                    document.getElementById('target-component').value = exampleData.targetComponent || '';
+
+                    // FILTRAR: Eliminar el targetComponent de las listas de componentes
+                    const targetComponent = exampleData.targetComponent || '';
+
+                    functionAnalysisData.systemComponents = (exampleData.systemComponents || [])
+                        .filter(component => component !== targetComponent);
+
+                    functionAnalysisData.supersystemComponents = (exampleData.supersystemComponents || [])
+                        .filter(component => component !== targetComponent);
+
+                    functionAnalysisData.interactions = exampleData.interactions || {};
+                    functionAnalysisData.functions = exampleData.functions || [];
+
+                    // Actualizar listas de componentes
+                    updateComponentLists();
+                    updateFunctionAnalysis();
+
+                    // Cargar funciones en la tabla
+                    if (exampleData.functions && exampleData.functions.length > 0) {
+                        setTimeout(() => {
+                            exampleData.functions.forEach(func => {
+                                addFunctionRow();
+                                const rows = document.querySelectorAll('#function-table-body tr');
+                                const lastRow = rows[rows.length - 1];
+
+                                if (lastRow) {
+                                    lastRow.querySelector('.function-carrier').value = func.carrier;
+                                    lastRow.querySelector('.function-action').value = func.action;
+                                    lastRow.querySelector('.function-target').value = func.target;
+                                    lastRow.querySelector('.function-category').value = func.category === 'useful' ? 'U' : 'H';
+                                    lastRow.querySelector('.function-performance').value =
+                                        func.performance === 'normal' ? 'N' :
+                                            (func.performance === 'insufficient' ? 'I' : 'E');
+                                    lastRow.querySelector('.function-comment').value = func.comment || '';
+                                }
+                            });
+                            updateFunctionDiagram();
+                        }, 100);
+                    }
+                } else {
+                    // Ejemplo por defecto: Sistema de taza de café
+                    // ... (código existente) ...
+                }
+        }
+
         // ===== FUNCIONES DE SOLUCIÓN =====
         function solveProblem() {
             clearResults();
@@ -3218,59 +4425,82 @@
                 })
             };
 
-            const selectedType = document.querySelector('input[name="contradiction-type"]:checked');
-            // Allow execution even if contradiction type is not selected
-            problemData.contradictionType = selectedType ? selectedType.value : null;
-            problemData.recommendedPrinciples = [];
+            // 9 Windows data
+            problemData.nineWindows = {
+                superPast: document.getElementById('nine-windows-super-past').value,
+                superPresent: document.getElementById('nine-windows-super-present').value,
+                superFuture: document.getElementById('nine-windows-super-future').value,
+                systemPast: document.getElementById('nine-windows-system-past').value,
+                systemPresent: document.getElementById('nine-windows-system-present').value,
+                systemFuture: document.getElementById('nine-windows-system-future').value,
+                subPast: document.getElementById('nine-windows-sub-past').value,
+                subPresent: document.getElementById('nine-windows-sub-present').value,
+                subFuture: document.getElementById('nine-windows-sub-future').value
+            };
 
-            if (problemData.contradictionType === 'technical') {
-                let improvingIndex = parseInt(document.getElementById('improving-feature').value);
-                let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
+            // Function Analysis data
+            problemData.functionAnalysis = {
+                mainFunction: functionAnalysisData.mainFunction,
+                targetComponent: functionAnalysisData.targetComponent,
+                systemComponents: functionAnalysisData.systemComponents,
+                supersystemComponents: functionAnalysisData.supersystemComponents,
+                interactions: functionAnalysisData.interactions,
+                functions: functionAnalysisData.functions
+            };
 
-                if (isNaN(improvingIndex) || improvingIndex < 0) improvingIndex = improvingFeatureIndex;
-                if (isNaN(worseningIndex) || worseningIndex < 0) worseningIndex = worseningFeatureIndex;
+            // Technical Contradiction data
+            let improvingIndex = parseInt(document.getElementById('improving-feature').value);
+            let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
 
-                if (improvingIndex !== null && worseningIndex !== null && improvingIndex >= 0 && worseningIndex >= 0) {
-                    improvingFeatureIndex = improvingIndex;
-                    worseningFeatureIndex = worseningIndex;
+            if (isNaN(improvingIndex) || improvingIndex < 0) improvingIndex = improvingFeatureIndex;
+            if (isNaN(worseningIndex) || worseningIndex < 0) worseningIndex = worseningFeatureIndex;
 
-                    const features = getCurrentFeatures();
-                    problemData.improvingFeature = features[improvingIndex];
-                    problemData.worseningFeature = features[worseningIndex];
+            problemData.technicalContradiction = {
+                improvingFeature: "Not selected",
+                worseningFeature: "Not selected",
+                recommendedPrinciples: []
+            };
 
-                    const improvingKey = (improvingIndex + 1).toString();
-                    const worseningKey = (worseningIndex + 1).toString();
-                    const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
+            if (improvingIndex !== null && worseningIndex !== null && improvingIndex >= 0 && worseningIndex >= 0) {
+                improvingFeatureIndex = improvingIndex;
+                worseningFeatureIndex = worseningIndex;
 
-                    problemData.recommendedPrinciples = (principlesList || []).map(id => {
-                        return principles[id] ? { ...principles[id], id } : null;
-                    }).filter(p => p !== null);
-                } else {
-                    problemData.improvingFeature = "Not selected";
-                    problemData.worseningFeature = "Not selected";
-                }
+                const features = getCurrentFeatures();
+                problemData.technicalContradiction.improvingFeature = features[improvingIndex];
+                problemData.technicalContradiction.worseningFeature = features[worseningIndex];
 
-            } else if (problemData.contradictionType === 'physical') {
-                const parameter = document.getElementById('conflicting-parameter').value;
-                problemData.conflictingParameter = parameter || "Not specified";
+                const improvingKey = (improvingIndex + 1).toString();
+                const worseningKey = (worseningIndex + 1).toString();
+                const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
 
-                if (physicalStrategyFlow.step3 && physicalStrategyFlow.selectedMethod) {
-                    problemData.ozRelationship = physicalStrategyFlow.selectedMethod;
-                    problemData.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
-
-                    const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
-                    problemData.recommendedPrinciples = strategy.principles.map(p => ({
-                        id: p.number,
-                        name: p.name,
-                        desc: p.description,
-                        example: p.example
-                    }));
-                } else {
-                    problemData.ozRelationship = null;
-                }
+                problemData.technicalContradiction.recommendedPrinciples = (principlesList || []).map(id => {
+                    return principles[id] ? { ...principles[id], id } : null;
+                }).filter(p => p !== null);
             }
 
-            // Collect Su-Field systems
+            // Physical Contradiction data
+            const parameter = document.getElementById('conflicting-parameter').value;
+            problemData.physicalContradiction = {
+                conflictingParameter: parameter || "Not specified",
+                recommendedPrinciples: []
+            };
+
+            if (physicalStrategyFlow.step3 && physicalStrategyFlow.selectedMethod) {
+                problemData.physicalContradiction.ozRelationship = physicalStrategyFlow.selectedMethod;
+                problemData.physicalContradiction.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
+
+                const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
+                problemData.physicalContradiction.recommendedPrinciples = strategy.principles.map(p => ({
+                    id: p.number,
+                    name: p.name,
+                    desc: p.description,
+                    example: p.example
+                }));
+            } else {
+                problemData.physicalContradiction.ozRelationship = null;
+            }
+
+            // Collect Su-Field systems - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
             problemData.sufield = { systems: [] };
             const systemElements = document.getElementsByClassName('sufield-system');
 
@@ -3286,10 +4516,10 @@
                         : [];
 
                     problemData.sufield.systems.push({
-                        object: object,
-                        tool: tool,
-                        field: field,
-                        type: type,
+                        object: object || 'S1',  // VALOR POR DEFECTO
+                        tool: tool || 'S2',      // VALOR POR DEFECTO
+                        field: field || 'Field', // VALOR POR DEFECTO
+                        type: type || 'insufficient', // VALOR POR DEFECTO
                         suggestion: sufieldSolutions[type] || "No specific suggestion available.",
                         standardSolutions: standardSolutions
                     });
@@ -3354,72 +4584,325 @@
         </p>
     </div>`;
 
-            // Problem Summary (Contradiction)
-            html += `<div class="solver-step"><h4><i class="fas fa-clipboard-list"></i> Contradiction Summary</h4>`;
+            // 9 Windows Analysis
+            html += `<div class="solver-step"><h4><i class="fas fa-window-restore"></i> 9 Windows Analysis</h4>
+<div class="nine-windows-container" style="margin-top: 20px;">
+    <table class="nine-windows-table" style="border-collapse: collapse; width: 100%;">
+        <tr>
+            <td style="width: 80px; border: none;"></td>
+            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Past</td>
+            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Present</td>
+            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Future</td>
+        </tr>
+        <tr>
+            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                Super-System
+            </td>
+            <td style="padding: 5px; background: #f0f7ff;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                    ${problemData.nineWindows.superPast || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #f0f7ff;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                    ${problemData.nineWindows.superPresent || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #f0f7ff;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                    ${problemData.nineWindows.superFuture || 'Not specified'}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
+                System
+            </td>
+            <td style="padding: 5px; background: #f0fff0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.systemPast || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #f0fff0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.systemPresent || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #f0fff0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.systemFuture || 'Not specified'}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                Sub-System
+            </td>
+            <td style="padding: 5px; background: #fff0f0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.subPast || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #fff0f0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.subPresent || 'Not specified'}
+                </div>
+            </td>
+            <td style="padding: 5px; background: #fff0f0;">
+                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                    ${problemData.nineWindows.subFuture || 'Not specified'}
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
+        <strong>Color Guide:</strong> 
+        <span style="color: #0066cc;">Super-System (Blue)</span> | 
+        <span style="color: #009900;">System (Green)</span> | 
+        <span style="color: #cc0000;">Sub-System (Red)</span>
+    </div>
+</div>
+<p style="margin-top: 15px; font-style: italic; text-align: center;">
+    Use this 9-windows analysis to identify innovation opportunities in different timeframes and system levels.
+</p>
+</div>`;
 
-            if (problemData.contradictionType === 'technical') {
-                html += `<div class="contradiction-visual">
-            <div class="improving-side">
-                <i class="fas fa-arrow-up improving-icon feature-icon"></i>
-                <h4>Improving</h4>
-                <p>${problemData.improvingFeature}</p>
-            </div>
-            <div class="contradiction-arrow">
-                <i class="fas fa-exchange-alt"></i>
-            </div>
-            <div class="worsening-side">
-                <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
-                <h4>Worsening</h4>
-                <p>${problemData.worseningFeature}</p>
-            </div>
-        </div>`;
-            } else if (problemData.contradictionType === 'physical') {
-                html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
+            // Function Analysis
+            if (problemData.functionAnalysis) {
+                html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> Function Analysis</h4>`;
 
-                if (problemData.ozRelationship) {
-                    const strategy = physicalContradictionPrinciples[problemData.ozRelationship];
-                    if (strategy) {
-                        html += `<div class="physical-strategy-guide">
-                    <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
-                    <div class="strategy-description">${strategy.description}</div>
-                    <div class="strategy-example">
-                        <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.ozRelationship)}
+                // Step 1: Main Function
+                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                    <h5>Step 1: Main Function</h5>
+                    <p><strong>Main Function:</strong> ${problemData.functionAnalysis.mainFunction || 'Not defined'}</p>
+                    <p><strong>Target Component:</strong> ${problemData.functionAnalysis.targetComponent || 'Not defined'}</p>
+                </div>`;
+
+                // Step 2: Component Analysis
+                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                    <h5>Step 2: Component Analysis</h5>
+                    <div class="panels-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem;">
+                        <div class="panel-half" style="flex: 1; min-width: 300px;">
+                            <h6>System Components:</h6>
+                            <ul>`;
+
+                if (problemData.functionAnalysis.systemComponents && problemData.functionAnalysis.systemComponents.length > 0) {
+                    problemData.functionAnalysis.systemComponents.forEach(component => {
+                        html += `<li>${component}</li>`;
+                    });
+                } else {
+                    html += `<li><em>No system components defined</em></li>`;
+                }
+
+                html += `</ul></div><div class="panel-half" style="flex: 1; min-width: 300px;">
+                            <h6>Supersystem Components:</h6>
+                            <ul>`;
+
+                if (problemData.functionAnalysis.supersystemComponents && problemData.functionAnalysis.supersystemComponents.length > 0) {
+                    problemData.functionAnalysis.supersystemComponents.forEach(component => {
+                        html += `<li>${component}</li>`;
+                    });
+                } else {
+                    html += `<li><em>No supersystem components defined</em></li>`;
+                }
+
+                html += `</ul></div></div></div>`;
+
+                // Step 3: Interaction Analysis
+                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                    <h5>Step 3: Interaction Analysis</h5>`;
+
+                if (Object.keys(problemData.functionAnalysis.interactions).length > 0) {
+                    html += `<p>Components in contact/interaction:</p><ul>`;
+
+                    for (const [interactionId, isChecked] of Object.entries(problemData.functionAnalysis.interactions)) {
+                        if (isChecked) {
+                            const [component1, component2] = interactionId.split('-');
+                            html += `<li>${component1} ↔ ${component2}</li>`;
+                        }
+                    }
+
+                    html += `</ul>`;
+                } else {
+                    html += `<p><em>No interactions defined</em></p>`;
+                }
+
+                html += `</div>`;
+
+                // Step 4: Functional Analysis (Tabular)
+                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                    <h5>Step 4: Functional Analysis (Tabular)</h5>`;
+
+                if (problemData.functionAnalysis.functions && problemData.functionAnalysis.functions.length > 0) {
+                    html += `<div style="overflow-x: auto;">
+                        <table class="trends-table">
+                            <thead>
+                                <tr>
+                                    <th>Component (function carrier)</th>
+                                    <th>Action (Verb)</th>
+                                    <th>Target (Object of the Function)</th>
+                                    <th>Category</th>
+                                    <th>Performance level</th>
+                                    <th>Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                    problemData.functionAnalysis.functions.forEach(func => {
+                        html += `
+                            <tr>
+                                <td>${func.carrier}</td>
+                                <td>${func.action}</td>
+                                <td>${func.target}</td>
+                                <td>${func.category === 'useful' ? 'Useful (U)' : 'Harmful (H)'}</td>
+                                <td>${func.performance === 'normal' ? 'Normal (N)' : (func.performance === 'insufficient' ? 'Insufficient (I)' : 'Excessive (E)')}</td>
+                                <td>${func.comment || ''}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `</tbody></table></div>`;
+                } else {
+                    html += `<p><em>No functions defined</em></p>`;
+                }
+
+                html += `</div>`;
+
+                // Step 5: Function Model Diagram
+                html += `<div class="calculation-block">
+                    <h5>Step 5: Function Model Diagram</h5>
+                    <div class="mermaid-container" id="resultsMermaidDiagram">
+                        <div class="mermaid">
+                            ${generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions)}
+                        </div>
+                    </div>
+                    
+                    <div class="diagram-legend">
+                        <h6 class="legend-title">Diagram Legend</h6>
+                        <div class="legend-grid">
+                            <div class="legend-item">
+                                <div class="legend-color-box" style="background: #dceeff; border: 2px solid #82b6ff;"></div>
+                                <span>System Component</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color-box" style="background: #ffe6cc; border: 2px solid #d79b00; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"></div>
+                                <span>Supersystem Component (Hexagon)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color-box" style="background: #ffffcc; border: 2px solid #d6b656; border-radius: 10px;"></div>
+                                <span>Target Component (Rounded)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line-sample" style="background: #000; height: 2px;"></div>
+                                <span>Useful Function (Normal)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line-sample" style="border: 1px dashed #000; height: 2px;"></div>
+                                <span>Useful Function (Insufficient)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line-sample" style="background: #000; height: 3px;"></div>
+                                <span>Useful Function (Excessive)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line-sample" style="background: #e74c3c; height: 3px;"></div>
+                                <span>Harmful Function</span>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
+
+                html += `</div>`;
+            }
+
+            // Technical Contradiction
+            if (problemData.technicalContradiction) {
+                html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Technical Contradiction</h4>`;
+
+                html += `<div class="contradiction-visual">
+                    <div class="improving-side">
+                        <i class="fas fa-arrow-up improving-icon feature-icon"></i>
+                        <h4>Improving</h4>
+                        <p>${problemData.technicalContradiction.improvingFeature}</p>
+                    </div>
+                    <div class="contradiction-arrow">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="worsening-side">
+                        <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
+                        <h4>Worsening</h4>
+                        <p>${problemData.technicalContradiction.worseningFeature}</p>
+                    </div>
+                </div>`;
+
+                // Matrix Version
+                html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
+                    <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+                </div>`;
+
+                // Recommended Principles
+                if (problemData.technicalContradiction.recommendedPrinciples && problemData.technicalContradiction.recommendedPrinciples.length > 0) {
+                    html += `<h5>Recommended Inventive Principles:</h5>`;
+                    problemData.technicalContradiction.recommendedPrinciples.forEach(p => {
+                        html += `
+                            <div class="principle-card">
+                                <div class="principle-header">
+                                    <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
+                                    <strong>Principle ${p.id}: ${p.name}</strong>
+                                </div>
+                                <p>${p.desc}</p>
+                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                    <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p>No specific principles are recommended based on the current inputs.</p>';
+                }
+                html += `</div>`;
+            }
+
+            // Physical Contradiction
+            if (problemData.physicalContradiction) {
+                html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
+
+                html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
+
+                if (problemData.physicalContradiction.ozRelationship) {
+                    const strategy = physicalContradictionPrinciples[problemData.physicalContradiction.ozRelationship];
+                    if (strategy) {
+                        html += `<div class="physical-strategy-guide">
+                            <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
+                            <div class="strategy-description">${strategy.description}</div>
+                            <div class="strategy-example">
+                                <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.physicalContradiction.ozRelationship)}
+                            </div>
+                        </div>`;
                     }
                 }
-            } else {
-                html += `<p><em>No specific contradiction type was fully defined.</em></p>`;
+
+                // Recommended Principles
+                if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
+                    html += `<h5>Recommended Inventive Principles:</h5>`;
+                    problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
+                        html += `
+                            <div class="principle-card">
+                                <div class="principle-header">
+                                    <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
+                                    <strong>Principle ${p.id}: ${p.name}</strong>
+                                </div>
+                                <p>${p.desc}</p>
+                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                    <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
             }
-            html += `</div>`;
-
-            // Matrix Version
-            html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
-        <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
-    </div>`;
-
-            // Recommended Principles
-            html += `<div class="solver-step"><h4><i class="fas fa-lightbulb"></i> Recommended Principles (from Contradiction)</h4>`;
-
-            if (problemData.recommendedPrinciples && problemData.recommendedPrinciples.length > 0) {
-                problemData.recommendedPrinciples.forEach(p => {
-                    html += `
-                <div class="principle-card">
-                    <div class="principle-header">
-                        <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
-                        <strong>Principle ${p.id}: ${p.name}</strong>
-                    </div>
-                    <p>${p.desc}</p>
-                    <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
-                    </div>
-                </div>
-            `;
-                });
-            } else {
-                html += '<p>No specific principles are recommended based on the current inputs. Ensure you have selected contradiction parameters or complete the physical contradiction analysis steps.</p>';
-            }
-            html += `</div>`;
 
             // Su-Field Analysis
             if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
@@ -3513,7 +4996,7 @@
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
 
-            // Dibujar diagramas Su-Field
+            // Dibujar diagramas Su-Field - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
             if (problemData.sufield && problemData.sufield.systems) {
                 problemData.sufield.systems.forEach((system, index) => {
                     if (system.object || system.tool || system.field) {
@@ -3522,26 +5005,160 @@
 
                         if (typeof updateProblemDiagramInSolution === 'function') {
                             updateProblemDiagramInSolution(problemDiagramId, {
-                                objectText: system.object,
-                                toolText: system.tool,
-                                fieldType: system.field,
-                                problemType: system.type
+                                objectText: system.object || 'S1',
+                                toolText: system.tool || 'S2',
+                                fieldType: system.field || 'Field',
+                                problemType: system.type || 'insufficient'
                             });
                         }
 
                         if (typeof updateSolutionDiagram === 'function') {
                             updateSolutionDiagram(
                                 solutionDiagramId,
-                                system.object,
-                                system.tool,
-                                system.field
+                                system.object || 'S1',
+                                system.tool || 'S2',
+                                system.field || 'Field'
                             );
                         }
                     }
                 });
             }
 
+            // Renderizar el diagrama Mermaid en resultados
+            setTimeout(() => {
+                updateMermaidDiagramInResults();
+            }, 500);
+
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función auxiliar para generar código Mermaid para resultados
+        function generateFunctionDiagramCodeForResults(functions) {
+            if (!functions || functions.length === 0) {
+                return 'graph LR;\n    A[No functions defined]';
+            }
+
+            let lines = [];
+
+            // Definir estilos para nodos
+            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
+            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
+            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
+
+            // Identificar todos los componentes únicos
+            const allComponents = new Set();
+            functions.forEach(func => {
+                allComponents.add(func.carrier);
+                allComponents.add(func.target);
+            });
+
+            // Determinar tipo de cada componente
+            const componentTypes = {};
+            const functionAnalysis = problemData.functionAnalysis;
+            Array.from(allComponents).forEach(component => {
+                if (component === functionAnalysis.targetComponent) {
+                    componentTypes[component] = 'target';
+                } else if (functionAnalysis.systemComponents && functionAnalysis.systemComponents.includes(component)) {
+                    componentTypes[component] = 'system';
+                } else {
+                    componentTypes[component] = 'supersystem';
+                }
+            });
+
+            // Crear nodos con formas apropiadas
+            Object.entries(componentTypes).forEach(([component, type]) => {
+                let shapeStart = '[';
+                let shapeEnd = ']';
+                let className = 'system';
+
+                if (type === 'supersystem') {
+                    shapeStart = '{{';
+                    shapeEnd = '}}';
+                    className = 'supersystem';
+                } else if (type === 'target') {
+                    shapeStart = '([';
+                    shapeEnd = '])';
+                    className = 'target';
+                }
+
+                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
+                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
+            });
+
+            // Crear aristas (conexiones) con estilos basados en propiedades
+            functions.forEach((func, index) => {
+                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
+                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
+
+                let arrow = '-->';
+                let linkStyle = '';
+
+                // Determinar estilo de flecha basado en categoría y rendimiento
+                if (func.category === 'useful') {
+                    if (func.performance === 'insufficient') {
+                        arrow = '-.->';
+                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
+                    } else if (func.performance === 'excessive') {
+                        arrow = '==>';
+                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    } else {
+                        arrow = '-->';
+                    }
+                } else if (func.category === 'harmful') {
+                    arrow = '==>';
+                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
+                }
+
+                // Añadir la arista
+                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+
+                // Añadir estilo de enlace si está especificado
+                if (linkStyle) {
+                    lines.push(`    ${linkStyle}`);
+                }
+            });
+
+            return 'graph LR\n' + lines.join('\n');
+        }
+
+        function updateMermaidDiagramInResults() {
+            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
+                return;
+            }
+
+            const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
+            const container = document.getElementById('resultsMermaidDiagram');
+
+            if (!container) return;
+
+            // Clear container and render new diagram
+            container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+            // Reinitialize Mermaid with the new diagram
+            if (typeof mermaid !== 'undefined') {
+                try {
+                    // Cancel any pending render
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    // Render with a small delay to asegurar que el DOM esté listo
+                    window.mermaidTimeout = setTimeout(() => {
+                        mermaid.init({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'basis'
+                            }
+                        }, container.querySelectorAll('.mermaid'));
+                    }, 100);
+                } catch (error) {
+                    console.error('Mermaid rendering error in results:', error);
+                }
+            }
         }
 
         function exportToExcel() {
@@ -3579,30 +5196,85 @@
             ws_data.push(["Ideal Final Result (IFR)"]);
             ws_data.push([problemData.ifr]);
             ws_data.push([]);
-            ws_data.push(["Contradiction Analysis"]);
 
-            if (problemData.contradictionType === 'technical') {
-                ws_data.push(["Type", "Technical Contradiction"]);
-                ws_data.push(["Improving Feature", problemData.improvingFeature]);
-                ws_data.push(["Worsening Feature", problemData.worseningFeature]);
-            } else {
-                ws_data.push(["Type", "Physical Contradiction"]);
-                ws_data.push(["Conflicting Parameter", problemData.conflictingParameter]);
-                ws_data.push(["Operational Zones Relationship", problemData.ozRelationship]);
-                ws_data.push(["Recommended Strategy", physicalContradictionPrinciples[problemData.ozRelationship]?.strategy]);
-            }
-
+            // 9 Windows
+            ws_data.push(["9 Windows Analysis"]);
+            ws_data.push(["Super-System Past", problemData.nineWindows.superPast]);
+            ws_data.push(["Super-System Present", problemData.nineWindows.superPresent]);
+            ws_data.push(["Super-System Future", problemData.nineWindows.superFuture]);
+            ws_data.push(["System Past", problemData.nineWindows.systemPast]);
+            ws_data.push(["System Present", problemData.nineWindows.systemPresent]);
+            ws_data.push(["System Future", problemData.nineWindows.systemFuture]);
+            ws_data.push(["Sub-System Past", problemData.nineWindows.subPast]);
+            ws_data.push(["Sub-System Present", problemData.nineWindows.subPresent]);
+            ws_data.push(["Sub-System Future", problemData.nineWindows.subFuture]);
             ws_data.push([]);
-            ws_data.push(["Recommended Inventive Principles (from Contradiction)"]);
-            ws_data.push(["Principle ID", "Name", "Description"]);
 
-            if (problemData.recommendedPrinciples) {
-                problemData.recommendedPrinciples.forEach(p => {
-                    ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+            // Function Analysis
+            if (problemData.functionAnalysis) {
+                ws_data.push(["Function Analysis"]);
+                ws_data.push(["Main Function", problemData.functionAnalysis.mainFunction]);
+                ws_data.push(["Target Component", problemData.functionAnalysis.targetComponent]);
+                ws_data.push([]);
+
+                ws_data.push(["System Components"]);
+                problemData.functionAnalysis.systemComponents.forEach(component => {
+                    ws_data.push(["", component]);
                 });
+                ws_data.push([]);
+
+                ws_data.push(["Supersystem Components"]);
+                problemData.functionAnalysis.supersystemComponents.forEach(component => {
+                    ws_data.push(["", component]);
+                });
+                ws_data.push([]);
+
+                ws_data.push(["Functions"]);
+                ws_data.push(["Component", "Action", "Target", "Category", "Performance", "Comment"]);
+                problemData.functionAnalysis.functions.forEach(func => {
+                    ws_data.push([func.carrier, func.action, func.target, func.category === 'useful' ? 'Useful' : 'Harmful',
+                    func.performance === 'normal' ? 'Normal' : (func.performance === 'insufficient' ? 'Insufficient' : 'Excessive'),
+                    func.comment || '']);
+                });
+                ws_data.push([]);
             }
 
-            ws_data.push([]);
+            // Technical Contradiction
+            if (problemData.technicalContradiction) {
+                ws_data.push(["Technical Contradiction"]);
+                ws_data.push(["Type", "Technical Contradiction"]);
+                ws_data.push(["Improving Feature", problemData.technicalContradiction.improvingFeature]);
+                ws_data.push(["Worsening Feature", problemData.technicalContradiction.worseningFeature]);
+
+                if (problemData.technicalContradiction.recommendedPrinciples && problemData.technicalContradiction.recommendedPrinciples.length > 0) {
+                    ws_data.push(["Recommended Inventive Principles (from Technical Contradiction)"]);
+                    ws_data.push(["Principle ID", "Name", "Description"]);
+                    problemData.technicalContradiction.recommendedPrinciples.forEach(p => {
+                        ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+                    });
+                }
+                ws_data.push([]);
+            }
+
+            // Physical Contradiction
+            if (problemData.physicalContradiction) {
+                ws_data.push(["Physical Contradiction"]);
+                ws_data.push(["Type", "Physical Contradiction"]);
+                ws_data.push(["Conflicting Parameter", problemData.physicalContradiction.conflictingParameter]);
+                ws_data.push(["Operational Zones Relationship", problemData.physicalContradiction.ozRelationship]);
+                ws_data.push(["Recommended Strategy", problemData.physicalContradiction.strategy]);
+
+                if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
+                    ws_data.push(["Recommended Inventive Principles (from Physical Contradiction)"]);
+                    ws_data.push(["Principle ID", "Name", "Description"]);
+                    problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
+                        ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+                    });
+                }
+                ws_data.push([]);
+            }
+
+            // Su-Field Analysis
             ws_data.push(["Su-Field Analysis"]);
 
             if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
