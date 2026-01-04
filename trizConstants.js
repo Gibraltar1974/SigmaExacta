@@ -1,3 +1,4 @@
+
 // Contiene todas las constantes estáticas de datos para la herramienta TRIZ (triz.html)
 // IMPORTANTE: lifecycleRecommendations y lifecycleToLdstMapping ya están definidos en ldst.js
 
@@ -134,7 +135,7 @@ const standardSolutionClasses = {
     "Class 5: Strategies for simplification and Improvement": "This class offers solutions for simplifying systems."
 };
 
-// NUEVA ESTRUCTURA DE EJEMPLOS - SOPORTANDO AMBAS CONTRADICCIONES
+// SOLO UN EJEMPLO COMPLETO: Screwdriver Bit Holder
 const examples = [
     {
         id: "ex1_pdf",
@@ -142,15 +143,15 @@ const examples = [
         // STEP 1: Define Problem
         system: "Screwdriver Bit Holder (developed by Oliver Gerundt and Jochen Wessner 2019)",
         function: "To hold the bit firmly during operation",
-        harm: "The hand has difficulty gripping the bit when changing it. Strong magnet holds well but makes extraction hard; weak magnet loses the bit.",
+        harm: "Strong magnet holds well but makes extraction hard; weak magnet loses the bit",
 
         // STEP 2: LDST
-        lifecycleStage: "growth", // Transitioning to magnetic fields indicates growth/evolution
+        lifecycleStage: "growth",
 
-        // STEP 3: IFR (Page 7, Rule B)
+        // STEP 3: IFR
         ifr: "The bit is magnetized and holds itself, eliminating the need for a separate holding mechanism.",
 
-        // STEP 4: 9 Windows (Page 2 - Problem Oriented)
+        // STEP 4: 9 Windows
         nineWindows: {
             superPast: "Screw receives a coating",
             superPresent: "Screwdriver generates vibrations / Second hand catches bit",
@@ -163,40 +164,28 @@ const examples = [
             subFuture: "Magnetic field properties / Self-holding material"
         },
 
-        // STEP 5: Function Analysis (Page 5 & 6)
+        // STEP 5: Function Analysis
         functionAnalysis: {
             mainFunction: "Screw System drives Screw",
             targetComponent: "Screw",
             systemComponents: ["Pin", "Magnet", "Sleeve", "Bit"],
             supersystemComponents: ["Hand", "Relining", "Screw"],
 
-            // INTERACTIONS MATRIX
             interactions: {
-                // Relining con otros componentes
                 "Relining-Pin": true,
                 "Pin-Relining": true,
-
-                // Pin con otros componentes
                 "Pin-Magnet": true,
                 "Magnet-Pin": true,
                 "Pin-Sleeve": true,
                 "Sleeve-Pin": true,
-
-                // Sleeve con otros componentes
                 "Sleeve-Magnet": true,
                 "Magnet-Sleeve": true,
                 "Sleeve-Bit": true,
                 "Bit-Sleeve": true,
-
-                // Magnet con otros componentes
                 "Magnet-Bit": true,
                 "Bit-Magnet": true,
-
-                // Bit con otros componentes
                 "Bit-Screw": true,
                 "Screw-Bit": true,
-
-                // Hand con otros componentes
                 "Hand-Screw": true,
                 "Screw-Hand": true
             },
@@ -216,7 +205,7 @@ const examples = [
             ]
         },
 
-        // STEP 6: Technical Contradiction (Page 8)
+        // STEP 6: Technical Contradiction
         technicalContradiction: {
             active: true,
             matrixVersion: "classic",
@@ -230,21 +219,26 @@ const examples = [
             ]
         },
 
-        // STEP 7: Physical Contradiction (Page 8 - Alternative analysis)
+        // STEP 7: Physical Contradiction - CORREGIDO COMPLETAMENTE
         physicalContradiction: {
             active: true,
             conflictingParameter: "Magnetic holding force",
-            ozDefinition: "spatial", // Different zones in the bit holder
-            ozIntersection: "intersect", // Zones intersect in the same space
-            separationMethod: "separationInSpace",
+            // Paso 1: Definición de zonas (OZ/OT)
+            ozDefinition: "spatial", // Different spatial zones in the bit holder
+            // Paso 2: Relación entre zonas (según lógica de Litvin)
+            ozIntersection: "no-intersect", // Las zonas no se superponen: zona de sujeción vs zona de liberación
+            // Paso 3: Método de separación (generado automáticamente para "no-intersect")
+            separationMethod: "separationInSpace", // Separación en el espacio
+            // Datos para mostrar en resultados
             recommendedStrategy: "Separation in space",
             recommendedPrinciples: [
-                { id: 1, name: "Segmentation", desc: "Divide an object into independent parts", example: "Segment the magnetic field into zones" },
-                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Create localized magnetic field variations" }
+                { id: 1, name: "Segmentation", desc: "Divide an object into independent parts", example: "Segment the magnetic field into zones with different strengths" },
+                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Create localized magnetic field variations - strong in holding zone, weak in release zone" },
+                { id: 17, name: "Transition into new dimension", desc: "Remove problems of moving in a line by allowing movement along a plane or in space", example: "Multi-layer magnetic arrangement" }
             ]
         },
 
-        // STEP 8: Su-Field Analysis (Page 12)
+        // STEP 8: Su-Field Analysis
         sufield: {
             systems: [
                 {
@@ -253,190 +247,6 @@ const examples = [
                     field: "Magnetic",
                     type: "insufficient", // Contradiction: insufficient for removal when too strong
                     suggestion: "The magnetic field is either too strong (difficult to remove) or too weak (bit can be lost). Standard Solutions suggest adding a third substance (e.g., a tool to push out the bit) or using a controllable magnetic field (Standard 1.1.3 / 2.4.1)."
-                }
-            ]
-        }
-    },
-    {
-        id: "ex2_coffee",
-        title: "Coffee Cup Thermal Management",
-        // STEP 1: Define Problem
-        system: "Coffee Cup",
-        function: "To hold hot liquid",
-        harm: "Burns the hand",
-
-        // STEP 2: LDST
-        lifecycleStage: "maturity",
-
-        // STEP 3: IFR
-        ifr: "The coffee cup itself holds hot liquid and protects the hand.",
-
-        // STEP 4: 9 Windows
-        nineWindows: {
-            superPast: "Clay pottery, Ceramic workshops",
-            superPresent: "Kitchen, Office, Coffee shop",
-            superFuture: "Smart kitchens, Temperature-controlled environments",
-            systemPast: "Simple ceramic cup",
-            systemPresent: "Insulated travel mug",
-            systemFuture: "Self-temperature-regulating cup",
-            subPast: "Clay material, Glaze",
-            subPresent: "Double wall, Vacuum insulation, Handle",
-            subFuture: "Phase-change materials, Thermoelectric elements"
-        },
-
-        // STEP 5: Function Analysis
-        functionAnalysis: {
-            mainFunction: "Coffee System contains Liquid",
-            targetComponent: "Liquid",
-            systemComponents: ["Cup Wall", "Handle", "Lid"],
-            supersystemComponents: ["Hand", "Air", "Table"],
-
-            interactions: {
-                "Cup Wall-Liquid": true,
-                "Liquid-Cup Wall": true,
-                "Cup Wall-Hand": true,
-                "Hand-Cup Wall": true,
-                "Handle-Hand": true,
-                "Hand-Handle": true,
-                "Lid-Liquid": true,
-                "Liquid-Lid": true
-            },
-
-            functions: [
-                { carrier: "Cup Wall", action: "contains", target: "Liquid", category: "useful", performance: "normal" },
-                { carrier: "Cup Wall", action: "transfers", target: "Heat", category: "harmful", performance: "excessive", comment: "Too much heat transfer to hand" },
-                { carrier: "Handle", action: "protects", target: "Hand", category: "useful", performance: "insufficient", comment: "Handle still gets hot" },
-                { carrier: "Lid", action: "prevents", target: "Spilling", category: "useful", performance: "normal" }
-            ]
-        },
-
-        // STEP 6: Technical Contradiction
-        technicalContradiction: {
-            active: true,
-            matrixVersion: "classic",
-            improvingFeature: 17, // 17: Temperature
-            worseningFeature: 33, // 33: Ease of operation
-            recommendedPrinciples: [
-                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Insulate only the areas where hand touches" },
-                { id: 40, name: "Composite materials", desc: "Change from uniform to composite materials", example: "Use layered materials with different thermal properties" }
-            ]
-        },
-
-        // STEP 7: Physical Contradiction
-        physicalContradiction: {
-            active: true,
-            conflictingParameter: "Temperature",
-            ozDefinition: "spatial", // Different spatial zones
-            ozIntersection: "intersect", // Hot liquid and hand contact zones intersect
-            separationMethod: "separationInSpace",
-            recommendedStrategy: "Separation in space",
-            recommendedPrinciples: [
-                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Hot interior, cool exterior" },
-                { id: 4, name: "Asymmetry", desc: "Change the shape from symmetrical to asymmetrical", example: "Asymmetrical wall thickness" }
-            ]
-        },
-
-        // STEP 8: Su-Field Analysis
-        sufield: {
-            systems: [
-                {
-                    object: "Hand",
-                    tool: "Cup Wall",
-                    field: "Thermal",
-                    type: "harmful",
-                    suggestion: "Thermal energy transfer from cup wall to hand is harmful. Standard Solutions suggest adding an insulating layer (S3) or changing the field type."
-                }
-            ]
-        }
-    },
-    {
-        id: "ex3_bicycle",
-        title: "Bicycle Frame Strength vs Weight",
-        // STEP 1: Define Problem
-        system: "Bicycle Frame",
-        function: "To support rider and components",
-        harm: "Too heavy for optimal performance",
-
-        // STEP 2: LDST
-        lifecycleStage: "growth",
-
-        // STEP 3: IFR
-        ifr: "The bicycle frame supports all components with zero weight.",
-
-        // STEP 4: 9 Windows
-        nineWindows: {
-            superPast: "Iron foundries, Blacksmith shops",
-            superPresent: "Roads, Bike lanes, Repair shops",
-            superFuture: "Smart roads, Automated transport systems",
-            systemPast: "Solid iron frame",
-            systemPresent: "Tubular steel/aluminum frame",
-            systemFuture: "Carbon fiber monocoque",
-            subPast: "Solid metal bars",
-            subPresent: "Welded tubes, Joints",
-            subFuture: "Composite fibers, Resin matrix"
-        },
-
-        // STEP 5: Function Analysis
-        functionAnalysis: {
-            mainFunction: "Bicycle System transports Rider",
-            targetComponent: "Rider",
-            systemComponents: ["Frame", "Wheels", "Handlebars", "Pedals"],
-            supersystemComponents: ["Road", "Air", "Gravity"],
-
-            interactions: {
-                "Frame-Wheels": true,
-                "Wheels-Frame": true,
-                "Frame-Handlebars": true,
-                "Handlebars-Frame": true,
-                "Frame-Pedals": true,
-                "Pedals-Frame": true,
-                "Wheels-Road": true,
-                "Road-Wheels": true
-            },
-
-            functions: [
-                { carrier: "Frame", action: "supports", target: "Rider", category: "useful", performance: "normal" },
-                { carrier: "Frame", action: "resists", target: "Forces", category: "useful", performance: "normal" },
-                { carrier: "Frame", action: "adds", target: "Weight", category: "harmful", performance: "excessive", comment: "Too heavy for racing" },
-                { carrier: "Wheels", action: "transmits", target: "Power", category: "useful", performance: "normal" }
-            ]
-        },
-
-        // STEP 6: Technical Contradiction
-        technicalContradiction: {
-            active: true,
-            matrixVersion: "classic",
-            improvingFeature: 14, // 14: Strength
-            worseningFeature: 1, // 1: Weight of moving object
-            recommendedPrinciples: [
-                { id: 40, name: "Composite materials", desc: "Change from uniform to composite materials", example: "Carbon fiber composites" },
-                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Variable wall thickness in tubes" }
-            ]
-        },
-
-        // STEP 7: Physical Contradiction
-        physicalContradiction: {
-            active: true,
-            conflictingParameter: "Material density",
-            ozDefinition: "spatial", // Different parts of frame
-            ozIntersection: "no-intersect", // Strength needed in some areas, lightness in others
-            separationMethod: "separationInSpace",
-            recommendedStrategy: "Separation in space",
-            recommendedPrinciples: [
-                { id: 1, name: "Segmentation", desc: "Divide an object into independent parts", example: "Frame with different materials in different sections" },
-                { id: 3, name: "Local quality", desc: "Change an object's structure from uniform to non-uniform", example: "Reinforced joints, lightweight tubes" }
-            ]
-        },
-
-        // STEP 8: Su-Field Analysis
-        sufield: {
-            systems: [
-                {
-                    object: "Frame",
-                    tool: "Material",
-                    field: "Mechanical",
-                    type: "inefficient",
-                    suggestion: "Material adds excessive weight for required strength. Standard Solutions suggest using different materials (S2) or composite structures."
                 }
             ]
         }

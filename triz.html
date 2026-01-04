@@ -2781,19 +2781,21 @@
                                 </div>
                             </div>
 
+                            <!-- MODIFICADO SEGÚN LÓGICA DE LITVIN -->
                             <div class="solver-step hidden" id="physical-step-2">
-                                <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Interaction</h4>
+                                <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Relationship (Litvin's
+                                    Logic)</h4>
                                 <div class="form-group">
-                                    <label>Do the Operational Zones/Times intersect?</label>
+                                    <label>How do the Operational Zones/Times relate? (Litvin's logic)</label>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="oz-intersection" value="intersect"
-                                                onchange="updatePhysicalStrategy();"> Yes, OZ/OT INTERSECT
-                                            (Use Satisfy
-                                            strategy)</label>
                                         <label><input type="radio" name="oz-intersection" value="no-intersect"
-                                                onchange="updatePhysicalStrategy();"> No, OZ/OT do NOT
-                                            intersect (Use Bypass
-                                            strategy)</label>
+                                                onchange="updatePhysicalStrategy();"> No intersect (OZ/OT do not
+                                            touch)</label>
+                                        <label><input type="radio" name="oz-intersection" value="contiguous"
+                                                onchange="updatePhysicalStrategy();"> Contiguous (OZ/OT are
+                                            adjacent)</label>
+                                        <label><input type="radio" name="oz-intersection" value="intersect"
+                                                onchange="updatePhysicalStrategy();"> Intersect (OZ/OT overlap)</label>
                                     </div>
                                 </div>
                             </div>
@@ -2946,6 +2948,16 @@
             selectedMethod: null
         };
 
+        // Variables para Function Analysis
+        let functionAnalysisData = {
+            mainFunction: '',
+            targetComponent: '',
+            systemComponents: [],
+            supersystemComponents: [],
+            interactions: {},
+            functions: []
+        };
+
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function switchMainTab(tabId) {
             // Quitar clase active de todos los botones y contenidos principales
@@ -2991,11 +3003,16 @@
                 }
             }
 
-            // Scroll al top de la sub-tab
-            const subTabsNav = document.querySelector('.sub-tabs-nav');
-            if (subTabsNav) {
-                window.scrollTo({ top: subTabsNav.offsetTop - 20, behavior: 'smooth' });
-            }
+            // Scroll al top de la sub-tab CON RETRASO PARA PERMITIR RENDERIZADO
+            setTimeout(() => {
+                const subTabsNav = document.querySelector('.sub-tabs-nav');
+                if (subTabsNav) {
+                    window.scrollTo({
+                        top: subTabsNav.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 150);
         }
 
         // ===== CARGAR HEADER DINÁMICAMENTE =====
@@ -3017,27 +3034,27 @@
 
             // Inicializar Mermaid para Function Analysis
             if (typeof mermaid !== 'undefined') {
-                mermaid.initialize({
-                    startOnLoad: false, // Cambiado a false para control manual
-                    theme: 'default',
-                    securityLevel: 'loose',
-                    flowchart: {
-                        useMaxWidth: true,
-                        htmlLabels: true,
-                        curve: 'basis'
-                    },
-                    gantt: {
-                        useMaxWidth: true,
-                        barHeight: 20,
-                        fontSize: 12
-                    },
-                    sequence: {
-                        useMaxWidth: true,
-                        diagramMarginX: 50,
-                        diagramMarginY: 10,
-                        boxTextMargin: 5
-                    }
-                });
+                try {
+                    mermaid.initialize({
+                        startOnLoad: false, // Desactivar carga automática
+                        theme: 'default',
+                        securityLevel: 'loose',
+                        flowchart: {
+                            useMaxWidth: true,
+                            htmlLabels: true,
+                            curve: 'basis'
+                        },
+                        // Configuración adicional para evitar errores
+                        deterministicIds: true,
+                        deterministicIDSeed: 'triz-function-analysis',
+                        fontFamily: 'Nunito, sans-serif'
+                    });
+                    console.log('Mermaid initialized successfully');
+                } catch (mermaidError) {
+                    console.error('Failed to initialize Mermaid:', mermaidError);
+                }
+            } else {
+                console.warn('Mermaid library not loaded');
             }
 
             // Verificar que todos los archivos JS se hayan cargado correctamente
@@ -3106,9 +3123,32 @@
 
         // ===== FUNCIONES DE EJEMPLO Y RESET =====
         function loadExampleAndGo() {
+            // Limpiar cualquier error previo
+            clearResults();
+
+            // Cargar el ejemplo
             loadExample();
-            switchMainTab('tab-tools');
-            switchSubTab('sub-tab-define');
+
+            // Cambiar a la pestaña de herramientas
+            setTimeout(() => {
+                switchMainTab('tab-tools');
+
+                // Esperar a que se renderice y luego ir a la primera subtab
+                setTimeout(() => {
+                    switchSubTab('sub-tab-define');
+
+                    // Scroll suave al inicio de las herramientas
+                    setTimeout(() => {
+                        const toolsHeader = document.querySelector('#tab-tools h2');
+                        if (toolsHeader) {
+                            toolsHeader.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }, 200);
+                }, 100);
+            }, 50);
         }
 
         function resetTool() {
@@ -3425,6 +3465,621 @@
             exampleIndex = (exampleIndex + 1) % examples.length;
         }
 
+        // ===== FUNCIONES DE FUNCTION ANALYSIS =====
+        function initFunctionAnalysis() {
+            updateFunctionAnalysis();
+        }
+
+        function resetFunctionAnalysis() {
+            functionAnalysisData = {
+                mainFunction: '',
+                targetComponent: '',
+                systemComponents: [],
+                supersystemComponents: [],
+                interactions: {},
+                functions: []
+            };
+
+            document.getElementById('main-function').value = '';
+            document.getElementById('target-component').value = '';
+            document.getElementById('system-component-input').value = '';
+            document.getElementById('supersystem-component-input').value = '';
+            document.getElementById('function-table-body').innerHTML = '';
+
+            updateFunctionAnalysis();
+        }
+
+        function updateFunctionAnalysis() {
+            // Actualizar main function y target component
+            functionAnalysisData.mainFunction = document.getElementById('main-function').value;
+            functionAnalysisData.targetComponent = document.getElementById('target-component').value;
+
+            // Actualizar displays
+            document.getElementById('target-component-display').textContent =
+                functionAnalysisData.targetComponent || 'Not defined';
+            document.getElementById('main-function-display').textContent =
+                functionAnalysisData.mainFunction || 'Not defined';
+
+            // Actualizar matriz de interacciones
+            updateInteractionMatrix();
+
+            // Actualizar diagrama
+            updateFunctionDiagram();
+        }
+
+        function validateComponentName(component) {
+            if (!component || typeof component !== 'string') return null;
+            const trimmed = component.trim();
+            if (trimmed.length === 0) return null;
+            // Eliminar caracteres problemáticos para Mermaid
+            return trimmed.replace(/[{}[\]()|;]/g, '');
+        }
+
+        function addSystemComponent() {
+            const input = document.getElementById('system-component-input');
+            const component = validateComponentName(input.value);
+
+            if (component && !functionAnalysisData.systemComponents.includes(component)) {
+                functionAnalysisData.systemComponents.push(component);
+                updateComponentLists();
+                input.value = '';
+                updateInteractionMatrix();
+                // Delay para asegurar que el DOM se actualice
+                setTimeout(() => {
+                    updateFunctionDiagram();
+                }, 100);
+            } else if (!component) {
+                alert('Please enter a valid component name');
+                input.focus();
+            }
+        }
+
+        function addSupersystemComponent() {
+            const input = document.getElementById('supersystem-component-input');
+            const component = validateComponentName(input.value);
+
+            if (component && !functionAnalysisData.supersystemComponents.includes(component)) {
+                functionAnalysisData.supersystemComponents.push(component);
+                updateComponentLists();
+                input.value = '';
+                updateInteractionMatrix();
+                setTimeout(() => {
+                    updateFunctionDiagram();
+                }, 100);
+            } else if (!component) {
+                alert('Please enter a valid component name');
+                input.focus();
+            }
+        }
+
+        function removeSystemComponent(component) {
+            functionAnalysisData.systemComponents = functionAnalysisData.systemComponents.filter(c => c !== component);
+            updateComponentLists();
+            updateInteractionMatrix();
+            updateFunctionDiagram();
+        }
+
+        function removeSupersystemComponent(component) {
+            functionAnalysisData.supersystemComponents = functionAnalysisData.supersystemComponents.filter(c => c !== component);
+            updateComponentLists();
+            updateInteractionMatrix();
+            updateFunctionDiagram();
+        }
+
+        function updateComponentLists() {
+            // Actualizar lista de componentes del sistema
+            const systemList = document.getElementById('system-components-list');
+            systemList.innerHTML = '';
+
+            functionAnalysisData.systemComponents.forEach(component => {
+                const div = document.createElement('div');
+                div.className = 'item-entry';
+                div.innerHTML = `
+                    <span>${component}</span>
+                    <button class="btn-warning" onclick="removeSystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                systemList.appendChild(div);
+            });
+
+            // Actualizar lista de componentes del supersistema
+            const supersystemList = document.getElementById('supersystem-components-list');
+            supersystemList.innerHTML = '';
+
+            functionAnalysisData.supersystemComponents.forEach(component => {
+                const div = document.createElement('div');
+                div.className = 'item-entry';
+                div.innerHTML = `
+                    <span>${component}</span>
+                    <button class="btn-warning" onclick="removeSupersystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                supersystemList.appendChild(div);
+            });
+        }
+
+        // CORRECCIÓN DEL HOVER: Actualizar matriz de interacciones con hover que no permanece
+        function updateInteractionMatrix() {
+            const container = document.getElementById('interaction-matrix-container');
+
+            // Combinar todos los componentes (target está en supersistema)
+            const allComponents = [
+                ...functionAnalysisData.systemComponents,
+                ...functionAnalysisData.supersystemComponents,
+                functionAnalysisData.targetComponent
+            ].filter(c => c); // Filtrar componentes vacíos
+
+            if (allComponents.length < 2) {
+                container.innerHTML = '<p><em>Define at least 2 components in Step 2 to see the interaction matrix.</em></p>';
+                return;
+            }
+
+            // Crear tabla de interacciones con encabezados de color azul oscuro
+            let html = `
+                <table class="interaction-matrix" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Components</th>
+            `;
+
+            // Encabezados de columnas con fondo azul oscuro
+            allComponents.forEach(component => {
+                html += `<th>${component}</th>`;
+            });
+
+            html += `</tr></thead><tbody>`;
+
+            // Filas de la matriz
+            allComponents.forEach(rowComponent => {
+                html += `<tr><th>${rowComponent}</th>`;
+
+                allComponents.forEach(colComponent => {
+                    if (rowComponent === colComponent) {
+                        html += `<td style="background: #f0f0f0; text-align: center;">-</td>`;
+                    } else {
+                        const interactionId = `${rowComponent}-${colComponent}`;
+                        const reverseInteractionId = `${colComponent}-${rowComponent}`;
+                        const isChecked = functionAnalysisData.interactions[interactionId] ||
+                            functionAnalysisData.interactions[reverseInteractionId] || false;
+
+                        html += `
+                            <td style="text-align: center;">
+                                <input type="checkbox" id="${interactionId}" 
+                                       ${isChecked ? 'checked' : ''}
+                                       onchange="toggleInteraction('${rowComponent}', '${colComponent}')"
+                                       class="interaction-checkbox">
+                            </td>
+                        `;
+                    }
+                });
+
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            html += `<p style="margin-top: 10px; font-style: italic;">Check boxes where components are in contact or touch each other.</p>`;
+
+            container.innerHTML = html;
+
+            // CORRECCIÓN DEL HOVER: Event listeners mejorados
+            const table = container.querySelector('.interaction-matrix');
+            if (table) {
+                let currentRow = null;
+                let currentCol = null;
+
+                const clearHighlights = () => {
+                    if (currentRow) {
+                        currentRow.classList.remove('highlight-row');
+                        currentRow = null;
+                    }
+                    if (currentCol) {
+                        currentCol.forEach(cell => cell.classList.remove('highlight-col'));
+                        currentCol = null;
+                    }
+                };
+
+                const cells = table.querySelectorAll('td, th');
+                cells.forEach(cell => {
+                    cell.addEventListener('mouseenter', function () {
+                        clearHighlights();
+
+                        const row = this.parentNode;
+                        const cellIndex = Array.from(row.children).indexOf(this);
+
+                        // Resaltar toda la fila
+                        row.classList.add('highlight-row');
+                        currentRow = row;
+
+                        // Resaltar toda la columna
+                        const colCells = [];
+                        const allRows = table.querySelectorAll('tr');
+                        allRows.forEach(r => {
+                            if (r.children[cellIndex]) {
+                                r.children[cellIndex].classList.add('highlight-col');
+                                colCells.push(r.children[cellIndex]);
+                            }
+                        });
+                        currentCol = colCells;
+                    });
+
+                    cell.addEventListener('mouseleave', clearHighlights);
+                });
+            }
+        }
+
+        // Alternar interacción entre componentes
+        function toggleInteraction(component1, component2) {
+            const interactionId = `${component1}-${component2}`;
+            const reverseInteractionId = `${component2}-${component1}`;
+            const checkbox = document.getElementById(interactionId);
+
+            if (checkbox) {
+                functionAnalysisData.interactions[interactionId] = checkbox.checked;
+                functionAnalysisData.interactions[reverseInteractionId] = checkbox.checked;
+
+                // También actualizar el checkbox inverso si existe
+                const reverseCheckbox = document.getElementById(reverseInteractionId);
+                if (reverseCheckbox && reverseCheckbox.checked !== checkbox.checked) {
+                    reverseCheckbox.checked = checkbox.checked;
+                }
+
+                updateFunctionDiagram();
+            }
+        }
+
+        // Añadir fila a la tabla de funciones
+        function addFunctionRow() {
+            const tableBody = document.getElementById('function-table-body');
+
+            // Obtener todos los componentes disponibles
+            const allComponents = [
+                ...functionAnalysisData.systemComponents,
+                ...functionAnalysisData.supersystemComponents,
+                functionAnalysisData.targetComponent
+            ].filter(c => c);
+
+            if (allComponents.length === 0) {
+                alert('Please define components in Step 2 first.');
+                return;
+            }
+
+            // Crear opciones para los selectores de componentes
+            const componentOptions = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            const rowId = 'function-row-' + Date.now();
+            const row = document.createElement('tr');
+            row.id = rowId;
+            row.innerHTML = `
+                <td>
+                    <select class="function-carrier" style="width: 100%;">
+                        <option value="">Select...</option>
+                        ${componentOptions}
+                    </select>
+                </td>
+                <td><input type="text" class="function-action" placeholder="e.g., holds, heats" style="width: 100%;"></td>
+                <td>
+                    <select class="function-target" style="width: 100%;">
+                        <option value="">Select...</option>
+                        ${componentOptions}
+                    </select>
+                </td>
+                <td>
+                    <select class="function-category" style="width: 100%;">
+                        <option value="U">Useful (U)</option>
+                        <option value="H">Harmful (H)</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="function-performance" style="width: 100%;">
+                        <option value="N">Normal (N)</option>
+                        <option value="I">Insufficient (I)</option>
+                        <option value="E">Excessive (E)</option>
+                    </select>
+                </td>
+                <td><input type="text" class="function-comment" placeholder="Optional comment" style="width: 100%;"></td>
+                <td>
+                    <button class="btn-warning" onclick="removeFunctionRow('${rowId}')" style="padding: 2px 5px; font-size: 0.8em;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+            // Añadir evento para actualizar el diagrama cuando se modifique la fila
+            row.querySelectorAll('select, input').forEach(element => {
+                element.addEventListener('change', updateFunctionDiagram);
+                element.addEventListener('input', updateFunctionDiagram);
+            });
+
+            updateFunctionDiagram();
+        }
+
+        // Eliminar fila de función
+        function removeFunctionRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+                updateFunctionDiagram();
+            }
+        }
+
+        // ===== FUNCIÓN CORREGIDA: GENERAR CÓDIGO MERMAIRD PARA FUNCTION ANALYSIS =====
+        function generateFunctionDiagramCodeForFunctionAnalysis(functions) {
+            if (!functions || functions.length === 0) {
+                return 'graph LR\n    A[No functions defined]';
+            }
+
+            let lines = [];
+
+            // Definir estilos para nodos
+            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
+            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
+            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
+
+            // Identificar todos los componentes únicos y crear un mapeo de IDs seguros
+            const componentMap = new Map();
+            const usedIds = new Set();
+            let idCounter = 1;
+
+            // Función para crear IDs seguros para Mermaid
+            function createSafeId(componentName) {
+                if (!componentName || componentName.trim() === '') {
+                    return null;
+                }
+
+                // Crear ID seguro: solo letras, números y guiones bajos
+                let safeId = componentName
+                    .trim()
+                    .replace(/[^a-zA-Z0-9]/g, '_')
+                    .replace(/_+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+
+                if (!safeId) {
+                    safeId = `comp_${idCounter++}`;
+                }
+
+                // Asegurar que el ID sea único
+                let finalId = safeId;
+                let suffix = 1;
+                while (usedIds.has(finalId)) {
+                    finalId = `${safeId}_${suffix++}`;
+                }
+
+                usedIds.add(finalId);
+                componentMap.set(componentName, finalId);
+                return finalId;
+            }
+
+            // Crear IDs para todos los componentes
+            functions.forEach(func => {
+                if (func.carrier && func.carrier.trim()) {
+                    createSafeId(func.carrier);
+                }
+                if (func.target && func.target.trim()) {
+                    createSafeId(func.target);
+                }
+            });
+
+            // Crear nodos con formas apropiadas
+            Array.from(componentMap.entries()).forEach(([componentName, nodeId]) => {
+                if (!componentName || !nodeId) return;
+
+                let type = 'system';
+                if (functionAnalysisData) {
+                    if (componentName === functionAnalysisData.targetComponent) {
+                        type = 'target';
+                    } else if (functionAnalysisData.supersystemComponents &&
+                        functionAnalysisData.supersystemComponents.includes(componentName)) {
+                        type = 'supersystem';
+                    }
+                }
+
+                let shapeStart = '[';
+                let shapeEnd = ']';
+                let className = 'system';
+
+                if (type === 'supersystem') {
+                    shapeStart = '{{';
+                    shapeEnd = '}}';
+                    className = 'supersystem';
+                } else if (type === 'target') {
+                    shapeStart = '([';
+                    shapeEnd = '])';
+                    className = 'target';
+                }
+
+                lines.push(`    ${nodeId}${shapeStart}"${componentName}"${shapeEnd}:::${className}`);
+            });
+
+            // Crear aristas (conexiones) con estilos basados en propiedades
+            functions.forEach((func, index) => {
+                const carrierId = componentMap.get(func.carrier);
+                const targetId = componentMap.get(func.target);
+
+                if (!carrierId || !targetId) {
+                    return;
+                }
+
+                let arrow = '-->';
+                let linkStyle = '';
+
+                if (func.category === 'useful') {
+                    if (func.performance === 'insufficient') {
+                        arrow = '-.->';
+                        linkStyle = `linkStyle ${index} stroke-dasharray:5,5;`;
+                    } else if (func.performance === 'excessive') {
+                        arrow = '==>';
+                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    }
+                } else if (func.category === 'harmful') {
+                    arrow = '==>';
+                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
+                }
+
+                const label = func.action || 'affects';
+                lines.push(`    ${carrierId} ${arrow}|${label}| ${targetId}`);
+
+                if (linkStyle) {
+                    lines.push(`    ${linkStyle}`);
+                }
+            });
+
+            if (lines.length <= 4) { // Solo tiene las definiciones de clase
+                return 'graph LR\n    A[Add functions to see diagram]';
+            }
+
+            return 'graph LR\n' + lines.join('\n');
+        }
+
+        function updateFunctionDiagram() {
+            // Recopilar todas las funciones de la tabla
+            const functionRows = document.querySelectorAll('#function-table-body tr');
+            functionAnalysisData.functions = [];
+
+            functionRows.forEach(row => {
+                const carrier = row.querySelector('.function-carrier')?.value;
+                const action = row.querySelector('.function-action')?.value;
+                const target = row.querySelector('.function-target')?.value;
+                const category = row.querySelector('.function-category')?.value;
+                const performance = row.querySelector('.function-performance')?.value;
+                const comment = row.querySelector('.function-comment')?.value;
+
+                if (carrier && action && target && carrier.trim() && action.trim() && target.trim()) {
+                    functionAnalysisData.functions.push({
+                        carrier: carrier.trim(),
+                        action: action.trim(),
+                        target: target.trim(),
+                        category: category === 'U' ? 'useful' : 'harmful',
+                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
+                        comment: comment ? comment.trim() : ''
+                    });
+                }
+            });
+
+            // Generar código Mermaid
+            const code = generateFunctionDiagramCodeForFunctionAnalysis(functionAnalysisData.functions);
+            const container = document.getElementById('faMermaidPreview');
+
+            // Limpiar y renderizar nuevo diagrama
+            container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+            // Re-inicializar Mermaid solo si hay funciones definidas
+            if (typeof mermaid !== 'undefined' && functionAnalysisData.functions.length > 0) {
+                try {
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    window.mermaidTimeout = setTimeout(() => {
+                        // Destruir cualquier instancia anterior de Mermaid
+                        mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'basis'
+                            }
+                        });
+
+                        // Renderizar solo si el contenedor está visible
+                        const mermaidElements = container.querySelectorAll('.mermaid');
+                        if (mermaidElements.length > 0) {
+                            try {
+                                mermaid.init(undefined, mermaidElements);
+                            } catch (mermaidError) {
+                                console.warn('Mermaid rendering error, using fallback:', mermaidError);
+                                container.innerHTML = `
+                                    <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                                        <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
+                                        <p><strong>Function Analysis Diagram</strong></p>
+                                        <p>Define functions in the table above to see the diagram</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }, 300);
+                } catch (error) {
+                    console.error('Mermaid initialization error:', error);
+                }
+            } else {
+                // Mostrar mensaje amigable si no hay funciones
+                container.innerHTML = `
+                    <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                        <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
+                        <p><strong>Function Analysis Diagram</strong></p>
+                        <p>Add functions to the table above to see the diagram</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar ejemplo en Function Analysis
+        function loadFunctionAnalysisExample(exampleData) {
+            // Limpiar tabla de funciones
+            document.getElementById('function-table-body').innerHTML = '';
+
+            // Resetear datos de Function Analysis
+            functionAnalysisData = {
+                mainFunction: '',
+                targetComponent: '',
+                systemComponents: [],
+                supersystemComponents: [],
+                interactions: {},
+                functions: []
+            };
+
+            if (exampleData) {
+                // Si se proporciona exampleData, usarlo
+                document.getElementById('main-function').value = exampleData.mainFunction || '';
+                document.getElementById('target-component').value = exampleData.targetComponent || '';
+
+                // FILTRAR: Eliminar el targetComponent de las listas de componentes
+                const targetComponent = exampleData.targetComponent || '';
+
+                functionAnalysisData.systemComponents = (exampleData.systemComponents || [])
+                    .filter(component => component !== targetComponent);
+
+                functionAnalysisData.supersystemComponents = (exampleData.supersystemComponents || [])
+                    .filter(component => component !== targetComponent);
+
+                functionAnalysisData.interactions = exampleData.interactions || {};
+                functionAnalysisData.functions = exampleData.functions || [];
+
+                // Actualizar listas de componentes
+                updateComponentLists();
+                updateFunctionAnalysis();
+
+                // Cargar funciones en la tabla
+                if (exampleData.functions && exampleData.functions.length > 0) {
+                    setTimeout(() => {
+                        exampleData.functions.forEach(func => {
+                            addFunctionRow();
+                            const rows = document.querySelectorAll('#function-table-body tr');
+                            const lastRow = rows[rows.length - 1];
+
+                            if (lastRow) {
+                                lastRow.querySelector('.function-carrier').value = func.carrier;
+                                lastRow.querySelector('.function-action').value = func.action;
+                                lastRow.querySelector('.function-target').value = func.target;
+                                lastRow.querySelector('.function-category').value = func.category === 'useful' ? 'U' : 'H';
+                                lastRow.querySelector('.function-performance').value =
+                                    func.performance === 'normal' ? 'N' :
+                                        (func.performance === 'insufficient' ? 'I' : 'E');
+                                lastRow.querySelector('.function-comment').value = func.comment || '';
+                            }
+                        });
+                        updateFunctionDiagram();
+                    }, 100);
+                }
+            }
+        }
+
+        // ===== MODIFICADO SEGÚN LÓGICA DE LITVIN =====
         function updatePhysicalStrategy() {
             clearResults();
 
@@ -3438,13 +4093,8 @@
                     document.getElementById('physical-step-3').classList.remove('hidden');
                     physicalStrategyFlow.step2 = true;
 
-                    if (ozIntersection.value === 'intersect') {
-                        physicalStrategyFlow.selectedStrategy = 'satisfy';
-                    } else {
-                        physicalStrategyFlow.selectedStrategy = 'bypass';
-                    }
-
-                    generateSeparationMethods(physicalStrategyFlow.selectedStrategy);
+                    // Generar los métodos de separación según el tipo de intersección (Litvin's logic)
+                    generateSeparationMethods(ozIntersection.value);
 
                     setTimeout(() => {
                         const separationMethod = document.querySelector('input[name="separation-method"]:checked');
@@ -3471,24 +4121,33 @@
             document.getElementById('principles-toggle-container').style.display = 'block';
         }
 
-        function generateSeparationMethods(strategy) {
+        // ===== MODIFICADO SEGÚN LÓGICA DE LITVIN =====
+        function generateSeparationMethods(intersectionType) {
             const container = document.getElementById('separation-methods');
             container.innerHTML = '';
 
             let methodsHTML = '';
 
-            if (strategy === 'satisfy') {
+            // Litvin's logic:
+            // 1. No intersect (do not touch) → Offer Separation in Space and Time
+            // 2. Contiguous (adjacent) → Offer Separation by Relation and Physical-Chemical Principles
+            // 3. Intersect (overlap) → Offer System Transition and Bypass
+
+            if (intersectionType === 'no-intersect') {
                 methodsHTML = `
-                <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange();"> Separation in Space</label>
-                <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange();"> Separation in Time</label>
-                <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange();"> Separation in Relation</label>
-                <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange();"> Separation in System Level</label>
-                <label><input type="radio" name="separation-method" value="satisfyContradictoryDemands" onchange="handleSeparationMethodChange();"> Satisfy Contradictory Demands</label>
-            `;
-            } else {
+                    <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange();"> Separation in Space</label>
+                    <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange();"> Separation in Time</label>
+                `;
+            } else if (intersectionType === 'contiguous') {
                 methodsHTML = `
-                <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange();"> Bypass Contradictory Demands</label>
-            `;
+                    <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange();"> Separation by Relation</label>
+                    <label><input type="radio" name="separation-method" value="physicalChemicalPrinciples" onchange="handleSeparationMethodChange();"> Physical-Chemical Principles</label>
+                `;
+            } else if (intersectionType === 'intersect') {
+                methodsHTML = `
+                    <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange();"> System Transition</label>
+                    <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange();"> Bypass Contradictory Demands</label>
+                `;
             }
 
             container.innerHTML = methodsHTML;
@@ -3839,564 +4498,6 @@
             }
         }
 
-        // ===== NUEVAS FUNCIONES PARA FUNCTION ANALYSIS =====
-
-        // Variables para Function Analysis
-        let functionAnalysisData = {
-            mainFunction: '',
-            targetComponent: '',
-            systemComponents: [],
-            supersystemComponents: [],
-            interactions: {},
-            functions: []
-        };
-
-        // Inicializar Function Analysis
-        function initFunctionAnalysis() {
-            updateFunctionAnalysis();
-        }
-
-        // Reset Function Analysis
-        function resetFunctionAnalysis() {
-            functionAnalysisData = {
-                mainFunction: '',
-                targetComponent: '',
-                systemComponents: [],
-                supersystemComponents: [],
-                interactions: {},
-                functions: []
-            };
-
-            document.getElementById('main-function').value = '';
-            document.getElementById('target-component').value = '';
-            document.getElementById('system-component-input').value = '';
-            document.getElementById('supersystem-component-input').value = '';
-            document.getElementById('function-table-body').innerHTML = '';
-
-            updateFunctionAnalysis();
-        }
-
-        // Actualizar datos de Function Analysis
-        function updateFunctionAnalysis() {
-            // Actualizar main function y target component
-            functionAnalysisData.mainFunction = document.getElementById('main-function').value;
-            functionAnalysisData.targetComponent = document.getElementById('target-component').value;
-
-            // Actualizar displays
-            document.getElementById('target-component-display').textContent =
-                functionAnalysisData.targetComponent || 'Not defined';
-            document.getElementById('main-function-display').textContent =
-                functionAnalysisData.mainFunction || 'Not defined';
-
-            // Actualizar matriz de interacciones
-            updateInteractionMatrix();
-
-            // Actualizar diagrama
-            updateFunctionDiagram();
-        }
-
-        // Añadir componente del sistema
-        function addSystemComponent() {
-            const input = document.getElementById('system-component-input');
-            const component = input.value.trim();
-
-            if (component && !functionAnalysisData.systemComponents.includes(component)) {
-                functionAnalysisData.systemComponents.push(component);
-                updateComponentLists();
-                input.value = '';
-                updateInteractionMatrix();
-                updateFunctionDiagram();
-            }
-        }
-
-        // Añadir componente del supersistema
-        function addSupersystemComponent() {
-            const input = document.getElementById('supersystem-component-input');
-            const component = input.value.trim();
-
-            if (component && !functionAnalysisData.supersystemComponents.includes(component)) {
-                functionAnalysisData.supersystemComponents.push(component);
-                updateComponentLists();
-                input.value = '';
-                updateInteractionMatrix();
-                updateFunctionDiagram();
-            }
-        }
-
-        // Eliminar componente del sistema
-        function removeSystemComponent(component) {
-            functionAnalysisData.systemComponents = functionAnalysisData.systemComponents.filter(c => c !== component);
-            updateComponentLists();
-            updateInteractionMatrix();
-            updateFunctionDiagram();
-        }
-
-        // Eliminar componente del supersistema
-        function removeSupersystemComponent(component) {
-            functionAnalysisData.supersystemComponents = functionAnalysisData.supersystemComponents.filter(c => c !== component);
-            updateComponentLists();
-            updateInteractionMatrix();
-            updateFunctionDiagram();
-        }
-
-        // Actualizar listas de componentes en la UI
-        function updateComponentLists() {
-            // Actualizar lista de componentes del sistema
-            const systemList = document.getElementById('system-components-list');
-            systemList.innerHTML = '';
-
-            functionAnalysisData.systemComponents.forEach(component => {
-                const div = document.createElement('div');
-                div.className = 'item-entry';
-                div.innerHTML = `
-                    <span>${component}</span>
-                    <button class="btn-warning" onclick="removeSystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                systemList.appendChild(div);
-            });
-
-            // Actualizar lista de componentes del supersistema
-            const supersystemList = document.getElementById('supersystem-components-list');
-            supersystemList.innerHTML = '';
-
-            functionAnalysisData.supersystemComponents.forEach(component => {
-                const div = document.createElement('div');
-                div.className = 'item-entry';
-                div.innerHTML = `
-                    <span>${component}</span>
-                    <button class="btn-warning" onclick="removeSupersystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                supersystemList.appendChild(div);
-            });
-        }
-
-        // CORRECCIÓN DEL HOVER: Actualizar matriz de interacciones con hover que no permanece
-        function updateInteractionMatrix() {
-            const container = document.getElementById('interaction-matrix-container');
-
-            // Combinar todos los componentes (target está en supersistema)
-            const allComponents = [
-                ...functionAnalysisData.systemComponents,
-                ...functionAnalysisData.supersystemComponents,
-                functionAnalysisData.targetComponent
-            ].filter(c => c); // Filtrar componentes vacíos
-
-            if (allComponents.length < 2) {
-                container.innerHTML = '<p><em>Define at least 2 components in Step 2 to see the interaction matrix.</em></p>';
-                return;
-            }
-
-            // Crear tabla de interacciones con encabezados de color azul oscuro
-            let html = `
-                <table class="interaction-matrix" style="font-size: 0.9rem;">
-                    <thead>
-                        <tr>
-                            <th>Components</th>
-            `;
-
-            // Encabezados de columnas con fondo azul oscuro
-            allComponents.forEach(component => {
-                html += `<th>${component}</th>`;
-            });
-
-            html += `</tr></thead><tbody>`;
-
-            // Filas de la matriz
-            allComponents.forEach(rowComponent => {
-                html += `<tr><th>${rowComponent}</th>`;
-
-                allComponents.forEach(colComponent => {
-                    if (rowComponent === colComponent) {
-                        html += `<td style="background: #f0f0f0; text-align: center;">-</td>`;
-                    } else {
-                        const interactionId = `${rowComponent}-${colComponent}`;
-                        const reverseInteractionId = `${colComponent}-${rowComponent}`;
-                        const isChecked = functionAnalysisData.interactions[interactionId] ||
-                            functionAnalysisData.interactions[reverseInteractionId] || false;
-
-                        html += `
-                            <td style="text-align: center;">
-                                <input type="checkbox" id="${interactionId}" 
-                                       ${isChecked ? 'checked' : ''}
-                                       onchange="toggleInteraction('${rowComponent}', '${colComponent}')"
-                                       class="interaction-checkbox">
-                            </td>
-                        `;
-                    }
-                });
-
-                html += `</tr>`;
-            });
-
-            html += `</tbody></table>`;
-            html += `<p style="margin-top: 10px; font-style: italic;">Check boxes where components are in contact or touch each other.</p>`;
-
-            container.innerHTML = html;
-
-            // CORRECCIÓN DEL HOVER: Event listeners mejorados
-            const table = container.querySelector('.interaction-matrix');
-            if (table) {
-                let currentRow = null;
-                let currentCol = null;
-
-                const clearHighlights = () => {
-                    if (currentRow) {
-                        currentRow.classList.remove('highlight-row');
-                        currentRow = null;
-                    }
-                    if (currentCol) {
-                        currentCol.forEach(cell => cell.classList.remove('highlight-col'));
-                        currentCol = null;
-                    }
-                };
-
-                const cells = table.querySelectorAll('td, th');
-                cells.forEach(cell => {
-                    cell.addEventListener('mouseenter', function () {
-                        clearHighlights();
-
-                        const row = this.parentNode;
-                        const cellIndex = Array.from(row.children).indexOf(this);
-
-                        // Resaltar toda la fila
-                        row.classList.add('highlight-row');
-                        currentRow = row;
-
-                        // Resaltar toda la columna
-                        const colCells = [];
-                        const allRows = table.querySelectorAll('tr');
-                        allRows.forEach(r => {
-                            if (r.children[cellIndex]) {
-                                r.children[cellIndex].classList.add('highlight-col');
-                                colCells.push(r.children[cellIndex]);
-                            }
-                        });
-                        currentCol = colCells;
-                    });
-
-                    cell.addEventListener('mouseleave', clearHighlights);
-                });
-            }
-        }
-
-        // Alternar interacción entre componentes
-        function toggleInteraction(component1, component2) {
-            const interactionId = `${component1}-${component2}`;
-            const reverseInteractionId = `${component2}-${component1}`;
-            const checkbox = document.getElementById(interactionId);
-
-            if (checkbox) {
-                functionAnalysisData.interactions[interactionId] = checkbox.checked;
-                functionAnalysisData.interactions[reverseInteractionId] = checkbox.checked;
-
-                // También actualizar el checkbox inverso si existe
-                const reverseCheckbox = document.getElementById(reverseInteractionId);
-                if (reverseCheckbox && reverseCheckbox.checked !== checkbox.checked) {
-                    reverseCheckbox.checked = checkbox.checked;
-                }
-
-                updateFunctionDiagram();
-            }
-        }
-
-        // Añadir fila a la tabla de funciones
-        function addFunctionRow() {
-            const tableBody = document.getElementById('function-table-body');
-
-            // Obtener todos los componentes disponibles
-            const allComponents = [
-                ...functionAnalysisData.systemComponents,
-                ...functionAnalysisData.supersystemComponents,
-                functionAnalysisData.targetComponent
-            ].filter(c => c);
-
-            if (allComponents.length === 0) {
-                alert('Please define components in Step 2 first.');
-                return;
-            }
-
-            // Crear opciones para los selectores de componentes
-            const componentOptions = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
-
-            const rowId = 'function-row-' + Date.now();
-            const row = document.createElement('tr');
-            row.id = rowId;
-            row.innerHTML = `
-                <td>
-                    <select class="function-carrier" style="width: 100%;">
-                        <option value="">Select...</option>
-                        ${componentOptions}
-                    </select>
-                </td>
-                <td><input type="text" class="function-action" placeholder="e.g., holds, heats" style="width: 100%;"></td>
-                <td>
-                    <select class="function-target" style="width: 100%;">
-                        <option value="">Select...</option>
-                        ${componentOptions}
-                    </select>
-                </td>
-                <td>
-                    <select class="function-category" style="width: 100%;">
-                        <option value="U">Useful (U)</option>
-                        <option value="H">Harmful (H)</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="function-performance" style="width: 100%;">
-                        <option value="N">Normal (N)</option>
-                        <option value="I">Insufficient (I)</option>
-                        <option value="E">Excessive (E)</option>
-                    </select>
-                </td>
-                <td><input type="text" class="function-comment" placeholder="Optional comment" style="width: 100%;"></td>
-                <td>
-                    <button class="btn-warning" onclick="removeFunctionRow('${rowId}')" style="padding: 2px 5px; font-size: 0.8em;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </td>
-            `;
-
-            tableBody.appendChild(row);
-
-            // Añadir evento para actualizar el diagrama cuando se modifique la fila
-            row.querySelectorAll('select, input').forEach(element => {
-                element.addEventListener('change', updateFunctionDiagram);
-                element.addEventListener('input', updateFunctionDiagram);
-            });
-
-            updateFunctionDiagram();
-        }
-
-        // Eliminar fila de función
-        function removeFunctionRow(rowId) {
-            const row = document.getElementById(rowId);
-            if (row) {
-                row.remove();
-                updateFunctionDiagram();
-            }
-        }
-
-        // Actualizar diagrama de funciones
-        function updateFunctionDiagram() {
-            // Recopilar todas las funciones de la tabla
-            const functionRows = document.querySelectorAll('#function-table-body tr');
-            functionAnalysisData.functions = [];
-
-            functionRows.forEach(row => {
-                const carrier = row.querySelector('.function-carrier')?.value;
-                const action = row.querySelector('.function-action')?.value;
-                const target = row.querySelector('.function-target')?.value;
-                const category = row.querySelector('.function-category')?.value;
-                const performance = row.querySelector('.function-performance')?.value;
-                const comment = row.querySelector('.function-comment')?.value;
-
-                if (carrier && action && target) {
-                    functionAnalysisData.functions.push({
-                        carrier,
-                        action,
-                        target,
-                        category: category === 'U' ? 'useful' : 'harmful',
-                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
-                        comment
-                    });
-                }
-            });
-
-            // Generar código Mermaid
-            const code = generateFunctionDiagramCode(functionAnalysisData.functions);
-            const container = document.getElementById('faMermaidPreview');
-
-            // Limpiar y renderizar nuevo diagrama
-            container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-            // Re-inicializar Mermaid
-            if (typeof mermaid !== 'undefined') {
-                try {
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
-                    }
-
-                    window.mermaidTimeout = setTimeout(() => {
-                        mermaid.init({
-                            startOnLoad: false,
-                            theme: 'default',
-                            securityLevel: 'loose',
-                            flowchart: {
-                                useMaxWidth: true,
-                                htmlLabels: true,
-                                curve: 'basis'
-                            }
-                        }, container.querySelectorAll('.mermaid'));
-                    }, 100);
-                } catch (error) {
-                    console.error('Mermaid rendering error:', error);
-                    container.innerHTML = `
-                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                            <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
-                            <p><strong>Function Analysis Diagram</strong></p>
-                            <p>Add functions to the table to see the diagram</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Generar código Mermaid para el diagrama de funciones
-        function generateFunctionDiagramCode(functions) {
-            if (functions.length === 0) {
-                return 'graph LR;\n    A[Define Functions] --> B[Diagram will appear here]';
-            }
-
-            let lines = [];
-
-            // Definir estilos para nodos
-            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
-            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
-            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
-
-            // Identificar todos los componentes únicos
-            const allComponents = new Set();
-            functions.forEach(func => {
-                allComponents.add(func.carrier);
-                allComponents.add(func.target);
-            });
-
-            // Determinar tipo de cada componente
-            const componentTypes = {};
-            Array.from(allComponents).forEach(component => {
-                if (component === functionAnalysisData.targetComponent) {
-                    componentTypes[component] = 'target';
-                } else if (functionAnalysisData.systemComponents.includes(component)) {
-                    componentTypes[component] = 'system';
-                } else {
-                    componentTypes[component] = 'supersystem';
-                }
-            });
-
-            // Crear nodos con formas apropiadas
-            Object.entries(componentTypes).forEach(([component, type]) => {
-                let shapeStart = '[';
-                let shapeEnd = ']';
-                let className = 'system';
-
-                if (type === 'supersystem') {
-                    shapeStart = '{{';
-                    shapeEnd = '}}';
-                    className = 'supersystem';
-                } else if (type === 'target') {
-                    shapeStart = '([';
-                    shapeEnd = '])';
-                    className = 'target';
-                }
-
-                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
-                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
-            });
-
-            // Crear aristas (conexiones) con estilos basados en propiedades
-            functions.forEach((func, index) => {
-                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
-                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
-
-                let arrow = '-->';
-                let linkStyle = '';
-
-                // Determinar estilo de flecha basado en categoría y rendimiento
-                if (func.category === 'useful') {
-                    if (func.performance === 'insufficient') {
-                        arrow = '-.->';
-                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
-                    } else if (func.performance === 'excessive') {
-                        arrow = '==>';
-                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
-                    } else {
-                        arrow = '-->';
-                    }
-                } else if (func.category === 'harmful') {
-                    arrow = '==>';
-                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
-                }
-
-                // Añadir la arista
-                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
-
-                // Añadir estilo de enlace si está especificado
-                if (linkStyle) {
-                    lines.push(`    ${linkStyle}`);
-                }
-            });
-
-            return 'graph LR\n' + lines.join('\n');
-        }
-
-        // Cargar ejemplo en Function Analysis
-        function loadFunctionAnalysisExample(exampleData) {
-                // Limpiar tabla de funciones
-                document.getElementById('function-table-body').innerHTML = '';
-
-                // Resetear datos de Function Analysis
-                functionAnalysisData = {
-                    mainFunction: '',
-                    targetComponent: '',
-                    systemComponents: [],
-                    supersystemComponents: [],
-                    interactions: {},
-                    functions: []
-                };
-
-                if (exampleData) {
-                    // Si se proporciona exampleData, usarlo
-                    document.getElementById('main-function').value = exampleData.mainFunction || '';
-                    document.getElementById('target-component').value = exampleData.targetComponent || '';
-
-                    // FILTRAR: Eliminar el targetComponent de las listas de componentes
-                    const targetComponent = exampleData.targetComponent || '';
-
-                    functionAnalysisData.systemComponents = (exampleData.systemComponents || [])
-                        .filter(component => component !== targetComponent);
-
-                    functionAnalysisData.supersystemComponents = (exampleData.supersystemComponents || [])
-                        .filter(component => component !== targetComponent);
-
-                    functionAnalysisData.interactions = exampleData.interactions || {};
-                    functionAnalysisData.functions = exampleData.functions || [];
-
-                    // Actualizar listas de componentes
-                    updateComponentLists();
-                    updateFunctionAnalysis();
-
-                    // Cargar funciones en la tabla
-                    if (exampleData.functions && exampleData.functions.length > 0) {
-                        setTimeout(() => {
-                            exampleData.functions.forEach(func => {
-                                addFunctionRow();
-                                const rows = document.querySelectorAll('#function-table-body tr');
-                                const lastRow = rows[rows.length - 1];
-
-                                if (lastRow) {
-                                    lastRow.querySelector('.function-carrier').value = func.carrier;
-                                    lastRow.querySelector('.function-action').value = func.action;
-                                    lastRow.querySelector('.function-target').value = func.target;
-                                    lastRow.querySelector('.function-category').value = func.category === 'useful' ? 'U' : 'H';
-                                    lastRow.querySelector('.function-performance').value =
-                                        func.performance === 'normal' ? 'N' :
-                                            (func.performance === 'insufficient' ? 'I' : 'E');
-                                    lastRow.querySelector('.function-comment').value = func.comment || '';
-                                }
-                            });
-                            updateFunctionDiagram();
-                        }, 100);
-                    }
-                } else {
-                    // Ejemplo por defecto: Sistema de taza de café
-                    // ... (código existente) ...
-                }
-        }
-
         // ===== FUNCIONES DE SOLUCIÓN =====
         function solveProblem() {
             clearResults();
@@ -4527,6 +4628,198 @@
             }
 
             displayResults();
+        }
+
+        // Función auxiliar para generar código Mermaid para resultados
+        function generateFunctionDiagramCodeForResults(functions) {
+            if (!functions || functions.length === 0) {
+                return 'graph LR;\n    A[No functions defined]';
+            }
+
+            let lines = [];
+
+            // Definir estilos para nodos
+            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
+            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
+            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
+
+            // Identificar todos los componentes únicos y crear un mapeo de IDs seguros
+            const componentMap = new Map();
+            const usedIds = new Set();
+            let idCounter = 1;
+
+            // Función para crear IDs seguros para Mermaid
+            function createSafeId(componentName) {
+                if (!componentName || componentName.trim() === '') {
+                    const fallbackId = `comp_${idCounter++}`;
+                    componentMap.set(componentName, fallbackId);
+                    return fallbackId;
+                }
+
+                // Crear ID seguro reemplazando caracteres no alfanuméricos y espacios
+                let safeId = componentName
+                    .trim()
+                    .replace(/[^a-zA-Z0-9]/g, '_')
+                    .replace(/_+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+
+                if (!safeId) {
+                    safeId = `comp_${idCounter++}`;
+                }
+
+                let finalId = safeId;
+                let suffix = 1;
+                while (usedIds.has(finalId)) {
+                    finalId = `${safeId}_${suffix++}`;
+                }
+
+                usedIds.add(finalId);
+                componentMap.set(componentName, finalId);
+                return finalId;
+            }
+
+            // Crear IDs para todos los componentes
+            functions.forEach(func => {
+                createSafeId(func.carrier);
+                createSafeId(func.target);
+            });
+
+            // Asegurarse de que el target component principal también tenga un ID
+            const functionAnalysis = problemData.functionAnalysis;
+            if (functionAnalysis && functionAnalysis.targetComponent) {
+                createSafeId(functionAnalysis.targetComponent);
+            }
+
+            // Crear nodos con formas apropiadas
+            Array.from(componentMap.entries()).forEach(([componentName, nodeId]) => {
+                if (!componentName || componentName.trim() === '') {
+                    return;
+                }
+
+                let type = 'system';
+                if (functionAnalysis) {
+                    if (componentName === functionAnalysis.targetComponent) {
+                        type = 'target';
+                    } else if (functionAnalysis.supersystemComponents &&
+                        functionAnalysis.supersystemComponents.includes(componentName)) {
+                        type = 'supersystem';
+                    } else if (functionAnalysis.systemComponents &&
+                        functionAnalysis.systemComponents.includes(componentName)) {
+                        type = 'system';
+                    }
+                }
+
+                let shapeStart = '[';
+                let shapeEnd = ']';
+                let className = 'system';
+
+                if (type === 'supersystem') {
+                    shapeStart = '{{';
+                    shapeEnd = '}}';
+                    className = 'supersystem';
+                } else if (type === 'target') {
+                    shapeStart = '([';
+                    shapeEnd = '])';
+                    className = 'target';
+                }
+
+                lines.push(`    ${nodeId}${shapeStart}"${componentName}"${shapeEnd}:::${className}`);
+            });
+
+            // Crear aristas (conexiones) con estilos basados en propiedades
+            functions.forEach((func, index) => {
+                const carrierId = componentMap.get(func.carrier);
+                const targetId = componentMap.get(func.target);
+
+                if (!carrierId || !targetId) {
+                    console.warn(`No se pudo crear arista para: ${func.carrier} -> ${func.target}`);
+                    return;
+                }
+
+                let arrow = '-->';
+                let linkStyle = '';
+
+                if (func.category === 'useful') {
+                    if (func.performance === 'insufficient') {
+                        arrow = '-.->';
+                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
+                    } else if (func.performance === 'excessive') {
+                        arrow = '==>';
+                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    } else {
+                        arrow = '-->';
+                    }
+                } else if (func.category === 'harmful') {
+                    arrow = '==>';
+                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
+                }
+
+                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+
+                if (linkStyle) {
+                    lines.push(`    ${linkStyle}`);
+                }
+            });
+
+            return 'graph LR\n' + lines.join('\n');
+        }
+
+        function updateMermaidDiagramInResults() {
+            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
+                return;
+            }
+
+            const container = document.getElementById('resultsMermaidDiagram');
+            if (!container) return;
+
+            try {
+                const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
+
+                // Clear container
+                container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+                // Reinitialize Mermaid
+                if (typeof mermaid !== 'undefined') {
+                    // Cancel any pending render
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    // Render with a small delay
+                    window.mermaidTimeout = setTimeout(() => {
+                        try {
+                            mermaid.init({
+                                startOnLoad: false,
+                                theme: 'default',
+                                securityLevel: 'loose',
+                                flowchart: {
+                                    useMaxWidth: true,
+                                    htmlLabels: true,
+                                    curve: 'basis'
+                                }
+                            }, container.querySelectorAll('.mermaid'));
+                        } catch (error) {
+                            console.error('Mermaid rendering error:', error);
+                            container.innerHTML = `
+                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                            <p><i class="fas fa-exclamation-triangle" style="color: #f39c12; font-size: 2rem; margin-bottom: 10px;"></i></p>
+                            <p><strong>Diagram Error</strong></p>
+                            <p>Could not render function diagram. Please check your function definitions.</p>
+                        </div>
+                    `;
+                        }
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Error generating diagram code:', error);
+                container.innerHTML = `
+            <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                <p><i class="fas fa-exclamation-triangle" style="color: #e74c3c; font-size: 2rem; margin-bottom: 10px;"></i></p>
+                <p><strong>Error Generating Diagram</strong></p>
+                <p>${error.message}</p>
+            </div>
+        `;
+            }
         }
 
         function displayResults() {
@@ -5032,135 +5325,6 @@
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Función auxiliar para generar código Mermaid para resultados
-        function generateFunctionDiagramCodeForResults(functions) {
-            if (!functions || functions.length === 0) {
-                return 'graph LR;\n    A[No functions defined]';
-            }
-
-            let lines = [];
-
-            // Definir estilos para nodos
-            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
-            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
-            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
-
-            // Identificar todos los componentes únicos
-            const allComponents = new Set();
-            functions.forEach(func => {
-                allComponents.add(func.carrier);
-                allComponents.add(func.target);
-            });
-
-            // Determinar tipo de cada componente
-            const componentTypes = {};
-            const functionAnalysis = problemData.functionAnalysis;
-            Array.from(allComponents).forEach(component => {
-                if (component === functionAnalysis.targetComponent) {
-                    componentTypes[component] = 'target';
-                } else if (functionAnalysis.systemComponents && functionAnalysis.systemComponents.includes(component)) {
-                    componentTypes[component] = 'system';
-                } else {
-                    componentTypes[component] = 'supersystem';
-                }
-            });
-
-            // Crear nodos con formas apropiadas
-            Object.entries(componentTypes).forEach(([component, type]) => {
-                let shapeStart = '[';
-                let shapeEnd = ']';
-                let className = 'system';
-
-                if (type === 'supersystem') {
-                    shapeStart = '{{';
-                    shapeEnd = '}}';
-                    className = 'supersystem';
-                } else if (type === 'target') {
-                    shapeStart = '([';
-                    shapeEnd = '])';
-                    className = 'target';
-                }
-
-                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
-                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
-            });
-
-            // Crear aristas (conexiones) con estilos basados en propiedades
-            functions.forEach((func, index) => {
-                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
-                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
-
-                let arrow = '-->';
-                let linkStyle = '';
-
-                // Determinar estilo de flecha basado en categoría y rendimiento
-                if (func.category === 'useful') {
-                    if (func.performance === 'insufficient') {
-                        arrow = '-.->';
-                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
-                    } else if (func.performance === 'excessive') {
-                        arrow = '==>';
-                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
-                    } else {
-                        arrow = '-->';
-                    }
-                } else if (func.category === 'harmful') {
-                    arrow = '==>';
-                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
-                }
-
-                // Añadir la arista
-                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
-
-                // Añadir estilo de enlace si está especificado
-                if (linkStyle) {
-                    lines.push(`    ${linkStyle}`);
-                }
-            });
-
-            return 'graph LR\n' + lines.join('\n');
-        }
-
-        function updateMermaidDiagramInResults() {
-            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
-                return;
-            }
-
-            const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
-            const container = document.getElementById('resultsMermaidDiagram');
-
-            if (!container) return;
-
-            // Clear container and render new diagram
-            container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-            // Reinitialize Mermaid with the new diagram
-            if (typeof mermaid !== 'undefined') {
-                try {
-                    // Cancel any pending render
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
-                    }
-
-                    // Render with a small delay to asegurar que el DOM esté listo
-                    window.mermaidTimeout = setTimeout(() => {
-                        mermaid.init({
-                            startOnLoad: false,
-                            theme: 'default',
-                            securityLevel: 'loose',
-                            flowchart: {
-                                useMaxWidth: true,
-                                htmlLabels: true,
-                                curve: 'basis'
-                            }
-                        }, container.querySelectorAll('.mermaid'));
-                    }, 100);
-                } catch (error) {
-                    console.error('Mermaid rendering error in results:', error);
-                }
-            }
-        }
-
         function exportToExcel() {
             if (Object.keys(problemData).length === 0) {
                 alert("No data to export. Please solve a problem first.");
@@ -5306,13 +5470,14 @@
             XLSX.writeFile(wb, `TRIZ_Report_Sigma_Exacta_${dateStr}.xlsx`);
         }
 
+        // ===== ACTUALIZADO SEGÚN LÓGICA DE LITVIN =====
         function getPhysicalContradictionExample(relationship) {
             const examples = {
                 separationInSpace: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
                 separationInTime: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
                 separationInRelation: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material.",
                 separationInSystemLevel: "Traffic light with segmented pole elements for easy repair, separating maintenance requirements at different system levels.",
-                satisfyContradictoryDemands: "Heat packs using phase transition of gel to provide warmth without external heat source, satisfying both heating and portability demands.",
+                physicalChemicalPrinciples: "Use of shape-memory alloys that change properties with temperature, or phase-change materials that absorb/release heat.",
                 bypassContradictoryDemands: "Digital clocks replacing mechanical clockwork, bypassing the need for mechanical timekeeping altogether."
             };
             return examples[relationship] || "Apply separation principles to resolve the contradiction.";
