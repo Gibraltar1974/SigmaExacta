@@ -1956,6 +1956,11 @@
         .highlight-col {
             background-color: #e3f2fd !important;
         }
+
+        /* ===== NUEVO ESTILO PARA HIGHLIGHT EN TABLA DE PRINCIPIOS ===== */
+        .highlighted-principle-row {
+            background-color: #d4edda !important;
+        }
     </style>
 </head>
 
@@ -2745,11 +2750,12 @@
                     </div>
                 </div>
 
-                <!-- Sub-tab 7: Physical Contradiction -->
+                <!-- Sub-tab 7: Physical Contradiction (NUEVO ALGORITMO) -->
                 <div id="sub-tab-physical" class="sub-tab-content">
                     <div class="solver-step">
                         <h3><i class="fas fa-exchange-alt"></i> 7. Physical Contradiction</h3>
-                        <p>One feature needs opposite properties. Use separation principles to resolve.</p>
+                        <p>One feature needs opposite properties. Use the intersection test algorithm to determine the
+                            best resolution strategy.</p>
 
                         <div id="physical-solver-block">
                             <div class="form-group">
@@ -2758,69 +2764,63 @@
                                     placeholder="e.g., Temperature, Size, Visibility">
                             </div>
 
+                            <!-- Paso 1: Test de Intersección -->
                             <div class="solver-step" id="physical-step-1">
-                                <h4><i class="fas fa-cogs"></i> Step 1: Analyze Functions & Define OZ/OT</h4>
+                                <h4><i class="fas fa-cogs"></i> Step 1: Intersection Test (Space and Time)</h4>
+                                <p>Analyze the Operational Zones (OZ) and Operational Times (OT) where the two opposite
+                                    demands (A and Anti-A) occur.</p>
                                 <div class="form-group">
-                                    <label>Define Operational Zones/Times (OZ/OT):</label>
+                                    <label>Do the Operational Zones (OZ) and Operational Times (OT) of the two opposite
+                                        demands (A and Anti-A) intersect?</label>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="oz-definition" value="spatial"
-                                                onchange="updatePhysicalStrategy();"> Spatial Zones (different
-                                            locations)</label>
-                                        <label><input type="radio" name="oz-definition" value="temporal"
-                                                onchange="updatePhysicalStrategy();"> Temporal Zones
-                                            (different times)</label>
-                                        <label><input type="radio" name="oz-definition" value="conditional"
-                                                onchange="updatePhysicalStrategy();"> Conditional Zones
-                                            (different
-                                            conditions)</label>
-                                        <label><input type="radio" name="oz-definition" value="system"
-                                                onchange="updatePhysicalStrategy();"> System Levels (different
-                                            system
-                                            hierarchies)</label>
+                                        <label><input type="radio" name="intersection-test" value="no-intersection"
+                                                onchange="updatePhysicalStrategy();"> <strong>No, they do NOT
+                                                intersect</strong> (different place or time)</label>
+                                        <label><input type="radio" name="intersection-test" value="contiguous"
+                                                onchange="updatePhysicalStrategy();"> <strong>They are
+                                                contiguous</strong> (touch at a boundary)</label>
+                                        <label><input type="radio" name="intersection-test" value="total-intersection"
+                                                onchange="updatePhysicalStrategy();"> <strong>Yes, they totally
+                                                intersect</strong> (overlap completely)</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- MODIFICADO SEGÚN LÓGICA DE LITVIN -->
+                            <!-- Paso 2: Para intersección total, separación por condición o sistema -->
                             <div class="solver-step hidden" id="physical-step-2">
-                                <h4><i class="fas fa-exchange-alt"></i> Step 2: Determine OZ/OT Relationship (Litvin's
-                                    Logic)</h4>
+                                <h4><i class="fas fa-exchange-alt"></i> Step 2: For Total Intersection, try Separation
+                                    by Condition or System Level</h4>
+                                <p>When demands completely overlap, try separating them by different perspectives or
+                                    system hierarchy levels.</p>
                                 <div class="form-group">
-                                    <label>How do the Operational Zones/Times relate? (Litvin's logic)</label>
+                                    <label>Can the opposite demands be separated by condition (different systems or
+                                        users) or by system level (whole vs parts)?</label>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="oz-intersection" value="no-intersect"
-                                                onchange="updatePhysicalStrategy();"> No intersect (OZ/OT do not
-                                            touch)</label>
-                                        <label><input type="radio" name="oz-intersection" value="contiguous"
-                                                onchange="updatePhysicalStrategy();"> Contiguous (OZ/OT are
-                                            adjacent)</label>
-                                        <label><input type="radio" name="oz-intersection" value="intersect"
-                                                onchange="updatePhysicalStrategy();"> Intersect (OZ/OT overlap)</label>
+                                        <label><input type="radio" name="separation-type" value="condition"
+                                                onchange="updatePhysicalStrategy();"> <strong>Yes, by condition</strong>
+                                            (different perspectives)</label>
+                                        <label><input type="radio" name="separation-type" value="system-level"
+                                                onchange="updatePhysicalStrategy();"> <strong>Yes, by system
+                                                level</strong> (whole vs parts)</label>
+                                        <label><input type="radio" name="separation-type" value="neither"
+                                                onchange="updatePhysicalStrategy();"> <strong>No, neither condition nor
+                                                system level separation works</strong></label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="solver-step hidden" id="physical-step-3">
-                                <h4><i class="fas fa-object-group"></i> Step 3: Choose Separation Method</h4>
-                                <div class="form-group">
-                                    <label>Select separation method:</label>
-                                    <div class="radio-group" id="separation-methods">
-                                    </div>
-                                </div>
-                            </div>
-
+                            <!-- Botón para mostrar/ocultar la tabla de referencia -->
                             <div class="form-group" id="principles-toggle-container"
-                                style="display: none; text-align: center; margin: 1rem 0;">
+                                style="text-align: center; margin: 1rem 0;">
                                 <button type="button" class="btn-success" onclick="togglePrinciplesTable()">
-                                    <i class="fas fa-table"></i> Show/Hide Physical Contradiction Principles
+                                    <i class="fas fa-table"></i> Show/Hide Physical Contradiction Principles Reference
                                 </button>
                             </div>
 
                             <div class="hidden" id="principles-table-container">
                                 <div class="content-block">
                                     <h4><i class="fas fa-lightbulb"></i> Complete Physical Contradiction Principles
-                                        Reference
-                                    </h4>
+                                        Reference</h4>
                                     <div id="principles-table-content">
                                     </div>
                                 </div>
@@ -2939,23 +2939,14 @@
         let currentRecommendedLaws = ['law4'];
         let globalSuFieldCounter = 0; // Added global counter to avoid duplicate IDs
 
-        // Variables para el flujo de contradicciones físicas
+        // Variables para el nuevo flujo de contradicciones físicas (ALGORITMO NUEVO)
         let physicalStrategyFlow = {
             step1: false,
             step2: false,
-            step3: false,
-            selectedStrategy: null,
-            selectedMethod: null
-        };
-
-        // Variables para Function Analysis
-        let functionAnalysisData = {
-            mainFunction: '',
-            targetComponent: '',
-            systemComponents: [],
-            supersystemComponents: [],
-            interactions: {},
-            functions: []
+            selectedIntersection: null,
+            selectedSeparation: null,
+            strategy: null,
+            principles: []
         };
 
         // ===== FUNCIONES DE NAVEGACIÓN =====
@@ -3003,16 +2994,11 @@
                 }
             }
 
-            // Scroll al top de la sub-tab CON RETRASO PARA PERMITIR RENDERIZADO
-            setTimeout(() => {
-                const subTabsNav = document.querySelector('.sub-tabs-nav');
-                if (subTabsNav) {
-                    window.scrollTo({
-                        top: subTabsNav.offsetTop - 20,
-                        behavior: 'smooth'
-                    });
-                }
-            }, 150);
+            // Scroll al top de la sub-tab
+            const subTabsNav = document.querySelector('.sub-tabs-nav');
+            if (subTabsNav) {
+                window.scrollTo({ top: subTabsNav.offsetTop - 20, behavior: 'smooth' });
+            }
         }
 
         // ===== CARGAR HEADER DINÁMICAMENTE =====
@@ -3034,27 +3020,27 @@
 
             // Inicializar Mermaid para Function Analysis
             if (typeof mermaid !== 'undefined') {
-                try {
-                    mermaid.initialize({
-                        startOnLoad: false, // Desactivar carga automática
-                        theme: 'default',
-                        securityLevel: 'loose',
-                        flowchart: {
-                            useMaxWidth: true,
-                            htmlLabels: true,
-                            curve: 'basis'
-                        },
-                        // Configuración adicional para evitar errores
-                        deterministicIds: true,
-                        deterministicIDSeed: 'triz-function-analysis',
-                        fontFamily: 'Nunito, sans-serif'
-                    });
-                    console.log('Mermaid initialized successfully');
-                } catch (mermaidError) {
-                    console.error('Failed to initialize Mermaid:', mermaidError);
-                }
-            } else {
-                console.warn('Mermaid library not loaded');
+                mermaid.initialize({
+                    startOnLoad: false, // Cambiado a false para control manual
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis'
+                    },
+                    gantt: {
+                        useMaxWidth: true,
+                        barHeight: 20,
+                        fontSize: 12
+                    },
+                    sequence: {
+                        useMaxWidth: true,
+                        diagramMarginX: 50,
+                        diagramMarginY: 10,
+                        boxTextMargin: 5
+                    }
+                });
             }
 
             // Verificar que todos los archivos JS se hayan cargado correctamente
@@ -3123,32 +3109,9 @@
 
         // ===== FUNCIONES DE EJEMPLO Y RESET =====
         function loadExampleAndGo() {
-            // Limpiar cualquier error previo
-            clearResults();
-
-            // Cargar el ejemplo
             loadExample();
-
-            // Cambiar a la pestaña de herramientas
-            setTimeout(() => {
-                switchMainTab('tab-tools');
-
-                // Esperar a que se renderice y luego ir a la primera subtab
-                setTimeout(() => {
-                    switchSubTab('sub-tab-define');
-
-                    // Scroll suave al inicio de las herramientas
-                    setTimeout(() => {
-                        const toolsHeader = document.querySelector('#tab-tools h2');
-                        if (toolsHeader) {
-                            toolsHeader.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    }, 200);
-                }, 100);
-            }, 50);
+            switchMainTab('tab-tools');
+            switchSubTab('sub-tab-define');
         }
 
         function resetTool() {
@@ -3164,21 +3127,19 @@
             document.getElementById('lifecycle-stage').value = 'birth';
             document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
 
-            // Reset physical strategy flow
+            // Reset physical strategy flow (NUEVO ALGORITMO)
             physicalStrategyFlow = {
                 step1: false,
                 step2: false,
-                step3: false,
-                selectedStrategy: null,
-                selectedMethod: null
+                selectedIntersection: null,
+                selectedSeparation: null,
+                strategy: null,
+                principles: []
             };
 
-            // Reset physical steps UI
+            // Reset physical steps UI (NUEVO ALGORITMO)
             document.getElementById('physical-step-2').classList.add('hidden');
-            document.getElementById('physical-step-3').classList.add('hidden');
-            document.getElementById('principles-toggle-container').style.display = 'none';
-            document.getElementById('principles-table-container').classList.add('hidden');
-            document.getElementById('separation-methods').innerHTML = '';
+            document.getElementById('principles-toggle-container').style.display = 'block';
 
             // Reset 9 Windows fields
             document.getElementById('nine-windows-super-past').value = '';
@@ -3343,21 +3304,24 @@
             document.getElementById('ifr-formulation').value = '';
             document.getElementById('conflicting-parameter').value = '';
 
+            // Reset physical contradiction radio buttons (NUEVO ALGORITMO)
             const physicalRadios = document.querySelectorAll('#physical-solver-block input[type="radio"]');
             physicalRadios.forEach(radio => {
                 radio.checked = false;
             });
 
+            // Reset physical strategy flow (NUEVO ALGORITMO)
             physicalStrategyFlow = {
                 step1: false,
                 step2: false,
-                step3: false,
-                selectedStrategy: null,
-                selectedMethod: null
+                selectedIntersection: null,
+                selectedSeparation: null,
+                strategy: null,
+                principles: []
             };
 
+            // Reset physical steps UI (NUEVO ALGORITMO)
             document.getElementById('physical-step-2').classList.add('hidden');
-            document.getElementById('physical-step-3').classList.add('hidden');
 
             const currentExample = examples[exampleIndex];
 
@@ -3381,31 +3345,23 @@
                 updateSelectedFeatures();
             }
 
-            // Physical Contradiction
+            // Physical Contradiction (NUEVO ALGORITMO)
             if (currentExample.physicalContradiction) {
                 document.getElementById('conflicting-parameter').value = currentExample.physicalContradiction.conflictingParameter;
 
-                if (currentExample.physicalContradiction.ozDefinition) {
-                    const ozDefinitionRadio = document.querySelector(`input[name="oz-definition"][value="${currentExample.physicalContradiction.ozDefinition}"]`);
-                    if (ozDefinitionRadio) {
-                        ozDefinitionRadio.checked = true;
+                if (currentExample.physicalContradiction.intersectionTest) {
+                    const intersectionRadio = document.querySelector(`input[name="intersection-test"][value="${currentExample.physicalContradiction.intersectionTest}"]`);
+                    if (intersectionRadio) {
+                        intersectionRadio.checked = true;
                         updatePhysicalStrategy();
                     }
                 }
 
-                if (currentExample.physicalContradiction.ozIntersection) {
-                    const ozIntersectionRadio = document.querySelector(`input[name="oz-intersection"][value="${currentExample.physicalContradiction.ozIntersection}"]`);
-                    if (ozIntersectionRadio) {
-                        ozIntersectionRadio.checked = true;
+                if (currentExample.physicalContradiction.separationType) {
+                    const separationRadio = document.querySelector(`input[name="separation-type"][value="${currentExample.physicalContradiction.separationType}"]`);
+                    if (separationRadio) {
+                        separationRadio.checked = true;
                         updatePhysicalStrategy();
-                    }
-                }
-
-                if (currentExample.physicalContradiction.separationMethod) {
-                    const separationMethodRadio = document.querySelector(`input[name="separation-method"][value="${currentExample.physicalContradiction.separationMethod}"]`);
-                    if (separationMethodRadio) {
-                        separationMethodRadio.checked = true;
-                        handleSeparationMethodChange();
                     }
                 }
             }
@@ -3465,11 +3421,461 @@
             exampleIndex = (exampleIndex + 1) % examples.length;
         }
 
-        // ===== FUNCIONES DE FUNCTION ANALYSIS =====
+        // ===== NUEVAS FUNCIONES PARA CONTRADICCIÓN FÍSICA (ALGORITMO NUEVO) =====
+        function updatePhysicalStrategy() {
+            clearResults();
+
+            // Obtener la selección del paso 1
+            const intersectionTest = document.querySelector('input[name="intersection-test"]:checked');
+            const step2Div = document.getElementById('physical-step-2');
+
+            // Resetear el paso 2
+            step2Div.classList.add('hidden');
+
+            if (!intersectionTest) {
+                physicalStrategyFlow.step1 = false;
+                physicalStrategyFlow.step2 = false;
+                physicalStrategyFlow.selectedIntersection = null;
+                physicalStrategyFlow.selectedSeparation = null;
+                physicalStrategyFlow.strategy = null;
+                physicalStrategyFlow.principles = [];
+                return;
+            }
+
+            physicalStrategyFlow.step1 = true;
+            physicalStrategyFlow.selectedIntersection = intersectionTest.value;
+
+            // Mostrar el paso 2 solo si hay intersección total
+            if (intersectionTest.value === 'total-intersection') {
+                step2Div.classList.remove('hidden');
+                const separationType = document.querySelector('input[name="separation-type"]:checked');
+                if (separationType) {
+                    physicalStrategyFlow.step2 = true;
+                    physicalStrategyFlow.selectedSeparation = separationType.value;
+                    updatePhysicalStrategyFlow();
+                } else {
+                    physicalStrategyFlow.step2 = false;
+                    physicalStrategyFlow.selectedSeparation = null;
+                    physicalStrategyFlow.strategy = null;
+                    physicalStrategyFlow.principles = [];
+                }
+            } else {
+                // Para no intersección o contiguo, determinar la estrategia directamente
+                physicalStrategyFlow.step2 = false;
+                physicalStrategyFlow.selectedSeparation = null;
+                updatePhysicalStrategyFlow();
+            }
+        }
+
+        function updatePhysicalStrategyFlow() {
+            // Determinar la estrategia y los principios basados en el flujo
+            let strategy = "";
+            let principles = [];
+
+            switch (physicalStrategyFlow.selectedIntersection) {
+                case 'no-intersection':
+                    strategy = "Separation in Space or Time";
+                    principles = [
+                        physicalContradictionPrinciples.separationInSpace,
+                        physicalContradictionPrinciples.separationInTime
+                    ];
+                    break;
+                case 'contiguous':
+                    strategy = "Satisfy through physical-chemical changes";
+                    principles = [
+                        physicalContradictionPrinciples.satisfyContradictoryDemands
+                    ];
+                    break;
+                case 'total-intersection':
+                    if (physicalStrategyFlow.selectedSeparation === 'condition') {
+                        strategy = "Separation in Relation (Condition)";
+                        principles = [
+                            physicalContradictionPrinciples.separationInRelation
+                        ];
+                    } else if (physicalStrategyFlow.selectedSeparation === 'system-level') {
+                        strategy = "Separation in System Level";
+                        principles = [
+                            physicalContradictionPrinciples.separationInSystemLevel
+                        ];
+                    } else if (physicalStrategyFlow.selectedSeparation === 'neither') {
+                        strategy = "Bypass contradictory demands (System Transition)";
+                        principles = [
+                            physicalContradictionPrinciples.bypassContradictoryDemands
+                        ];
+                    } else {
+                        // No selection yet
+                        physicalStrategyFlow.strategy = null;
+                        physicalStrategyFlow.principles = [];
+                        return;
+                    }
+                    break;
+                default:
+                    physicalStrategyFlow.strategy = null;
+                    physicalStrategyFlow.principles = [];
+                    return;
+            }
+
+            // Update the physicalStrategyFlow object
+            physicalStrategyFlow.strategy = strategy;
+            physicalStrategyFlow.principles = principles;
+        }
+
+        function generatePrinciplesTable() {
+            const container = document.getElementById('principles-table-content');
+
+            let html = `
+                <p style="margin-bottom: 0.5rem; font-style: italic;">
+                    This table shows all physical contradiction resolution strategies and their associated inventive principles.
+                </p>
+                <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
+                    Source: 1. Litvin, S. (1993). The TRIZ Contradiction Matrix: Principles for Solving Physical Contradictions. 2. Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution of Inventive Problems.
+                </p>
+            `;
+
+            for (const [method, strategy] of Object.entries(physicalContradictionPrinciples)) {
+                // Determinar si esta estrategia es la actualmente seleccionada
+                const isCurrentStrategy = physicalStrategyFlow.strategy === strategy.strategy;
+
+                html += `
+                    <div class="physical-strategy-guide" style="${isCurrentStrategy ? 'border-left: 5px solid #27ae60; background: linear-gradient(135deg, #e8f5e9, #c8e6c9);' : ''}">
+                        <div class="strategy-title">${strategy.strategy}</div>
+                        <div class="strategy-description">${strategy.description}</div>
+                        <div class="strategy-example">
+                            <strong>Example:</strong> ${getPhysicalContradictionExample(method)}
+                        </div>
+                    </div>
+                    <table class="trends-table" style="margin-top: 1rem; margin-bottom: 2rem;">
+                        <thead>
+                            <tr>
+                                <th>Principle #</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                strategy.principles.forEach(principle => {
+                    const isCurrentPrinciple = isCurrentStrategy;
+                    html += `
+                        <tr ${isCurrentPrinciple ? 'class="recommended-trend"' : ''}>
+                            <td><strong>${principle.number}</strong></td>
+                            <td>${principle.name}</td>
+                            <td>${principle.description}</td>
+                            <td><em>${principle.example}</em></td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function togglePrinciplesTable() {
+            const tableContainer = document.getElementById('principles-table-container');
+            const isVisible = !tableContainer.classList.contains('hidden');
+
+            if (!isVisible) {
+                generatePrinciplesTable();
+                tableContainer.classList.remove('hidden');
+            } else {
+                tableContainer.classList.add('hidden');
+            }
+        }
+
+        function toggleSolutionsMatrix() {
+            const matrixContainer = document.getElementById('solutions-matrix-container');
+            const isVisible = !matrixContainer.classList.contains('hidden');
+
+            if (!isVisible) {
+                renderSolutionsMatrix();
+                matrixContainer.classList.remove('hidden');
+            } else {
+                matrixContainer.classList.add('hidden');
+            }
+        }
+
+        function renderSolutionsMatrix() {
+            const container = document.getElementById('solutions-matrix-content');
+
+            let html = `
+                <div class="content-block">
+                    <h4><i class="fas fa-th-list"></i> Classic 76 Standard Solutions Matrix</h4>
+                    <p style="margin-bottom: 0.5rem;">This matrix shows all 76 Standard Solutions and their applicability to different Su-Field problem types.</p>
+                    <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
+                        Source: Domb, E., Terninko, J., Miller, J., & MacGran, E. (Classification of the 76 Standard Solutions).
+                    </p>
+                    <div style="overflow-x: auto;">
+                        <table class="matrix-table solutions-matrix">
+                            <thead>
+                                <tr>
+                                    <th>Solution ID</th>
+                                    <th>Title</th>
+                                    <th>Class</th>
+                                    <th>Insufficient</th>
+                                    <th>Harmful</th>
+                                    <th>Difficult</th>
+                                    <th>Missing</th>
+                                    <th>Excessive</th>
+                                    <th>Inefficient</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            for (const className in trizStandardSolutions) {
+                const solutionClass = trizStandardSolutions[className];
+
+                for (const solutionId in solutionClass.solutions) {
+                    const solution = solutionClass.solutions[solutionId];
+
+                    const isInsufficient = solutionMap.insufficient.includes(solutionId);
+                    const isHarmful = solutionMap.harmful.includes(solutionId);
+                    const isDifficult = solutionMap.difficult.includes(solutionId);
+                    const isMissing = solutionMap.missing.includes(solutionId);
+                    const isExcessive = solutionMap.excessive.includes(solutionId);
+                    const isInefficient = solutionMap.inefficient.includes(solutionId);
+
+                    html += `
+                            <tr>
+                                <td><strong>${solutionId}</strong></td>
+                                <td>${solution.title}</td>
+                                <td>${className.split(':')[0]}</td>
+                                <td class="${isInsufficient ? 'matrix-applicable' : ''}">${isInsufficient ? '✓' : ''}</td>
+                                <td class="${isHarmful ? 'matrix-applicable' : ''}">${isHarmful ? '✓' : ''}</td>
+                                <td class="${isDifficult ? 'matrix-applicable' : ''}">${isDifficult ? '✓' : ''}</td>
+                                <td class="${isMissing ? 'matrix-applicable' : ''}">${isMissing ? '✓' : ''}</td>
+                                <td class="${isExcessive ? 'matrix-applicable' : ''}">${isExcessive ? '✓' : ''}</td>
+                                <td class="${isInefficient ? 'matrix-applicable' : ''}">${isInefficient ? '✓' : ''}</td>
+                            </tr>
+                        `;
+                }
+            }
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function toggleMatrixView() {
+            const dropdownView = document.getElementById('dropdown-view');
+            const matrixView = document.getElementById('matrix-view');
+
+            if (matrixView.classList.contains('hidden')) {
+                dropdownView.classList.add('hidden');
+                matrixView.classList.remove('hidden');
+            } else {
+                dropdownView.classList.remove('hidden');
+                matrixView.classList.add('hidden');
+            }
+        }
+
+        function createContradictionMatrix() {
+            const matrixTable = document.getElementById('contradiction-matrix');
+            matrixTable.innerHTML = '';
+
+            const features = getCurrentFeatures();
+
+            let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
+            for (let i = 0; i < features.length; i++) {
+                headerRow += `<th title="${features[i]}">${features[i].split(':')[0]}</th>`;
+            }
+            headerRow += '</tr>';
+            matrixTable.innerHTML += headerRow;
+
+            for (let i = 0; i < features.length; i++) {
+                let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
+                for (let j = 0; j < features.length; j++) {
+                    const cellClass = getCellClass(i, j);
+                    const principles = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
+                    const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
+
+                    const principleNames = principles && principles.length > 0
+                        ? principles.map(p => getPrincipleName(p)).join(', ')
+                        : 'No principles recommended';
+
+                    row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
+                        title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
+                    <div class="principle-numbers">${principleNumbers}</div>
+                </td>`;
+                }
+                row += '</tr>';
+                matrixTable.innerHTML += row;
+            }
+        }
+
+        function getCellClass(row, col) {
+            if (row === improvingFeatureIndex && col === worseningFeatureIndex) {
+                return 'selected';
+            } else if (row === improvingFeatureIndex) {
+                return 'improving';
+            } else if (col === worseningFeatureIndex) {
+                return 'worsening';
+            }
+            return '';
+        }
+
+        function selectMatrixCell(row, col) {
+            clearResults();
+            improvingFeatureIndex = row;
+            worseningFeatureIndex = col;
+
+            document.getElementById('improving-feature').value = row;
+            document.getElementById('worsening-feature').value = col;
+
+            updateMatrixDisplay();
+            updateSelectedFeatures();
+        }
+
+        function updateMatrixDisplay() {
+            const cells = document.querySelectorAll('#contradiction-matrix td');
+            const features = getCurrentFeatures();
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / features.length);
+                const col = index % features.length;
+                cell.className = getCellClass(row, col);
+            });
+        }
+
+        function populateDropdowns() {
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+
+            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+
+            const features = getCurrentFeatures();
+
+            features.forEach((param, index) => {
+                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
+                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
+            });
+
+            improvingFeatureIndex = null;
+            worseningFeatureIndex = null;
+        }
+
+        function updateSelectedFeatures() {
+            const features = getCurrentFeatures();
+            const improvingSpan = document.getElementById('selected-improving');
+            const worseningSpan = document.getElementById('selected-worsening');
+
+            if (improvingFeatureIndex !== null) {
+                improvingSpan.textContent = features[improvingFeatureIndex];
+                improvingSpan.title = features[improvingFeatureIndex];
+            } else {
+                improvingSpan.textContent = 'None';
+            }
+
+            if (worseningFeatureIndex !== null) {
+                worseningSpan.textContent = features[worseningFeatureIndex];
+                worseningSpan.title = features[worseningFeatureIndex];
+            } else {
+                worseningSpan.textContent = 'None';
+            }
+        }
+
+        // ===== FUNCIONES DE SU-FIELD =====
+        function addSuFieldSystem() {
+            const container = document.getElementById('sufield-systems-container');
+            // Use global counter to ensure unique IDs, avoiding the 'null' error on element removal
+            globalSuFieldCounter++;
+            const systemId = globalSuFieldCounter;
+
+            // Note: The UI label will be sequential based on current DOM elements
+            const uiLabelIndex = container.children.length + 1;
+
+            const systemHTML = `
+                <div class="sufield-system">
+                    <div class="sufield-system-header">
+                        <div class="sufield-system-title">System ${uiLabelIndex}</div>
+                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+                    <div class="sufield-system-fields">
+                        <div class="form-group">
+                            <label for="sufield-object-${systemId}">Object (S1):</label>
+                            <input type="text" class="sufield-object" id="sufield-object-${systemId}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-tool-${systemId}">Tool (S2):</label>
+                            <input type="text" class="sufield-tool" id="sufield-tool-${systemId}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-field-${systemId}">Field (F):</label>
+                            <input type="text" class="sufield-field" id="sufield-field-${systemId}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sufield-type-${systemId}">Problem Type:</label>
+                        <select class="sufield-type" id="sufield-type-${systemId}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
+                            <option value="insufficient">Insufficient interaction</option>
+                            <option value="harmful">Harmful interaction</option>
+                            <option value="difficult">Difficult to control</option>
+                            <option value="missing">Missing interaction</option>
+                            <option value="excessive">Excessive interaction</option>
+                            <option value="inefficient">Inefficient interaction</option>
+                        </select>
+                    </div>
+                    <div class="sufield-triangle-container sufield-system-diagram" id="sufield-diagram-${systemId}">
+                        </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', systemHTML);
+
+            // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+            setTimeout(() => {
+                const newSystem = container.lastElementChild;
+                if (newSystem) {
+                    updateSuFieldDiagram(newSystem);
+                }
+            }, 50);
+        }
+
+        function removeSuFieldSystem(button) {
+            const system = button.closest('.sufield-system');
+            if (system && document.querySelectorAll('.sufield-system').length > 1) {
+                system.remove();
+                // Renumber remaining systems UI labels only
+                const systems = document.querySelectorAll('.sufield-system');
+                systems.forEach((sys, index) => {
+                    sys.querySelector('.sufield-system-title').textContent = `System ${index + 1}`;
+                });
+            }
+        }
+
+        // ===== NUEVAS FUNCIONES PARA FUNCTION ANALYSIS =====
+
+        // Variables para Function Analysis
+        let functionAnalysisData = {
+            mainFunction: '',
+            targetComponent: '',
+            systemComponents: [],
+            supersystemComponents: [],
+            interactions: {},
+            functions: []
+        };
+
+        // Inicializar Function Analysis
         function initFunctionAnalysis() {
             updateFunctionAnalysis();
         }
 
+        // Reset Function Analysis
         function resetFunctionAnalysis() {
             functionAnalysisData = {
                 mainFunction: '',
@@ -3489,6 +3895,7 @@
             updateFunctionAnalysis();
         }
 
+        // Actualizar datos de Function Analysis
         function updateFunctionAnalysis() {
             // Actualizar main function y target component
             functionAnalysisData.mainFunction = document.getElementById('main-function').value;
@@ -3507,51 +3914,35 @@
             updateFunctionDiagram();
         }
 
-        function validateComponentName(component) {
-            if (!component || typeof component !== 'string') return null;
-            const trimmed = component.trim();
-            if (trimmed.length === 0) return null;
-            // Eliminar caracteres problemáticos para Mermaid
-            return trimmed.replace(/[{}[\]()|;]/g, '');
-        }
-
+        // Añadir componente del sistema
         function addSystemComponent() {
             const input = document.getElementById('system-component-input');
-            const component = validateComponentName(input.value);
+            const component = input.value.trim();
 
             if (component && !functionAnalysisData.systemComponents.includes(component)) {
                 functionAnalysisData.systemComponents.push(component);
                 updateComponentLists();
                 input.value = '';
                 updateInteractionMatrix();
-                // Delay para asegurar que el DOM se actualice
-                setTimeout(() => {
-                    updateFunctionDiagram();
-                }, 100);
-            } else if (!component) {
-                alert('Please enter a valid component name');
-                input.focus();
+                updateFunctionDiagram();
             }
         }
 
+        // Añadir componente del supersistema
         function addSupersystemComponent() {
             const input = document.getElementById('supersystem-component-input');
-            const component = validateComponentName(input.value);
+            const component = input.value.trim();
 
             if (component && !functionAnalysisData.supersystemComponents.includes(component)) {
                 functionAnalysisData.supersystemComponents.push(component);
                 updateComponentLists();
                 input.value = '';
                 updateInteractionMatrix();
-                setTimeout(() => {
-                    updateFunctionDiagram();
-                }, 100);
-            } else if (!component) {
-                alert('Please enter a valid component name');
-                input.focus();
+                updateFunctionDiagram();
             }
         }
 
+        // Eliminar componente del sistema
         function removeSystemComponent(component) {
             functionAnalysisData.systemComponents = functionAnalysisData.systemComponents.filter(c => c !== component);
             updateComponentLists();
@@ -3559,6 +3950,7 @@
             updateFunctionDiagram();
         }
 
+        // Eliminar componente del supersistema
         function removeSupersystemComponent(component) {
             functionAnalysisData.supersystemComponents = functionAnalysisData.supersystemComponents.filter(c => c !== component);
             updateComponentLists();
@@ -3566,6 +3958,7 @@
             updateFunctionDiagram();
         }
 
+        // Actualizar listas de componentes en la UI
         function updateComponentLists() {
             // Actualizar lista de componentes del sistema
             const systemList = document.getElementById('system-components-list');
@@ -3806,10 +4199,75 @@
             }
         }
 
-        // ===== FUNCIÓN CORREGIDA: GENERAR CÓDIGO MERMAIRD PARA FUNCTION ANALYSIS =====
-        function generateFunctionDiagramCodeForFunctionAnalysis(functions) {
-            if (!functions || functions.length === 0) {
-                return 'graph LR\n    A[No functions defined]';
+        // Actualizar diagrama de funciones
+        function updateFunctionDiagram() {
+            // Recopilar todas las funciones de la tabla
+            const functionRows = document.querySelectorAll('#function-table-body tr');
+            functionAnalysisData.functions = [];
+
+            functionRows.forEach(row => {
+                const carrier = row.querySelector('.function-carrier')?.value;
+                const action = row.querySelector('.function-action')?.value;
+                const target = row.querySelector('.function-target')?.value;
+                const category = row.querySelector('.function-category')?.value;
+                const performance = row.querySelector('.function-performance')?.value;
+                const comment = row.querySelector('.function-comment')?.value;
+
+                if (carrier && action && target) {
+                    functionAnalysisData.functions.push({
+                        carrier,
+                        action,
+                        target,
+                        category: category === 'U' ? 'useful' : 'harmful',
+                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
+                        comment
+                    });
+                }
+            });
+
+            // Generar código Mermaid
+            const code = generateFunctionDiagramCode(functionAnalysisData.functions);
+            const container = document.getElementById('faMermaidPreview');
+
+            // Limpiar y renderizar nuevo diagrama
+            container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+            // Re-inicializar Mermaid
+            if (typeof mermaid !== 'undefined') {
+                try {
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    window.mermaidTimeout = setTimeout(() => {
+                        mermaid.init({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'basis'
+                            }
+                        }, container.querySelectorAll('.mermaid'));
+                    }, 100);
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                    container.innerHTML = `
+                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                            <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
+                            <p><strong>Function Analysis Diagram</strong></p>
+                            <p>Add functions to the table to see the diagram</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Generar código Mermaid para el diagrama de funciones
+        function generateFunctionDiagramCode(functions) {
+            if (functions.length === 0) {
+                return 'graph LR;\n    A[Define Functions] --> B[Diagram will appear here]';
             }
 
             let lines = [];
@@ -3819,64 +4277,27 @@
             lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
             lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
 
-            // Identificar todos los componentes únicos y crear un mapeo de IDs seguros
-            const componentMap = new Map();
-            const usedIds = new Set();
-            let idCounter = 1;
-
-            // Función para crear IDs seguros para Mermaid
-            function createSafeId(componentName) {
-                if (!componentName || componentName.trim() === '') {
-                    return null;
-                }
-
-                // Crear ID seguro: solo letras, números y guiones bajos
-                let safeId = componentName
-                    .trim()
-                    .replace(/[^a-zA-Z0-9]/g, '_')
-                    .replace(/_+/g, '_')
-                    .replace(/^_+|_+$/g, '');
-
-                if (!safeId) {
-                    safeId = `comp_${idCounter++}`;
-                }
-
-                // Asegurar que el ID sea único
-                let finalId = safeId;
-                let suffix = 1;
-                while (usedIds.has(finalId)) {
-                    finalId = `${safeId}_${suffix++}`;
-                }
-
-                usedIds.add(finalId);
-                componentMap.set(componentName, finalId);
-                return finalId;
-            }
-
-            // Crear IDs para todos los componentes
+            // Identificar todos los componentes únicos
+            const allComponents = new Set();
             functions.forEach(func => {
-                if (func.carrier && func.carrier.trim()) {
-                    createSafeId(func.carrier);
-                }
-                if (func.target && func.target.trim()) {
-                    createSafeId(func.target);
+                allComponents.add(func.carrier);
+                allComponents.add(func.target);
+            });
+
+            // Determinar tipo de cada componente
+            const componentTypes = {};
+            Array.from(allComponents).forEach(component => {
+                if (component === functionAnalysisData.targetComponent) {
+                    componentTypes[component] = 'target';
+                } else if (functionAnalysisData.systemComponents.includes(component)) {
+                    componentTypes[component] = 'system';
+                } else {
+                    componentTypes[component] = 'supersystem';
                 }
             });
 
             // Crear nodos con formas apropiadas
-            Array.from(componentMap.entries()).forEach(([componentName, nodeId]) => {
-                if (!componentName || !nodeId) return;
-
-                let type = 'system';
-                if (functionAnalysisData) {
-                    if (componentName === functionAnalysisData.targetComponent) {
-                        type = 'target';
-                    } else if (functionAnalysisData.supersystemComponents &&
-                        functionAnalysisData.supersystemComponents.includes(componentName)) {
-                        type = 'supersystem';
-                    }
-                }
-
+            Object.entries(componentTypes).forEach(([component, type]) => {
                 let shapeStart = '[';
                 let shapeEnd = ']';
                 let className = 'system';
@@ -3891,131 +4312,44 @@
                     className = 'target';
                 }
 
-                lines.push(`    ${nodeId}${shapeStart}"${componentName}"${shapeEnd}:::${className}`);
+                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
+                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
             });
 
             // Crear aristas (conexiones) con estilos basados en propiedades
             functions.forEach((func, index) => {
-                const carrierId = componentMap.get(func.carrier);
-                const targetId = componentMap.get(func.target);
-
-                if (!carrierId || !targetId) {
-                    return;
-                }
+                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
+                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
 
                 let arrow = '-->';
                 let linkStyle = '';
 
+                // Determinar estilo de flecha basado en categoría y rendimiento
                 if (func.category === 'useful') {
                     if (func.performance === 'insufficient') {
                         arrow = '-.->';
-                        linkStyle = `linkStyle ${index} stroke-dasharray:5,5;`;
+                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
                     } else if (func.performance === 'excessive') {
                         arrow = '==>';
                         linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    } else {
+                        arrow = '-->';
                     }
                 } else if (func.category === 'harmful') {
                     arrow = '==>';
                     linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
                 }
 
-                const label = func.action || 'affects';
-                lines.push(`    ${carrierId} ${arrow}|${label}| ${targetId}`);
+                // Añadir la arista
+                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
 
+                // Añadir estilo de enlace si está especificado
                 if (linkStyle) {
                     lines.push(`    ${linkStyle}`);
                 }
             });
 
-            if (lines.length <= 4) { // Solo tiene las definiciones de clase
-                return 'graph LR\n    A[Add functions to see diagram]';
-            }
-
             return 'graph LR\n' + lines.join('\n');
-        }
-
-        function updateFunctionDiagram() {
-            // Recopilar todas las funciones de la tabla
-            const functionRows = document.querySelectorAll('#function-table-body tr');
-            functionAnalysisData.functions = [];
-
-            functionRows.forEach(row => {
-                const carrier = row.querySelector('.function-carrier')?.value;
-                const action = row.querySelector('.function-action')?.value;
-                const target = row.querySelector('.function-target')?.value;
-                const category = row.querySelector('.function-category')?.value;
-                const performance = row.querySelector('.function-performance')?.value;
-                const comment = row.querySelector('.function-comment')?.value;
-
-                if (carrier && action && target && carrier.trim() && action.trim() && target.trim()) {
-                    functionAnalysisData.functions.push({
-                        carrier: carrier.trim(),
-                        action: action.trim(),
-                        target: target.trim(),
-                        category: category === 'U' ? 'useful' : 'harmful',
-                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
-                        comment: comment ? comment.trim() : ''
-                    });
-                }
-            });
-
-            // Generar código Mermaid
-            const code = generateFunctionDiagramCodeForFunctionAnalysis(functionAnalysisData.functions);
-            const container = document.getElementById('faMermaidPreview');
-
-            // Limpiar y renderizar nuevo diagrama
-            container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-            // Re-inicializar Mermaid solo si hay funciones definidas
-            if (typeof mermaid !== 'undefined' && functionAnalysisData.functions.length > 0) {
-                try {
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
-                    }
-
-                    window.mermaidTimeout = setTimeout(() => {
-                        // Destruir cualquier instancia anterior de Mermaid
-                        mermaid.initialize({
-                            startOnLoad: false,
-                            theme: 'default',
-                            securityLevel: 'loose',
-                            flowchart: {
-                                useMaxWidth: true,
-                                htmlLabels: true,
-                                curve: 'basis'
-                            }
-                        });
-
-                        // Renderizar solo si el contenedor está visible
-                        const mermaidElements = container.querySelectorAll('.mermaid');
-                        if (mermaidElements.length > 0) {
-                            try {
-                                mermaid.init(undefined, mermaidElements);
-                            } catch (mermaidError) {
-                                console.warn('Mermaid rendering error, using fallback:', mermaidError);
-                                container.innerHTML = `
-                                    <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                                        <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
-                                        <p><strong>Function Analysis Diagram</strong></p>
-                                        <p>Define functions in the table above to see the diagram</p>
-                                    </div>
-                                `;
-                            }
-                        }
-                    }, 300);
-                } catch (error) {
-                    console.error('Mermaid initialization error:', error);
-                }
-            } else {
-                // Mostrar mensaje amigable si no hay funciones
-                container.innerHTML = `
-                    <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                        <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
-                        <p><strong>Function Analysis Diagram</strong></p>
-                        <p>Add functions to the table above to see the diagram</p>
-                    </div>
-                `;
-            }
         }
 
         // Cargar ejemplo en Function Analysis
@@ -4076,425 +4410,9 @@
                         updateFunctionDiagram();
                     }, 100);
                 }
-            }
-        }
-
-        // ===== MODIFICADO SEGÚN LÓGICA DE LITVIN =====
-        function updatePhysicalStrategy() {
-            clearResults();
-
-            const ozDefinition = document.querySelector('input[name="oz-definition"]:checked');
-            if (ozDefinition) {
-                document.getElementById('physical-step-2').classList.remove('hidden');
-                physicalStrategyFlow.step1 = true;
-
-                const ozIntersection = document.querySelector('input[name="oz-intersection"]:checked');
-                if (ozIntersection) {
-                    document.getElementById('physical-step-3').classList.remove('hidden');
-                    physicalStrategyFlow.step2 = true;
-
-                    // Generar los métodos de separación según el tipo de intersección (Litvin's logic)
-                    generateSeparationMethods(ozIntersection.value);
-
-                    setTimeout(() => {
-                        const separationMethod = document.querySelector('input[name="separation-method"]:checked');
-                        if (separationMethod) {
-                            physicalStrategyFlow.step3 = true;
-                            physicalStrategyFlow.selectedMethod = separationMethod.value;
-                        } else {
-                            physicalStrategyFlow.step3 = false;
-                        }
-                    }, 50);
-                } else {
-                    document.getElementById('physical-step-3').classList.add('hidden');
-                    physicalStrategyFlow.step2 = false;
-                    physicalStrategyFlow.step3 = false;
-                }
             } else {
-                document.getElementById('physical-step-2').classList.add('hidden');
-                document.getElementById('physical-step-3').classList.add('hidden');
-                physicalStrategyFlow.step1 = false;
-                physicalStrategyFlow.step2 = false;
-                physicalStrategyFlow.step3 = false;
-            }
-
-            document.getElementById('principles-toggle-container').style.display = 'block';
-        }
-
-        // ===== MODIFICADO SEGÚN LÓGICA DE LITVIN =====
-        function generateSeparationMethods(intersectionType) {
-            const container = document.getElementById('separation-methods');
-            container.innerHTML = '';
-
-            let methodsHTML = '';
-
-            // Litvin's logic:
-            // 1. No intersect (do not touch) → Offer Separation in Space and Time
-            // 2. Contiguous (adjacent) → Offer Separation by Relation and Physical-Chemical Principles
-            // 3. Intersect (overlap) → Offer System Transition and Bypass
-
-            if (intersectionType === 'no-intersect') {
-                methodsHTML = `
-                    <label><input type="radio" name="separation-method" value="separationInSpace" onchange="handleSeparationMethodChange();"> Separation in Space</label>
-                    <label><input type="radio" name="separation-method" value="separationInTime" onchange="handleSeparationMethodChange();"> Separation in Time</label>
-                `;
-            } else if (intersectionType === 'contiguous') {
-                methodsHTML = `
-                    <label><input type="radio" name="separation-method" value="separationInRelation" onchange="handleSeparationMethodChange();"> Separation by Relation</label>
-                    <label><input type="radio" name="separation-method" value="physicalChemicalPrinciples" onchange="handleSeparationMethodChange();"> Physical-Chemical Principles</label>
-                `;
-            } else if (intersectionType === 'intersect') {
-                methodsHTML = `
-                    <label><input type="radio" name="separation-method" value="separationInSystemLevel" onchange="handleSeparationMethodChange();"> System Transition</label>
-                    <label><input type="radio" name="separation-method" value="bypassContradictoryDemands" onchange="handleSeparationMethodChange();"> Bypass Contradictory Demands</label>
-                `;
-            }
-
-            container.innerHTML = methodsHTML;
-        }
-
-        function handleSeparationMethodChange() {
-            const separationMethod = document.querySelector('input[name="separation-method"]:checked');
-            if (separationMethod) {
-                physicalStrategyFlow.step3 = true;
-                physicalStrategyFlow.selectedMethod = separationMethod.value;
-                document.getElementById('principles-table-container').classList.add('hidden');
-            } else {
-                physicalStrategyFlow.step3 = false;
-            }
-        }
-
-        function generatePrinciplesTable() {
-            const container = document.getElementById('principles-table-content');
-
-            let html = `
-        <p style="margin-bottom: 0.5rem; font-style: italic;">
-            This table shows all physical contradiction resolution strategies and their associated inventive principles.
-        </p>
-        <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
-            Source: 1. Litvin, S. (1993). The TRIZ Contradiction Matrix: Principles for Solving Physical Contradictions. 2. Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution of Inventive Problems.
-        </p>
-    `;
-
-            for (const [method, strategy] of Object.entries(physicalContradictionPrinciples)) {
-                html += `
-        <div class="physical-strategy-guide">
-            <div class="strategy-title">${strategy.strategy}</div>
-            <div class="strategy-description">${strategy.description}</div>
-            <div class="strategy-example">
-                <strong>Example:</strong> ${getPhysicalContradictionExample(method)}
-            </div>
-        </div>
-        <table class="matrix-table" style="margin-top: 1rem; margin-bottom: 2rem;">
-            <thead>
-                <tr>
-                    <th>Principle #</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Example</th>
-                </tr>
-            </thead>
-            <tbody>
-        `;
-
-                strategy.principles.forEach(principle => {
-                    html += `
-            <tr>
-                <td><strong>${principle.number}</strong></td>
-                <td>${principle.name}</td>
-                <td>${principle.description}</td>
-                <td><em>${principle.example}</em></td>
-            </tr>
-        `;
-                });
-
-                html += `
-            </tbody>
-        </table>
-    `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        function togglePrinciplesTable() {
-            const tableContainer = document.getElementById('principles-table-container');
-            const isVisible = !tableContainer.classList.contains('hidden');
-
-            if (!isVisible) {
-                generatePrinciplesTable();
-                tableContainer.classList.remove('hidden');
-            } else {
-                tableContainer.classList.add('hidden');
-            }
-        }
-
-        function toggleSolutionsMatrix() {
-            const matrixContainer = document.getElementById('solutions-matrix-container');
-            const isVisible = !matrixContainer.classList.contains('hidden');
-
-            if (!isVisible) {
-                renderSolutionsMatrix();
-                matrixContainer.classList.remove('hidden');
-            } else {
-                matrixContainer.classList.add('hidden');
-            }
-        }
-
-        function renderSolutionsMatrix() {
-            const container = document.getElementById('solutions-matrix-content');
-
-            let html = `
-        <div class="content-block">
-            <h4><i class="fas fa-th-list"></i> Classic 76 Standard Solutions Matrix</h4>
-            <p style="margin-bottom: 0.5rem;">This matrix shows all 76 Standard Solutions and their applicability to different Su-Field problem types.</p>
-            <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
-                Source: Domb, E., Terninko, J., Miller, J., & MacGran, E. (Classification of the 76 Standard Solutions).
-            </p>
-            <div style="overflow-x: auto;">
-                <table class="matrix-table solutions-matrix">
-                    <thead>
-                        <tr>
-                            <th>Solution ID</th>
-                            <th>Title</th>
-                            <th>Class</th>
-                            <th>Insufficient</th>
-                            <th>Harmful</th>
-                            <th>Difficult</th>
-                            <th>Missing</th>
-                            <th>Excessive</th>
-                            <th>Inefficient</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-    `;
-
-            for (const className in trizStandardSolutions) {
-                const solutionClass = trizStandardSolutions[className];
-
-                for (const solutionId in solutionClass.solutions) {
-                    const solution = solutionClass.solutions[solutionId];
-
-                    const isInsufficient = solutionMap.insufficient.includes(solutionId);
-                    const isHarmful = solutionMap.harmful.includes(solutionId);
-                    const isDifficult = solutionMap.difficult.includes(solutionId);
-                    const isMissing = solutionMap.missing.includes(solutionId);
-                    const isExcessive = solutionMap.excessive.includes(solutionId);
-                    const isInefficient = solutionMap.inefficient.includes(solutionId);
-
-                    html += `
-                <tr>
-                    <td><strong>${solutionId}</strong></td>
-                    <td>${solution.title}</td>
-                    <td>${className.split(':')[0]}</td>
-                    <td class="${isInsufficient ? 'matrix-applicable' : ''}">${isInsufficient ? '✓' : ''}</td>
-                    <td class="${isHarmful ? 'matrix-applicable' : ''}">${isHarmful ? '✓' : ''}</td>
-                    <td class="${isDifficult ? 'matrix-applicable' : ''}">${isDifficult ? '✓' : ''}</td>
-                    <td class="${isMissing ? 'matrix-applicable' : ''}">${isMissing ? '✓' : ''}</td>
-                    <td class="${isExcessive ? 'matrix-applicable' : ''}">${isExcessive ? '✓' : ''}</td>
-                    <td class="${isInefficient ? 'matrix-applicable' : ''}">${isInefficient ? '✓' : ''}</td>
-                </tr>
-            `;
-                }
-            }
-
-            html += `
-                    </tbody>
-                </table>
-            </div>
-            
-            </div>
-    `;
-
-            container.innerHTML = html;
-        }
-
-        function toggleMatrixView() {
-            const dropdownView = document.getElementById('dropdown-view');
-            const matrixView = document.getElementById('matrix-view');
-
-            if (matrixView.classList.contains('hidden')) {
-                dropdownView.classList.add('hidden');
-                matrixView.classList.remove('hidden');
-            } else {
-                dropdownView.classList.remove('hidden');
-                matrixView.classList.add('hidden');
-            }
-        }
-
-        function createContradictionMatrix() {
-            const matrixTable = document.getElementById('contradiction-matrix');
-            matrixTable.innerHTML = '';
-
-            const features = getCurrentFeatures();
-
-            let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
-            for (let i = 0; i < features.length; i++) {
-                headerRow += `<th title="${features[i]}">${features[i].split(':')[0]}</th>`;
-            }
-            headerRow += '</tr>';
-            matrixTable.innerHTML += headerRow;
-
-            for (let i = 0; i < features.length; i++) {
-                let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
-                for (let j = 0; j < features.length; j++) {
-                    const cellClass = getCellClass(i, j);
-                    const principles = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
-                    const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
-
-                    const principleNames = principles && principles.length > 0
-                        ? principles.map(p => getPrincipleName(p)).join(', ')
-                        : 'No principles recommended';
-
-                    row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
-                        title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
-                    <div class="principle-numbers">${principleNumbers}</div>
-                </td>`;
-                }
-                row += '</tr>';
-                matrixTable.innerHTML += row;
-            }
-        }
-
-        function getCellClass(row, col) {
-            if (row === improvingFeatureIndex && col === worseningFeatureIndex) {
-                return 'selected';
-            } else if (row === improvingFeatureIndex) {
-                return 'improving';
-            } else if (col === worseningFeatureIndex) {
-                return 'worsening';
-            }
-            return '';
-        }
-
-        function selectMatrixCell(row, col) {
-            clearResults();
-            improvingFeatureIndex = row;
-            worseningFeatureIndex = col;
-
-            document.getElementById('improving-feature').value = row;
-            document.getElementById('worsening-feature').value = col;
-
-            updateMatrixDisplay();
-            updateSelectedFeatures();
-        }
-
-        function updateMatrixDisplay() {
-            const cells = document.querySelectorAll('#contradiction-matrix td');
-            const features = getCurrentFeatures();
-            cells.forEach((cell, index) => {
-                const row = Math.floor(index / features.length);
-                const col = index % features.length;
-                cell.className = getCellClass(row, col);
-            });
-        }
-
-        function populateDropdowns() {
-            const improvingSelect = document.getElementById('improving-feature');
-            const worseningSelect = document.getElementById('worsening-feature');
-
-            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
-            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
-
-            const features = getCurrentFeatures();
-
-            features.forEach((param, index) => {
-                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
-                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
-            });
-
-            improvingFeatureIndex = null;
-            worseningFeatureIndex = null;
-        }
-
-        function updateSelectedFeatures() {
-            const features = getCurrentFeatures();
-            const improvingSpan = document.getElementById('selected-improving');
-            const worseningSpan = document.getElementById('selected-worsening');
-
-            if (improvingFeatureIndex !== null) {
-                improvingSpan.textContent = features[improvingFeatureIndex];
-                improvingSpan.title = features[improvingFeatureIndex];
-            } else {
-                improvingSpan.textContent = 'None';
-            }
-
-            if (worseningFeatureIndex !== null) {
-                worseningSpan.textContent = features[worseningFeatureIndex];
-                worseningSpan.title = features[worseningFeatureIndex];
-            } else {
-                worseningSpan.textContent = 'None';
-            }
-        }
-
-        // ===== FUNCIONES DE SU-FIELD =====
-        function addSuFieldSystem() {
-            const container = document.getElementById('sufield-systems-container');
-            // Use global counter to ensure unique IDs, avoiding the 'null' error on element removal
-            globalSuFieldCounter++;
-            const systemId = globalSuFieldCounter;
-
-            // Note: The UI label will be sequential based on current DOM elements
-            const uiLabelIndex = container.children.length + 1;
-
-            const systemHTML = `
-                <div class="sufield-system">
-                    <div class="sufield-system-header">
-                        <div class="sufield-system-title">System ${uiLabelIndex}</div>
-                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
-                            <i class="fas fa-times"></i> Remove
-                        </button>
-                    </div>
-                    <div class="sufield-system-fields">
-                        <div class="form-group">
-                            <label for="sufield-object-${systemId}">Object (S1):</label>
-                            <input type="text" class="sufield-object" id="sufield-object-${systemId}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-tool-${systemId}">Tool (S2):</label>
-                            <input type="text" class="sufield-tool" id="sufield-tool-${systemId}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-field-${systemId}">Field (F):</label>
-                            <input type="text" class="sufield-field" id="sufield-field-${systemId}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="sufield-type-${systemId}">Problem Type:</label>
-                        <select class="sufield-type" id="sufield-type-${systemId}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                            <option value="insufficient">Insufficient interaction</option>
-                            <option value="harmful">Harmful interaction</option>
-                            <option value="difficult">Difficult to control</option>
-                            <option value="missing">Missing interaction</option>
-                            <option value="excessive">Excessive interaction</option>
-                            <option value="inefficient">Inefficient interaction</option>
-                        </select>
-                    </div>
-                    <div class="sufield-triangle-container sufield-system-diagram" id="sufield-diagram-${systemId}">
-                        </div>
-                </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', systemHTML);
-
-            // Usar setTimeout para asegurar que el DOM esté completamente renderizado
-            setTimeout(() => {
-                const newSystem = container.lastElementChild;
-                if (newSystem) {
-                    updateSuFieldDiagram(newSystem);
-                }
-            }, 50);
-        }
-
-        function removeSuFieldSystem(button) {
-            const system = button.closest('.sufield-system');
-            if (system && document.querySelectorAll('.sufield-system').length > 1) {
-                system.remove();
-                // Renumber remaining systems UI labels only
-                const systems = document.querySelectorAll('.sufield-system');
-                systems.forEach((sys, index) => {
-                    sys.querySelector('.sufield-system-title').textContent = `System ${index + 1}`;
-                });
+                // Ejemplo por defecto: Sistema de taza de café
+                // ... (código existente) ...
             }
         }
 
@@ -4579,26 +4497,28 @@
                 }).filter(p => p !== null);
             }
 
-            // Physical Contradiction data
+            // Physical Contradiction data (NUEVO ALGORITMO)
             const parameter = document.getElementById('conflicting-parameter').value;
             problemData.physicalContradiction = {
                 conflictingParameter: parameter || "Not specified",
+                intersectionTest: physicalStrategyFlow.selectedIntersection,
+                separationType: physicalStrategyFlow.selectedSeparation,
+                strategy: physicalStrategyFlow.strategy,
                 recommendedPrinciples: []
             };
 
-            if (physicalStrategyFlow.step3 && physicalStrategyFlow.selectedMethod) {
-                problemData.physicalContradiction.ozRelationship = physicalStrategyFlow.selectedMethod;
-                problemData.physicalContradiction.strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod].strategy;
-
-                const strategy = physicalContradictionPrinciples[physicalStrategyFlow.selectedMethod];
-                problemData.physicalContradiction.recommendedPrinciples = strategy.principles.map(p => ({
-                    id: p.number,
-                    name: p.name,
-                    desc: p.description,
-                    example: p.example
-                }));
-            } else {
-                problemData.physicalContradiction.ozRelationship = null;
+            if (physicalStrategyFlow.strategy && physicalStrategyFlow.principles) {
+                // Collect all principles from the strategy groups
+                physicalStrategyFlow.principles.forEach(principleGroup => {
+                    principleGroup.principles.forEach(principle => {
+                        problemData.physicalContradiction.recommendedPrinciples.push({
+                            id: principle.number,
+                            name: principle.name,
+                            desc: principle.description,
+                            example: principle.example
+                        });
+                    });
+                });
             }
 
             // Collect Su-Field systems - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
@@ -4630,198 +4550,6 @@
             displayResults();
         }
 
-        // Función auxiliar para generar código Mermaid para resultados
-        function generateFunctionDiagramCodeForResults(functions) {
-            if (!functions || functions.length === 0) {
-                return 'graph LR;\n    A[No functions defined]';
-            }
-
-            let lines = [];
-
-            // Definir estilos para nodos
-            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
-            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
-            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
-
-            // Identificar todos los componentes únicos y crear un mapeo de IDs seguros
-            const componentMap = new Map();
-            const usedIds = new Set();
-            let idCounter = 1;
-
-            // Función para crear IDs seguros para Mermaid
-            function createSafeId(componentName) {
-                if (!componentName || componentName.trim() === '') {
-                    const fallbackId = `comp_${idCounter++}`;
-                    componentMap.set(componentName, fallbackId);
-                    return fallbackId;
-                }
-
-                // Crear ID seguro reemplazando caracteres no alfanuméricos y espacios
-                let safeId = componentName
-                    .trim()
-                    .replace(/[^a-zA-Z0-9]/g, '_')
-                    .replace(/_+/g, '_')
-                    .replace(/^_+|_+$/g, '');
-
-                if (!safeId) {
-                    safeId = `comp_${idCounter++}`;
-                }
-
-                let finalId = safeId;
-                let suffix = 1;
-                while (usedIds.has(finalId)) {
-                    finalId = `${safeId}_${suffix++}`;
-                }
-
-                usedIds.add(finalId);
-                componentMap.set(componentName, finalId);
-                return finalId;
-            }
-
-            // Crear IDs para todos los componentes
-            functions.forEach(func => {
-                createSafeId(func.carrier);
-                createSafeId(func.target);
-            });
-
-            // Asegurarse de que el target component principal también tenga un ID
-            const functionAnalysis = problemData.functionAnalysis;
-            if (functionAnalysis && functionAnalysis.targetComponent) {
-                createSafeId(functionAnalysis.targetComponent);
-            }
-
-            // Crear nodos con formas apropiadas
-            Array.from(componentMap.entries()).forEach(([componentName, nodeId]) => {
-                if (!componentName || componentName.trim() === '') {
-                    return;
-                }
-
-                let type = 'system';
-                if (functionAnalysis) {
-                    if (componentName === functionAnalysis.targetComponent) {
-                        type = 'target';
-                    } else if (functionAnalysis.supersystemComponents &&
-                        functionAnalysis.supersystemComponents.includes(componentName)) {
-                        type = 'supersystem';
-                    } else if (functionAnalysis.systemComponents &&
-                        functionAnalysis.systemComponents.includes(componentName)) {
-                        type = 'system';
-                    }
-                }
-
-                let shapeStart = '[';
-                let shapeEnd = ']';
-                let className = 'system';
-
-                if (type === 'supersystem') {
-                    shapeStart = '{{';
-                    shapeEnd = '}}';
-                    className = 'supersystem';
-                } else if (type === 'target') {
-                    shapeStart = '([';
-                    shapeEnd = '])';
-                    className = 'target';
-                }
-
-                lines.push(`    ${nodeId}${shapeStart}"${componentName}"${shapeEnd}:::${className}`);
-            });
-
-            // Crear aristas (conexiones) con estilos basados en propiedades
-            functions.forEach((func, index) => {
-                const carrierId = componentMap.get(func.carrier);
-                const targetId = componentMap.get(func.target);
-
-                if (!carrierId || !targetId) {
-                    console.warn(`No se pudo crear arista para: ${func.carrier} -> ${func.target}`);
-                    return;
-                }
-
-                let arrow = '-->';
-                let linkStyle = '';
-
-                if (func.category === 'useful') {
-                    if (func.performance === 'insufficient') {
-                        arrow = '-.->';
-                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
-                    } else if (func.performance === 'excessive') {
-                        arrow = '==>';
-                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
-                    } else {
-                        arrow = '-->';
-                    }
-                } else if (func.category === 'harmful') {
-                    arrow = '==>';
-                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
-                }
-
-                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
-
-                if (linkStyle) {
-                    lines.push(`    ${linkStyle}`);
-                }
-            });
-
-            return 'graph LR\n' + lines.join('\n');
-        }
-
-        function updateMermaidDiagramInResults() {
-            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
-                return;
-            }
-
-            const container = document.getElementById('resultsMermaidDiagram');
-            if (!container) return;
-
-            try {
-                const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
-
-                // Clear container
-                container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-                // Reinitialize Mermaid
-                if (typeof mermaid !== 'undefined') {
-                    // Cancel any pending render
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
-                    }
-
-                    // Render with a small delay
-                    window.mermaidTimeout = setTimeout(() => {
-                        try {
-                            mermaid.init({
-                                startOnLoad: false,
-                                theme: 'default',
-                                securityLevel: 'loose',
-                                flowchart: {
-                                    useMaxWidth: true,
-                                    htmlLabels: true,
-                                    curve: 'basis'
-                                }
-                            }, container.querySelectorAll('.mermaid'));
-                        } catch (error) {
-                            console.error('Mermaid rendering error:', error);
-                            container.innerHTML = `
-                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                            <p><i class="fas fa-exclamation-triangle" style="color: #f39c12; font-size: 2rem; margin-bottom: 10px;"></i></p>
-                            <p><strong>Diagram Error</strong></p>
-                            <p>Could not render function diagram. Please check your function definitions.</p>
-                        </div>
-                    `;
-                        }
-                    }, 100);
-                }
-            } catch (error) {
-                console.error('Error generating diagram code:', error);
-                container.innerHTML = `
-            <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                <p><i class="fas fa-exclamation-triangle" style="color: #e74c3c; font-size: 2rem; margin-bottom: 10px;"></i></p>
-                <p><strong>Error Generating Diagram</strong></p>
-                <p>${error.message}</p>
-            </div>
-        `;
-            }
-        }
-
         function displayResults() {
             const resultsDiv = document.getElementById('results-container');
             let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
@@ -4842,124 +4570,124 @@
 
             // LDST Analysis
             html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
-        <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
-        <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
+                <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
+                <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
 
             problemData.ldst.recommendedLaws.forEach(law => {
                 html += `
-            <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                <h5>${law.name}</h5>
-                <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
-                <div>${law.examples}</div>
-            </div>
-        `;
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <h5>${law.name}</h5>
+                        <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
+                        <div>${law.examples}</div>
+                    </div>
+                `;
             });
 
             html += `
-        <div class="tese-trends-icons">`;
+                <div class="tese-trends-icons">`;
 
             problemData.ldst.recommendedLaws.forEach(law => {
                 law.principles.forEach(principle => {
                     html += `
-                <div class="tese-trend-item">
-                    <div class="tese-trend-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="tese-trend-name">${principle}</div>
-                </div>
-            `;
+                        <div class="tese-trend-item">
+                            <div class="tese-trend-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="tese-trend-name">${principle}</div>
+                        </div>
+                    `;
                 });
             });
 
             html += `</div>
-        <p style="margin-top: 1rem; font-style: italic; text-align: center;">
-            Apply these principles according to the fundamental laws of technical systems development
-        </p>
-    </div>`;
+                <p style="margin-top: 1rem; font-style: italic; text-align: center;">
+                    Apply these principles according to the fundamental laws of technical systems development
+                </p>
+            </div>`;
 
             // 9 Windows Analysis
             html += `<div class="solver-step"><h4><i class="fas fa-window-restore"></i> 9 Windows Analysis</h4>
-<div class="nine-windows-container" style="margin-top: 20px;">
-    <table class="nine-windows-table" style="border-collapse: collapse; width: 100%;">
-        <tr>
-            <td style="width: 80px; border: none;"></td>
-            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Past</td>
-            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Present</td>
-            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Future</td>
-        </tr>
-        <tr>
-            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
-                Super-System
-            </td>
-            <td style="padding: 5px; background: #f0f7ff;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                    ${problemData.nineWindows.superPast || 'Not specified'}
+                <div class="nine-windows-container" style="margin-top: 20px;">
+                    <table class="nine-windows-table" style="border-collapse: collapse; width: 100%;">
+                        <tr>
+                            <td style="width: 80px; border: none;"></td>
+                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Past</td>
+                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Present</td>
+                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Future</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                Super-System
+                            </td>
+                            <td style="padding: 5px; background: #f0f7ff;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                    ${problemData.nineWindows.superPast || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #f0f7ff;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                    ${problemData.nineWindows.superPresent || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #f0f7ff;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                    ${problemData.nineWindows.superFuture || 'Not specified'}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
+                                System
+                            </td>
+                            <td style="padding: 5px; background: #f0fff0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.systemPast || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #f0fff0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.systemPresent || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #f0fff0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.systemFuture || 'Not specified'}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                Sub-System
+                            </td>
+                            <td style="padding: 5px; background: #fff0f0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.subPast || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #fff0f0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.subPresent || 'Not specified'}
+                                </div>
+                            </td>
+                            <td style="padding: 5px; background: #fff0f0;">
+                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                    ${problemData.nineWindows.subFuture || 'Not specified'}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
+                        <strong>Color Guide:</strong> 
+                        <span style="color: #0066cc;">Super-System (Blue)</span> | 
+                        <span style="color: #009900;">System (Green)</span> | 
+                        <span style="color: #cc0000;">Sub-System (Red)</span>
+                    </div>
                 </div>
-            </td>
-            <td style="padding: 5px; background: #f0f7ff;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                    ${problemData.nineWindows.superPresent || 'Not specified'}
-                </div>
-            </td>
-            <td style="padding: 5px; background: #f0f7ff;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                    ${problemData.nineWindows.superFuture || 'Not specified'}
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
-                System
-            </td>
-            <td style="padding: 5px; background: #f0fff0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.systemPast || 'Not specified'}
-                </div>
-            </td>
-            <td style="padding: 5px; background: #f0fff0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.systemPresent || 'Not specified'}
-                </div>
-            </td>
-            <td style="padding: 5px; background: #f0fff0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.systemFuture || 'Not specified'}
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
-                Sub-System
-            </td>
-            <td style="padding: 5px; background: #fff0f0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.subPast || 'Not specified'}
-                </div>
-            </td>
-            <td style="padding: 5px; background: #fff0f0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.subPresent || 'Not specified'}
-                </div>
-            </td>
-            <td style="padding: 5px; background: #fff0f0;">
-                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                    ${problemData.nineWindows.subFuture || 'Not specified'}
-                </div>
-            </td>
-        </tr>
-    </table>
-    
-    <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
-        <strong>Color Guide:</strong> 
-        <span style="color: #0066cc;">Super-System (Blue)</span> | 
-        <span style="color: #009900;">System (Green)</span> | 
-        <span style="color: #cc0000;">Sub-System (Red)</span>
-    </div>
-</div>
-<p style="margin-top: 15px; font-style: italic; text-align: center;">
-    Use this 9-windows analysis to identify innovation opportunities in different timeframes and system levels.
-</p>
-</div>`;
+                <p style="margin-top: 15px; font-style: italic; text-align: center;">
+                    Use this 9-windows analysis to identify innovation opportunities in different timeframes and system levels.
+                </p>
+            </div>`;
 
             // Function Analysis
             if (problemData.functionAnalysis) {
@@ -5157,23 +4885,17 @@
                 html += `</div>`;
             }
 
-            // Physical Contradiction
+            // Physical Contradiction (NUEVO ALGORITMO)
             if (problemData.physicalContradiction) {
                 html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
 
                 html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
 
-                if (problemData.physicalContradiction.ozRelationship) {
-                    const strategy = physicalContradictionPrinciples[problemData.physicalContradiction.ozRelationship];
-                    if (strategy) {
-                        html += `<div class="physical-strategy-guide">
-                            <div class="strategy-title">Recommended Strategy: ${strategy.strategy}</div>
-                            <div class="strategy-description">${strategy.description}</div>
-                            <div class="strategy-example">
-                                <strong>Example from Litvin:</strong> ${getPhysicalContradictionExample(problemData.physicalContradiction.ozRelationship)}
-                            </div>
-                        </div>`;
-                    }
+                if (problemData.physicalContradiction.strategy) {
+                    html += `<div class="physical-strategy-guide">
+                        <div class="strategy-title">Recommended Strategy: ${problemData.physicalContradiction.strategy}</div>
+                        <div class="strategy-description">${getStrategyDescription(problemData.physicalContradiction.strategy)}</div>
+                    </div>`;
                 }
 
                 // Recommended Principles
@@ -5183,7 +4905,7 @@
                         html += `
                             <div class="principle-card">
                                 <div class="principle-header">
-                                    <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
+                                    <span class="physical-principle-icon"><i class="fas fa-lightbulb"></i></span>
                                     <strong>Principle ${p.id}: ${p.name}</strong>
                                 </div>
                                 <p>${p.desc}</p>
@@ -5211,28 +4933,28 @@
                         const solutionDiagramId = `solution-diagram-${index}`;
 
                         html += `
-                    <div class="solution-transformation">
-                        <div class="before-state">
-                            <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
-                            <div class="state-label">Problem State</div>
-                        </div>
-                        
-                        <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        
-                        <div class="after-state">
-                            <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
-                            <div class="state-label">Solution State</div>
-                        </div>
-                    </div>
-                `;
+                            <div class="solution-transformation">
+                                <div class="before-state">
+                                    <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
+                                    <div class="state-label">Problem State</div>
+                                </div>
+                                
+                                <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                                
+                                <div class="after-state">
+                                    <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
+                                    <div class="state-label">Solution State</div>
+                                </div>
+                            </div>
+                        `;
 
                         html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
-                    <div>
-                        <strong>Problem Type:</strong> ${system.type}
-                        <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
-                    </div>
-                </div>`;
+                            <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
+                            <div>
+                                <strong>Problem Type:</strong> ${system.type}
+                                <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                            </div>
+                        </div>`;
 
                         if (system.standardSolutions && system.standardSolutions.length > 0) {
                             const solutionsByClass = {};
@@ -5247,11 +4969,11 @@
                                 const classIcon = classIcons[className] || 'fa-cube';
                                 html += `<div class="standard-solution-visual">`;
                                 html += `
-                            <div class="class-header">
-                                <span class="class-icon"><i class="fas ${classIcon}"></i></span>
-                                <h5>${className}</h5>
-                            </div>
-                        `;
+                                    <div class="class-header">
+                                        <span class="class-icon"><i class="fas ${classIcon}"></i></span>
+                                        <h5>${className}</h5>
+                                    </div>
+                                `;
                                 html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
 
                                 html += `<div class="solution-description">`;
@@ -5260,14 +4982,14 @@
                                 solutions.forEach(solution => {
                                     const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
                                     html += `
-                                <div class="solution-card">
-                                    <div class="solution-header">
-                                        <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
-                                        <strong>${solution.id}: ${solution.title}</strong>
-                                    </div>
-                                    <p>${solution.description}</p>
-                                </div>
-                            `;
+                                        <div class="solution-card">
+                                            <div class="solution-header">
+                                                <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
+                                                <strong>${solution.id}: ${solution.title}</strong>
+                                            </div>
+                                            <p>${solution.description}</p>
+                                        </div>
+                                    `;
                                 });
 
                                 html += `</div></div>`;
@@ -5323,6 +5045,135 @@
             }, 500);
 
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función auxiliar para generar código Mermaid para resultados
+        function generateFunctionDiagramCodeForResults(functions) {
+            if (!functions || functions.length === 0) {
+                return 'graph LR;\n    A[No functions defined]';
+            }
+
+            let lines = [];
+
+            // Definir estilos para nodos
+            lines.push('    classDef system fill:#dceeff,stroke:#82b6ff,stroke-width:2px;');
+            lines.push('    classDef supersystem fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;');
+            lines.push('    classDef target fill:#ffffcc,stroke:#d6b656,stroke-width:2px;');
+
+            // Identificar todos los componentes únicos
+            const allComponents = new Set();
+            functions.forEach(func => {
+                allComponents.add(func.carrier);
+                allComponents.add(func.target);
+            });
+
+            // Determinar tipo de cada componente
+            const componentTypes = {};
+            const functionAnalysis = problemData.functionAnalysis;
+            Array.from(allComponents).forEach(component => {
+                if (component === functionAnalysis.targetComponent) {
+                    componentTypes[component] = 'target';
+                } else if (functionAnalysis.systemComponents && functionAnalysis.systemComponents.includes(component)) {
+                    componentTypes[component] = 'system';
+                } else {
+                    componentTypes[component] = 'supersystem';
+                }
+            });
+
+            // Crear nodos con formas apropiadas
+            Object.entries(componentTypes).forEach(([component, type]) => {
+                let shapeStart = '[';
+                let shapeEnd = ']';
+                let className = 'system';
+
+                if (type === 'supersystem') {
+                    shapeStart = '{{';
+                    shapeEnd = '}}';
+                    className = 'supersystem';
+                } else if (type === 'target') {
+                    shapeStart = '([';
+                    shapeEnd = '])';
+                    className = 'target';
+                }
+
+                const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
+                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
+            });
+
+            // Crear aristas (conexiones) con estilos basados en propiedades
+            functions.forEach((func, index) => {
+                const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
+                const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
+
+                let arrow = '-->';
+                let linkStyle = '';
+
+                // Determinar estilo de flecha basado en categoría y rendimiento
+                if (func.category === 'useful') {
+                    if (func.performance === 'insufficient') {
+                        arrow = '-.->';
+                        linkStyle = `linkStyle ${index} stroke-dasharray: 5,5;`;
+                    } else if (func.performance === 'excessive') {
+                        arrow = '==>';
+                        linkStyle = `linkStyle ${index} stroke-width:3px;`;
+                    } else {
+                        arrow = '-->';
+                    }
+                } else if (func.category === 'harmful') {
+                    arrow = '==>';
+                    linkStyle = `linkStyle ${index} stroke:#e74c3c,stroke-width:3px;`;
+                }
+
+                // Añadir la arista
+                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+
+                // Añadir estilo de enlace si está especificado
+                if (linkStyle) {
+                    lines.push(`    ${linkStyle}`);
+                }
+            });
+
+            return 'graph LR\n' + lines.join('\n');
+        }
+
+        function updateMermaidDiagramInResults() {
+            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
+                return;
+            }
+
+            const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
+            const container = document.getElementById('resultsMermaidDiagram');
+
+            if (!container) return;
+
+            // Clear container and render new diagram
+            container.innerHTML = `<div class="mermaid">${code}</div>`;
+
+            // Reinitialize Mermaid with the new diagram
+            if (typeof mermaid !== 'undefined') {
+                try {
+                    // Cancel any pending render
+                    if (window.mermaidTimeout) {
+                        clearTimeout(window.mermaidTimeout);
+                    }
+
+                    // Render with a small delay to asegurar que el DOM esté listo
+                    window.mermaidTimeout = setTimeout(() => {
+                        mermaid.init({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'basis'
+                            }
+                        }, container.querySelectorAll('.mermaid'));
+                    }, 100);
+                } catch (error) {
+                    console.error('Mermaid rendering error in results:', error);
+                }
+            }
         }
 
         function exportToExcel() {
@@ -5420,12 +5271,13 @@
                 ws_data.push([]);
             }
 
-            // Physical Contradiction
+            // Physical Contradiction (NUEVO ALGORITMO)
             if (problemData.physicalContradiction) {
                 ws_data.push(["Physical Contradiction"]);
                 ws_data.push(["Type", "Physical Contradiction"]);
                 ws_data.push(["Conflicting Parameter", problemData.physicalContradiction.conflictingParameter]);
-                ws_data.push(["Operational Zones Relationship", problemData.physicalContradiction.ozRelationship]);
+                ws_data.push(["Intersection Test", problemData.physicalContradiction.intersectionTest]);
+                ws_data.push(["Separation Type", problemData.physicalContradiction.separationType]);
                 ws_data.push(["Recommended Strategy", problemData.physicalContradiction.strategy]);
 
                 if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
@@ -5470,14 +5322,24 @@
             XLSX.writeFile(wb, `TRIZ_Report_Sigma_Exacta_${dateStr}.xlsx`);
         }
 
-        // ===== ACTUALIZADO SEGÚN LÓGICA DE LITVIN =====
+        function getStrategyDescription(strategy) {
+            const descriptions = {
+                "Separation in Space or Time": "The two opposite demands occur in different places or at different times. Use separation in space or time principles.",
+                "Satisfy through physical-chemical changes": "The demands are contiguous (touch at a boundary). Use physical or chemical changes to satisfy both demands.",
+                "Separation in Relation (Condition)": "The demands are for different systems or users. Separate by condition or perspective.",
+                "Separation in System Level": "The whole system has one property while its parts have the opposite. Separate by system hierarchy.",
+                "Bypass contradictory demands (System Transition)": "The demands completely overlap and cannot be separated. Consider a system transition or bypass."
+            };
+            return descriptions[strategy] || "";
+        }
+
         function getPhysicalContradictionExample(relationship) {
             const examples = {
                 separationInSpace: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
                 separationInTime: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
                 separationInRelation: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material.",
                 separationInSystemLevel: "Traffic light with segmented pole elements for easy repair, separating maintenance requirements at different system levels.",
-                physicalChemicalPrinciples: "Use of shape-memory alloys that change properties with temperature, or phase-change materials that absorb/release heat.",
+                satisfyContradictoryDemands: "Heat packs using phase transition of gel to provide warmth without external heat source, satisfying both heating and portability demands.",
                 bypassContradictoryDemands: "Digital clocks replacing mechanical clockwork, bypassing the need for mechanical timekeeping altogether."
             };
             return examples[relationship] || "Apply separation principles to resolve the contradiction.";
