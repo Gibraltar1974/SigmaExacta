@@ -70,6 +70,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event Listeners
     document.getElementById('cpkForm').addEventListener('submit', handleFormSubmit);
+
+    // Crear botones ocultos para ejemplo y reset si no existen
+    if (!document.getElementById('fillExampleBtn')) {
+        const fillExampleBtn = document.createElement('button');
+        fillExampleBtn.id = 'fillExampleBtn';
+        fillExampleBtn.style.display = 'none';
+        document.body.appendChild(fillExampleBtn);
+    }
+
+    if (!document.getElementById('resetDataBtn')) {
+        const resetDataBtn = document.createElement('button');
+        resetDataBtn.id = 'resetDataBtn';
+        resetDataBtn.style.display = 'none';
+        document.body.appendChild(resetDataBtn);
+    }
+
     document.getElementById('fillExampleBtn').addEventListener('click', fillExampleData);
     document.getElementById('resetDataBtn').addEventListener('click', resetFormData);
     document.getElementById('exportBtn').addEventListener('click', exportToExcel);
@@ -104,16 +120,18 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Mostrar los resultados del primer dataset
         displayResults(datasets[0], 0);
         updateDatasetTabs();
 
         const overallStats = calculateStatistics(overallData, lsl, usl, target);
         if (overallStats && overallData.length >= 2) {
-            document.getElementById('overallResults').style.display = 'flex';
+            // Mostrar contenedor de resultados overall
+            document.getElementById('overall-results-wrapper').classList.add('active');
             document.getElementById('long-term-charts-wrapper').style.display = 'flex';
             displayOverallResults(overallStats);
         } else {
-            document.getElementById('overallResults').style.display = 'none';
+            document.getElementById('overall-results-wrapper').classList.remove('active');
             document.getElementById('long-term-charts-wrapper').style.display = 'none';
         }
 
@@ -231,7 +249,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayResults(dataset, index) {
-        document.getElementById('results').style.display = 'flex';
+        // Mostrar el contenedor de resultados
+        document.getElementById('dataset-results-wrapper').classList.add('active');
+        document.getElementById('short-term-charts-wrapper').style.display = 'flex';
+
         document.getElementById('mean').textContent = isFinite(dataset.mean) ? dataset.mean.toFixed(4) : 'N/A';
         document.getElementById('deviation').textContent = isFinite(dataset.sigmaWithin) ? dataset.sigmaWithin.toFixed(4) : 'N/A';
         document.getElementById('cp').textContent = isFinite(dataset.cp) ? dataset.cp.toFixed(4) : 'N/A';
@@ -244,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('kolmogorov').innerHTML = formatNormalityResult(dataset.kolmogorov);
         document.getElementById('anderson').innerHTML = formatNormalityResult(dataset.anderson);
 
-        document.getElementById('short-term-charts-wrapper').style.display = 'flex';
         plotChart(dataset.mean, dataset.sigmaWithin, parseFloat(document.getElementById('lsl').value),
             parseFloat(document.getElementById('usl').value), dataset.measurements, index);
         createControlChart(dataset, index);
@@ -759,12 +779,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 tab.className = 'dataset-tab ' + (index === 0 ? 'active' : '');
                 tab.textContent = 'Dataset #' + dataset.id;
                 tab.addEventListener('click', function () {
-                    document.querySelector('.dataset-tab.active').classList.remove('active');
+                    document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     displayResults(dataset, index);
                 });
                 tabsContainer.appendChild(tab);
             });
+
+            // Add overall tab
+            const overallTab = document.createElement('div');
+            overallTab.className = 'dataset-tab overall-tab';
+            overallTab.textContent = 'Overall Results';
+            overallTab.addEventListener('click', function () {
+                document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
+                overallTab.classList.add('active');
+                // Mostrar resultados overall y ocultar individuales
+                document.getElementById('dataset-results-wrapper').classList.remove('active');
+                document.getElementById('overall-results-wrapper').classList.add('active');
+            });
+            tabsContainer.appendChild(overallTab);
         } else {
             tabsContainer.style.display = 'none';
         }
@@ -846,11 +879,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        document.querySelector('.remove-dataset-btn').style.display = 'none';
+        // Ocultar contenedores de resultados
+        document.getElementById('dataset-results-wrapper').classList.remove('active');
+        document.getElementById('overall-results-wrapper').classList.remove('active');
+        document.getElementById('short-term-charts-wrapper').style.display = 'none';
+        document.getElementById('long-term-charts-wrapper').style.display = 'none';
+        document.getElementById('datasetTabsContainer').style.display = 'none';
 
-        ['results', 'overallResults', 'short-term-charts-wrapper', 'long-term-charts-wrapper', 'datasetTabsContainer'].forEach(function (id) {
-            document.getElementById(id).style.display = 'none';
-        });
         document.getElementById('exportBtn').disabled = true;
 
         // Resetear también los gráficos

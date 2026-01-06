@@ -1040,66 +1040,71 @@
 
                     <!-- Contenedor para resultados del dataset activo -->
                     <div class="results-container">
-                        <div id="results" style="display:none;">
-                            <div class="results-content">
-                                <div class="calculation-title">Short-Term Results</div>
-                                <p><i class="fas fa-chart-line"></i> Mean: <span id="mean" class="result-value">-</span>
-                                </p>
-                                <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp" class="result-value">-</span>
-                                </p>
-                                <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
-                                        class="result-value">-</span></p>
-                                <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm" class="result-value">-</span>
-                                </p>
-                                <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
-                                        id="failures_ppm" class="result-value">-</span> ppm</p>
-                                <p><i class="fas fa-percentage"></i> Defective Parts: <span id="defective_percentage"
-                                        class="result-value">-</span>%</p>
+                        <!-- Contenedor para resultados individuales de datasets -->
+                        <div id="dataset-results-wrapper" class="dataset-results-wrapper">
+                            <div class="results-box">
+                                <div class="results-content">
+                                    <div class="calculation-title">Short-Term Results</div>
+                                    <p><i class="fas fa-chart-line"></i> Mean: <span id="mean"
+                                            class="result-value">-</span>
+                                    </p>
+                                    <p><i class="fas fa-chart-bar"></i> Std Dev (Within): <span id="deviation"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp"
+                                            class="result-value">-</span>
+                                    </p>
+                                    <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
+                                            class="result-value">-</span></p>
+                                    <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm"
+                                            class="result-value">-</span>
+                                    </p>
+                                    <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
+                                            id="failures_ppm" class="result-value">-</span> ppm</p>
+                                    <p><i class="fas fa-percentage"></i> Defective Parts: <span
+                                            id="defective_percentage" class="result-value">-</span>%</p>
 
-                                <div class="normality-results">
-                                    <div class="calculation-title"
-                                        style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality
-                                        Tests</div>
-                                    <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
-                                    <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
-                                    <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
+                                    <div class="normality-results">
+                                        <div class="calculation-title"
+                                            style="font-size: 1.1em; margin-top: 1rem; margin-bottom: 0.5rem;">Normality
+                                            Tests</div>
+                                        <p>Shapiro-Wilk: <span id="shapiro" class="result-value">-</span></p>
+                                        <p>Kolmogorov-Smirnov: <span id="kolmogorov" class="result-value">-</span></p>
+                                        <p>Anderson-Darling: <span id="anderson" class="result-value">-</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
+                                <div id="cpkChart" class="cpk-chart-container">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="cpkChartCanvas" class="chart-canvas"></canvas>
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color"
+                                                style="background-color: #333; border-top: 2px dashed #333;"></div> Mean
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color"
+                                                style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
+                                            Process Limits (±3σ)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="controlChartContainer" class="control-chart-container">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="controlChartCanvas" class="chart-canvas"></canvas>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="charts-wrapper" id="short-term-charts-wrapper" style="display: none;">
-                            <div id="cpkChart">
-                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                                <canvas id="cpkChartCanvas"></canvas>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color"
-                                            style="background-color: #333; border-top: 2px dashed #333;"></div> Mean
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color"
-                                            style="background-color: #3498db; border-top: 2px solid #3498db;"></div>
-                                        Process Limits (±3σ)
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="controlChartContainer">
-                                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark" class="chart-watermark">
-                                <canvas id="controlChartCanvas"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="calculation-block">
-                        <div class="calculation-title">Overall Performance (Long-Term Analysis)</div>
-
-                        <div class="overall-results-container">
-                            <div id="overallResults" style="display:none;">
+                        <!-- Contenedor para resultados overall (long-term) -->
+                        <div id="overall-results-wrapper" class="dataset-results-wrapper">
+                            <div class="results-box">
                                 <div class="results-content">
                                     <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
                                     <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
@@ -1130,10 +1135,10 @@
                             </div>
 
                             <div class="charts-wrapper" id="long-term-charts-wrapper" style="display: none;">
-                                <div id="overallChartContainer">
+                                <div id="overallChartContainer" class="overall-chart-container">
                                     <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
                                         class="chart-watermark">
-                                    <canvas id="overallChartCanvas"></canvas>
+                                    <canvas id="overallChartCanvas" class="chart-canvas"></canvas>
                                     <div class="chart-legend">
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: #e74c3c;"></div> LSL/USL
@@ -1149,18 +1154,19 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="overallControlChartContainer">
+                                <div id="overallControlChartContainer" class="overall-control-chart-container">
                                     <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
                                         class="chart-watermark">
-                                    <canvas id="overallControlChartCanvas"></canvas>
+                                    <canvas id="overallControlChartCanvas" class="chart-canvas"></canvas>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
-                            <button type="button" id="exportBtn" class="button-green" disabled><i
-                                    class="fas fa-file-excel"></i> Export to Excel</button>
-                        </div>
+                    <!-- Botón de exportar (común para todos los datasets) -->
+                    <div class="button-group" style="margin-top: 20px; justify-content: flex-start;">
+                        <button type="button" id="exportBtn" class="button-green" disabled><i
+                                class="fas fa-file-excel"></i> Export to Excel</button>
                     </div>
                 </div>
             </div>
