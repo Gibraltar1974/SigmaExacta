@@ -1961,6 +1961,40 @@
         .highlighted-principle-row {
             background-color: #d4edda !important;
         }
+
+        /* ===== CORRECCIÓN PARA RADIO BUTTONS VISIBLES ===== */
+        input[type="radio"][name="matrix-version"] {
+            opacity: 1 !important;
+            position: relative !important;
+            width: 16px !important;
+            height: 16px !important;
+            margin-right: 8px !important;
+            cursor: pointer !important;
+            appearance: auto !important;
+        }
+
+        input[type="radio"][name="matrix-version"]:checked {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+
+        .radio-group label {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            cursor: pointer !important;
+            padding: 5px !important;
+            border-radius: 4px !important;
+            transition: background-color 0.3s !important;
+        }
+
+        .radio-group label:hover {
+            background-color: rgba(52, 152, 219, 0.1) !important;
+        }
+
+        .radio-group label input[type="radio"]:checked+strong {
+            color: var(--secondary-color) !important;
+        }
     </style>
 </head>
 
@@ -2717,10 +2751,14 @@
                             </div>
 
                             <div id="dropdown-view">
-                                <div class="form-group"><label for="improving-feature">Feature to
-                                        Improve:</label><select id="improving-feature"></select></div>
-                                <div class="form-group"><label for="worsening-feature">Feature that
-                                        Worsens:</label><select id="worsening-feature"></select></div>
+                                <div class="form-group">
+                                    <label for="improving-feature">Feature to Improve:</label>
+                                    <select id="improving-feature" onchange="handleDropdownChange()"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="worsening-feature">Feature that Worsens:</label>
+                                    <select id="worsening-feature" onchange="handleDropdownChange()"></select>
+                                </div>
                             </div>
 
                             <div id="matrix-view" class="hidden">
@@ -2946,7 +2984,7 @@
             selectedIntersection: null,
             selectedSeparation: null,
             strategy: null,
-            principles: []
+            categories: []  // Cambiado de 'principles' a 'categories'
         };
 
         // ===== FUNCIONES DE NAVEGACIÓN =====
@@ -2992,6 +3030,14 @@
                         updateFunctionDiagram();
                     }, 100);
                 }
+
+                // FIXED: Si estamos en la sub-tab de Technical Contradiction, asegurar dropdowns estén poblados
+                if (subTabId === 'sub-tab-technical') {
+                    setTimeout(() => {
+                        populateDropdowns();
+                        document.getElementById('technical-solver-block').classList.remove('hidden');
+                    }, 50);
+                }
             }
 
             // Scroll al top de la sub-tab
@@ -3009,10 +3055,13 @@
                 .then(data => {
                     document.getElementById('header-container').innerHTML = data;
                     initNavigationMenu();
+
+                    // Inicializar tool DESPUÉS de que el header esté cargado
+                    setTimeout(() => {
+                        init();
+                    }, 100);
                 })
                 .catch(error => console.error('Error loading header:', error));
-
-            init(); // Inicializar tool
 
             // Asignar eventos a los botones globales
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExampleAndGo);
@@ -3057,6 +3106,11 @@
 
             // Inicializar Function Analysis
             initFunctionAnalysis();
+
+            // Configurar event listeners para physical contradiction (NUEVO)
+            setTimeout(() => {
+                setupPhysicalContradictionEventListeners();
+            }, 1000);
         });
 
         // ===== INICIALIZAR EL MENÚ DE NAVEGACIÓN =====
@@ -3093,8 +3147,26 @@
 
         // ===== FUNCIONES DE INICIALIZACIÓN =====
         function init() {
+            console.log("Initializing TRIZ tool...");
+
+            // Asegurar que el radio button "classic" esté marcado por defecto
+            setTimeout(() => {
+                const classicRadio = document.querySelector('input[name="matrix-version"][value="classic"]');
+                if (classicRadio) {
+                    classicRadio.checked = true;
+                    console.log("Classic radio button set to checked");
+                    // Forzar un evento change para actualizar todo
+                    classicRadio.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }, 100);
+
+            currentMatrixVersion = 'classic';
+
             populateDropdowns();
             createContradictionMatrix();
+
+            // FIXED: Asegurar que el bloque de Technical Contradiction sea visible
+            document.getElementById('technical-solver-block').classList.remove('hidden');
 
             // Inicializar LDST
             setTimeout(() => {
@@ -3105,6 +3177,42 @@
             setTimeout(() => {
                 addSuFieldSystem();
             }, 150);
+
+            console.log("TRIZ tool initialized successfully");
+        }
+
+        // Función auxiliar para forzar la actualización de radio buttons
+        function forceRadioButtonUpdate(version) {
+            console.log("Forcing radio button update for version:", version);
+
+            // Buscar todos los radio buttons
+            const radios = document.querySelectorAll('input[name="matrix-version"]');
+
+            // Desmarcar todos
+            radios.forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Marcar el seleccionado
+            const targetRadio = document.querySelector(`input[name="matrix-version"][value="${version}"]`);
+            if (targetRadio) {
+                targetRadio.checked = true;
+                console.log(`Radio button ${version} marked as checked:`, targetRadio.checked);
+
+                // Actualizar variable global
+                currentMatrixVersion = version;
+
+                // Forzar eventos
+                targetRadio.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // Actualizar dropdowns y matriz inmediatamente
+                setTimeout(() => {
+                    populateDropdowns();
+                    createContradictionMatrix();
+                }, 50);
+            }
+
+            return targetRadio;
         }
 
         // ===== FUNCIONES DE EJEMPLO Y RESET =====
@@ -3115,31 +3223,54 @@
         }
 
         function resetTool() {
+            console.log("Resetting tool...");
+
             problemData = {};
+
+            // Reset específico de radio buttons
+            forceRadioButtonUpdate('classic');
+
+            // Reset de otros elementos
             document.querySelectorAll('input[type="text"], textarea, select').forEach(el => {
-                if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+                if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else el.value = '';
             });
-            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+
+            document.querySelectorAll('input[type="radio"]').forEach(el => {
+                if (el.name !== 'matrix-version') { // No resetear los de matrix-version
+                    el.checked = false;
+                }
+            });
 
             // Reset specific elements
-            document.getElementById('technical-solver-block').classList.add('hidden');
-            document.getElementById('matrix-version-selector-container').classList.add('hidden');
+            document.getElementById('technical-solver-block').classList.remove('hidden');
             document.getElementById('lifecycle-stage').value = 'birth';
+
+            // Asegurar que classic esté marcado
             document.querySelector('input[name="matrix-version"][value="classic"]').checked = true;
 
-            // Reset physical strategy flow (NUEVO ALGORITMO)
+            // FIXED: Reset results container
+            const resultsContainer = document.getElementById('results-container');
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+                resultsContainer.classList.add('hidden');
+            }
+
+            // Reset physical strategy flow
             physicalStrategyFlow = {
                 step1: false,
                 step2: false,
                 selectedIntersection: null,
                 selectedSeparation: null,
                 strategy: null,
-                principles: []
+                categories: []
             };
 
-            // Reset physical steps UI (NUEVO ALGORITMO)
+            // Reset physical steps UI
             document.getElementById('physical-step-2').classList.add('hidden');
-            document.getElementById('principles-toggle-container').style.display = 'block';
+            if (document.getElementById('principles-toggle-container')) {
+                document.getElementById('principles-toggle-container').style.display = 'block';
+            }
 
             // Reset 9 Windows fields
             document.getElementById('nine-windows-super-past').value = '';
@@ -3157,16 +3288,25 @@
             // Reset matrix selection
             improvingFeatureIndex = null;
             worseningFeatureIndex = null;
-            document.getElementById('selected-improving').textContent = 'None';
-            document.getElementById('selected-worsening').textContent = 'None';
+            if (document.getElementById('selected-improving')) {
+                document.getElementById('selected-improving').textContent = 'None';
+            }
+            if (document.getElementById('selected-worsening')) {
+                document.getElementById('selected-worsening').textContent = 'None';
+            }
             updateMatrixDisplay();
 
             // Reset Su-Field systems
-            document.getElementById('sufield-systems-container').innerHTML = '';
+            if (document.getElementById('sufield-systems-container')) {
+                document.getElementById('sufield-systems-container').innerHTML = '';
+            }
             globalSuFieldCounter = 0;
 
             // Reset solutions matrix
-            document.getElementById('solutions-matrix-container').classList.add('hidden');
+            const solutionsMatrix = document.getElementById('solutions-matrix-container');
+            if (solutionsMatrix) {
+                solutionsMatrix.classList.add('hidden');
+            }
 
             // Reset LDST
             updateLDSTRecommendations();
@@ -3182,6 +3322,8 @@
             // Volver a la pestaña inicial
             switchMainTab('tab-start');
             switchSubTab('sub-tab-define');
+
+            console.log("Tool reset complete");
         }
 
         // ===== FUNCIONES DE LDST =====
@@ -3233,6 +3375,14 @@
         function changeMatrixVersion() {
             const selectedVersion = document.querySelector('input[name="matrix-version"]:checked').value;
             currentMatrixVersion = selectedVersion;
+
+            console.log("Matrix version changed to:", currentMatrixVersion, "Radio button checked");
+
+            // Verificar visualmente que el radio button está marcado
+            const classicRadio = document.querySelector('input[name="matrix-version"][value="classic"]');
+            const modernRadio = document.querySelector('input[name="matrix-version"][value="2003"]');
+            console.log("Classic radio checked:", classicRadio?.checked);
+            console.log("2003 radio checked:", modernRadio?.checked);
 
             populateDropdowns();
             createContradictionMatrix();
@@ -3296,6 +3446,86 @@
             }
         }
 
+        // CORREGIDA: Función populateDropdowns con valores 1-based
+        function populateDropdowns() {
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+
+            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+
+            const features = getCurrentFeatures();
+
+            // CORRECCIÓN: Usar (i + 1) como valor en lugar de i (índice)
+            features.forEach((param, index) => {
+                const featureNumber = index + 1; // Convertir a número 1-based
+                improvingSelect.innerHTML += `<option value="${featureNumber}" title="${param}">${featureNumber}: ${param}</option>`;
+                worseningSelect.innerHTML += `<option value="${featureNumber}" title="${param}">${featureNumber}: ${param}</option>`;
+            });
+
+            improvingFeatureIndex = null;
+            worseningFeatureIndex = null;
+        }
+
+        // NUEVA FUNCIÓN: Para manejar cambios en los dropdowns
+        function handleDropdownChange() {
+            console.log("handleDropdownChange called");
+            const improvingValue = parseInt(document.getElementById('improving-feature').value);
+            const worseningValue = parseInt(document.getElementById('worsening-feature').value);
+
+            if (improvingValue > 0) {
+                improvingFeatureIndex = improvingValue - 1;
+            } else {
+                improvingFeatureIndex = null;
+            }
+
+            if (worseningValue > 0) {
+                worseningFeatureIndex = worseningValue - 1;
+            } else {
+                worseningFeatureIndex = null;
+            }
+
+            updateMatrixDisplay();
+            updateSelectedFeatures();
+            clearResults();
+        }
+
+        function updateSelectedFeatures() {
+            const features = getCurrentFeatures();
+            const improvingSpan = document.getElementById('selected-improving');
+            const worseningSpan = document.getElementById('selected-worsening');
+
+            // Obtener los valores seleccionados de los dropdowns
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+
+            const improvingValue = parseInt(improvingSelect.value);
+            const worseningValue = parseInt(worseningSelect.value);
+
+            if (improvingValue > 0 && improvingValue <= features.length) {
+                improvingSpan.textContent = `${improvingValue}: ${features[improvingValue - 1]}`;
+                improvingSpan.title = features[improvingValue - 1];
+                improvingFeatureIndex = improvingValue - 1; // Convertir a índice 0-based
+            } else {
+                improvingSpan.textContent = 'None';
+                improvingSpan.title = '';
+                improvingFeatureIndex = null;
+            }
+
+            if (worseningValue > 0 && worseningValue <= features.length) {
+                worseningSpan.textContent = `${worseningValue}: ${features[worseningValue - 1]}`;
+                worseningSpan.title = features[worseningValue - 1];
+                worseningFeatureIndex = worseningValue - 1; // Convertir a índice 0-based
+            } else {
+                worseningSpan.textContent = 'None';
+                worseningSpan.title = '';
+                worseningFeatureIndex = null;
+            }
+
+            // Actualizar también la visualización de la matriz
+            updateMatrixDisplay();
+        }
+
         function loadExample() {
             clearResults();
             document.getElementById('problem-system').value = '';
@@ -3317,7 +3547,7 @@
                 selectedIntersection: null,
                 selectedSeparation: null,
                 strategy: null,
-                principles: []
+                categories: []
             };
 
             // Reset physical steps UI (NUEVO ALGORITMO)
@@ -3330,19 +3560,74 @@
             document.getElementById('problem-harm').value = currentExample.harm;
             document.getElementById('ifr-formulation').value = currentExample.ifr;
 
-            // Cargar ambos tipos de contradicción
-            // Technical Contradiction
+            // Technical Contradiction - CÓDIGO CORREGIDO
             if (currentExample.technicalContradiction) {
-                const improvingIndex = currentExample.technicalContradiction.improvingFeature - 1;
-                const worseningIndex = currentExample.technicalContradiction.worseningFeature - 1;
+                console.log("=== LOADING TECHNICAL CONTRADICTION EXAMPLE ===");
+                console.log("Example data:", currentExample.technicalContradiction);
 
-                document.getElementById('improving-feature').value = improvingIndex;
-                document.getElementById('worsening-feature').value = worseningIndex;
+                // PRIMERO: Configurar la versión de matriz
+                if (currentExample.technicalContradiction.matrixVersion) {
+                    const matrixVersion = currentExample.technicalContradiction.matrixVersion;
+                    console.log("Setting matrix version to:", matrixVersion);
 
-                improvingFeatureIndex = improvingIndex;
-                worseningFeatureIndex = worseningIndex;
-                updateMatrixDisplay();
-                updateSelectedFeatures();
+                    // Actualizar variable global primero
+                    currentMatrixVersion = matrixVersion;
+
+                    // Marcar el radio button correcto
+                    const classicRadio = document.querySelector('input[name="matrix-version"][value="classic"]');
+                    const modernRadio = document.querySelector('input[name="matrix-version"][value="2003"]');
+
+                    if (matrixVersion === 'classic' && classicRadio) {
+                        classicRadio.checked = true;
+                        modernRadio.checked = false;
+                    } else if (matrixVersion === '2003' && modernRadio) {
+                        modernRadio.checked = true;
+                        classicRadio.checked = false;
+                    }
+
+                    // Actualizar la información de versión
+                    const versionInfo = document.getElementById('matrix-version-info');
+                    if (versionInfo) {
+                        versionInfo.textContent = matrixVersion === 'classic'
+                            ? "Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles. Altshuller, G. S. (1950-1980)."
+                            : "Using 2003 TRIZ Matrix 48x48 matrix- Mann, D., & Dewulf, S. (2003). Matrix 2003: Updating the TRIZ Contradiction Matrix. CREAX Press.";
+                    }
+
+                    // Recrear la matriz y dropdowns
+                    setTimeout(() => {
+                        populateDropdowns();
+                        createContradictionMatrix();
+
+                        // NUEVO: Esperar a que los dropdowns se actualicen completamente
+                        setTimeout(() => {
+                            const improvingFeatureNumber = currentExample.technicalContradiction.improvingFeature;
+                            const worseningFeatureNumber = currentExample.technicalContradiction.worseningFeature;
+
+                            console.log("Feature numbers to load:", improvingFeatureNumber, worseningFeatureNumber);
+
+                            // Obtener los elementos select
+                            const improvingSelect = document.getElementById('improving-feature');
+                            const worseningSelect = document.getElementById('worsening-feature');
+
+                            if (improvingSelect && worseningSelect) {
+                                // CORRECCIÓN: Establecer los valores directamente (ya son 1-based)
+                                improvingSelect.value = improvingFeatureNumber;
+                                worseningSelect.value = worseningFeatureNumber;
+
+                                console.log("Set improving dropdown to value:", improvingFeatureNumber,
+                                    "text:", improvingSelect.options[improvingSelect.selectedIndex]?.text || 'N/A');
+                                console.log("Set worsening dropdown to value:", worseningFeatureNumber,
+                                    "text:", worseningSelect.options[worseningSelect.selectedIndex]?.text || 'N/A');
+
+                                // Disparar eventos change para actualizar la interfaz
+                                improvingSelect.dispatchEvent(new Event('change'));
+                                worseningSelect.dispatchEvent(new Event('change'));
+
+                                console.log("Technical contradiction loaded successfully!");
+                            }
+                        }, 300); // Aumentado a 300ms
+                    }, 200); // Aumentado a 200ms
+                }
             }
 
             // Physical Contradiction (NUEVO ALGORITMO)
@@ -3438,7 +3723,7 @@
                 physicalStrategyFlow.selectedIntersection = null;
                 physicalStrategyFlow.selectedSeparation = null;
                 physicalStrategyFlow.strategy = null;
-                physicalStrategyFlow.principles = [];
+                physicalStrategyFlow.categories = [];
                 return;
             }
 
@@ -3457,7 +3742,7 @@
                     physicalStrategyFlow.step2 = false;
                     physicalStrategyFlow.selectedSeparation = null;
                     physicalStrategyFlow.strategy = null;
-                    physicalStrategyFlow.principles = [];
+                    physicalStrategyFlow.categories = [];
                 }
             } else {
                 // Para no intersección o contiguo, determinar la estrategia directamente
@@ -3468,100 +3753,142 @@
         }
 
         function updatePhysicalStrategyFlow() {
-            // Determinar la estrategia y los principios basados en el flujo
+            // Determinar la estrategia basada en el flujo completo
             let strategy = "";
-            let principles = [];
+            let categories = []; // Array de categorías (claves de physicalContradictionPrinciples)
+
+            console.log("Physical flow state:", {
+                intersection: physicalStrategyFlow.selectedIntersection,
+                separation: physicalStrategyFlow.selectedSeparation
+            });
 
             switch (physicalStrategyFlow.selectedIntersection) {
                 case 'no-intersection':
-                    strategy = "Separation in Space or Time";
-                    principles = [
-                        physicalContradictionPrinciples.separationInSpace,
-                        physicalContradictionPrinciples.separationInTime
-                    ];
+                    // Sin intersección → Separación en espacio Y tiempo
+                    strategy = "Separation in Space AND Time";
+                    categories = ['separationInSpace', 'separationInTime'];
                     break;
+
                 case 'contiguous':
-                    strategy = "Satisfy through physical-chemical changes";
-                    principles = [
-                        physicalContradictionPrinciples.satisfyContradictoryDemands
-                    ];
+                    // Contiguo → Satisfacer demandas contradictorias
+                    strategy = "Satisfy contradictory demands through physical-chemical changes";
+                    categories = ['satisfyContradictoryDemands'];
                     break;
+
                 case 'total-intersection':
+                    // Intersección total → Depende del tipo de separación
                     if (physicalStrategyFlow.selectedSeparation === 'condition') {
                         strategy = "Separation in Relation (Condition)";
-                        principles = [
-                            physicalContradictionPrinciples.separationInRelation
-                        ];
+                        categories = ['separationInRelation'];
                     } else if (physicalStrategyFlow.selectedSeparation === 'system-level') {
                         strategy = "Separation in System Level";
-                        principles = [
-                            physicalContradictionPrinciples.separationInSystemLevel
-                        ];
+                        categories = ['separationInSystemLevel'];
                     } else if (physicalStrategyFlow.selectedSeparation === 'neither') {
                         strategy = "Bypass contradictory demands (System Transition)";
-                        principles = [
-                            physicalContradictionPrinciples.bypassContradictoryDemands
-                        ];
+                        categories = ['bypassContradictoryDemands'];
                     } else {
-                        // No selection yet
-                        physicalStrategyFlow.strategy = null;
-                        physicalStrategyFlow.principles = [];
-                        return;
+                        // No hay selección todavía
+                        strategy = null;
+                        categories = [];
                     }
                     break;
+
                 default:
-                    physicalStrategyFlow.strategy = null;
-                    physicalStrategyFlow.principles = [];
-                    return;
+                    strategy = null;
+                    categories = [];
             }
 
-            // Update the physicalStrategyFlow object
+            // Actualizar el objeto physicalStrategyFlow
             physicalStrategyFlow.strategy = strategy;
-            physicalStrategyFlow.principles = principles;
+            physicalStrategyFlow.categories = categories;
+
+            console.log("Updated strategy:", strategy);
+            console.log("Categories:", categories);
+
+            // Si la tabla de principios está visible, actualizarla
+            const tableContainer = document.getElementById('principles-table-container');
+            if (tableContainer && !tableContainer.classList.contains('hidden')) {
+                generatePrinciplesTable();
+            }
         }
 
         function generatePrinciplesTable() {
             const container = document.getElementById('principles-table-content');
 
             let html = `
-                <p style="margin-bottom: 0.5rem; font-style: italic;">
-                    This table shows all physical contradiction resolution strategies and their associated inventive principles.
-                </p>
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
+                    <h5><i class="fas fa-info-circle"></i> Physical Contradiction Resolution Algorithm</h5>
+                    <p>Follow these steps to determine the appropriate resolution strategy:</p>
+                    <ol>
+                        <li><strong>Step 1 (Intersection Test):</strong> Analyze if the opposite demands occur in the same or different places/times</li>
+                        <li><strong>Step 2 (For Total Intersection):</strong> Try to separate by condition or system level</li>
+                        <li><strong>Result:</strong> Each path leads to specific resolution categories</li>
+                    </ol>
+                </div>
+                
+                <div style="margin-bottom: 1rem; font-style: italic;">
+                    <strong>Current Selection:</strong> 
+                    ${physicalStrategyFlow.selectedIntersection ? `Intersection: ${physicalStrategyFlow.selectedIntersection}` : 'Not selected'} | 
+                    ${physicalStrategyFlow.selectedSeparation ? `Separation: ${physicalStrategyFlow.selectedSeparation}` : ''}
+                    ${physicalStrategyFlow.strategy ? `<br/><strong>Recommended Strategy:</strong> ${physicalStrategyFlow.strategy}` : ''}
+                </div>
+                
                 <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
-                    Source: 1. Litvin, S. (1993). The TRIZ Contradiction Matrix: Principles for Solving Physical Contradictions. 2. Altshuller, G. S. (1984). Creativity as an Exact Science: The Theory of the Solution of Inventive Problems.
+                    Source: Litvin, S. (1993). The TRIZ Contradiction Matrix: Principles for Solving Physical Contradictions.
                 </p>
             `;
 
-            for (const [method, strategy] of Object.entries(physicalContradictionPrinciples)) {
-                // Determinar si esta estrategia es la actualmente seleccionada
-                const isCurrentStrategy = physicalStrategyFlow.strategy === strategy.strategy;
+            // Obtener las categorías seleccionadas actualmente
+            const selectedCategories = physicalStrategyFlow.categories || [];
+
+            // Iterar a través de todas las categorías de principios
+            for (const [categoryKey, categoryData] of Object.entries(physicalContradictionPrinciples)) {
+                // Determinar si esta categoría está actualmente seleccionada
+                const isSelected = selectedCategories.includes(categoryKey);
+
+                // Determinar el color de borde según el tipo de categoría
+                let borderColor = "#3498db"; // Azul por defecto
+                if (categoryKey.includes('Space') || categoryKey.includes('Time')) {
+                    borderColor = "#2ecc71"; // Verde para separación espacio/tiempo
+                } else if (categoryKey.includes('Relation') || categoryKey.includes('System')) {
+                    borderColor = "#9b59b6"; // Púrpura para separación por condición/sistema
+                } else if (categoryKey.includes('satisfy')) {
+                    borderColor = "#f39c12"; // Naranja para satisfacer
+                } else if (categoryKey.includes('bypass')) {
+                    borderColor = "#e74c3c"; // Rojo para bypass
+                }
 
                 html += `
-                    <div class="physical-strategy-guide" style="${isCurrentStrategy ? 'border-left: 5px solid #27ae60; background: linear-gradient(135deg, #e8f5e9, #c8e6c9);' : ''}">
-                        <div class="strategy-title">${strategy.strategy}</div>
-                        <div class="strategy-description">${strategy.description}</div>
+                    <div class="physical-strategy-guide" style="border-left: 5px solid ${borderColor}; ${isSelected ? 'background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #27ae60;' : ''}">
+                        <div class="strategy-title" style="color: ${borderColor};">
+                            ${categoryData.strategy}
+                            ${isSelected ? ' <span style="color: #27ae60;">✓ (Recommended)</span>' : ''}
+                        </div>
+                        <div class="strategy-description">${categoryData.description}</div>
                         <div class="strategy-example">
-                            <strong>Example:</strong> ${getPhysicalContradictionExample(method)}
+                            <strong>Example:</strong> ${getPhysicalContradictionExample(categoryKey)}
                         </div>
                     </div>
-                    <table class="trends-table" style="margin-top: 1rem; margin-bottom: 2rem;">
-                        <thead>
-                            <tr>
-                                <th>Principle #</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Example</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    
+                    <div style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+                        <table class="trends-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Principle #</th>
+                                    <th style="width: 150px;">Name</th>
+                                    <th>Description</th>
+                                    <th style="width: 200px;">Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
 
-                strategy.principles.forEach(principle => {
-                    const isCurrentPrinciple = isCurrentStrategy;
+                // Mostrar todos los principios de esta categoría
+                categoryData.principles.forEach(principle => {
                     html += `
-                        <tr ${isCurrentPrinciple ? 'class="recommended-trend"' : ''}>
+                        <tr>
                             <td><strong>${principle.number}</strong></td>
-                            <td>${principle.name}</td>
+                            <td><strong>${principle.name}</strong></td>
                             <td>${principle.description}</td>
                             <td><em>${principle.example}</em></td>
                         </tr>
@@ -3571,7 +3898,8 @@
                 html += `
                         </tbody>
                     </table>
-                `;
+                </div>
+            `;
             }
 
             container.innerHTML = html;
@@ -3732,8 +4060,9 @@
             improvingFeatureIndex = row;
             worseningFeatureIndex = col;
 
-            document.getElementById('improving-feature').value = row;
-            document.getElementById('worsening-feature').value = col;
+            // CORRECCIÓN: Establecer valores 1-based en los dropdowns
+            document.getElementById('improving-feature').value = row + 1;
+            document.getElementById('worsening-feature').value = col + 1;
 
             updateMatrixDisplay();
             updateSelectedFeatures();
@@ -3747,115 +4076,6 @@
                 const col = index % features.length;
                 cell.className = getCellClass(row, col);
             });
-        }
-
-        function populateDropdowns() {
-            const improvingSelect = document.getElementById('improving-feature');
-            const worseningSelect = document.getElementById('worsening-feature');
-
-            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
-            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
-
-            const features = getCurrentFeatures();
-
-            features.forEach((param, index) => {
-                improvingSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
-                worseningSelect.innerHTML += `<option value="${index}" title="${param}">${param}</option>`;
-            });
-
-            improvingFeatureIndex = null;
-            worseningFeatureIndex = null;
-        }
-
-        function updateSelectedFeatures() {
-            const features = getCurrentFeatures();
-            const improvingSpan = document.getElementById('selected-improving');
-            const worseningSpan = document.getElementById('selected-worsening');
-
-            if (improvingFeatureIndex !== null) {
-                improvingSpan.textContent = features[improvingFeatureIndex];
-                improvingSpan.title = features[improvingFeatureIndex];
-            } else {
-                improvingSpan.textContent = 'None';
-            }
-
-            if (worseningFeatureIndex !== null) {
-                worseningSpan.textContent = features[worseningFeatureIndex];
-                worseningSpan.title = features[worseningFeatureIndex];
-            } else {
-                worseningSpan.textContent = 'None';
-            }
-        }
-
-        // ===== FUNCIONES DE SU-FIELD =====
-        function addSuFieldSystem() {
-            const container = document.getElementById('sufield-systems-container');
-            // Use global counter to ensure unique IDs, avoiding the 'null' error on element removal
-            globalSuFieldCounter++;
-            const systemId = globalSuFieldCounter;
-
-            // Note: The UI label will be sequential based on current DOM elements
-            const uiLabelIndex = container.children.length + 1;
-
-            const systemHTML = `
-                <div class="sufield-system">
-                    <div class="sufield-system-header">
-                        <div class="sufield-system-title">System ${uiLabelIndex}</div>
-                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
-                            <i class="fas fa-times"></i> Remove
-                        </button>
-                    </div>
-                    <div class="sufield-system-fields">
-                        <div class="form-group">
-                            <label for="sufield-object-${systemId}">Object (S1):</label>
-                            <input type="text" class="sufield-object" id="sufield-object-${systemId}" placeholder="e.g., Coffee" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-tool-${systemId}">Tool (S2):</label>
-                            <input type="text" class="sufield-tool" id="sufield-tool-${systemId}" placeholder="e.g., Cup" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-field-${systemId}">Field (F):</label>
-                            <input type="text" class="sufield-field" id="sufield-field-${systemId}" placeholder="e.g., Thermal energy" oninput="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="sufield-type-${systemId}">Problem Type:</label>
-                        <select class="sufield-type" id="sufield-type-${systemId}" onchange="updateSuFieldDiagram(this.closest('.sufield-system'))">
-                            <option value="insufficient">Insufficient interaction</option>
-                            <option value="harmful">Harmful interaction</option>
-                            <option value="difficult">Difficult to control</option>
-                            <option value="missing">Missing interaction</option>
-                            <option value="excessive">Excessive interaction</option>
-                            <option value="inefficient">Inefficient interaction</option>
-                        </select>
-                    </div>
-                    <div class="sufield-triangle-container sufield-system-diagram" id="sufield-diagram-${systemId}">
-                        </div>
-                </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', systemHTML);
-
-            // Usar setTimeout para asegurar que el DOM esté completamente renderizado
-            setTimeout(() => {
-                const newSystem = container.lastElementChild;
-                if (newSystem) {
-                    updateSuFieldDiagram(newSystem);
-                }
-            }, 50);
-        }
-
-        function removeSuFieldSystem(button) {
-            const system = button.closest('.sufield-system');
-            if (system && document.querySelectorAll('.sufield-system').length > 1) {
-                system.remove();
-                // Renumber remaining systems UI labels only
-                const systems = document.querySelectorAll('.sufield-system');
-                systems.forEach((sys, index) => {
-                    sys.querySelector('.sufield-system-title').textContent = `System ${index + 1}`;
-                });
-            }
         }
 
         // ===== NUEVAS FUNCIONES PARA FUNCTION ANALYSIS =====
@@ -4467,12 +4687,30 @@
                 functions: functionAnalysisData.functions
             };
 
-            // Technical Contradiction data
+            // Technical Contradiction data - CORREGIDO
             let improvingIndex = parseInt(document.getElementById('improving-feature').value);
             let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
 
-            if (isNaN(improvingIndex) || improvingIndex < 0) improvingIndex = improvingFeatureIndex;
-            if (isNaN(worseningIndex) || worseningIndex < 0) worseningIndex = worseningFeatureIndex;
+            // CORRECCIÓN: Convertir de valores 1-based a índices 0-based
+            if (improvingIndex > 0) {
+                improvingFeatureIndex = improvingIndex - 1;
+            } else {
+                improvingFeatureIndex = null;
+            }
+
+            if (worseningIndex > 0) {
+                worseningFeatureIndex = worseningIndex - 1;
+            } else {
+                worseningFeatureIndex = null;
+            }
+
+            // Si no se pudo obtener de los dropdowns, usar las variables globales
+            if (improvingFeatureIndex === null && improvingFeatureIndex !== null) {
+                improvingIndex = improvingFeatureIndex;
+            }
+            if (worseningFeatureIndex === null && worseningFeatureIndex !== null) {
+                worseningIndex = worseningFeatureIndex;
+            }
 
             problemData.technicalContradiction = {
                 improvingFeature: "Not selected",
@@ -4480,16 +4718,13 @@
                 recommendedPrinciples: []
             };
 
-            if (improvingIndex !== null && worseningIndex !== null && improvingIndex >= 0 && worseningIndex >= 0) {
-                improvingFeatureIndex = improvingIndex;
-                worseningFeatureIndex = worseningIndex;
-
+            if (improvingFeatureIndex !== null && worseningFeatureIndex !== null && improvingFeatureIndex >= 0 && worseningFeatureIndex >= 0) {
                 const features = getCurrentFeatures();
-                problemData.technicalContradiction.improvingFeature = features[improvingIndex];
-                problemData.technicalContradiction.worseningFeature = features[worseningIndex];
+                problemData.technicalContradiction.improvingFeature = features[improvingFeatureIndex];
+                problemData.technicalContradiction.worseningFeature = features[worseningFeatureIndex];
 
-                const improvingKey = (improvingIndex + 1).toString();
-                const worseningKey = (worseningIndex + 1).toString();
+                const improvingKey = (improvingFeatureIndex + 1).toString();
+                const worseningKey = (worseningFeatureIndex + 1).toString();
                 const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
 
                 problemData.technicalContradiction.recommendedPrinciples = (principlesList || []).map(id => {
@@ -4497,27 +4732,32 @@
                 }).filter(p => p !== null);
             }
 
-            // Physical Contradiction data (NUEVO ALGORITMO)
+            // Physical Contradiction data (ALGORITMO CORREGIDO)
             const parameter = document.getElementById('conflicting-parameter').value;
             problemData.physicalContradiction = {
                 conflictingParameter: parameter || "Not specified",
                 intersectionTest: physicalStrategyFlow.selectedIntersection,
                 separationType: physicalStrategyFlow.selectedSeparation,
                 strategy: physicalStrategyFlow.strategy,
+                categories: physicalStrategyFlow.categories || [], // Guardar las categorías seleccionadas
                 recommendedPrinciples: []
             };
 
-            if (physicalStrategyFlow.strategy && physicalStrategyFlow.principles) {
-                // Collect all principles from the strategy groups
-                physicalStrategyFlow.principles.forEach(principleGroup => {
-                    principleGroup.principles.forEach(principle => {
-                        problemData.physicalContradiction.recommendedPrinciples.push({
-                            id: principle.number,
-                            name: principle.name,
-                            desc: principle.description,
-                            example: principle.example
+            // Recopilar todos los principios de las categorías seleccionadas
+            if (physicalStrategyFlow.categories && physicalStrategyFlow.categories.length > 0) {
+                physicalStrategyFlow.categories.forEach(categoryKey => {
+                    const category = physicalContradictionPrinciples[categoryKey];
+                    if (category && category.principles) {
+                        category.principles.forEach(principle => {
+                            problemData.physicalContradiction.recommendedPrinciples.push({
+                                id: principle.number,
+                                name: principle.name,
+                                desc: principle.description,
+                                example: principle.example,
+                                category: category.strategy // Agregar información de categoría
+                            });
                         });
-                    });
+                    }
                 });
             }
 
@@ -4885,21 +5125,74 @@
                 html += `</div>`;
             }
 
-            // Physical Contradiction (NUEVO ALGORITMO)
+            // Physical Contradiction (ALGORITMO CORREGIDO)
             if (problemData.physicalContradiction) {
                 html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
 
                 html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
 
+                html += `<div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
+                    <strong>Algorithm Path:</strong><br/>
+                    • <strong>Intersection Test:</strong> ${problemData.physicalContradiction.intersectionTest || 'Not selected'}<br/>
+                    ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${problemData.physicalContradiction.separationType}<br/>` : ''}
+                    • <strong>Result:</strong> ${problemData.physicalContradiction.strategy || 'No strategy selected'}
+                </div>`;
+
                 if (problemData.physicalContradiction.strategy) {
-                    html += `<div class="physical-strategy-guide">
-                        <div class="strategy-title">Recommended Strategy: ${problemData.physicalContradiction.strategy}</div>
-                        <div class="strategy-description">${getStrategyDescription(problemData.physicalContradiction.strategy)}</div>
+                    html += `<div class="physical-strategy-guide" style="border-left: 5px solid #27ae60;">
+                        <div class="strategy-title">Recommended Resolution Strategy</div>
+                        <div class="strategy-description"><strong>${problemData.physicalContradiction.strategy}</strong></div>
+                        <div class="strategy-example">
+                            ${getStrategyDescription(problemData.physicalContradiction.strategy)}
+                        </div>
                     </div>`;
                 }
 
-                // Recommended Principles
-                if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
+                // Mostrar las categorías de resolución
+                if (problemData.physicalContradiction.categories && problemData.physicalContradiction.categories.length > 0) {
+                    html += `<h5>Resolution Categories:</h5>`;
+
+                    problemData.physicalContradiction.categories.forEach(categoryKey => {
+                        const category = physicalContradictionPrinciples[categoryKey];
+                        if (category) {
+                            html += `
+                                <div class="principle-card" style="border-left: 4px solid #9b59b6;">
+                                    <div class="principle-header">
+                                        <span class="physical-principle-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                                            <i class="fas fa-layer-group"></i>
+                                        </span>
+                                        <strong>${category.strategy}</strong>
+                                    </div>
+                                    <p>${category.description}</p>
+                                    
+                                    <div style="margin-top: 1rem;">
+                                        <h6>Principles in this category:</h6>
+                            `;
+
+                            // Mostrar solo los principios de esta categoría específica
+                            const categoryPrinciples = problemData.physicalContradiction.recommendedPrinciples
+                                .filter(p => p.category === category.strategy);
+
+                            categoryPrinciples.forEach(p => {
+                                html += `
+                                    <div class="solution-card" style="margin-bottom: 0.5rem;">
+                                        <div class="solution-header">
+                                            <span class="principle-icon"><i class="fas fa-lightbulb"></i></span>
+                                            <strong>Principle ${p.id}: ${p.name}</strong>
+                                        </div>
+                                        <p>${p.desc}</p>
+                                        <div style="font-size: 0.9rem; color: #666; font-style: italic;">
+                                            <strong>Example:</strong> ${p.example}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+
+                            html += `</div></div>`;
+                        }
+                    });
+                } else if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
+                    // Fallback para compatibilidad con versiones anteriores
                     html += `<h5>Recommended Inventive Principles:</h5>`;
                     problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
                         html += `
@@ -5279,12 +5572,13 @@
                 ws_data.push(["Intersection Test", problemData.physicalContradiction.intersectionTest]);
                 ws_data.push(["Separation Type", problemData.physicalContradiction.separationType]);
                 ws_data.push(["Recommended Strategy", problemData.physicalContradiction.strategy]);
+                ws_data.push(["Categories", problemData.physicalContradiction.categories.join(', ')]);
 
                 if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
                     ws_data.push(["Recommended Inventive Principles (from Physical Contradiction)"]);
-                    ws_data.push(["Principle ID", "Name", "Description"]);
+                    ws_data.push(["Principle ID", "Name", "Description", "Category"]);
                     problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
-                        ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+                        ws_data.push([`Principle ${p.id}`, p.name, p.desc, p.category || '']);
                     });
                 }
                 ws_data.push([]);
@@ -5324,11 +5618,11 @@
 
         function getStrategyDescription(strategy) {
             const descriptions = {
-                "Separation in Space or Time": "The two opposite demands occur in different places or at different times. Use separation in space or time principles.",
-                "Satisfy through physical-chemical changes": "The demands are contiguous (touch at a boundary). Use physical or chemical changes to satisfy both demands.",
-                "Separation in Relation (Condition)": "The demands are for different systems or users. Separate by condition or perspective.",
-                "Separation in System Level": "The whole system has one property while its parts have the opposite. Separate by system hierarchy.",
-                "Bypass contradictory demands (System Transition)": "The demands completely overlap and cannot be separated. Consider a system transition or bypass."
+                "Separation in Space AND Time": "The two opposite demands occur in different places and/or at different times. Apply both separation in space and time principles.",
+                "Satisfy contradictory demands through physical-chemical changes": "The demands are contiguous (touch at a boundary). Use physical or chemical changes to satisfy both demands simultaneously.",
+                "Separation in Relation (Condition)": "The demands are for different systems, users, or conditions. Separate by perspective, user, or operating condition.",
+                "Separation in System Level": "The whole system has one property while its parts have the opposite. Separate by system hierarchy (macro vs micro level).",
+                "Bypass contradictory demands (System Transition)": "The demands completely overlap and cannot be separated. Consider a system transition or bypass the contradiction entirely."
             };
             return descriptions[strategy] || "";
         }
@@ -5343,6 +5637,39 @@
                 bypassContradictoryDemands: "Digital clocks replacing mechanical clockwork, bypassing the need for mechanical timekeeping altogether."
             };
             return examples[relationship] || "Apply separation principles to resolve the contradiction.";
+        }
+
+        // Función para actualizar la tabla de principios en tiempo real cuando cambian los radio buttons
+        function setupPhysicalContradictionEventListeners() {
+            // Escuchar cambios en los radio buttons de intersección
+            const intersectionRadios = document.querySelectorAll('input[name="intersection-test"]');
+            intersectionRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    // Actualizar el flujo
+                    updatePhysicalStrategy();
+
+                    // Si la tabla está visible, regenerarla
+                    const tableContainer = document.getElementById('principles-table-container');
+                    if (tableContainer && !tableContainer.classList.contains('hidden')) {
+                        generatePrinciplesTable();
+                    }
+                });
+            });
+
+            // Escuchar cambios en los radio buttons de separación
+            const separationRadios = document.querySelectorAll('input[name="separation-type"]');
+            separationRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    // Actualizar el flujo
+                    updatePhysicalStrategy();
+
+                    // Si la tabla está visible, regenerarla
+                    const tableContainer = document.getElementById('principles-table-container');
+                    if (tableContainer && !tableContainer.classList.contains('hidden')) {
+                        generatePrinciplesTable();
+                    }
+                });
+            });
         }
     </script>
 </body>
