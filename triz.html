@@ -3031,11 +3031,26 @@
                     }, 100);
                 }
 
-                // FIXED: Si estamos en la sub-tab de Technical Contradiction, asegurar dropdowns estén poblados
+                // CORRECCIÓN: Eliminamos la llamada a populateDropdowns() que sobreescribía los valores
+                // Solo aseguramos que el bloque esté visible
                 if (subTabId === 'sub-tab-technical') {
                     setTimeout(() => {
-                        populateDropdowns();
+                        // Solo asegurar que el bloque está visible y actualizar visualmente
                         document.getElementById('technical-solver-block').classList.remove('hidden');
+
+                        // Forzar una actualización visual de los dropdowns si hay valores seleccionados
+                        const improvingSelect = document.getElementById('improving-feature');
+                        const worseningSelect = document.getElementById('worsening-feature');
+
+                        // Si hay valores establecidos, forzar que se muestren correctamente
+                        if (improvingSelect && improvingSelect.value > 0) {
+                            improvingSelect.style.color = "#2c3e50";
+                            improvingSelect.style.fontWeight = "600";
+                        }
+                        if (worseningSelect && worseningSelect.value > 0) {
+                            worseningSelect.style.color = "#2c3e50";
+                            worseningSelect.style.fontWeight = "600";
+                        }
                     }, 50);
                 }
             }
@@ -3181,7 +3196,6 @@
             console.log("TRIZ tool initialized successfully");
         }
 
-        // Función auxiliar para forzar la actualización de radio buttons
         function forceRadioButtonUpdate(version) {
             console.log("Forcing radio button update for version:", version);
 
@@ -3467,11 +3481,14 @@
             worseningFeatureIndex = null;
         }
 
-        // NUEVA FUNCIÓN: Para manejar cambios en los dropdowns
+        // NUEVA FUNCIÓN: Para manejar cambios en los dropdowns - CORREGIDA
         function handleDropdownChange() {
             console.log("handleDropdownChange called");
-            const improvingValue = parseInt(document.getElementById('improving-feature').value);
-            const worseningValue = parseInt(document.getElementById('worsening-feature').value);
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+
+            const improvingValue = parseInt(improvingSelect.value);
+            const worseningValue = parseInt(worseningSelect.value);
 
             if (improvingValue > 0) {
                 improvingFeatureIndex = improvingValue - 1;
@@ -3488,6 +3505,23 @@
             updateMatrixDisplay();
             updateSelectedFeatures();
             clearResults();
+
+            // Actualizar visualmente los dropdowns
+            if (improvingSelect.value > 0) {
+                improvingSelect.style.color = "#2c3e50";
+                improvingSelect.style.fontWeight = "600";
+            } else {
+                improvingSelect.style.color = "";
+                improvingSelect.style.fontWeight = "";
+            }
+
+            if (worseningSelect.value > 0) {
+                worseningSelect.style.color = "#2c3e50";
+                worseningSelect.style.fontWeight = "600";
+            } else {
+                worseningSelect.style.color = "";
+                worseningSelect.style.fontWeight = "";
+            }
         }
 
         function updateSelectedFeatures() {
@@ -3560,74 +3594,77 @@
             document.getElementById('problem-harm').value = currentExample.harm;
             document.getElementById('ifr-formulation').value = currentExample.ifr;
 
-            // Technical Contradiction - CÓDIGO CORREGIDO
+            // CORRECCIÓN: Cargamos primero los valores básicos del ejemplo
+            // Technical Contradiction - CÓDIGO MEJORADO
             if (currentExample.technicalContradiction) {
                 console.log("=== LOADING TECHNICAL CONTRADICTION EXAMPLE ===");
                 console.log("Example data:", currentExample.technicalContradiction);
 
-                // PRIMERO: Configurar la versión de matriz
-                if (currentExample.technicalContradiction.matrixVersion) {
-                    const matrixVersion = currentExample.technicalContradiction.matrixVersion;
-                    console.log("Setting matrix version to:", matrixVersion);
+                // PRIMERO: Guardar los valores que queremos establecer
+                const improvingFeatureNumber = currentExample.technicalContradiction.improvingFeature;
+                const worseningFeatureNumber = currentExample.technicalContradiction.worseningFeature;
+                const matrixVersion = currentExample.technicalContradiction.matrixVersion || 'classic';
 
-                    // Actualizar variable global primero
-                    currentMatrixVersion = matrixVersion;
+                console.log("Feature numbers to load:", improvingFeatureNumber, worseningFeatureNumber);
+                console.log("Matrix version:", matrixVersion);
 
-                    // Marcar el radio button correcto
-                    const classicRadio = document.querySelector('input[name="matrix-version"][value="classic"]');
-                    const modernRadio = document.querySelector('input[name="matrix-version"][value="2003"]');
+                // Configurar la versión de matriz
+                currentMatrixVersion = matrixVersion;
 
-                    if (matrixVersion === 'classic' && classicRadio) {
-                        classicRadio.checked = true;
-                        modernRadio.checked = false;
-                    } else if (matrixVersion === '2003' && modernRadio) {
-                        modernRadio.checked = true;
-                        classicRadio.checked = false;
-                    }
+                // Marcar el radio button correcto
+                const classicRadio = document.querySelector('input[name="matrix-version"][value="classic"]');
+                const modernRadio = document.querySelector('input[name="matrix-version"][value="2003"]');
 
-                    // Actualizar la información de versión
-                    const versionInfo = document.getElementById('matrix-version-info');
-                    if (versionInfo) {
-                        versionInfo.textContent = matrixVersion === 'classic'
-                            ? "Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles. Altshuller, G. S. (1950-1980)."
-                            : "Using 2003 TRIZ Matrix 48x48 matrix- Mann, D., & Dewulf, S. (2003). Matrix 2003: Updating the TRIZ Contradiction Matrix. CREAX Press.";
-                    }
-
-                    // Recrear la matriz y dropdowns
-                    setTimeout(() => {
-                        populateDropdowns();
-                        createContradictionMatrix();
-
-                        // NUEVO: Esperar a que los dropdowns se actualicen completamente
-                        setTimeout(() => {
-                            const improvingFeatureNumber = currentExample.technicalContradiction.improvingFeature;
-                            const worseningFeatureNumber = currentExample.technicalContradiction.worseningFeature;
-
-                            console.log("Feature numbers to load:", improvingFeatureNumber, worseningFeatureNumber);
-
-                            // Obtener los elementos select
-                            const improvingSelect = document.getElementById('improving-feature');
-                            const worseningSelect = document.getElementById('worsening-feature');
-
-                            if (improvingSelect && worseningSelect) {
-                                // CORRECCIÓN: Establecer los valores directamente (ya son 1-based)
-                                improvingSelect.value = improvingFeatureNumber;
-                                worseningSelect.value = worseningFeatureNumber;
-
-                                console.log("Set improving dropdown to value:", improvingFeatureNumber,
-                                    "text:", improvingSelect.options[improvingSelect.selectedIndex]?.text || 'N/A');
-                                console.log("Set worsening dropdown to value:", worseningFeatureNumber,
-                                    "text:", worseningSelect.options[worseningSelect.selectedIndex]?.text || 'N/A');
-
-                                // Disparar eventos change para actualizar la interfaz
-                                improvingSelect.dispatchEvent(new Event('change'));
-                                worseningSelect.dispatchEvent(new Event('change'));
-
-                                console.log("Technical contradiction loaded successfully!");
-                            }
-                        }, 300); // Aumentado a 300ms
-                    }, 200); // Aumentado a 200ms
+                if (matrixVersion === 'classic' && classicRadio) {
+                    classicRadio.checked = true;
+                    modernRadio.checked = false;
+                } else if (matrixVersion === '2003' && modernRadio) {
+                    modernRadio.checked = true;
+                    classicRadio.checked = false;
                 }
+
+                // Actualizar la información de versión
+                const versionInfo = document.getElementById('matrix-version-info');
+                if (versionInfo) {
+                    versionInfo.textContent = matrixVersion === 'classic'
+                        ? "Using Classic TRIZ Matrix - The original 39x39 matrix with 40 inventive principles. Altshuller, G. S. (1950-1980)."
+                        : "Using 2003 TRIZ Matrix 48x48 matrix- Mann, D., & Dewulf, S. (2003). Matrix 2003: Updating the TRIZ Contradiction Matrix. CREAX Press.";
+                }
+
+                // Ahora poblamos los dropdowns con la versión correcta
+                populateDropdowns();
+                createContradictionMatrix();
+
+                // IMPORTANTE: Esperamos a que el DOM se actualice antes de establecer los valores
+                setTimeout(() => {
+                    // Obtener los elementos select
+                    const improvingSelect = document.getElementById('improving-feature');
+                    const worseningSelect = document.getElementById('worsening-feature');
+
+                    if (improvingSelect && worseningSelect) {
+                        // Establecer los valores en los dropdowns
+                        improvingSelect.value = improvingFeatureNumber;
+                        worseningSelect.value = worseningFeatureNumber;
+
+                        // Actualizar las variables globales
+                        improvingFeatureIndex = improvingFeatureNumber - 1;
+                        worseningFeatureIndex = worseningFeatureNumber - 1;
+
+                        // Aplicar estilos visuales
+                        improvingSelect.style.color = "#2c3e50";
+                        improvingSelect.style.fontWeight = "600";
+                        worseningSelect.style.color = "#2c3e50";
+                        worseningSelect.style.fontWeight = "600";
+
+                        // Actualizar las visualizaciones
+                        updateMatrixDisplay();
+                        updateSelectedFeatures();
+
+                        console.log("Technical contradiction loaded successfully!");
+                        console.log("Improving dropdown value:", improvingSelect.value);
+                        console.log("Worsening dropdown value:", worseningSelect.value);
+                    }
+                }, 100); // Delay suficiente para que los dropdowns se hayan poblado
             }
 
             // Physical Contradiction (NUEVO ALGORITMO)
@@ -4063,6 +4100,14 @@
             // CORRECCIÓN: Establecer valores 1-based en los dropdowns
             document.getElementById('improving-feature').value = row + 1;
             document.getElementById('worsening-feature').value = col + 1;
+
+            // Aplicar estilos visuales
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
+            improvingSelect.style.color = "#2c3e50";
+            improvingSelect.style.fontWeight = "600";
+            worseningSelect.style.color = "#2c3e50";
+            worseningSelect.style.fontWeight = "600";
 
             updateMatrixDisplay();
             updateSelectedFeatures();
