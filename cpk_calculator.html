@@ -1,28 +1,18 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Capability Index Calculator | Sigma Exacta</title>
     <meta name="description"
         content="Calculate Cp, Cpk, Pp & Ppk with our free Capability Index tool. This advanced calculator includes normality tests, distribution plots, and I-Charts for robust analysis.">
     <meta name="keywords"
         content="Open source, Free software, SigmaExacta, capability index calculator, cpk calculator, process capability, normality check, cp, cpk, cpm, pp, ppk, six sigma, spc tool, control chart, i-chart, lsl, usl, normal distribution plot, normality tests, Shapiro-Wilk, Anderson-Darling, Kolmogorov-Smirnov">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
-        crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -371,12 +361,22 @@
             font-size: 1.1em;
             width: 100%;
             box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .formula-item>div {
+            width: 100%;
+            overflow-x: auto;
+            text-align: center;
+            padding: 0.5rem 0;
         }
 
         .formula-item h3 {
             margin-top: 0;
             margin-bottom: 1rem;
             color: var(--primary-color);
+            width: 100%;
+            text-align: center;
         }
 
         .legend {
@@ -803,6 +803,22 @@
             display: flex;
         }
 
+        /* Estilos para fórmulas KaTeX */
+        .katex {
+            font-size: 1.1em !important;
+        }
+
+        .katex-display {
+            margin: 0.5em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5em 0;
+        }
+
+        .formula-item .katex-display {
+            margin: 0 !important;
+        }
+
         @media (max-width: 768px) {
 
             .results-container,
@@ -929,13 +945,13 @@
 
         <div class="tabs-container">
             <nav class="tabs-nav">
-                <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i>
+                <button class="tab-btn active" data-tab="tab-theory"><i class="fas fa-book"></i>
                     Theory & Info</button>
-                <button class="tab-btn" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i>
+                <button class="tab-btn" data-tab="tab-tool"><i class="fas fa-calculator"></i>
                     Calculator Tool</button>
-                <button class="tab-btn" onclick="switchWizardTab('tab-results')"><i class="fas fa-chart-bar"></i>
+                <button class="tab-btn" data-tab="tab-results"><i class="fas fa-chart-bar"></i>
                     Results</button>
-                <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
+                <button class="tab-btn" data-tab="tab-formulas"><i class="fas fa-square-root-alt"></i>
                     Formulas</button>
             </nav>
 
@@ -993,7 +1009,7 @@
                     </div>
 
                     <div class="tab-nav-buttons">
-                        <button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to Calculator <i
+                        <button class="btn-next-tab" data-next="tab-tool">Go to Calculator <i
                                 class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
@@ -1116,7 +1132,7 @@
                                 <div class="results-content">
                                     <div class="calculation-title">Overall Performance (Pp, Ppk)</div>
                                     <p><i class="fas fa-database"></i> <b>Total Points:</b> <span id="overall_total"
-                                            class="result-value">-</span></p>
+                                            class="result-value">1</span></p>
                                     <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span id="overall_mean"
                                             class="result-value">-</span></p>
                                     <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev:</b> <span id="overall_dev"
@@ -1133,10 +1149,10 @@
                                         <div class="calculation-title"
                                             style="font-size:1.1em;margin-top:1rem;margin-bottom:.5rem">Overall
                                             Normality</div>
-                                        <p>Shapiro-Wilk: <span id="overall_shapiro" class="result-value">-</span></p>
+                                        <p>Shapiro-Wilk: <span id="overall_shapiro" class="result_value">-</span></p>
                                         <p>Kolmogorov-Smirnov: <span id="overall_kolmogorov"
-                                                class="result-value">-</span></p>
-                                        <p>Anderson-Darling: <span id="overall_anderson" class="result-value">-</span>
+                                                class="result_value">-</span></p>
+                                        <p>Anderson-Darling: <span id="overall_anderson" class="result_value">-</span>
                                         </p>
                                     </div>
                                 </div>
@@ -1186,34 +1202,32 @@
                         <div class="formula-grid">
                             <div class="formula-item">
                                 <h3>Sigma Within (Short-Term)</h3>
-                                <div style="font-size: 1rem;">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$
+                                <div class="katex-content">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$
                                 </div>
                                 <p>Where $d_2 = 1.128$ for $n=2$</p>
                             </div>
                             <div class="formula-item">
                                 <h3>Cp (Capability)</h3>
-                                <div style="font-size: 1rem;">$$ C_p = \frac{USL - LSL}{6\sigma_{\text{within}}} $$
-                                </div>
+                                <div class="katex-content">$$ C_p = \frac{USL - LSL}{6\sigma_{\text{within}}} $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Cpk (Centering)</h3>
-                                <div style="font-size: 1rem;">$$ C_{pk} = \min\left( \frac{USL -
+                                <div class="katex-content">$$ C_{pk} = \min\left( \frac{USL -
                                     \mu}{3\sigma_{\text{within}}}, \frac{\mu - LSL}{3\sigma_{\text{within}}} \right)
                                     $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Cpm (Targeting)</h3>
-                                <div style="font-size: 1rem;">$$ C_{pm} = \frac{USL -
+                                <div class="katex-content">$$ C_{pm} = \frac{USL -
                                     LSL}{6\sqrt{\sigma_{\text{within}}^2 + (\mu - T)^2}} $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Pp (Performance)</h3>
-                                <div style="font-size: 1rem;">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{overall}}} $$
-                                </div>
+                                <div class="katex-content">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{overall}}} $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Ppk (Centering)</h3>
-                                <div style="font-size: 1.1rem;">$$ P_{pk} = \min\left( \frac{USL -
+                                <div class="katex-content">$$ P_{pk} = \min\left( \frac{USL -
                                     \mu}{3\sigma_{\text{overall}}}, \frac{\mu - LSL}{3\sigma_{\text{overall}}} \right)
                                     $$</div>
                             </div>
@@ -1254,7 +1268,23 @@
         </div>
     </footer>
 
+    <!-- Scripts al final del body para mejor rendimiento -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"></script>
+
     <script>
+        // Variable para controlar si KaTeX ya se ha renderizado
+        let katexRendered = false;
+
         // Función para cambiar entre pestañas del wizard
         function switchWizardTab(tabId) {
             // Quitar clase active de todos los botones y contenidos de wizard
@@ -1262,19 +1292,68 @@
             document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
 
             // Activar el contenido seleccionado
-            document.getElementById(tabId).classList.add('active');
+            const activeTab = document.getElementById(tabId);
+            activeTab.classList.add('active');
 
             // Activar botón correspondiente
-            const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
             // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Renderizar KaTeX cuando se active la pestaña de fórmulas
+            if (tabId === 'tab-formulas' && !katexRendered) {
+                setTimeout(renderKaTeX, 100);
+            }
+        }
+
+        // Función para renderizar KaTeX
+        function renderKaTeX() {
+            if (window.renderMathInElement && !katexRendered) {
+                // Renderizar solo en el contenedor de fórmulas
+                const mathElements = document.getElementById('tab-formulas');
+                if (mathElements) {
+                    renderMathInElement(mathElements, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false },
+                            { left: '\\(', right: '\\)', display: false },
+                            { left: '\\[', right: '\\]', display: true }
+                        ],
+                        throwOnError: false,
+                        strict: false
+                    });
+                    katexRendered = true;
+                    console.log('KaTeX renderizado correctamente');
+                }
+            }
         }
 
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
-            // Configurar botones globales para activar los botones originales
+            // Configurar event listeners para las pestañas
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tabId = this.getAttribute('data-tab');
+                    switchWizardTab(tabId);
+                });
+            });
+
+            // Configurar botones de navegación
+            document.querySelectorAll('.btn-next-tab').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const nextTab = this.getAttribute('data-next');
+                    switchWizardTab(nextTab);
+                });
+            });
+
+            // Renderizar KaTeX inicialmente si la pestaña de fórmulas está activa
+            if (document.getElementById('tab-formulas').classList.contains('active')) {
+                setTimeout(renderKaTeX, 300);
+            }
+
+            // Configurar botones globales
             const globalFillBtn = document.getElementById('globalFillExampleBtn');
             const globalResetBtn = document.getElementById('globalResetDataBtn');
             const form = document.getElementById('cpkForm');
@@ -1324,10 +1403,6 @@
 
             // Modificar el formulario para que al calcular cambie a la pestaña de resultados
             if (form) {
-                // Guardar el event listener original
-                const originalSubmit = form.onsubmit;
-
-                // Añadir nuestro propio event listener
                 form.addEventListener('submit', function (e) {
                     // Esperar un momento para que el cálculo se complete
                     setTimeout(function () {
@@ -1357,6 +1432,13 @@
                     }
                 });
             }, 1000);
+        });
+
+        // También intentar renderizar KaTeX cuando la página esté completamente cargada
+        window.addEventListener('load', function () {
+            if (document.getElementById('tab-formulas').classList.contains('active') && !katexRendered) {
+                setTimeout(renderKaTeX, 500);
+            }
         });
     </script>
 
