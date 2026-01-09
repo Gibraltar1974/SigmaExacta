@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     let exampleIndex = 0;
+    let overallStats = null; // Variable para almacenar resultados overall
 
     const exampleDataSetsCollection = [
         // Example Set 1 (Three Datasets: Centered, Shifted, Spread)
@@ -120,20 +121,16 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // CALCULAR overallStats SIEMPRE que haya datos overall
+        if (overallData.length >= 2) {
+            overallStats = calculateStatistics(overallData, lsl, usl, target);
+        } else {
+            overallStats = null;
+        }
+
         // Mostrar los resultados del primer dataset
         displayResults(datasets[0], 0);
         updateDatasetTabs();
-
-        const overallStats = calculateStatistics(overallData, lsl, usl, target);
-        if (overallStats && overallData.length >= 2) {
-            // Mostrar contenedor de resultados overall
-            document.getElementById('overall-results-wrapper').classList.add('active');
-            document.getElementById('long-term-charts-wrapper').style.display = 'flex';
-            displayOverallResults(overallStats);
-        } else {
-            document.getElementById('overall-results-wrapper').classList.remove('active');
-            document.getElementById('long-term-charts-wrapper').style.display = 'none';
-        }
 
         document.getElementById('exportBtn').disabled = false;
     }
@@ -184,6 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         ppk: Math.min((usl - mean) / (3 * sigmaOverall), (mean - lsl) / (3 * sigmaOverall)),
                         failures_ppm: 0,
                         defective_percentage: 0,
+                        failures_ppm_lt: 0,
+                        defective_percentage_lt: 0,
                         shapiro: { result: 'N/A', statistic: 0, pValue: 0 },
                         kolmogorov: { result: 'N/A', statistic: 0, pValue: 0 },
                         anderson: { result: 'N/A', statistic: 0, criticalValue: 0 }
@@ -202,6 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         ppk: 0,
                         failures_ppm: 1000000,
                         defective_percentage: 100,
+                        failures_ppm_lt: 1000000,
+                        defective_percentage_lt: 100,
                         shapiro: { result: 'N/A', statistic: 0, pValue: 0 },
                         kolmogorov: { result: 'N/A', statistic: 0, pValue: 0 },
                         anderson: { result: 'N/A', statistic: 0, criticalValue: 0 }
@@ -249,9 +250,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayResults(dataset, index) {
-        // Mostrar el contenedor de resultados
+        // Mostrar el contenedor de resultados individuales
         document.getElementById('dataset-results-wrapper').classList.add('active');
         document.getElementById('short-term-charts-wrapper').style.display = 'flex';
+
+        // Ocultar overall si está visible
+        document.getElementById('overall-results-wrapper').classList.remove('active');
+        document.getElementById('long-term-charts-wrapper').style.display = 'none';
 
         document.getElementById('mean').textContent = isFinite(dataset.mean) ? dataset.mean.toFixed(4) : 'N/A';
         document.getElementById('deviation').textContent = isFinite(dataset.sigmaWithin) ? dataset.sigmaWithin.toFixed(4) : 'N/A';
@@ -271,12 +276,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayOverallResults(stats) {
+        // Solo mostrar resultados overall cuando se activa la pestaña overall
+        document.getElementById('overall-results-wrapper').classList.add('active');
+        document.getElementById('long-term-charts-wrapper').style.display = 'flex';
+
+        // Ocultar resultados individuales
+        document.getElementById('dataset-results-wrapper').classList.remove('active');
+        document.getElementById('short-term-charts-wrapper').style.display = 'none';
+
         document.getElementById('overall_total').textContent = overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
         document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
-        // MEJORA 3: Usar defectos long-term para resultados generales
         document.getElementById('overall_failures').textContent = stats.failures_ppm_lt.toFixed(2);
         document.getElementById('overall_defective').textContent = stats.defective_percentage_lt.toFixed(4);
 
@@ -772,32 +784,38 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateDatasetTabs() {
         const tabsContainer = document.getElementById('datasetTabsContainer');
         tabsContainer.innerHTML = '';
-        if (datasets.length > 1) {
+
+        // Siempre mostrar las pestañas si hay al menos un dataset
+        if (datasets.length >= 1) {
             tabsContainer.style.display = 'flex';
+
+            // Añadir pestañas para cada dataset
             datasets.forEach(function (dataset, index) {
                 const tab = document.createElement('div');
-                tab.className = 'dataset-tab ' + (index === 0 ? 'active' : '');
+                tab.className = 'dataset-tab' + (index === 0 ? ' active' : '');
                 tab.textContent = 'Dataset #' + dataset.id;
                 tab.addEventListener('click', function () {
                     document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
+                    // Mostrar resultados del dataset seleccionado
                     displayResults(dataset, index);
                 });
                 tabsContainer.appendChild(tab);
             });
 
-            // Add overall tab
-            const overallTab = document.createElement('div');
-            overallTab.className = 'dataset-tab overall-tab';
-            overallTab.textContent = 'Overall Results';
-            overallTab.addEventListener('click', function () {
-                document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
-                overallTab.classList.add('active');
-                // Mostrar resultados overall y ocultar individuales
-                document.getElementById('dataset-results-wrapper').classList.remove('active');
-                document.getElementById('overall-results-wrapper').classList.add('active');
-            });
-            tabsContainer.appendChild(overallTab);
+            // Añadir pestaña overall SIEMPRE que haya datos overall
+            if (overallData.length >= 2 && overallStats) {
+                const overallTab = document.createElement('div');
+                overallTab.className = 'dataset-tab overall-tab';
+                overallTab.textContent = 'Overall Results';
+                overallTab.addEventListener('click', function () {
+                    document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
+                    overallTab.classList.add('active');
+                    // Mostrar resultados overall
+                    displayOverallResults(overallStats);
+                });
+                tabsContainer.appendChild(overallTab);
+            }
         } else {
             tabsContainer.style.display = 'none';
         }
@@ -863,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dsContainer = document.getElementById('datasetsContainer');
         dsContainer.innerHTML = '';
         currentDatasetId = 1;
+        overallStats = null; // Limpiar overallStats al resetear
 
         // Crear primer dataset directamente
         const newDatasetEl = document.createElement('div');
