@@ -1,7 +1,7 @@
 app_name: "Sigma Exacta Engineering Tools Suite"
 app_url: "http://SigmaExacta.com"
 app_version: "2.0"
-description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, and QFD for quality and reliability engineering"
+description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, QFD, and Pugh Matrix for quality and reliability engineering"
 author: "SigmaExacta"
 license: "Open Source"
 
@@ -104,6 +104,22 @@ tools_suite:
       - "Responsive design optimized for mobile and desktop"
       - "Clean, modern UI with intuitive navigation"
 
+  - name: "Pugh Matrix (Decision Matrix)"
+    url: "/pugh"
+    description: "Systematically evaluate and select the best concept from a list of alternatives based on weighted criteria. Essential tool for product design, engineering, and decision-making."
+    features:
+      - "Interactive criteria and concept input with add/remove functionality"
+      - "Generate interactive Pugh Matrix table"
+      - "Set baseline concept for comparison"
+      - "Weighted criteria (1-5 scale)"
+      - "Score concepts as Better (+), Same (S), or Worse (-) against baseline"
+      - "Automatic total score calculation"
+      - "Highlight winning concept"
+      - "Export to Excel with formatted matrix"
+      - "Wizard-style interface with theory, data input, and results tabs"
+      - "Load example data for demonstration"
+      - "Responsive design for mobile and desktop"
+
 functionality:
   control_plan:
     primary_features:
@@ -200,6 +216,19 @@ functionality:
       - "Example data loading for demonstration"
       - "Comprehensive data reset functionality"
 
+  pugh_matrix:
+    primary_features:
+      - "Interactive criteria and concept management"
+      - "Dynamic matrix generation based on input"
+      - "Baseline concept selection"
+      - "Weight assignment for each criterion (1-5)"
+      - "Score assignment (+, S, -) for each concept per criterion"
+      - "Automatic total score calculation"
+      - "Winning concept identification"
+      - "Excel export with complete matrix"
+      - "Example data loading"
+      - "Data reset functionality"
+
   input_requirements:
     control_plan:
       - "Process Name (manufacturing step)"
@@ -268,6 +297,13 @@ functionality:
       - "Technical specifications (measurable characteristics)"
       - "Relationship scores between requirements and specs (strong/medium/weak)"
       - "Correlation scores between technical specs (positive/negative, strong/weak)"
+    
+    pugh_matrix:
+      - "Criteria names (evaluation factors)"
+      - "Concepts/alternatives names"
+      - "Baseline concept selection"
+      - "Weight for each criterion (numeric, 1-5 recommended)"
+      - "Scores for each concept per criterion (+, S, -)"
 
   calculations:
     control_plan_methods:
@@ -324,6 +360,12 @@ functionality:
       - "Technical requirement ranking based on priority scores"
       - "Excel export with formatted House of Quality matrix"
       - "Data validation for completeness before generation"
+    
+    pugh_matrix_methods:
+      - "Total score calculation: sum of (weight * score) for each concept"
+      - "Score mapping: + = 1, S = 0, - = -1"
+      - "Excel file generation with SheetJS"
+      - "Dynamic table generation and update"
 
   visualizations:
     control_plan:
@@ -379,6 +421,13 @@ functionality:
       - "Rank indicators with color coding"
       - "Importance rating visualization with progress bars"
       - "Interactive table with relationship selection dropdowns"
+    
+    pugh_matrix:
+      - "Interactive Pugh Matrix table with color-coded cells"
+      - "Baseline concept highlighting"
+      - "Winning concept highlighting"
+      - "Total scores row"
+      - "Weight and score input controls"
 
   statistical_tests:
     normality_tests:
@@ -492,6 +541,17 @@ ui_features:
     - "Priority ranking table with visual bars"
     - "Tab navigation buttons between main tabs"
     - "Clean, modern design with intuitive workflow"
+  
+  pugh_matrix_specific:
+    - "Three main tabs: Theory & Info, Data Input & Matrix, Results"
+    - "Dynamic criteria and concept input with add/remove buttons"
+    - "Generate matrix button to create interactive table"
+    - "Baseline selector dropdown"
+    - "Weight inputs for each criterion"
+    - "Score dropdowns (+, S, -) for each cell"
+    - "Results tab with read-only matrix and winning concept"
+    - "Export to Excel button"
+    - "Load example and reset buttons"
 
 technical_specifications:
   frontend:
@@ -558,6 +618,15 @@ usage_scenarios:
   - "Engineering effort prioritization based on customer value"
   - "New product design planning"
   - "Product feature prioritization"
+  - "Product design concept selection"
+  - "Engineering alternative evaluation"
+  - "Decision-making processes in project management"
+  - "New product development"
+  - "Design for Manufacturing (DFM) alternatives"
+  - "Quality improvement project selection"
+  - "Supplier selection"
+  - "Material selection"
+  - "Process design alternatives"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
@@ -601,6 +670,12 @@ educational_value:
   - "Correlation matrix analysis for design trade-offs"
   - "QFD history and origins (Japan, 1960s)"
   - "QFD applications in automotive, aerospace, and consumer products"
+  - "Pugh Matrix theory and Stuart Pugh's methodology"
+  - "Concept selection in product design"
+  - "Decision matrix fundamentals"
+  - "Weighted criteria evaluation"
+  - "Baseline comparison technique"
+  - "Objective decision-making in engineering"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -623,6 +698,9 @@ performance_characteristics:
   - "Handles up to 50 customer requirements and 50 technical specifications"
   - "Fast Excel export for large QFD matrices"
   - "Responsive table rendering for complex House of Quality"
+  - "Handles up to 20 criteria and 20 concepts efficiently"
+  - "Fast matrix generation and score updates"
+  - "Smooth Excel export for large matrices"
 
 error_handling:
   - "Robust input validation"
@@ -642,6 +720,10 @@ error_handling:
   - "QFD data completeness validation before matrix generation"
   - "Customer requirement importance validation"
   - "Technical specification input validation"
+  - "Input validation for criteria and concepts"
+  - "Minimum data validation (at least 1 criterion and 2 concepts)"
+  - "Confirmation for reset actions"
+  - "Notification system for user feedback"
 
 implementation_notes:
   - "Professional-grade control plan implementation"
@@ -666,6 +748,10 @@ implementation_notes:
   - "Kano-style interface design for intuitive user experience"
   - "Excel export with complete QFD matrix formatting"
   - "Example data based on real-world QFD applications"
+  - "Pugh Matrix implementation based on Stuart Pugh's Total Design methodology"
+  - "Interactive matrix built with vanilla JavaScript"
+  - "Excel export using SheetJS library"
+  - "Wizard-style interface following Sigma Exacta design pattern"
 
 references:
   methodology_sources:
@@ -696,6 +782,8 @@ references:
     - "Mizuno, Shigeru and Akao, Yoji (1994). QFD: The Customer-Driven Approach to Quality Planning and Deployment"
     - "Hauser, J. R., & Clausing, D. (1988). The House of Quality"
     - "Cohen, L. (1995). Quality Function Deployment: How to Make QFD Work for You"
+    - "Pugh, S. (1991). Total Design: Integrated Methods for Successful Product Engineering"
+    - "Pugh Matrix (Decision Matrix) methodology"
   
   algorithm_sources:
     - "SheetJS for Excel export functionality"
