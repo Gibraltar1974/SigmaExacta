@@ -72,6 +72,8 @@ tools_suite:
       - "Optimal factor level determination"
       - "Pareto chart of factor importance"
       - "Excel export with comprehensive results"
+      - "URL parameter injection for automated data loading"
+      - "Auto-calculation trigger via URL parameters"
 
   - name: "FMEA (Failure Modes and Effects Analysis)"
     url: "/fmea"
@@ -203,6 +205,8 @@ functionality:
       - "Predicted outcome calculation"
       - "Main effects plots and Pareto chart visualization"
       - "Excel export with all analysis results"
+      - "URL parameter injection for automated setup"
+      - "Auto-calculation based on URL parameters"
 
   fmea:
     primary_features:
@@ -300,12 +304,14 @@ functionality:
       - "Next steps for standardization or new cycle (Act phase)"
     
     taguchi_doe:
-      - "Experiment name and objective"
-      - "Factors with their respective levels"
-      - "Response variable name"
-      - "Signal-to-Noise ratio type selection"
-      - "Target value for nominal-is-best analysis"
-      - "Measured results for each experimental run"
+      - "Experiment name and objective (via URL: experiment-name)"
+      - "Response variable name (via URL: response-variable)"
+      - "Signal-to-Noise ratio type selection (Smaller/Larger/Nominal) (via URL: snr-type)"
+      - "Factors with their respective levels (via URL: factors, levels)"
+      - "Orthogonal array selection (via URL: array)"
+      - "Measured results for each experimental run (via URL: results)"
+      - "Target value for nominal-is-best analysis (via URL: target)"
+      - "Auto-calculation flag (via URL: auto_calculate)"
     
     fmea:
       - "Component names (system/process elements)"
@@ -345,6 +351,36 @@ functionality:
       - "Cost for each function (numeric value)"
       - "Value score for each function (1-10 scale)"
       - "Minimum 1 component and 1 function required for analysis"
+
+  url_parameters:
+    taguchi_doe:
+      - "experiment-name: Experiment name (string)"
+      - "objective: Experiment objective (string)"
+      - "response-variable: Response variable name (string)"
+      - "snr-type: Signal-to-Noise ratio type (Smaller, Larger, Nominal)"
+      - "factors: List of factors separated by '|' (e.g., Factor1|Factor2|Factor3)"
+      - "levels: List of levels for each factor separated by '|' (e.g., Level1, Level2|High, Low|TypeA, TypeB)"
+      - "array: Orthogonal array selection (L4, L8, L9, L16)"
+      - "results: Measured results for each experimental run, comma-separated (e.g., 10.2,9.8,12.1,11.5)"
+      - "target: Target value for nominal-is-best analysis (numeric)"
+      - "auto_calculate: Auto-calculation trigger (true, 1, false, 0)"
+    
+    process_capability:
+      - "data: Measurements data, comma-separated"
+      - "lsl: Lower Specification Limit"
+      - "usl: Upper Specification Limit"
+      - "target: Target value"
+      - "type: Calculation type"
+      - "auto_calculate: Auto-calculation trigger"
+    
+    weibull_analysis:
+      - "data: Failure times, comma-separated"
+      - "auto_calculate: Auto-calculation trigger"
+    
+    tolerance_stack_up:
+      - "data: Dimension parameters"
+      - "type: Analysis method"
+      - "auto_calculate: Auto-calculation trigger"
 
   calculations:
     control_plan_methods:
@@ -387,6 +423,9 @@ functionality:
       - "Optimal level determination for robustness"
       - "Main effects analysis and range calculation"
       - "Predicted outcome based on optimal settings"
+      - "URL parameter processing and data injection"
+      - "Dynamic factor and level creation from URL parameters"
+      - "Automatic result assignment from URL parameters"
     
     fmea_methods:
       - "Risk Priority Number (RPN) calculation: RPN = Severity × Occurrence × Detection"
@@ -453,6 +492,7 @@ functionality:
       - "Orthogonal array visualization in tabular format"
       - "ANOVA table with significance indicators"
       - "Optimal settings summary display"
+      - "URL parameter processing status indicators"
     
     fmea:
       - "Interactive network diagram showing system structure"
@@ -511,6 +551,7 @@ functionality:
       - "F-test for ANOVA with conservative F-critical value interpolation"
       - "Main effects calculation and range analysis"
       - "Orthogonal array design principles"
+      - "URL parameter parsing and normalization algorithms"
     
     qfd_methods:
       - "Quality Function Deployment prioritization algorithm"
@@ -533,6 +574,7 @@ functionality:
     - "Signal-to-Noise ratio calculations with dB scale"
     - "QFD priority calculations with proper weighting"
     - "Value Index calculations with 4 decimal precision"
+    - "URL parameter decoding and normalization algorithms"
 
 ui_features:
   common_features:
@@ -544,6 +586,7 @@ ui_features:
       - "Load example data functionality"
       - "Reset all data functionality"
       - "Export to Excel capability"
+      - "URL parameter injection support"
   
   control_plan_specific:
     - "Wizard tabs: Theory & Info, Control Plan Tool, Results"
@@ -588,6 +631,9 @@ ui_features:
     - "Multiple chart visualizations (main effects, Pareto)"
     - "Executive summary with optimal settings"
     - "Comprehensive ANOVA table with significance testing"
+    - "URL parameter processing and auto-population"
+    - "Auto-calculation trigger from URL parameters"
+    - "Parameter processing status indicator"
   
   fmea_specific:
     - "Four main tabs: Theory & Info, Define Structure, Visualize, FMEA Results"
@@ -644,6 +690,11 @@ technical_specifications:
       - "Chart.js 4.4.2 with annotation plugin (for other tools)"
       - "KaTeX 0.16.9 for mathematical formula rendering (for other tools)"
       - "vis.js 4.21.0 for network diagram visualization (FMEA, VAVE)"
+    query_handling:
+      - "query-handler.js for URL parameter processing"
+      - "Intelligent field mapping system"
+      - "Auto-calculation triggers"
+      - "Parameter normalization algorithms"
   
   compatibility:
     browsers: "Modern browsers with ES6 support"
@@ -721,11 +772,20 @@ usage_scenarios:
   - "Standardization projects"
   - "Waste elimination in product design"
   - "Customer value enhancement"
+  - "URL-based experiment sharing and collaboration"
+  - "Automated data loading via query parameters"
+  - "Integration with external data sources via URL"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
   privacy: "All data remains in user's browser"
   export: "Excel export includes formatted control plan with headers"
+  url_parameters:
+    - "Support for URL parameter injection"
+    - "Auto-population of form fields from query strings"
+    - "Auto-calculation trigger via URL"
+    - "Parameter normalization and validation"
+    - "Field mapping intelligence"
 
 educational_value:
   - "Control plan theory and APQP principles"
@@ -779,6 +839,8 @@ educational_value:
   - "Application of VAVE in various industries"
   - "Cost reduction strategies through function analysis"
   - "Value improvement techniques and best practices"
+  - "URL parameter techniques for data sharing"
+  - "Web-based engineering tool integration concepts"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -809,6 +871,9 @@ performance_characteristics:
   - "Handles complex product structures with multiple functions"
   - "Fast Excel export for VAVE analysis results"
   - "Smooth network diagram rendering for system visualization"
+  - "Efficient URL parameter processing and field mapping"
+  - "Real-time data injection from query parameters"
+  - "Fast auto-calculation triggering"
 
 error_handling:
   - "Robust input validation"
@@ -834,6 +899,9 @@ error_handling:
   - "Minimum component and function validation for VAVE"
   - "Confirmation for reset actions"
   - "Notification system for user feedback"
+  - "URL parameter decoding errors"
+  - "Field mapping failures handling"
+  - "Auto-calculation validation before execution"
 
 implementation_notes:
   - "Professional-grade control plan implementation"
@@ -867,6 +935,9 @@ implementation_notes:
   - "Network diagram visualization similar to FMEA for consistency"
   - "Value Index calculation with threshold-based classification"
   - "Example data based on real-world VAVE applications"
+  - "URL parameter handling system for data injection"
+  - "Query parameter normalization and field mapping intelligence"
+  - "Auto-calculation triggers for seamless user experience"
 
 references:
   methodology_sources:
@@ -923,5 +994,7 @@ references:
     - "Canvas API for chart export functionality"
     - "QFD prioritization algorithms based on standard methodology"
     - "VAVE value index calculation algorithms"
+    - "URL parameter parsing and normalization algorithms"
+    - "Field mapping intelligence algorithms"
 
-disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG or any standards body."
+disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG or any standards body. URL parameter functionality is for convenience and data sharing purposes."

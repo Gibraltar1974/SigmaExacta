@@ -1,19 +1,25 @@
-INSTRUCTIONS FOR AI: SIGMA EXACTA ENGINEERING TOOLS HANDLING
 
-APPLICATION SUITE OVERVIEW:
-Sigma Exacta provides a comprehensive suite of engineering tools including:
-1. Control Plan Creator
-2. Process Capability Calculator (Cp, Cpk, Pp, Ppk)
-3. Tolerance Stack-Up Analysis Calculator
-4. Weibull Analysis for Failure Prediction
-5. PDCA Cycle (Plan-Do-Check-Act)
-6. Taguchi DOE Calculator & Analyzer
-7. FMEA (Failure Mode and Effects Analysis)
-8. Quality Function Deployment (QFD)
-9. Pugh Matrix Creator
-10. VAVE Analysis (Value Analysis & Value Engineering)
+This URL would:
+1. Set experiment name to "My Experiment"
+2. Create two factors: Temperature (levels: Low, High) and Pressure (levels: 10psi, 20psi)
+3. Populate results: 10.2, 9.8, 12.1, 11.5
+4. Automatically run the full Taguchi analysis
 
-All tools are designed for professional engineering analysis with educational value.
+G. UI FEEDBACK:
+- Visual indicator shows when parameters are loaded
+- Console logging for debugging
+- Notification system for errors or warnings
+
+H. ERROR HANDLING:
+- Graceful handling of missing fields
+- Validation of parameter values
+- Fallback mechanisms for partial data
+
+I. EXTENSION POINTS:
+- Additional tool-specific handlers can be added
+- Custom field mappings for new tools
+- Enhanced parameter validation
+- Support for array/object parameters in JSON format
 
 ================================================================================
 TOOL 1: CONTROL PLAN CREATOR
@@ -26,140 +32,145 @@ The tool provides a table-based interface for defining process steps, control ch
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Interactive table with rows for each process step
-   - Columns: Process Name, Machine/Tool, Characteristic, Spec/Tolerance, Evaluation Technique, Sample Size/Freq, Control Method, Reaction Plan, Action
-   - Textareas for free text input with auto-expand functionality
-   - Dropdowns for predefined options in Evaluation Technique, Control Method, and Reaction Plan
-   - Add Row button to create new process steps
-   - Delete button on each row to remove process steps
+- Interactive table with rows for each process step
+- Columns: Process Name, Machine/Tool, Characteristic, Spec/Tolerance, Evaluation Technique, Sample Size/Freq, Control Method, Reaction Plan, Action
+- Textareas for free text input with auto-expand functionality
+- Dropdowns for predefined options in Evaluation Technique, Control Method, and Reaction Plan
+- Add Row button to create new process steps
+- Delete button on each row to remove process steps
 
 2. PRE-DEFINED OPTIONS:
-   - Evaluation Techniques: Visual Inspection, Digital Caliper, Micrometer, Go/No-Go Gauge, CMM, Profilometer, Coating Thickness Gauge, Torque Wrench
-   - Control Methods: SPC Chart, First-off Inspection, 100% Inspection, Operator Checklist, Attribute Chart, Destructive Testing, Process Audit
-   - Reaction Plans: Stop Process & Quarantine, Adjust Machine/Tool, Notify Supervisor, Sort Suspect Material, Re-work/Repair Part, Check Tooling for Wear, Initiate 8D Report
+- Evaluation Techniques: Visual Inspection, Digital Caliper, Micrometer, Go/No-Go Gauge, CMM, Profilometer, Coating Thickness Gauge, Torque Wrench
+- Control Methods: SPC Chart, First-off Inspection, 100% Inspection, Operator Checklist, Attribute Chart, Destructive Testing, Process Audit
+- Reaction Plans: Stop Process & Quarantine, Adjust Machine/Tool, Notify Supervisor, Sort Suspect Material, Re-work/Repair Part, Check Tooling for Wear, Initiate 8D Report
 
 3. EXAMPLE AND RESET:
-   - Load Example button populates table with sample manufacturing data
-   - Reset All button clears the entire table
-   - Example data includes 5 process steps covering different manufacturing operations
+- Load Example button populates table with sample manufacturing data
+- Reset All button clears the entire table
+- Example data includes 5 process steps covering different manufacturing operations
 
 4. EXPORT FUNCTIONALITY:
-   - Export to Excel button generates XLSX file with complete control plan
-   - Excel file includes title, generation date, and formatted table
-   - Column widths optimized for readability
+- Export to Excel button generates XLSX file with complete control plan
+- Excel file includes title, generation date, and formatted table
+- Column widths optimized for readability
 
 5. UI STRUCTURE:
-   - Wizard-style tabs: Theory & Info, Control Plan Tool, Results
-   - Responsive design for all device sizes
-   - Main action buttons (Load Example, Reset All) above tabs
-   - Horizontal scrollable table for mobile devices
+- Wizard-style tabs: Theory & Info, Control Plan Tool, Results
+- Responsive design for all device sizes
+- Main action buttons (Load Example, Reset All) above tabs
+- Horizontal scrollable table for mobile devices
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with one empty row by default
-   - Event listeners are set up for buttons and table interactions
-   - Predefined arrays for dropdown options (evaluationTechniques, controlMethods, reactionPlans)
-   - Example data array for demonstration
+- The application loads with one empty row by default
+- Event listeners are set up for buttons and table interactions
+- Predefined arrays for dropdown options (evaluationTechniques, controlMethods, reactionPlans)
+- Example data array for demonstration
 
 B. CORE FUNCTIONS:
 
-   1. createRow(data = {})
-      - Creates a new row in the table with provided data or empty fields
-      - Inserts textareas for free text fields
-      - Creates dropdowns for predefined option fields
-      - Attaches event listeners for auto-expanding textareas and delete button
+1. createRow(data = {})
+   - Creates a new row in the table with provided data or empty fields
+   - Inserts textareas for free text fields
+   - Creates dropdowns for predefined option fields
+   - Attaches event listeners for auto-expanding textareas and delete button
 
-   2. autoGrow(element)
-      - Automatically adjusts the height of textareas based on content
-      - Called on input event for all textareas
+2. autoGrow(element)
+   - Automatically adjusts the height of textareas based on content
+   - Called on input event for all textareas
 
-   3. createSelect(options, selectedValue)
-      - Creates dropdown select element with provided options
-      - Sets selected value if provided
+3. createSelect(options, selectedValue)
+   - Creates dropdown select element with provided options
+   - Sets selected value if provided
 
-   4. loadExample()
-      - Clears existing table rows
-      - Iterates through exampleData array to create rows
-      - Switches to Control Plan Tool tab after loading
+4. loadExample()
+   - Clears existing table rows
+   - Iterates through exampleData array to create rows
+   - Switches to Control Plan Tool tab after loading
 
-   5. resetPlan()
-      - Clears all rows from the table
-      - Creates one empty row by default
+5. resetPlan()
+   - Clears all rows from the table
+   - Creates one empty row by default
 
-   6. listResults()
-      - Displays current control plan in formatted table in Results tab
-      - Creates read-only table showing all entered data
-      - Handles empty table case
+6. listResults()
+   - Displays current control plan in formatted table in Results tab
+   - Creates read-only table showing all entered data
+   - Handles empty table case
 
-   7. exportToExcel()
-      - Uses SheetJS library to create Excel workbook
-      - Formats Excel with merged cells for title and date
-      - Sets appropriate column widths
-      - Downloads file as "Control_Plan_Sigma_Exacta.xlsx"
+7. exportToExcel()
+   - Uses SheetJS library to create Excel workbook
+   - Formats Excel with merged cells for title and date
+   - Sets appropriate column widths
+   - Downloads file as "Control_Plan_Sigma_Exacta.xlsx"
 
-   8. switchWizardTab(tabId)
-      - Switches between wizard tabs (Theory, Tool, Results)
-      - Updates active tab styling
-      - Smooth scroll to top
+8. switchWizardTab(tabId)
+   - Switches between wizard tabs (Theory, Tool, Results)
+   - Updates active tab styling
+   - Smooth scroll to top
 
 C. DATA FLOW:
-   1. User adds rows via Add Row button or loads example
-   2. User edits textareas or selects from dropdowns
-   3. Textareas auto-expand based on content
-   4. User can delete individual rows
-   5. Results tab shows current data in read-only format
-   6. Export creates Excel file with all current data
+1. User adds rows via Add Row button or loads example
+2. User edits textareas or selects from dropdowns
+3. Textareas auto-expand based on content
+4. User can delete individual rows
+5. Results tab shows current data in read-only format
+6. Export creates Excel file with all current data
 
 D. UI UPDATES:
-   - Table dynamically updates as rows are added or removed
-   - Results tab shows formatted table of current data
-   - Tabs switch with fade animation
-   - Mobile devices show horizontally scrollable table
+- Table dynamically updates as rows are added or removed
+- Results tab shows formatted table of current data
+- Tabs switch with fade animation
+- Mobile devices show horizontally scrollable table
 
 E. EXPORT FUNCTIONALITY:
-   - Excel file includes:
-     * Title row (merged cells across all columns)
-     * Generation date row (merged cells)
-     * Table headers
-     * All rows of data with current values
-     * Column widths set based on header length
+- Excel file includes:
+  * Title row (merged cells across all columns)
+  * Generation date row (merged cells)
+  * Table headers
+  * All rows of data with current values
+  * Column widths set based on header length
 
 IMPORTANT ALGORITHMS:
 
 1. EXCEL GENERATION:
-   - Uses SheetJS XLSX.utils.aoa_to_sheet() for array to sheet conversion
-   - Merges cells for title and date rows using ws['!merges']
-   - Sets column widths using ws['!cols']
+- Uses SheetJS XLSX.utils.aoa_to_sheet() for array to sheet conversion
+- Merges cells for title and date rows using ws['!merges']
+- Sets column widths using ws['!cols']
 
 2. AUTO-GROWING TEXTAREAS:
-   - element.style.height = 'auto'
-   - element.style.height = (element.scrollHeight) + 'px'
+- element.style.height = 'auto'
+- element.style.height = (element.scrollHeight) + 'px'
 
 3. TABLE MANAGEMENT:
-   - Dynamic row creation with template-based approach
-   - Event delegation for delete buttons
+- Dynamic row creation with template-based approach
+- Event delegation for delete buttons
 
 EDGE CASE HANDLING:
-   - Empty table handling in listResults()
-   - Mobile responsive table with horizontal scrolling
-   - Special characters in Excel export
+- Empty table handling in listResults()
+- Mobile responsive table with horizontal scrolling
+- Special characters in Excel export
 
 INTEGRATION POINTS:
-   1. Header loaded dynamically from header.html
-   2. SheetJS for Excel export
-   3. Font Awesome for icons
-   4. Google Fonts for typography
+1. Header loaded dynamically from header.html
+2. SheetJS for Excel export
+3. Font Awesome for icons
+4. Google Fonts for typography
 
 PERFORMANCE CONSIDERATIONS:
-   - Table can handle hundreds of rows efficiently
-   - Excel export optimized for performance
-   - Event delegation used for efficient event handling
+- Table can handle hundreds of rows efficiently
+- Excel export optimized for performance
+- Event delegation used for efficient event handling
 
 ERROR HANDLING:
-   - Basic error handling for Excel export
-   - Graceful handling of empty tables
-   - Robust input handling in textareas
+- Basic error handling for Excel export
+- Graceful handling of empty tables
+- Robust input handling in textareas
+
+URL PARAMETER SUPPORT:
+- Generic parameter injection via Query Handler
+- Support for field-specific parameter names
+- Auto-population of form fields from URL parameters
 
 ================================================================================
 TOOL 2: PROCESS CAPABILITY CALCULATOR
@@ -172,90 +183,103 @@ The application allows users to analyze process data against specification limit
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Multiple datasets can be added/removed dynamically
-   - Each dataset requires numeric measurements (comma/space separated)
-   - Common specification limits (LSL, USL, Target) apply to all datasets
-   - Example datasets are provided for demonstration
+- Multiple datasets can be added/removed dynamically
+- Each dataset requires numeric measurements (comma/space separated)
+- Common specification limits (LSL, USL, Target) apply to all datasets
+- Example datasets are provided for demonstration
 
 2. CALCULATION ENGINE:
-   - Short-term indices (Cp, Cpk, Cpm) use moving range method (σ_within)
-   - Long-term indices (Pp, Ppk) use standard deviation (σ_overall)
-   - Professional normality tests (Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling)
-   - Defect rate calculation in PPM and percentage
+- Short-term indices (Cp, Cpk, Cpm) use moving range method (σ_within)
+- Long-term indices (Pp, Ppk) use standard deviation (σ_overall)
+- Professional normality tests (Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling)
+- Defect rate calculation in PPM and percentage
 
 3. VISUALIZATION SYSTEM:
-   - Process distribution plots with normal curve overlay
-   - Individuals control charts (I-Charts)
-   - Separate visualizations for individual datasets and overall performance
+- Process distribution plots with normal curve overlay
+- Individuals control charts (I-Charts)
+- Separate visualizations for individual datasets and overall performance
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory, Calculator, Results, Formulas
-   - Responsive design for all device sizes
-   - Interactive dataset management
+- Wizard-style tabs: Theory, Calculator, Results, Formulas
+- Responsive design for all device sizes
+- Interactive dataset management
+
+5. URL PARAMETER SUPPORT:
+- data: Comma-separated measurements
+- lsl: Lower Specification Limit
+- usl: Upper Specification Limit
+- target: Target value
+- type: Calculation type
+- auto_calculate: Trigger for automatic calculation
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with one dataset by default
-   - Event listeners are set up for form submission, buttons, etc.
-   - Chart.js and KaTeX are loaded from CDN
+- The application loads with one dataset by default
+- Event listeners are set up for form submission, buttons, etc.
+- Chart.js and KaTeX are loaded from CDN
 
 B. CORE FUNCTIONS:
 
-   1. calculateStatistics(data, lsl, usl, target)
-      - Main calculation function
-      - Returns object with all capability indices and test results
-      - Handles edge cases (zero variance, identical values)
+1. calculateStatistics(data, lsl, usl, target)
+   - Main calculation function
+   - Returns object with all capability indices and test results
+   - Handles edge cases (zero variance, identical values)
 
-   2. parseMeasurements(text)
-      - Converts text input to numeric array
-      - Supports comma, space, or semicolon separation
+2. parseMeasurements(text)
+   - Converts text input to numeric array
+   - Supports comma, space, or semicolon separation
 
-   3. normality test functions:
-      - shapiroWilkTest(data) - Professional implementation
-      - kolmogorovSmirnovTest(data) - With Stephens correction
-      - andersonDarlingTest(data) - Stephens, 1974 implementation
+3. normality test functions:
+   - shapiroWilkTest(data) - Professional implementation
+   - kolmogorovSmirnovTest(data) - With Stephens correction
+   - andersonDarlingTest(data) - Stephens, 1974 implementation
 
-   4. visualization functions:
-      - plotChart() - Creates process distribution plot
-      - createControlChart() - Creates I-Chart
-      - plotOverallChart() and createOverallControlChart() for combined data
+4. visualization functions:
+   - plotChart() - Creates process distribution plot
+   - createControlChart() - Creates I-Chart
+   - plotOverallChart() and createOverallControlChart() for combined data
 
-   5. utility functions:
-      - normalCDF(x) - High-precision normal CDF (Hart algorithm)
-      - normalQuantile(p) - High-precision inverse normal (Acklam's algorithm)
+5. utility functions:
+   - normalCDF(x) - High-precision normal CDF (Hart algorithm)
+   - normalQuantile(p) - High-precision inverse normal (Acklam's algorithm)
 
 C. DATA FLOW:
-   1. User inputs data → parseMeasurements() converts to array
-   2. Form submission → calculateStatistics() processes each dataset
-   3. Results stored in 'datasets' array and 'overallStats' object
-   4. Visualizations generated using Chart.js
-   5. Results displayed in appropriate tabs
+1. User inputs data → parseMeasurements() converts to array
+2. Form submission → calculateStatistics() processes each dataset
+3. Results stored in 'datasets' array and 'overallStats' object
+4. Visualizations generated using Chart.js
+5. Results displayed in appropriate tabs
 
 D. UI UPDATES:
-   - updateDatasetTabs() creates tabs for each dataset + overall
-   - displayResults() shows individual dataset results
-   - displayOverallResults() shows combined analysis
-   - All charts are responsive and update dynamically
+- updateDatasetTabs() creates tabs for each dataset + overall
+- displayResults() shows individual dataset results
+- displayOverallResults() shows combined analysis
+- All charts are responsive and update dynamically
 
 E. EXPORT FUNCTIONALITY:
-   - exportToExcel() creates XLSX file with two sheets:
-     * Summary sheet with all calculated indices
-     * Raw data sheet with all measurements
+- exportToExcel() creates XLSX file with two sheets:
+  * Summary sheet with all calculated indices
+  * Raw data sheet with all measurements
+
+F. URL PARAMETER INTEGRATION:
+- Query Handler automatically injects data, LSL, USL, target values
+- Auto-calculation triggered when auto_calculate parameter is set
+- Field mapping for common parameter names
 
 IMPORTANT ALGORITHMS:
 
 1. SHORT-TERM SIGMA CALCULATION:
-   σ_within = MR_bar / 1.128 (where 1.128 is d2 for n=2)
-   MR_bar = average of moving ranges between consecutive points
+σ_within = MR_bar / 1.128 (where 1.128 is d2 for n=2)
+MR_bar = average of moving ranges between consecutive points
 
 2. NORMALITY TESTS:
-   - All tests use standardized implementations from statistical literature
-   - Include sample size corrections and accurate p-value calculations
-   - Return 'Pass' (p > 0.05) or 'Fail' (p ≤ 0.05) results
+- All tests use standardized implementations from statistical literature
+- Include sample size corrections and accurate p-value calculations
+- Return 'Pass' (p > 0.05) or 'Fail' (p ≤ 0.05) results
 
 3. DEFECT CALCULATION:
-   Uses normal distribution probabilities based on distance from limits
+Uses normal distribution probabilities based on distance from limits
 
 EDGE CASE HANDLING:
 - Zero variance datasets (all identical values)
@@ -268,6 +292,7 @@ INTEGRATION POINTS:
 2. Chart.js with annotation plugin for visualizations
 3. KaTeX for mathematical formula rendering
 4. SheetJS for Excel export
+5. Query Handler for URL parameter support
 
 PERFORMANCE CONSIDERATIONS:
 - Algorithms optimized for up to 5000 data points
@@ -290,102 +315,102 @@ The tool supports multiple distribution types for components and uses arithmetic
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Multiple dimensions can be added/removed dynamically
-   - Each dimension requires a nominal value and distribution type
-   - Supported distributions: Normal, Homogeneous (Uniform), Triangular, Weibull, Lognormal, Beta, Exponential
-   - For Normal distribution, parameters can be defined by tolerance limits, standard deviation, or Cpk
-   - Each dimension has a sign (+ or -) to indicate direction in the stack
+- Multiple dimensions can be added/removed dynamically
+- Each dimension requires a nominal value and distribution type
+- Supported distributions: Normal, Homogeneous (Uniform), Triangular, Weibull, Lognormal, Beta, Exponential
+- For Normal distribution, parameters can be defined by tolerance limits, standard deviation, or Cpk
+- Each dimension has a sign (+ or -) to indicate direction in the stack
 
 2. CALCULATION ENGINE:
-   - Arithmetic method: sums nominal values and tolerances in worst-case scenario
-   - Probabilistic method: uses Root Sum Square (RSS) for all-normal distributions
-   - Monte Carlo simulation: used when any non-normal distribution is present
-   - Intelligent validation system checks distribution parameters
+- Arithmetic method: sums nominal values and tolerances in worst-case scenario
+- Probabilistic method: uses Root Sum Square (RSS) for all-normal distributions
+- Monte Carlo simulation: used when any non-normal distribution is present
+- Intelligent validation system checks distribution parameters
 
 3. VISUALIZATION SYSTEM:
-   - Vector diagram showing the stack-up of dimensions
-   - Distribution chart for Monte Carlo results
-   - Toggle between horizontal and vertical orientation
+- Vector diagram showing the stack-up of dimensions
+- Distribution chart for Monte Carlo results
+- Toggle between horizontal and vertical orientation
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory, Calculator, Results, Formulas
-   - Responsive design for all device sizes
-   - Interactive dimension management
+- Wizard-style tabs: Theory, Calculator, Results, Formulas
+- Responsive design for all device sizes
+- Interactive dimension management
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with no dimensions by default
-   - Event listeners are set up for form controls, buttons, etc.
-   - Chart.js is loaded for visualizations
+- The application loads with no dimensions by default
+- Event listeners are set up for form controls, buttons, etc.
+- Chart.js is loaded for visualizations
 
 B. CORE FUNCTIONS:
 
-   1. addDimension(name, nominal, tolerance, distribution, normalParams, sign, specificParams)
-      - Adds a new dimension to the analysis
-      - Parameters can be customized or left to defaults
+1. addDimension(name, nominal, tolerance, distribution, normalParams, sign, specificParams)
+   - Adds a new dimension to the analysis
+   - Parameters can be customized or left to defaults
 
-   2. calculate()
-      - Main calculation function
-      - Performs validation, then runs arithmetic, probabilistic, and/or Monte Carlo calculations
-      - Updates results and visualizations
+2. calculate()
+   - Main calculation function
+   - Performs validation, then runs arithmetic, probabilistic, and/or Monte Carlo calculations
+   - Updates results and visualizations
 
-   3. updateVisualization()
-      - Redraws the vector diagram based on current dimensions
+3. updateVisualization()
+   - Redraws the vector diagram based on current dimensions
 
-   4. loadExampleData()
-      - Loads a set of example dimensions with various distributions
+4. loadExampleData()
+   - Loads a set of example dimensions with various distributions
 
-   5. resetData()
-      - Clears all dimensions and results
+5. resetData()
+   - Clears all dimensions and results
 
-   6. listResults()
-      - Displays detailed calculation history
+6. listResults()
+   - Displays detailed calculation history
 
-   7. exportToExcel()
-      - Exports the calculation history to an Excel file
+7. exportToExcel()
+   - Exports the calculation history to an Excel file
 
 C. SUPPORTING FUNCTIONS:
 
-   1. DistributionValidator class
-      - Validates parameters for each distribution type
-      - Provides real-time feedback on parameter validity
+1. DistributionValidator class
+   - Validates parameters for each distribution type
+   - Provides real-time feedback on parameter validity
 
-   2. Statistical sampling functions:
-      - getRandomNormal(), getRandomUniform(), getRandomTriangular()
-      - getRandomWeibull(), getRandomLognormal(), getRandomBeta(), getRandomExponential()
+2. Statistical sampling functions:
+   - getRandomNormal(), getRandomUniform(), getRandomTriangular()
+   - getRandomWeibull(), getRandomLognormal(), getRandomBeta(), getRandomExponential()
 
-   3. Mathematical functions:
-      - gamma() - Accurate gamma function implementation
-      - boxMullerTransform() - For normal distribution sampling
+3. Mathematical functions:
+   - gamma() - Accurate gamma function implementation
+   - boxMullerTransform() - For normal distribution sampling
 
 D. DATA FLOW:
-   1. User adds dimensions → each dimension is stored in the dimensions array
-   2. User clicks Calculate → calculate() processes all dimensions
-   3. Results are stored in calculationHistory array
-   4. Visualizations are updated
+1. User adds dimensions → each dimension is stored in the dimensions array
+2. User clicks Calculate → calculate() processes all dimensions
+3. Results are stored in calculationHistory array
+4. Visualizations are updated
 
 E. VALIDATION SYSTEM:
-   - DistributionValidator class validates parameters for each distribution
-   - Real-time validation provides feedback on parameter errors or warnings
-   - Calculation proceeds only if all dimensions are valid
+- DistributionValidator class validates parameters for each distribution
+- Real-time validation provides feedback on parameter errors or warnings
+- Calculation proceeds only if all dimensions are valid
 
 IMPORTANT ALGORITHMS:
 
 1. MONTE CARLO SIMULATION:
-   - Generates random samples from each dimension's distribution
-   - Sums samples according to dimension signs
-   - Calculates statistics from the resulting distribution
+- Generates random samples from each dimension's distribution
+- Sums samples according to dimension signs
+- Calculates statistics from the resulting distribution
 
 2. ROOT SUM SQUARE (RSS):
-   - σ_total = √(Σ σ_i²) for all dimensions
-   - Assumes all dimensions follow normal distribution
-   - More realistic than worst-case analysis
+- σ_total = √(Σ σ_i²) for all dimensions
+- Assumes all dimensions follow normal distribution
+- More realistic than worst-case analysis
 
 3. DISTRIBUTION SAMPLING:
-   - Box-Muller transform for normal distribution
-   - Inverse transform for uniform and triangular
-   - Acceptance-rejection for Beta distribution
+- Box-Muller transform for normal distribution
+- Inverse transform for uniform and triangular
+- Acceptance-rejection for Beta distribution
 
 EDGE CASE HANDLING:
 - Zero or negative parameters for distributions that require positive values
@@ -415,99 +440,108 @@ The tool performs probability plotting, calculates Mean Time To Failure (MTTF), 
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Single textarea for entering failure times (comma-separated)
-   - Optional field for predicting failure probability at a specific time
-   - Auto-expanding textarea for better user experience
-   - Example data loading for demonstration
+- Single textarea for entering failure times (comma-separated)
+- Optional field for predicting failure probability at a specific time
+- Auto-expanding textarea for better user experience
+- Example data loading for demonstration
 
 2. CALCULATION ENGINE:
-   - Weibull parameter estimation (Beta β, Eta η) using probability plotting method
-   - Mean Time To Failure (MTTF) calculation using Gamma function
-   - Failure probability prediction at user-specified times
-   - Gamma function implementation using Lanczos approximation
+- Weibull parameter estimation (Beta β, Eta η) using probability plotting method
+- Mean Time To Failure (MTTF) calculation using Gamma function
+- Failure probability prediction at user-specified times
+- Gamma function implementation using Lanczos approximation
 
 3. VISUALIZATION SYSTEM:
-   - Weibull probability plot with log-scale x-axis
-   - Data points and regression line visualization
-   - Aggregated results display in card format
-   - Interactive chart with tooltips
+- Weibull probability plot with log-scale x-axis
+- Data points and regression line visualization
+- Aggregated results display in card format
+- Interactive chart with tooltips
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory & Info, Calculator Tool, Results, Formulas
-   - Main action buttons above tabs (Load Example, Reset All)
-   - Responsive design with full-width layout
-   - Results visibility toggle
+- Wizard-style tabs: Theory & Info, Calculator Tool, Results, Formulas
+- Main action buttons above tabs (Load Example, Reset All)
+- Responsive design with full-width layout
+- Results visibility toggle
+
+5. URL PARAMETER SUPPORT:
+- data: Comma-separated failure times
+- auto_calculate: Trigger for automatic calculation
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with empty input fields
-   - Event listeners are set up for form submission, buttons, etc.
-   - Chart.js, SheetJS, and KaTeX are loaded from CDN
-   - Empty chart is initialized
+- The application loads with empty input fields
+- Event listeners are set up for form submission, buttons, etc.
+- Chart.js, SheetJS, and KaTeX are loaded from CDN
+- Empty chart is initialized
 
 B. CORE FUNCTIONS:
 
-   1. calculateWeibull()
-      - Main calculation function triggered by form submission
-      - Parses failure times, validates input (minimum 2 points)
-      - Performs median rank estimation and linear regression
-      - Calculates Weibull parameters and MTTF
-      - Updates results and visualizations
+1. calculateWeibull()
+   - Main calculation function triggered by form submission
+   - Parses failure times, validates input (minimum 2 points)
+   - Performs median rank estimation and linear regression
+   - Calculates Weibull parameters and MTTF
+   - Updates results and visualizations
 
-   2. gamma(z)
-      - Implements Lanczos approximation for Gamma function
-      - Used for accurate MTTF calculation
+2. gamma(z)
+   - Implements Lanczos approximation for Gamma function
+   - Used for accurate MTTF calculation
 
-   3. plotChart(points, slope, intercept)
-      - Creates Weibull probability plot with Chart.js
-      - Shows data points and regression line
-      - Uses logarithmic scale for x-axis
+3. plotChart(points, slope, intercept)
+   - Creates Weibull probability plot with Chart.js
+   - Shows data points and regression line
+   - Uses logarithmic scale for x-axis
 
-   4. addResultToList()
-      - Adds current analysis to aggregated results list
-      - Creates result cards with timestamp and parameters
-      - Enables export functionality
+4. addResultToList()
+   - Adds current analysis to aggregated results list
+   - Creates result cards with timestamp and parameters
+   - Enables export functionality
 
-   5. exportExcel()
-      - Exports aggregated results to Excel using SheetJS
-      - Includes headers and formatted data
+5. exportExcel()
+   - Exports aggregated results to Excel using SheetJS
+   - Includes headers and formatted data
 
 C. DATA FLOW:
-   1. User enters failure times → parse and validate
-   2. Form submission → calculateWeibull() processes data
-   3. Results displayed in Results tab
-   4. User can add to aggregated list
-   5. Export creates Excel file with all aggregated analyses
+1. User enters failure times → parse and validate
+2. Form submission → calculateWeibull() processes data
+3. Results displayed in Results tab
+4. User can add to aggregated list
+5. Export creates Excel file with all aggregated analyses
 
 D. UI UPDATES:
-   - Auto-expanding textarea adjusts to content
-   - Results become visible after calculation
-   - Chart updates with data points and regression line
-   - Aggregated results displayed as cards
-   - Tabs switch with smooth animation
+- Auto-expanding textarea adjusts to content
+- Results become visible after calculation
+- Chart updates with data points and regression line
+- Aggregated results displayed as cards
+- Tabs switch with smooth animation
 
 E. EXPORT FUNCTIONALITY:
-   - exportExcel() creates XLSX file with aggregated results
-   - Includes calculation ID, timestamp, failure data, and parameters
-   - Custom headers and formatting
+- exportExcel() creates XLSX file with aggregated results
+- Includes calculation ID, timestamp, failure data, and parameters
+- Custom headers and formatting
+
+F. URL PARAMETER INTEGRATION:
+- Query Handler injects failure time data from URL
+- Auto-calculation triggered when auto_calculate parameter is set
+- Field mapping for data parameter
 
 IMPORTANT ALGORITHMS:
 
 1. WEIBULL PARAMETER ESTIMATION:
-   - Median rank estimation: (rank - 0.5) / n
-   - Coordinate transformation: x = ln(t), y = ln(ln(1/(1-F(t))))
-   - Linear regression on transformed coordinates
-   - Parameter extraction: β = slope, η = exp(-intercept/slope)
+- Median rank estimation: (rank - 0.5) / n
+- Coordinate transformation: x = ln(t), y = ln(ln(1/(1-F(t))))
+- Linear regression on transformed coordinates
+- Parameter extraction: β = slope, η = exp(-intercept/slope)
 
 2. GAMMA FUNCTION IMPLEMENTATION:
-   - Lanczos approximation with 7 coefficients
-   - Accurate for positive real numbers
-   - Recursive implementation for values < 0.5
+- Lanczos approximation with 7 coefficients
+- Accurate for positive real numbers
+- Recursive implementation for values < 0.5
 
 3. PROBABILITY PREDICTION:
-   - Uses Weibull CDF: F(t) = 1 - exp(-(t/η)^β)
-   - Converts to percentage for display
+- Uses Weibull CDF: F(t) = 1 - exp(-(t/η)^β)
+- Converts to percentage for display
 
 EDGE CASE HANDLING:
 - Insufficient data (minimum 2 failure times)
@@ -521,6 +555,7 @@ INTEGRATION POINTS:
 3. SheetJS for Excel export
 4. KaTeX for mathematical formula rendering
 5. Font Awesome for icons
+6. Query Handler for URL parameter support
 
 PERFORMANCE CONSIDERATIONS:
 - Efficient linear regression algorithm
@@ -545,137 +580,137 @@ It provides a structured framework for continuous improvement projects, allowing
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Four-phase data collection: Plan, Do, Check, Act
-   - Each phase has specific input fields:
-     • Plan: Problem/Opportunity, Goal/Hypothesis, Action Plan
-     • Do: Execution Record, Problems/Observations
-     • Check: Data & Results, Analysis
-     • Act: Conclusions/Learnings, Next Steps
-   - Auto-expanding textareas for all input fields
-   - Tab navigation with subtabs for each PDCA phase
+- Four-phase data collection: Plan, Do, Check, Act
+- Each phase has specific input fields:
+  • Plan: Problem/Opportunity, Goal/Hypothesis, Action Plan
+  • Do: Execution Record, Problems/Observations
+  • Check: Data & Results, Analysis
+  • Act: Conclusions/Learnings, Next Steps
+- Auto-expanding textareas for all input fields
+- Tab navigation with subtabs for each PDCA phase
 
 2. VISUALIZATION SYSTEM:
-   - Interactive PDCA wheel with four color-coded quadrants
-   - Hover effects and animations on wheel segments
-   - Rotating center circle icon
-   - Phase-based content display with smooth transitions
+- Interactive PDCA wheel with four color-coded quadrants
+- Hover effects and animations on wheel segments
+- Rotating center circle icon
+- Phase-based content display with smooth transitions
 
 3. REPORTING SYSTEM:
-   - Consolidated report generation in tabular format
-   - Color-coded rows for each PDCA phase
-   - Export to Excel with structured format
-   - Results table with phase-specific styling
+- Consolidated report generation in tabular format
+- Color-coded rows for each PDCA phase
+- Export to Excel with structured format
+- Results table with phase-specific styling
 
 4. UI STRUCTURE:
-   - Three main tabs: Start & Info, PDCA Tool, Report
-   - Subtabs within PDCA Tool for each phase (Plan, Do, Check, Act)
-   - Kano-style main action buttons (Load Example, Reset All)
-   - Tab navigation buttons between phases
-   - Responsive design for all device sizes
+- Three main tabs: Start & Info, PDCA Tool, Report
+- Subtabs within PDCA Tool for each phase (Plan, Do, Check, Act)
+- Kano-style main action buttons (Load Example, Reset All)
+- Tab navigation buttons between phases
+- Responsive design for all device sizes
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with empty input fields
-   - Event listeners are set up for tab switching, buttons, etc.
-   - SheetJS library loaded for Excel export
-   - Global cycleData object initialized
+- The application loads with empty input fields
+- Event listeners are set up for tab switching, buttons, etc.
+- SheetJS library loaded for Excel export
+- Global cycleData object initialized
 
 B. CORE FUNCTIONS:
 
-   1. switchTab(tabId)
-      - Switches between main tabs (Start & Info, PDCA Tool, Report)
-      - Updates active tab styling
-      - Scrolls to top smoothly
-      - Updates textarea heights
+1. switchTab(tabId)
+   - Switches between main tabs (Start & Info, PDCA Tool, Report)
+   - Updates active tab styling
+   - Scrolls to top smoothly
+   - Updates textarea heights
 
-   2. switchSubTab(subTabId)
-      - Switches between PDCA phase subtabs (Plan, Do, Check, Act)
-      - Updates active subtab styling
-      - Scrolls to subtab content
-      - Updates textarea heights
+2. switchSubTab(subTabId)
+   - Switches between PDCA phase subtabs (Plan, Do, Check, Act)
+   - Updates active subtab styling
+   - Scrolls to subtab content
+   - Updates textarea heights
 
-   3. autoResizeTextarea(textarea)
-      - Automatically adjusts textarea height based on content
-      - Called on input for all textareas
+3. autoResizeTextarea(textarea)
+   - Automatically adjusts textarea height based on content
+   - Called on input for all textareas
 
-   4. resetTool()
-      - Clears all input fields and resets cycleData object
-      - Shows confirmation dialog before resetting
-      - Displays notification after reset
+4. resetTool()
+   - Clears all input fields and resets cycleData object
+   - Shows confirmation dialog before resetting
+   - Displays notification after reset
 
-   5. loadExample()
-      - Populates all PDCA phases with example data
-      - Demonstrates realistic improvement project scenario
-      - Switches to PDCA Tool tab after loading
-      - Shows notification after loading
+5. loadExample()
+   - Populates all PDCA phases with example data
+   - Demonstrates realistic improvement project scenario
+   - Switches to PDCA Tool tab after loading
+   - Shows notification after loading
 
-   6. generateReport()
-      - Gathers data from all PDCA phases into cycleData object
-      - Validates that at least Plan phase has data
-      - Calls displayResults() to show report
-      - Switches to Report tab
+6. generateReport()
+   - Gathers data from all PDCA phases into cycleData object
+   - Validates that at least Plan phase has data
+   - Calls displayResults() to show report
+   - Switches to Report tab
 
-   7. displayResults()
-      - Creates formatted HTML table with all PDCA data
-      - Applies phase-specific styling and color coding
-      - Includes export button for Excel download
-      - Shows results container
+7. displayResults()
+   - Creates formatted HTML table with all PDCA data
+   - Applies phase-specific styling and color coding
+   - Includes export button for Excel download
+   - Shows results container
 
-   8. exportToExcel()
-      - Uses SheetJS to create Excel workbook
-      - Formats data with headers and phase labels
-      - Downloads file as "PDCA_Report_Sigma_Exacta_[date].xlsx"
-      - Shows notification after export
+8. exportToExcel()
+   - Uses SheetJS to create Excel workbook
+   - Formats data with headers and phase labels
+   - Downloads file as "PDCA_Report_Sigma_Exacta_[date].xlsx"
+   - Shows notification after export
 
-   9. showNotification(message)
-      - Displays temporary notification message
-      - Uses CSS animations for slide-in and fade-out
-      - Automatically removes after 3 seconds
+9. showNotification(message)
+   - Displays temporary notification message
+   - Uses CSS animations for slide-in and fade-out
+   - Automatically removes after 3 seconds
 
 C. DATA FLOW:
-   1. User enters data in PDCA phase subtabs or loads example
-   2. Textareas auto-expand as content is added
-   3. User navigates between phases using tab buttons
-   4. Generate Report collects all data into cycleData object
-   5. Results displayed in formatted table in Report tab
-   6. Export creates Excel file with structured PDCA report
+1. User enters data in PDCA phase subtabs or loads example
+2. Textareas auto-expand as content is added
+3. User navigates between phases using tab buttons
+4. Generate Report collects all data into cycleData object
+5. Results displayed in formatted table in Report tab
+6. Export creates Excel file with structured PDCA report
 
 D. UI UPDATES:
-   - PDCA wheel quadrants have hover effects and animations
-   - Tabs and subtabs switch with smooth transitions
-   - Textareas auto-expand based on content
-   - Results table shows with color-coded phases
-   - Notifications provide user feedback
+- PDCA wheel quadrants have hover effects and animations
+- Tabs and subtabs switch with smooth transitions
+- Textareas auto-expand based on content
+- Results table shows with color-coded phases
+- Notifications provide user feedback
 
 E. VISUALIZATION FEATURES:
-   - PDCA wheel with four interactive quadrants
-   - Each quadrant has icon, phase name, and description
-   - Center circle rotates continuously
-   - Hover effects include scaling, shadows, and brightness
-   - Quadrant colors: Plan (blue), Do (orange), Check (green), Act (purple)
+- PDCA wheel with four interactive quadrants
+- Each quadrant has icon, phase name, and description
+- Center circle rotates continuously
+- Hover effects include scaling, shadows, and brightness
+- Quadrant colors: Plan (blue), Do (orange), Check (green), Act (purple)
 
 IMPORTANT ALGORITHMS:
 
 1. TAB NAVIGATION SYSTEM:
-   - Manages both main tabs and subtabs
-   - Maintains active state for proper UI feedback
-   - Handles smooth scrolling and content updates
+- Manages both main tabs and subtabs
+- Maintains active state for proper UI feedback
+- Handles smooth scrolling and content updates
 
 2. EXCEL EXPORT FORMATTING:
-   - Creates structured worksheet with phase headers
-   - Uses appropriate column widths for readability
-   - Includes date stamp in filename
+- Creates structured worksheet with phase headers
+- Uses appropriate column widths for readability
+- Includes date stamp in filename
 
 3. TEXTAREA AUTO-RESIZING:
-   - element.style.height = 'auto'
-   - element.style.height = (element.scrollHeight) + 'px'
-   - Applied to all textareas on input and tab switch
+- element.style.height = 'auto'
+- element.style.height = (element.scrollHeight) + 'px'
+- Applied to all textareas on input and tab switch
 
 4. DATA VALIDATION:
-   - Checks for minimum data before report generation
-   - Confirms destructive actions (reset)
-   - Validates example loading when data exists
+- Checks for minimum data before report generation
+- Confirms destructive actions (reset)
+- Validates example loading when data exists
 
 EDGE CASE HANDLING:
 - Empty data validation for report generation
@@ -720,151 +755,175 @@ The tool helps plan and analyze experiments to optimize products and processes f
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Five main tabs: Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas
-   - Dynamic factor and level management with add/remove functionality
-   - Orthogonal array selection (L4, L8, L9, L16) with automatic recommendation
-   - Signal-to-Noise ratio type selection (Smaller/Larger/Nominal is best)
-   - Interactive data entry table for experimental results
-   - Example data loading for demonstration
+- Five main tabs: Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas
+- Dynamic factor and level management with add/remove functionality
+- Orthogonal array selection (L4, L8, L9, L16) with automatic recommendation
+- Signal-to-Noise ratio type selection (Smaller/Larger/Nominal is best)
+- Interactive data entry table for experimental results
+- Example data loading for demonstration
 
 2. CALCULATION ENGINE:
-   - Orthogonal array generation based on selected design
-   - Signal-to-Noise ratio calculations per Taguchi formulas
-   - Factor effects analysis with range calculation
-   - ANOVA with F-critical value lookup tables
-   - Optimal factor level determination for robustness
-   - Predicted outcome calculation based on optimal settings
+- Orthogonal array generation based on selected design
+- Signal-to-Noise ratio calculations per Taguchi formulas
+- Factor effects analysis with range calculation
+- ANOVA with F-critical value lookup tables
+- Optimal factor level determination for robustness
+- Predicted outcome calculation based on optimal settings
 
 3. VISUALIZATION SYSTEM:
-   - Main effects plots for each factor
-   - Pareto chart of factor importance
-   - Orthogonal array visualization in tabular format
-   - ANOVA table with significance indicators
-   - Executive summary with optimal settings
+- Main effects plots for each factor
+- Pareto chart of factor importance
+- Orthogonal array visualization in tabular format
+- ANOVA table with significance indicators
+- Executive summary with optimal settings
 
 4. UI STRUCTURE:
-   - Wizard-style five-tab interface following Kano tool pattern
-   - Responsive design for all device sizes
-   - Main action buttons (Load Example, Reset All) above tabs
-   - Tab navigation buttons between phases
-   - Notification system for user feedback
+- Wizard-style five-tab interface following Kano tool pattern
+- Responsive design for all device sizes
+- Main action buttons (Load Example, Reset All) above tabs
+- Tab navigation buttons between phases
+- Notification system for user feedback
+
+5. URL PARAMETER SUPPORT:
+- experiment-name: Name of the experiment
+- objective: Experiment objective
+- response-variable: Name of the response variable
+- snr-type: Signal-to-Noise ratio type (Smaller/Larger/Nominal)
+- factors: Pipe-separated list of factors (e.g., Factor1|Factor2|Factor3)
+- levels: Pipe-separated list of levels for each factor (e.g., Level1,Level2|High,Low|TypeA,TypeB)
+- array: Orthogonal array selection (L4, L8, L9, L16)
+- results: Comma-separated experimental results (e.g., 10.2,9.8,12.1,11.5)
+- target: Target value for nominal-is-best analysis
+- auto_calculate: Trigger for automatic calculation
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with empty input fields
-   - Event listeners are set up for tab switching, buttons, etc.
-   - TaguchiCalculator module loaded from external JS file
-   - Chart.js and KaTeX are loaded from CDN
-   - Global experimentData object initialized
+- The application loads with empty input fields
+- Event listeners are set up for tab switching, buttons, etc.
+- TaguchiCalculator module loaded from external JS file
+- Chart.js and KaTeX are loaded from CDN
+- Global experimentData object initialized
 
 B. CORE FUNCTIONS:
 
-   1. switchWizardTab(tabId)
-      - Switches between main tabs (Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas)
-      - Updates active tab styling
-      - Scrolls to top smoothly
+1. switchWizardTab(tabId)
+   - Switches between main tabs (Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas)
+   - Updates active tab styling
+   - Scrolls to top smoothly
 
-   2. addFactorInput(name, levels)
-      - Adds a new factor input row to the setup form
-      - Includes name and levels (comma-separated) fields
-      - Attaches remove button functionality
+2. addFactorInput(name, levels)
+   - Adds a new factor input row to the setup form
+   - Includes name and levels (comma-separated) fields
+   - Attaches remove button functionality
 
-   3. generateDesign()
-      - Validates setup data and generates orthogonal array design
-      - Creates interactive data entry table for experimental runs
-      - Automatically selects appropriate array if not specified
-      - Shows notification upon completion
+3. generateDesign()
+   - Validates setup data and generates orthogonal array design
+   - Creates interactive data entry table for experimental runs
+   - Automatically selects appropriate array if not specified
+   - Shows notification upon completion
 
-   4. runFullAnalysis()
-      - Collects data from design table and validates completeness
-      - Calls TaguchiCalculator.runAnalysis() with experiment data
-      - Generates comprehensive analysis report with visualizations
-      - Switches to Analysis & Report tab
+4. runFullAnalysis()
+   - Collects data from design table and validates completeness
+   - Calls TaguchiCalculator.runAnalysis() with experiment data
+   - Generates comprehensive analysis report with visualizations
+   - Switches to Analysis & Report tab
 
-   5. createAndDisplayReportBlock(runId)
-      - Creates formatted analysis report with multiple sections:
-        • Executive summary with optimal settings
-        • Effects analysis with Pareto chart
-        • Main effects plots for each factor
-        • Factor effects tables
-        • ANOVA table with significance testing
-        • Signal-to-Noise ratio analysis
-        • Export functionality
+5. createAndDisplayReportBlock(runId)
+   - Creates formatted analysis report with multiple sections:
+     • Executive summary with optimal settings
+     • Effects analysis with Pareto chart
+     • Main effects plots for each factor
+     • Factor effects tables
+     • ANOVA table with significance testing
+     • Signal-to-Noise ratio analysis
+     • Export functionality
 
-   6. createParetoChart(runId)
-      - Creates Pareto chart of factor importance using Chart.js
-      - Sorts factors by effect range from most to least influential
-      - Uses blue color scheme for consistency
+6. createParetoChart(runId)
+   - Creates Pareto chart of factor importance using Chart.js
+   - Sorts factors by effect range from most to least influential
+   - Uses blue color scheme for consistency
 
-   7. createMainEffectsCharts(runId)
-      - Creates main effects plots for each factor
-      - Shows average response at each factor level
-      - Uses line charts with different colors for each factor
+7. createMainEffectsCharts(runId)
+   - Creates main effects plots for each factor
+   - Shows average response at each factor level
+   - Uses line charts with different colors for each factor
 
-   8. exportToExcelTaguchi(runId)
-      - Exports complete Taguchi analysis to Excel using SheetJS
-      - Creates multiple sheets: Summary, Design Data, ANOVA
-      - Includes all calculated results and settings
-      - Downloads file with experiment name in filename
+8. exportToExcelTaguchi(runId)
+   - Exports complete Taguchi analysis to Excel using SheetJS
+   - Creates multiple sheets: Summary, Design Data, ANOVA
+   - Includes all calculated results and settings
+   - Downloads file with experiment name in filename
 
 C. DATA FLOW:
-   1. User sets up experiment with factors and levels
-   2. Generate Design creates orthogonal array and data entry table
-   3. User enters experimental results for each run
-   4. Calculate Full Analysis processes data through TaguchiCalculator
-   5. Results displayed with visualizations in Analysis & Report tab
-   6. Export creates Excel file with comprehensive analysis
+1. User sets up experiment with factors and levels
+2. Generate Design creates orthogonal array and data entry table
+3. User enters experimental results for each run
+4. Calculate Full Analysis processes data through TaguchiCalculator
+5. Results displayed with visualizations in Analysis & Report tab
+6. Export creates Excel file with comprehensive analysis
 
 D. TAGUCHICALCULATOR MODULE:
-  The core calculation logic is encapsulated in the TaguchiCalculator module:
+The core calculation logic is encapsulated in the TaguchiCalculator module:
 
-   1. Orthogonal Arrays: Predefined L4, L8, L9, L16 arrays
-   2. Signal-to-Noise Ratio Calculations:
-      - Smaller is better: S/N = -10 log10(y²)
-      - Larger is better: S/N = -10 log10(1/y²)
-      - Nominal is best: S/N = -10 log10((y-T)²)
-   3. Factor Effects Analysis: Calculates average response per factor level
-   4. ANOVA Calculation: Computes sum of squares, F-values, significance
-   5. Optimal Level Determination: Finds levels that maximize S/N ratio
-   6. F-Critical Values: Lookup table with conservative interpolation
+1. Orthogonal Arrays: Predefined L4, L8, L9, L16 arrays
+2. Signal-to-Noise Ratio Calculations:
+   - Smaller is better: S/N = -10 log10(y²)
+   - Larger is better: S/N = -10 log10(1/y²)
+   - Nominal is best: S/N = -10 log10((y-T)²)
+3. Factor Effects Analysis: Calculates average response per factor level
+4. ANOVA Calculation: Computes sum of squares, F-values, significance
+5. Optimal Level Determination: Finds levels that maximize S/N ratio
+6. F-Critical Values: Lookup table with conservative interpolation
 
-E. UI UPDATES:
-   - Dynamic factor management with real-time validation
-   - Interactive data entry table with change tracking
-   - Automatic orthogonal array selection based on factors
-   - Charts update dynamically based on analysis results
-   - Tab switching with smooth animations
-   - Notification system for user feedback
+E. URL PARAMETER INTEGRATION:
+- Query Handler processes Taguchi-specific parameters
+- Special handlers for factors and levels (pipe-separated format)
+- Special handler for results (comma-separated values)
+- Auto-calculation triggered when auto_calculate parameter is set
+- Dynamic factor creation from URL parameters
+
+F. UI UPDATES:
+- Dynamic factor management with real-time validation
+- Interactive data entry table with change tracking
+- Automatic orthogonal array selection based on factors
+- Charts update dynamically based on analysis results
+- Tab switching with smooth animations
+- Notification system for user feedback
 
 IMPORTANT ALGORITHMS:
 
 1. ORTHOGONAL ARRAY SELECTION:
-   - Automatically selects appropriate array based on:
-     • Maximum number of levels among factors
-     • Number of factors
-   - Falls back to manual selection if automatic fails
+- Automatically selects appropriate array based on:
+  • Maximum number of levels among factors
+  • Number of factors
+- Falls back to manual selection if automatic fails
 
 2. SIGNAL-TO-NOISE RATIO CALCULATIONS:
-   - Follows Taguchi's formulas for different quality characteristics
-   - Handles edge cases (zero values, null results)
-   - Converts to dB scale for interpretation
+- Follows Taguchi's formulas for different quality characteristics
+- Handles edge cases (zero values, null results)
+- Converts to dB scale for interpretation
 
 3. FACTOR EFFECTS ANALYSIS:
-   - Calculates average response for each factor level
-   - Computes range (max-min) to determine factor importance
-   - Uses orthogonal array structure for proper averaging
+- Calculates average response for each factor level
+- Computes range (max-min) to determine factor importance
+- Uses orthogonal array structure for proper averaging
 
 4. ANOVA CALCULATION:
-   - Computes sum of squares for factors and error
-   - Calculates degrees of freedom
-   - Looks up F-critical values with conservative interpolation
-   - Determines statistical significance (p < 0.05)
+- Computes sum of squares for factors and error
+- Calculates degrees of freedom
+- Looks up F-critical values with conservative interpolation
+- Determines statistical significance (p < 0.05)
 
 5. OPTIMAL LEVEL DETERMINATION:
-   - Selects levels that maximize Signal-to-Noise ratio
-   - Associates response values with optimal levels
-   - Calculates predicted outcome based on optimal settings
+- Selects levels that maximize Signal-to-Noise ratio
+- Associates response values with optimal levels
+- Calculates predicted outcome based on optimal settings
+
+6. URL PARAMETER PROCESSING:
+- Parses pipe-separated factors and levels
+- Maps comma-separated results to response inputs
+- Validates parameter formats before processing
 
 EDGE CASE HANDLING:
 - Missing or invalid response data validation
@@ -872,6 +931,7 @@ EDGE CASE HANDLING:
 - Handling of nominal target when S/N type is nominal
 - Automatic orthogonal array fallback when manual selection invalid
 - Mobile-responsive data entry table
+- URL parameter format validation and error handling
 
 INTEGRATION POINTS:
 1. Header loaded dynamically from header.html
@@ -880,12 +940,14 @@ INTEGRATION POINTS:
 4. SheetJS for Excel export
 5. KaTeX for mathematical formula rendering in Formulas tab
 6. Font Awesome for icons
+7. Query Handler for URL parameter support
 
 PERFORMANCE CONSIDERATIONS:
 - Efficient orthogonal array processing
 - Optimized chart rendering with Chart.js
 - Client-side only calculations
 - Smooth tab switching without page reloads
+- Efficient URL parameter parsing
 
 ERROR HANDLING:
 - Comprehensive input validation with descriptive alerts
@@ -893,6 +955,7 @@ ERROR HANDLING:
 - Notification system for user feedback
 - Fallback for chart rendering issues
 - Conservative statistical calculations to avoid errors
+- URL parameter validation and error messages
 
 EDUCATIONAL VALUE:
 - Taguchi Method theory and history (Genichi Taguchi)
@@ -901,6 +964,7 @@ EDUCATIONAL VALUE:
 - Robust design methodology for process optimization
 - ANOVA and statistical significance in experimental design
 - Real-world example of experimental design and analysis
+- URL parameter techniques for data sharing and collaboration
 
 ================================================================================
 TOOL 7: FMEA (FAILURE MODE AND EFFECTS ANALYSIS)
@@ -914,133 +978,133 @@ Users can define system components, contacts (interfaces), and functions, visual
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Three main data panels: Components, Contacts, and Functions
-   - Components can be marked as external (outside system boundary)
-   - Contacts define interfaces between components (from-to relationships)
-   - Functions describe what the system is supposed to do and are assigned to specific contacts
-   - Functions can be primary or secondary
+- Three main data panels: Components, Contacts, and Functions
+- Components can be marked as external (outside system boundary)
+- Contacts define interfaces between components (from-to relationships)
+- Functions describe what the system is supposed to do and are assigned to specific contacts
+- Functions can be primary or secondary
 
 2. VISUALIZATION SYSTEM:
-   - Interactive network diagram (using vis.js) showing components as nodes and contacts as edges
-   - Functions are displayed as colored curved arrows overlaid on contacts
-   - Internal and external components are visually distinguished
-   - Users can drag nodes to rearrange the layout
-   - Legend shows function colors and labels
+- Interactive network diagram (using vis.js) showing components as nodes and contacts as edges
+- Functions are displayed as colored curved arrows overlaid on contacts
+- Internal and external components are visually distinguished
+- Users can drag nodes to rearrange the layout
+- Legend shows function colors and labels
 
 3. FMEA ANALYSIS SYSTEM:
-   - Generate FMEA button creates a new analysis instance
-   - Each function gets a row in the FMEA table with ability to add multiple failure modes
-   - For each failure mode, users can define: failure mode, effects, severity (S), causes, occurrence (O), current controls, detection (D)
-   - RPN is automatically calculated as S × O × D and color-coded (high ≥100, medium ≥50)
-   - Recommended actions can be added for each failure mode
-   - Each analysis instance is timestamped and can be exported separately
+- Generate FMEA button creates a new analysis instance
+- Each function gets a row in the FMEA table with ability to add multiple failure modes
+- For each failure mode, users can define: failure mode, effects, severity (S), causes, occurrence (O), current controls, detection (D)
+- RPN is automatically calculated as S × O × D and color-coded (high ≥100, medium ≥50)
+- Recommended actions can be added for each failure mode
+- Each analysis instance is timestamped and can be exported separately
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory & Info, Define Structure, Visualize, FMEA Results
-   - Main action buttons above tabs (Load Example, Reset All)
-   - Responsive design for all device sizes
+- Wizard-style tabs: Theory & Info, Define Structure, Visualize, FMEA Results
+- Main action buttons above tabs (Load Example, Reset All)
+- Responsive design for all device sizes
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with empty data structures
-   - Event listeners are set up for buttons and form controls
-   - vis.js and SheetJS are loaded from CDN
+- The application loads with empty data structures
+- Event listeners are set up for buttons and form controls
+- vis.js and SheetJS are loaded from CDN
 
 B. CORE FUNCTIONS:
 
-   1. loadExample()
-      - Populates components, contacts, and functions with example data
-      - Switches to Define Structure tab after loading
+1. loadExample()
+   - Populates components, contacts, and functions with example data
+   - Switches to Define Structure tab after loading
 
-   2. resetAll()
-      - Clears all data and resets counters
-      - Destroys and recreates the network visualization
+2. resetAll()
+   - Clears all data and resets counters
+   - Destroys and recreates the network visualization
 
-   3. addComponent(), addContact(), addFunction()
-      - Validate input and add new items to respective arrays
-      - Update all displays and visualizations
+3. addComponent(), addContact(), addFunction()
+   - Validate input and add new items to respective arrays
+   - Update all displays and visualizations
 
-   4. updateAll()
-      - Updates the components, contacts, and functions lists
-      - Updates the network visualization
+4. updateAll()
+   - Updates the components, contacts, and functions lists
+   - Updates the network visualization
 
-   5. updateNetworkVisualization()
-      - Creates or updates the vis.js network
-      - Internal components are placed in the center, external components above and below
-      - Contacts are drawn as straight lines, functions as curved arrows with labels
+5. updateNetworkVisualization()
+   - Creates or updates the vis.js network
+   - Internal components are placed in the center, external components above and below
+   - Contacts are drawn as straight lines, functions as curved arrows with labels
 
-   6. generateFMEA()
-      - Creates a new FMEA analysis block with a timestamp
-      - For each function, creates a table row with input fields for failure analysis
-      - Adds event listeners for dynamic RPN calculation and action management
+6. generateFMEA()
+   - Creates a new FMEA analysis block with a timestamp
+   - For each function, creates a table row with input fields for failure analysis
+   - Adds event listeners for dynamic RPN calculation and action management
 
-   7. exportTableToExcel(tableElement, fileName)
-      - Exports the FMEA table to an Excel file using SheetJS
-      - Includes all failure mode data and recommended actions
+7. exportTableToExcel(tableElement, fileName)
+   - Exports the FMEA table to an Excel file using SheetJS
+   - Includes all failure mode data and recommended actions
 
-   8. exportChart()
-      - Exports the network diagram as a JPG image
+8. exportChart()
+   - Exports the network diagram as a JPG image
 
 C. DATA FLOW:
-   1. User adds components, then contacts between components, then functions assigned to contacts
-   2. The network diagram updates in real-time
-   3. User clicks Generate FMEA to create a new analysis table
-   4. In the table, user fills in failure modes, effects, causes, controls, and selects S, O, D values
-   5. RPN is calculated automatically and color-coded
-   6. User can add recommended actions for each failure mode
-   7. User can export the FMEA table to Excel or export the network diagram as an image
+1. User adds components, then contacts between components, then functions assigned to contacts
+2. The network diagram updates in real-time
+3. User clicks Generate FMEA to create a new analysis table
+4. In the table, user fills in failure modes, effects, causes, controls, and selects S, O, D values
+5. RPN is calculated automatically and color-coded
+6. User can add recommended actions for each failure mode
+7. User can export the FMEA table to Excel or export the network diagram as an image
 
 D. UI UPDATES:
-   - Lists of components, contacts, and functions update as items are added or removed
-   - Network diagram updates dynamically
-   - New FMEA analysis blocks are added to the Results tab with smooth scrolling
+- Lists of components, contacts, and functions update as items are added or removed
+- Network diagram updates dynamically
+- New FMEA analysis blocks are added to the Results tab with smooth scrolling
 
 E. EXPORT FUNCTIONALITY:
-   - Each FMEA analysis can be exported to Excel with formatted columns
-   - Network diagram can be exported as JPG
+- Each FMEA analysis can be exported to Excel with formatted columns
+- Network diagram can be exported as JPG
 
 IMPORTANT ALGORITHMS:
 
 1. NETWORK LAYOUT:
-   - Internal components are arranged in two columns with vertical spacing
-   - External components are placed above and below the internal zone with horizontal spacing
-   - Contacts are drawn as straight lines, functions as curved arrows to avoid overlap
+- Internal components are arranged in two columns with vertical spacing
+- External components are placed above and below the internal zone with horizontal spacing
+- Contacts are drawn as straight lines, functions as curved arrows to avoid overlap
 
 2. RPN CALCULATION:
-   - RPN = Severity × Occurrence × Detection
-   - Color coding: red for RPN ≥100, yellow for RPN ≥50, no color otherwise
+- RPN = Severity × Occurrence × Detection
+- Color coding: red for RPN ≥100, yellow for RPN ≥50, no color otherwise
 
 3. DYNAMIC TABLE MANAGEMENT:
-   - Rows are added dynamically for each failure mode
-   - Textareas auto-expand based on content
-   - Action items can be added or removed dynamically
+- Rows are added dynamically for each failure mode
+- Textareas auto-expand based on content
+- Action items can be added or removed dynamically
 
 EDGE CASE HANDLING:
-   - Preventing duplicate or self-contacts
-   - Handling deletion of components that are referenced by contacts or functions
-   - Validating input before adding new items
-   - Handling empty data sets in visualization
+- Preventing duplicate or self-contacts
+- Handling deletion of components that are referenced by contacts or functions
+- Validating input before adding new items
+- Handling empty data sets in visualization
 
 INTEGRATION POINTS:
-   1. Header loaded dynamically from header.html
-   2. vis.js for network visualization
-   3. SheetJS for Excel export
-   4. Font Awesome for icons
-   5. Google Fonts for typography
+1. Header loaded dynamically from header.html
+2. vis.js for network visualization
+3. SheetJS for Excel export
+4. Font Awesome for icons
+5. Google Fonts for typography
 
 PERFORMANCE CONSIDERATIONS:
-   - Network visualization is optimized for up to 50 nodes and edges
-   - Dynamic table rows are added efficiently with event delegation
+- Network visualization is optimized for up to 50 nodes and edges
+- Dynamic table rows are added efficiently with event delegation
 
 ERROR HANDLING:
-   - Input validation with alerts for invalid data
-   - Graceful handling of missing data in exports
+- Input validation with alerts for invalid data
+- Graceful handling of missing data in exports
 
 EDUCATIONAL VALUE:
-   - Explains FMEA methodology and 7-step process
-   - Provides example data for a mechanical system
-   - Teaches risk assessment through RPN calculation
+- Explains FMEA methodology and 7-step process
+- Provides example data for a mechanical system
+- Teaches risk assessment through RPN calculation
 
 ================================================================================
 TOOL 8: QUALITY FUNCTION DEPLOYMENT (QFD)
@@ -1053,129 +1117,129 @@ It enables users to translate Customer Needs ("Whats") into Technical Specificat
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Four specialized input tabs within the "Input Data" section:
-     • Customer Needs: Text input with Importance rating (1-5 scale)
-     • Technical Specs: Measurable engineering characteristics
-     • Relationships: Matrix defining link strength between Needs and Specs (Strong/Medium/Weak/None)
-     • Correlations: "Roof" matrix defining interactions between Technical Specs (Strong Positive/Positive/Negative/Strong Negative)
-   - Dynamic lists with add/remove functionality for requirements and specs
+- Four specialized input tabs within the "Input Data" section:
+  • Customer Needs: Text input with Importance rating (1-5 scale)
+  • Technical Specs: Measurable engineering characteristics
+  • Relationships: Matrix defining link strength between Needs and Specs (Strong/Medium/Weak/None)
+  • Correlations: "Roof" matrix defining interactions between Technical Specs (Strong Positive/Positive/Negative/Strong Negative)
+- Dynamic lists with add/remove functionality for requirements and specs
 
 2. VISUALIZATION SYSTEM:
-   - House of Quality Matrix generation including:
-     • The "Roof" (Correlation Matrix)
-     • The "Room" (Relationship Matrix with symbols: ●, ○, ▲)
-     • The "Basement" (Technical Priorities and Rankings)
-   - Priority bar charts for visual comparison of technical importance
+- House of Quality Matrix generation including:
+  • The "Roof" (Correlation Matrix)
+  • The "Room" (Relationship Matrix with symbols: ●, ○, ▲)
+  • The "Basement" (Technical Priorities and Rankings)
+- Priority bar charts for visual comparison of technical importance
 
 3. CALCULATION ENGINE:
-   - Priority Score Calculation: Sum of (Customer Importance × Relationship Value)
-   - Dynamic Ranking: Auto-ranks technical specs based on calculated scores
-   - Rank-based color coding (Red for top rank, fading to grey)
+- Priority Score Calculation: Sum of (Customer Importance × Relationship Value)
+- Dynamic Ranking: Auto-ranks technical specs based on calculated scores
+- Rank-based color coding (Red for top rank, fading to grey)
 
 4. UI STRUCTURE:
-   - Wizard-style main tabs: Theory & Info, Input Data, Results & Matrix
-   - Nested tabs within Input Data for organized data entry
-   - Responsive design with horizontal scrolling for large matrices
-   - Action buttons (Load Example, Reset All, Generate Matrix)
+- Wizard-style main tabs: Theory & Info, Input Data, Results & Matrix
+- Nested tabs within Input Data for organized data entry
+- Responsive design with horizontal scrolling for large matrices
+- Action buttons (Load Example, Reset All, Generate Matrix)
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - The application loads with empty arrays for customerRequirements and technicalRequirements
-   - Objects `relationships` and `correlations` are initialized
-   - Event listeners set up for all input buttons and tab switching
+- The application loads with empty arrays for customerRequirements and technicalRequirements
+- Objects `relationships` and `correlations` are initialized
+- Event listeners set up for all input buttons and tab switching
 
 B. CORE FUNCTIONS:
 
-   1. switchQfdTab(tabId) / switchInputTab(tabId)
-      - Handles navigation between main wizard tabs and nested input tabs
-   - Updates active states and scrolls to content
+1. switchQfdTab(tabId) / switchInputTab(tabId)
+   - Handles navigation between main wizard tabs and nested input tabs
+- Updates active states and scrolls to content
 
-   2. renderCustomerRequirements() / renderTechnicalSpecs()
-      - Dynamically updates the DOM lists as items are added/removed
-      - Handles "empty state" messages
+2. renderCustomerRequirements() / renderTechnicalSpecs()
+   - Dynamically updates the DOM lists as items are added/removed
+   - Handles "empty state" messages
 
-   3. updateRelationshipControls()
-      - Generates the relationship selection grid based on current needs and specs
-      - Uses data attributes to map inputs to specific pairs (cr_ID + tr_ID)
+3. updateRelationshipControls()
+   - Generates the relationship selection grid based on current needs and specs
+   - Uses data attributes to map inputs to specific pairs (cr_ID + tr_ID)
 
-   4. updateCorrelationControls()
-      - Generates the triangular correlation grid for the "Roof"
-      - Prevents redundant pairs (only shows upper triangle of matrix)
+4. updateCorrelationControls()
+   - Generates the triangular correlation grid for the "Roof"
+   - Prevents redundant pairs (only shows upper triangle of matrix)
 
-   5. generateQfdMatrix()
-      - Constructs the full House of Quality HTML table
-      - Renders symbols for relationships (●=9, ○=3, ▲=1)
-      - Renders signs for correlations (++, +, -, --)
-      - Triggers priority calculation
+5. generateQfdMatrix()
+   - Constructs the full House of Quality HTML table
+   - Renders symbols for relationships (●=9, ○=3, ▲=1)
+   - Renders signs for correlations (++, +, -, --)
+   - Triggers priority calculation
 
-   6. calculatePriorities()
-      - Computes technical scores and updates the "Basement" of the matrix
-      - Generates the priority summary table with bar charts
+6. calculatePriorities()
+   - Computes technical scores and updates the "Basement" of the matrix
+   - Generates the priority summary table with bar charts
 
-   7. loadExample()
-      - Populates the tool with a complete dataset (6 needs, 6 specs)
-      - Sets up complex relationships and correlations
-      - Switches view to Input Data tab
+7. loadExample()
+   - Populates the tool with a complete dataset (6 needs, 6 specs)
+   - Sets up complex relationships and correlations
+   - Switches view to Input Data tab
 
-   8. exportToExcel()
-      - Uses SheetJS to export the matrix and priority list
-      - Formats column widths for readability
+8. exportToExcel()
+   - Uses SheetJS to export the matrix and priority list
+   - Formats column widths for readability
 
 C. DATA FLOW:
-   1. User inputs Needs and Specs -> Arrays updated -> Render Lists
-   2. User defines Relationships/Correlations -> Objects updated
-   3. User clicks Generate -> `generateQfdMatrix` builds DOM table
-   4. `calculatePriorities` runs math -> Updates table footer and Results tab
+1. User inputs Needs and Specs -> Arrays updated -> Render Lists
+2. User defines Relationships/Correlations -> Objects updated
+3. User clicks Generate -> `generateQfdMatrix` builds DOM table
+4. `calculatePriorities` runs math -> Updates table footer and Results tab
 
 D. UI UPDATES:
-   - Toast notifications (`showToast`) for actions (add, remove, error, success)
-   - Smooth scrolling when switching tabs or generating matrix
-   - Dynamic table generation for the matrix
+- Toast notifications (`showToast`) for actions (add, remove, error, success)
+- Smooth scrolling when switching tabs or generating matrix
+- Dynamic table generation for the matrix
 
 E. EXPORT FUNCTIONALITY:
-   - Exports two sheets:
-     * "QFD Matrix": The visual representation of the House
-     * "Priorities": Sorted list of technical specs with scores and ranks
+- Exports two sheets:
+  * "QFD Matrix": The visual representation of the House
+  * "Priorities": Sorted list of technical specs with scores and ranks
 
 IMPORTANT ALGORITHMS:
 
 1. PRIORITY SCORE CALCULATION:
-  - Score(Tech_Spec_j) = Σ (Customer_Importance_i × Relationship_Value_ij)
-   - Relationship Values: Strong (9), Medium (3), Weak (1), None (0)
+- Score(Tech_Spec_j) = Σ (Customer_Importance_i × Relationship_Value_ij)
+- Relationship Values: Strong (9), Medium (3), Weak (1), None (0)
 
 2. RANKING LOGIC:
-   - Sorts Technical Specs by Score (Descending)
-   - Assigns Rank 1 to highest score
-   - Handles ties (same rank for identical scores)
+- Sorts Technical Specs by Score (Descending)
+- Assigns Rank 1 to highest score
+- Handles ties (same rank for identical scores)
 
 3. MATRIX CONSTRUCTION:
-   - "Roof" Logic: Iterates `i` from 0 to N, `j` from `i+1` to N to build the triangular correlation structure
+- "Roof" Logic: Iterates `i` from 0 to N, `j` from `i+1` to N to build the triangular correlation structure
 
 EDGE CASE HANDLING:
-   - Attempting to generate matrix with 0 needs or 0 specs
-   - Attempting to set correlations with < 2 technical specs
-   - Empty relationship values treated as 0 in calculation
+- Attempting to generate matrix with 0 needs or 0 specs
+- Attempting to set correlations with < 2 technical specs
+- Empty relationship values treated as 0 in calculation
 
 INTEGRATION POINTS:
-   1. Header loaded from header.html
-   2. SheetJS (xlsx.full.min.js) for Excel export
-   3. Font Awesome for UI icons and matrix symbols
-   4. Google Fonts (Nunito)
+1. Header loaded from header.html
+2. SheetJS (xlsx.full.min.js) for Excel export
+3. Font Awesome for UI icons and matrix symbols
+4. Google Fonts (Nunito)
 
 PERFORMANCE CONSIDERATIONS:
-   - Matrix generation clears and rebuilds DOM elements
-   - Responsive horizontal scrolling for mobile viewing of large matrices
+- Matrix generation clears and rebuilds DOM elements
+- Responsive horizontal scrolling for mobile viewing of large matrices
 
 ERROR HANDLING:
-   - Toast notifications for missing input data
-   - Input validation to prevent empty text entries
-   - Confirmation dialog for Reset All action
+- Toast notifications for missing input data
+- Input validation to prevent empty text entries
+- Confirmation dialog for Reset All action
 
 EDUCATIONAL VALUE:
-  - Visualizes the House of Quality methodology
-   - Demonstrates the flow from Voice of Customer to Engineering Specs
-   - Teaches prioritization based on weighted impact
+- Visualizes the House of Quality methodology
+- Demonstrates the flow from Voice of Customer to Engineering Specs
+- Teaches prioritization based on weighted impact
 
 ================================================================================
 TOOL 9: PUGH MATRIX CREATOR
@@ -1188,97 +1252,97 @@ It uses a weighted criteria system where concepts are compared against a designa
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Two dynamic list builders:
-     • Criteria: The requirements used to judge concepts (e.g., Cost, Weight)
-     • Concepts: The different alternatives being evaluated
-   - Add/Remove functionality for list items
-   - Validation ensures at least 1 criterion and 2 concepts before generation
+- Two dynamic list builders:
+  • Criteria: The requirements used to judge concepts (e.g., Cost, Weight)
+  • Concepts: The different alternatives being evaluated
+- Add/Remove functionality for list items
+- Validation ensures at least 1 criterion and 2 concepts before generation
 
 2. MATRIX SYSTEM:
-   - Dynamic table generation based on input lists
-   - Baseline Selector: Dropdown to choose which concept serves as the reference (Datum)
-   - Weights: Numeric input for each criterion to determine importance
-   - Scoring: Dropdown per cell (+, S, -) to compare concepts against the baseline
+- Dynamic table generation based on input lists
+- Baseline Selector: Dropdown to choose which concept serves as the reference (Datum)
+- Weights: Numeric input for each criterion to determine importance
+- Scoring: Dropdown per cell (+, S, -) to compare concepts against the baseline
 
 3. CALCULATION ENGINE:
-   - Score Mapping: "+" = 1, "S" = 0, "-" = -1
-   - Total Score Calculation: Σ (Score × Weight) for each concept
-   - Baseline Logic: The baseline concept always scores 0 for all criteria
-   - Automatic Winner Detection: Highlights the concept with the highest total score
+- Score Mapping: "+" = 1, "S" = 0, "-" = -1
+- Total Score Calculation: Σ (Score × Weight) for each concept
+- Baseline Logic: The baseline concept always scores 0 for all criteria
+- Automatic Winner Detection: Highlights the concept with the highest total score
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory & Info, Data Input & Matrix, Results
-   - Integrated matrix view within the Data Input tab for real-time interaction
-   - Results tab with summary view and "Winning Concept" highlight card
-   - Main action buttons (Load Example, Reset All)
+- Wizard-style tabs: Theory & Info, Data Input & Matrix, Results
+- Integrated matrix view within the Data Input tab for real-time interaction
+- Results tab with summary view and "Winning Concept" highlight card
+- Main action buttons (Load Example, Reset All)
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - Loads header from header.html
-   - Initializes empty `criteriaData` and `conceptsData` arrays
-   - Sets up global listeners for navigation and main buttons
+- Loads header from header.html
+- Initializes empty `criteriaData` and `conceptsData` arrays
+- Sets up global listeners for navigation and main buttons
 
 B. CORE FUNCTIONS:
 
-   1. generateMatrix()
-      - Constructs the HTML table string based on input arrays
-      - Creates dropdowns for Baseline selection and scoring
-      - Attaches event listeners to new inputs for real-time calculation
-      - Updates `matrixGenerated` state
+1. generateMatrix()
+   - Constructs the HTML table string based on input arrays
+   - Creates dropdowns for Baseline selection and scoring
+   - Attaches event listeners to new inputs for real-time calculation
+   - Updates `matrixGenerated` state
 
-   2. updateScores()
-      - Main calculation loop triggered on any input change
-      - Identifies the current Baseline index
-      - Iterates through rows (criteria) and columns (concepts)
-      - Sums weighted scores (Score × Weight)
-      - Updates the "Total" row in the footer
+2. updateScores()
+   - Main calculation loop triggered on any input change
+   - Identifies the current Baseline index
+   - Iterates through rows (criteria) and columns (concepts)
+   - Sums weighted scores (Score × Weight)
+   - Updates the "Total" row in the footer
 
-   3. highlightWinner(totals, baselineIndex)
-      - Finds the maximum score excluding the baseline
-      - Applies CSS classes (`winning-column`, `winning-column-header`) to the winner
-      - Handles draws (no winner highlighted if tie)
+3. highlightWinner(totals, baselineIndex)
+   - Finds the maximum score excluding the baseline
+   - Applies CSS classes (`winning-column`, `winning-column-header`) to the winner
+   - Handles draws (no winner highlighted if tie)
 
-   4. loadExampleData()
-      - Populates lists with sample data (e.g., "Standard Plastic Case", "Machined Aluminum Case")
-      - Automatically switches to Input tab and saves data
+4. loadExampleData()
+   - Populates lists with sample data (e.g., "Standard Plastic Case", "Machined Aluminum Case")
+   - Automatically switches to Input tab and saves data
 
-   5. exportToExcel()
-      - Clones the matrix table
-      - Replaces interactive inputs (selects, numbers) with static text values
-      - Uses SheetJS `table_to_book` to generate the file
+5. exportToExcel()
+   - Clones the matrix table
+   - Replaces interactive inputs (selects, numbers) with static text values
+   - Uses SheetJS `table_to_book` to generate the file
 
 C. DATA FLOW:
-   1. User adds items to lists -> Arrays updated -> `saveInputData`
-   2. User clicks Generate Matrix -> Table built in DOM
-   3. User changes Baseline -> `updateScores` resets baseline column to "S" and recalculates others
-   4. User adjusts Weights or Scores -> `updateScores` recalculates totals
-   5. Winner is highlighted dynamically
+1. User adds items to lists -> Arrays updated -> `saveInputData`
+2. User clicks Generate Matrix -> Table built in DOM
+3. User changes Baseline -> `updateScores` resets baseline column to "S" and recalculates others
+4. User adjusts Weights or Scores -> `updateScores` recalculates totals
+5. Winner is highlighted dynamically
 
 D. UI UPDATES:
-   - "Go to Results" button is disabled until matrix is generated
-   - Baseline cells are visually distinct (blue background, fixed "B" value)
-   - Winning column gets a green highlight
-   - Results tab shows a summary card with the winner's name and score
+- "Go to Results" button is disabled until matrix is generated
+- Baseline cells are visually distinct (blue background, fixed "B" value)
+- Winning column gets a green highlight
+- Results tab shows a summary card with the winner's name and score
 
 E. ALGORITHMS:
-   - Weighted Sum: Total = Σ (Weight_i * Score_ij) where Score is {1, 0, -1}
-   - Baseline enforcement: Logic ensures comparison is always relative to the selected Datum
+- Weighted Sum: Total = Σ (Weight_i * Score_ij) where Score is {1, 0, -1}
+- Baseline enforcement: Logic ensures comparison is always relative to the selected Datum
 
 INTEGRATION POINTS:
-   1. SheetJS (xlsx.full.min.js) for Excel export
-   2. Font Awesome for UI icons
-   3. Header loaded from header.html
+1. SheetJS (xlsx.full.min.js) for Excel export
+2. Font Awesome for UI icons
+3. Header loaded from header.html
 
 EDGE CASE HANDLING:
-   - Minimum data validation (1 criterion, 2 concepts)
-   - Handling of ties in winner detection
-   - Export logic handles complex HTML elements (selects inside cells)
+- Minimum data validation (1 criterion, 2 concepts)
+- Handling of ties in winner detection
+- Export logic handles complex HTML elements (selects inside cells)
 
 EDUCATIONAL VALUE:
-   - Teaches the "Datum" concept in decision making
-   - Demonstrates systematic, weighted evaluation
-   - Encourages objective comparison over subjective preference
+- Teaches the "Datum" concept in decision making
+- Demonstrates systematic, weighted evaluation
+- Encourages objective comparison over subjective preference
 
 ================================================================================
 TOOL 10: VAVE ANALYSIS (VALUE ANALYSIS & VALUE ENGINEERING)
@@ -1291,162 +1355,175 @@ It enables users to define system structures (components, contacts, functions), 
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-   - Three main structure panels:
-     • Components: Define system parts (Internal or External)
-     • Contacts: Define interfaces/connections between components (From/To)
-     • Functions: Define what the system does (Primary or Secondary type), assigned to specific contacts
-   - Dynamic lists with add/remove functionality for all structural elements
-   - Analysis Input: Cost ($) and Value Score (1-10) for each identified function
+- Three main structure panels:
+  • Components: Define system parts (Internal or External)
+  • Contacts: Define interfaces/connections between components (From/To)
+  • Functions: Define what the system does (Primary or Secondary type), assigned to specific contacts
+- Dynamic lists with add/remove functionality for all structural elements
+- Analysis Input: Cost ($) and Value Score (1-10) for each identified function
 
 2. VISUALIZATION SYSTEM:
-   - Interactive Network Diagram (using vis.js):
-     • Internal components arranged centrally
-     • External components arranged above and below
-     • Contacts shown as straight lines
-     • Functions shown as curved arrows with labels
-   - Real-time updates as structure is modified
-   - Export functionality for the diagram as JPG
+- Interactive Network Diagram (using vis.js):
+  • Internal components arranged centrally
+  • External components arranged above and below
+  • Contacts shown as straight lines
+  • Functions shown as curved arrows with labels
+- Real-time updates as structure is modified
+- Export functionality for the diagram as JPG
 
 3. CALCULATION ENGINE:
-   - Value Index Calculation: Value Score / Cost
-   - Priority Logic:
-     • High Value: Index ≥ 0.25 (Green)
-     • Medium Value: Index ≥ 0.1 (Yellow)
-     • Low Value: Index < 0.1 (Red - candidates for cost reduction)
-   - Summary statistics: Total Cost, Average Value Index
+- Value Index Calculation: Value Score / Cost
+- Priority Logic:
+  • High Value: Index ≥ 0.25 (Green)
+  • Medium Value: Index ≥ 0.1 (Yellow)
+  • Low Value: Index < 0.1 (Red - candidates for cost reduction)
+- Summary statistics: Total Cost, Average Value Index
 
 4. UI STRUCTURE:
-   - Wizard-style tabs: Theory & Info, Define Structure, Visualize, VAVE Analysis
-   - Responsive design with smooth transitions
-   - Main action buttons (Load Example, Reset All)
-   - Integrated tab navigation buttons
+- Wizard-style tabs: Theory & Info, Define Structure, Visualize, VAVE Analysis
+- Responsive design with smooth transitions
+- Main action buttons (Load Example, Reset All)
+- Integrated tab navigation buttons
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-   - Loads header from header.html
-   - Initializes empty arrays: `components`, `contacts`, `functions`
-   - Sets up global listeners and initializes vis.js network
+- Loads header from header.html
+- Initializes empty arrays: `components`, `contacts`, `functions`
+- Sets up global listeners and initializes vis.js network
 
 B. CORE FUNCTIONS:
 
-   1. addComponent() / addContact() / addFunction()
-      - Validates inputs and adds new objects to respective arrays
-      - Updates DOM lists and internal counters
-      - Triggers `updateAll()` to refresh UI and Select options
+1. addComponent() / addContact() / addFunction()
+   - Validates inputs and adds new objects to respective arrays
+   - Updates DOM lists and internal counters
+   - Triggers `updateAll()` to refresh UI and Select options
 
-   2. updateNetworkVisualization()
-      - Configures vis.js data sets (nodes and edges)
-      - Implements specific layout logic:
-        * Internal nodes: Central grid layout
-        * External nodes: Fixed offsets top/bottom
-      - Renders functions as curved arrows (`curvedCW`) to distinguish from physical contacts
+2. updateNetworkVisualization()
+   - Configures vis.js data sets (nodes and edges)
+   - Implements specific layout logic:
+     * Internal nodes: Central grid layout
+     * External nodes: Fixed offsets top/bottom
+   - Renders functions as curved arrows (`curvedCW`) to distinguish from physical contacts
 
-   3. generateVAVEAnalysis()
-      - Builds the analysis table dynamically based on defined functions
-      - Calculates initial Value Indices
-      - Attaches event listeners to Cost and Value Score inputs for real-time recalculation
+3. generateVAVEAnalysis()
+   - Builds the analysis table dynamically based on defined functions
+   - Calculates initial Value Indices
+   - Attaches event listeners to Cost and Value Score inputs for real-time recalculation
 
-   4. calculateAllVAVEValues()
-      - Iterates through all functions
-      - Computes Value Index (Score / Cost)
-      - Applies CSS classes for High/Medium/Low priority highlighting
-      - Updates summary statistics
+4. calculateAllVAVEValues()
+   - Iterates through all functions
+   - Computes Value Index (Score / Cost)
+   - Applies CSS classes for High/Medium/Low priority highlighting
+   - Updates summary statistics
 
-   5. loadExample()
-      - Populates the tool with a complete mechanical system (Motor, Gearbox, Controller, etc.)
-      - Sets up complex relationships and functions (Transmit Power, Control Speed)
-      - Automatically transitions to Structure tab
+5. loadExample()
+   - Populates the tool with a complete mechanical system (Motor, Gearbox, Controller, etc.)
+   - Sets up complex relationships and functions (Transmit Power, Control Speed)
+   - Automatically transitions to Structure tab
 
-   6. exportVAVEToExcel()
-      - Uses SheetJS to export two sheets:
-        * "VAVE Analysis": Detailed function data, costs, and scores
-        * "Summary": Totals and counts of High/Low value functions
+6. exportVAVEToExcel()
+   - Uses SheetJS to export two sheets:
+     * "VAVE Analysis": Detailed function data, costs, and scores
+     * "Summary": Totals and counts of High/Low value functions
 
 C. DATA FLOW:
-   1. User defines Structure (Components -> Contacts -> Functions)
-   2. Network Diagram updates automatically via `updateNetworkVisualization`
-   3. User proceeds to Analysis tab -> `generateVAVEAnalysis` builds table
-   4. User inputs Costs and Scores -> Value Index is calculated real-time
-   5. User exports results or image
+1. User defines Structure (Components -> Contacts -> Functions)
+2. Network Diagram updates automatically via `updateNetworkVisualization`
+3. User proceeds to Analysis tab -> `generateVAVEAnalysis` builds table
+4. User inputs Costs and Scores -> Value Index is calculated real-time
+5. User exports results or image
 
 D. UI UPDATES:
-   - Network diagram handles node dragging and fitting
-   - Dynamic dropdowns in "Define Structure" populate based on existing components/contacts
-   - Analysis table updates color-coding immediately upon input change
+- Network diagram handles node dragging and fitting
+- Dynamic dropdowns in "Define Structure" populate based on existing components/contacts
+- Analysis table updates color-coding immediately upon input change
 
 E. ALGORITHMS:
-   - Network Layout: Custom positioning logic to separate Internal vs External system boundaries
-   - Value Equation: Value = Function Performance / Lifecycle Cost
-   - Prioritization thresholds (0.1, 0.25) for visual heat-mapping
+- Network Layout: Custom positioning logic to separate Internal vs External system boundaries
+- Value Equation: Value = Function Performance / Lifecycle Cost
+- Prioritization thresholds (0.1, 0.25) for visual heat-mapping
 
 INTEGRATION POINTS:
-   1. vis.js (4.21.0) for Network Visualization
-   2. SheetJS (xlsx.full.min.js) for Excel export
-   3. Font Awesome for UI icons
-   4. Header loaded from header.html
+1. vis.js (4.21.0) for Network Visualization
+2. SheetJS (xlsx.full.min.js) for Excel export
+3. Font Awesome for UI icons
+4. Header loaded from header.html
 
 EDGE CASE HANDLING:
-   - Attempting to add contacts with < 2 components
-   - Handling Cost = 0 (prevents division by zero errors in display)
-   - Deletion logic cascades (deleting a component deletes associated contacts and functions)
+- Attempting to add contacts with < 2 components
+- Handling Cost = 0 (prevents division by zero errors in display)
+- Deletion logic cascades (deleting a component deletes associated contacts and functions)
 
 EDUCATIONAL VALUE:
-   - Teaches the "Value = Function / Cost" equation
-   - Visualizes system boundaries and functional interfaces
-   - Demonstrates the difference between Primary and Secondary functions
+- Teaches the "Value = Function / Cost" equation
+- Visualizes system boundaries and functional interfaces
+- Demonstrates the difference between Primary and Secondary functions
 
 ================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:
-   - Wizard-style tab navigation
-   - Responsive design for all devices
-   - Consistent styling and color scheme
-   - Header/footer consistency
+- Wizard-style tab navigation
+- Responsive design for all devices
+- Consistent styling and color scheme
+- Header/footer consistency
 
 2. DATA MANAGEMENT:
-   - Client-side only processing
-   - No server communication
-   - Excel export functionality
-   - Example data loading
+- Client-side only processing
+- No server communication
+- Excel export functionality
+- Example data loading
 
 3. EDUCATIONAL VALUE:
-   - Theoretical explanations in Theory tabs
-   - Step-by-step instructions
-   - Real-world application examples
-   - Best practices guidance
+- Theoretical explanations in Theory tabs
+- Step-by-step instructions
+- Real-world application examples
+- Best practices guidance
 
 4. ERROR HANDLING:
-   - Input validation
-   - Informative error messages
-   - Graceful degradation
+- Input validation
+- Informative error messages
+- Graceful degradation
+
+5. URL PARAMETER SUPPORT:
+- Universal Query Handler for all tools
+- Automated data injection from URL parameters
+- Auto-calculation triggering
+- Field mapping intelligence
+- Special handlers for tool-specific parameters
 
 TESTING RECOMMENDATIONS FOR ALL TOOLS:
-   - Test with example data provided
-   - Test export functionality
-   - Test responsive design on different devices
-   - Test edge cases (empty inputs, large datasets)
-   - Verify calculations against known standards
+- Test with example data provided
+- Test export functionality
+- Test responsive design on different devices
+- Test edge cases (empty inputs, large datasets)
+- Verify calculations against known standards
+- Test URL parameter functionality with various parameter combinations
 
 SECURITY NOTES FOR ALL TOOLS:
-   - All calculations occur client-side
-   - No data sent to servers
-   - Input sanitization for data export
+- All calculations occur client-side
+- No data sent to servers
+- Input sanitization for data export
+- URL parameter validation to prevent injection attacks
 
 MAINTENANCE FOR ALL TOOLS:
-   - Keep external libraries updated
-   - Monitor for browser compatibility issues
-   - Regular testing of calculation accuracy
-   - Update example data as needed
+- Keep external libraries updated
+- Monitor for browser compatibility issues
+- Regular testing of calculation accuracy
+- Update example data as needed
+- Maintain URL parameter compatibility when updating tools
 
 EXTENSION POINTS FOR ALL TOOLS:
-   1. Additional import functionality (from Excel)
-   2. Cloud saving/loading of plans
-   3. Additional predefined options
-   4. Custom template creation
-   5. Collaboration features
-   6. Advanced filtering and sorting
-   7. Report generation in multiple formats
+1. Additional import functionality (from Excel)
+2. Cloud saving/loading of plans
+3. Additional predefined options
+4. Custom template creation
+5. Collaboration features
+6. Advanced filtering and sorting
+7. Report generation in multiple formats
+8. Enhanced URL parameter support for more tools
+9. API integration for external data sources
+10. Batch processing capabilities
 
 Information provided by http://SigmaExacta.com
