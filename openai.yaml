@@ -1,7 +1,7 @@
 app_name: "Sigma Exacta Engineering Tools Suite"
 app_url: "http://SigmaExacta.com"
 app_version: "2.0"
-description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis and Tolerance Stack-Up Analysis"
+description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, and Taguchi DOE"
 author: "SigmaExacta"
 license: "Open Source"
 
@@ -16,7 +16,7 @@ tools_suite:
       - "Export to Excel with formatted worksheet"
       - "Responsive design for mobile and desktop"
       - "Wizard-style interface with theory, tool, and results tabs"
-    
+  
   - name: "Process Capability Calculator"
     url: "/cpk_calculator"
     description: "Calculates Cp, Cpk, Cpm, Pp, and Ppk indices with statistical testing and visualization"
@@ -26,7 +26,7 @@ tools_suite:
       - "Normality testing (Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling)"
       - "Visual process distribution plots"
       - "Expected failure rate calculation"
-    
+  
   - name: "Tolerance Stack-Up Analysis"
     url: "/stack_up_analysis"
     description: "Perform tolerance stack-up analysis using arithmetic, probabilistic, and Monte Carlo methods for mechanical assemblies"
@@ -37,6 +37,41 @@ tools_suite:
       - "Multiple distribution types: Normal, Uniform, Triangular, Weibull, Lognormal, Beta, Exponential"
       - "Vector visualization of dimension chains"
       - "Excel export functionality"
+  
+  - name: "Weibull Analysis"
+    url: "/weibull"
+    description: "Perform Weibull analysis for failure prediction and reliability engineering with probability plotting"
+    features:
+      - "Calculate Weibull parameters (Beta β, Eta η) from failure data"
+      - "Mean Time To Failure (MTTF) calculation"
+      - "Probability of failure prediction at specific times"
+      - "Weibull probability plot visualization"
+      - "Aggregate multiple analyses and export to Excel"
+      - "Gamma function implementation for accurate calculations"
+  
+  - name: "PDCA Cycle (Plan-Do-Check-Act)"
+    url: "/pdca"
+    description: "Interactive PDCA Cycle tool for continuous improvement projects following Deming Wheel methodology"
+    features:
+      - "Interactive PDCA wheel visualization with four quadrants"
+      - "Phase-by-phase data collection (Plan, Do, Check, Act)"
+      - "Example project loading for demonstration"
+      - "Consolidated report generation"
+      - "Export to Excel with formatted summary"
+      - "Tab-based interface with subtabs for each PDCA phase"
+  
+  - name: "Taguchi DOE Calculator & Analyzer"
+    url: "/taguchi_doe"
+    description: "Robust Design (Taguchi Method) analysis tool with orthogonal arrays, S/N ratios, ANOVA, and optimal factor determination"
+    features:
+      - "Orthogonal array selection (L4, L8, L9, L16)"
+      - "Automatic array selection based on factors and levels"
+      - "Signal-to-Noise ratio calculations (Smaller/Larger/Nominal)"
+      - "Factor effects analysis and main effects plots"
+      - "ANOVA with F-critical values"
+      - "Optimal factor level determination"
+      - "Pareto chart of factor importance"
+      - "Excel export with comprehensive results"
 
 functionality:
   control_plan:
@@ -61,7 +96,7 @@ functionality:
       - "Individuals control charts (I-Charts)"
       - "Expected failure rate calculation (PPM and percentage)"
       - "Export results to Excel"
-
+  
   tolerance_stack_up:
     primary_features:
       - "Arithmetic (Worst-Case) tolerance analysis"
@@ -72,6 +107,40 @@ functionality:
       - "Vector diagram visualization"
       - "Distribution histogram charts"
       - "Calculation history and Excel export"
+  
+  weibull_analysis:
+    primary_features:
+      - "Calculate Weibull parameters (Beta β, Eta η) from failure times"
+      - "Mean Time To Failure (MTTF) calculation using Gamma function"
+      - "Probability of failure prediction at specific times"
+      - "Weibull probability plot with regression line"
+      - "Aggregate multiple analyses in list format"
+      - "Export aggregated results to Excel"
+      - "Failure mode interpretation based on Beta parameter"
+  
+  pdca_cycle:
+    primary_features:
+      - "Interactive PDCA wheel visualization with hover effects"
+      - "Four-phase data collection with dedicated forms"
+      - "Tab navigation with subtabs for each PDCA phase"
+      - "Example project loading with realistic improvement scenario"
+      - "Consolidated report generation in tabular format"
+      - "Export complete PDCA cycle to Excel"
+      - "Auto-expanding textareas for all input fields"
+      - "Responsive design for all device sizes"
+      - "Phase-specific icons and color coding"
+  
+  taguchi_doe:
+    primary_features:
+      - "Orthogonal array generation (L4, L8, L9, L16)"
+      - "Factor and level definition with dynamic interface"
+      - "Signal-to-Noise ratio calculation (Smaller/Larger/Nominal is best)"
+      - "Factor effects analysis and range calculation"
+      - "ANOVA with F-critical values and significance testing"
+      - "Optimal factor level determination for robustness"
+      - "Predicted outcome calculation"
+      - "Main effects plots and Pareto chart visualization"
+      - "Excel export with all analysis results"
 
   input_requirements:
     control_plan:
@@ -95,6 +164,30 @@ functionality:
       - "Statistical distribution for each dimension"
       - "Distribution parameters (varies by distribution)"
       - "Sign (+/-) for dimension direction"
+    
+    weibull_analysis:
+      - "Failure times (comma-separated numeric values)"
+      - "Optional prediction time for probability calculation"
+      - "Minimum 2 valid positive failure times required"
+    
+    pdca_cycle:
+      - "Problem/Opportunity statement (Plan phase)"
+      - "Goal/Hypothesis definition (Plan phase)"
+      - "Action plan steps (Plan phase)"
+      - "Execution record (Do phase)"
+      - "Problems/Observations during execution (Do phase)"
+      - "Data and results collection (Check phase)"
+      - "Analysis of results vs. hypothesis (Check phase)"
+      - "Conclusions and learnings (Act phase)"
+      - "Next steps for standardization or new cycle (Act phase)"
+    
+    taguchi_doe:
+      - "Experiment name and objective"
+      - "Factors with their respective levels"
+      - "Response variable name"
+      - "Signal-to-Noise ratio type selection"
+      - "Target value for nominal-is-best analysis"
+      - "Measured results for each experimental run"
 
   calculations:
     control_plan_methods:
@@ -116,6 +209,27 @@ functionality:
       - "Monte Carlo simulation for mixed distributions"
       - "Statistical sampling from various distributions"
       - "Intelligent validation of distribution parameters"
+    
+    weibull_analysis_methods:
+      - "Median rank estimation for probability plotting"
+      - "Linear regression on transformed Weibull coordinates"
+      - "Gamma function implementation (Lanczos approximation)"
+      - "Weibull parameter extraction from regression slope/intercept"
+      - "Cumulative distribution function calculations"
+    
+    pdca_cycle_methods:
+      - "Data collection and organization by PDCA phases"
+      - "Consolidated report generation in tabular format"
+      - "Excel export with phase-based structure"
+      - "HTML escaping for safe content display"
+    
+    taguchi_doe_methods:
+      - "Signal-to-Noise ratio calculations (Taguchi formulas)"
+      - "Factor effects calculation for each level"
+      - "ANOVA with F-critical value lookup tables"
+      - "Optimal level determination for robustness"
+      - "Main effects analysis and range calculation"
+      - "Predicted outcome based on optimal settings"
 
   visualizations:
     control_plan:
@@ -133,6 +247,26 @@ functionality:
       - "Vector diagram showing dimension chain with orientation toggle"
       - "Distribution histogram for Monte Carlo results"
       - "Interactive visualization of tolerance accumulation"
+    
+    weibull_analysis:
+      - "Weibull probability plot with log-scale x-axis"
+      - "Failure data points and regression line overlay"
+      - "Interactive scatter plot with tooltips"
+      - "Aggregated results cards for multiple analyses"
+    
+    pdca_cycle:
+      - "Interactive PDCA wheel with four color-coded quadrants"
+      - "Hover effects and animations on wheel segments"
+      - "Rotating center circle icon"
+      - "Phase-based content display with smooth transitions"
+      - "Results table with phase-specific styling"
+    
+    taguchi_doe:
+      - "Main effects plots for each factor"
+      - "Pareto chart of factor importance"
+      - "Orthogonal array visualization in tabular format"
+      - "ANOVA table with significance indicators"
+      - "Optimal settings summary display"
 
   statistical_tests:
     normality_tests:
@@ -144,11 +278,25 @@ functionality:
       - "Box-Muller transform for normal distribution"
       - "Acceptance-rejection method for Beta distribution"
       - "Inverse transform sampling for various distributions"
+    
+    weibull_methods:
+      - "Median rank estimation for probability plotting"
+      - "Linear regression on transformed Weibull coordinates"
+      - "Gamma function implementation (Lanczos approximation)"
+    
+    taguchi_methods:
+      - "Signal-to-Noise ratio calculations for different quality characteristics"
+      - "F-test for ANOVA with conservative F-critical value interpolation"
+      - "Main effects calculation and range analysis"
+      - "Orthogonal array design principles"
 
   precision:
     - "High-precision normal CDF (Hart algorithm, error < 1e-12)"
     - "High-precision normal quantile (Acklam's algorithm, error < 1.15e-9)"
     - "Accurate gamma function implementation for statistical distributions"
+    - "Lanczos approximation for Gamma function in Weibull calculations"
+    - "Conservative F-critical value interpolation for ANOVA"
+    - "Signal-to-Noise ratio calculations with dB scale"
 
 ui_features:
   common_features:
@@ -178,13 +326,39 @@ ui_features:
     - "Distribution parameter dynamic forms"
     - "Vector diagram orientation control"
     - "Monte Carlo sample size control"
+  
+  weibull_analysis_specific:
+    - "Auto-expanding textarea for failure times"
+    - "Results visibility toggle"
+    - "Aggregated results card display"
+    - "Weibull probability plot with log scale"
+    - "Failure mode interpretation based on Beta value"
+  
+  pdca_cycle_specific:
+    - "Three main tabs: Start & Info, PDCA Tool, Report"
+    - "Subtabs within PDCA Tool for each phase (Plan, Do, Check, Act)"
+    - "Interactive PDCA wheel as central visual element"
+    - "Kano-style main action buttons (Load Example, Reset All)"
+    - "Auto-expanding textareas for all phase inputs"
+    - "Tab navigation buttons between phases"
+    - "Phase-specific icons and color coding"
+  
+  taguchi_doe_specific:
+    - "Five main tabs: Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas"
+    - "Dynamic factor and level management"
+    - "Automatic orthogonal array selection"
+    - "Signal-to-Noise ratio type selection with conditional target input"
+    - "Interactive data entry table for experimental runs"
+    - "Multiple chart visualizations (main effects, Pareto)"
+    - "Executive summary with optimal settings"
+    - "Comprehensive ANOVA table with significance testing"
 
 technical_specifications:
   frontend:
     framework: "Vanilla JavaScript with modular architecture"
     styling: "Custom CSS with responsive design principles"
     libraries:
-      - "SheetJS 0.20.1 for Excel export functionality"
+      - "SheetJS 0.18.5 for Excel export functionality"
       - "Font Awesome 6.4.0 for icons"
       - "Google Fonts (Nunito) for typography"
       - "Chart.js 4.4.2 with annotation plugin (for other tools)"
@@ -207,9 +381,24 @@ usage_scenarios:
   - "Six Sigma projects and DMAIC phases"
   - "Manufacturing process capability analysis"
   - "Mechanical design and tolerance analysis"
+  - "Reliability engineering and failure prediction"
+  - "Maintenance planning and scheduling"
+  - "Warranty analysis and forecasting"
+  - "Product life testing and reliability assessment"
   - "Continuous improvement initiatives"
   - "Design for Manufacturing (DFM)"
   - "Geometric Dimensioning and Tolerancing (GD&T) analysis"
+  - "PDCA cycle implementation for problem-solving"
+  - "Kaizen and continuous improvement projects"
+  - "Process optimization and quality management"
+  - "Root cause analysis and corrective actions"
+  - "Project management and improvement tracking"
+  - "Design of Experiments (DOE) planning and analysis"
+  - "Robust design optimization for products and processes"
+  - "Parameter design for quality improvement"
+  - "Noise factor analysis and reduction"
+  - "Process parameter optimization"
+  - "Product development and improvement studies"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
@@ -225,6 +414,18 @@ educational_value:
   - "Visual representation of statistical concepts"
   - "Interpretation guidance for results"
   - "Real-world engineering application examples"
+  - "Weibull distribution theory and applications"
+  - "Reliability engineering fundamentals"
+  - "Failure mode analysis and prediction"
+  - "PDCA cycle theory and Deming Wheel methodology"
+  - "Continuous improvement principles (Kaizen)"
+  - "Problem-solving frameworks and methodologies"
+  - "Quality management history (Shewhart, Deming)"
+  - "Taguchi Method theory and robust design principles"
+  - "Design of Experiments (DOE) fundamentals"
+  - "Orthogonal array design and analysis"
+  - "Signal-to-Noise ratio concepts for quality engineering"
+  - "ANOVA and statistical significance in experimental design"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -234,6 +435,11 @@ performance_characteristics:
   - "Efficient calculation algorithms for real-time updates"
   - "Optimized chart rendering for smooth performance"
   - "Monte Carlo simulation up to 1,000,000 samples (other tools)"
+  - "Fast Weibull parameter estimation and plotting"
+  - "Smooth PDCA wheel animations and interactions"
+  - "Efficient tab switching without page reloads"
+  - "Quick orthogonal array generation and factor effect calculations"
+  - "Real-time ANOVA calculations with F-critical value lookup"
 
 error_handling:
   - "Robust input validation"
@@ -241,6 +447,11 @@ error_handling:
   - "Informative error messages"
   - "Graceful degradation for unsupported scenarios"
   - "Intelligent distribution parameter validation (other tools)"
+  - "Minimum data point validation for Weibull analysis"
+  - "Confirmation dialogs for reset actions"
+  - "Notification system for user feedback"
+  - "Factor and level validation for Taguchi designs"
+  - "Orthogonal array compatibility checking"
 
 implementation_notes:
   - "Professional-grade control plan implementation"
@@ -249,6 +460,12 @@ implementation_notes:
   - "Open source with clear code structure"
   - "Modular design for easy maintenance"
   - "Professional-grade statistical algorithms (other tools)"
+  - "Weibull analysis based on established reliability engineering methods"
+  - "PDCA implementation following Deming Wheel methodology"
+  - "Shewhart Cycle (PDCA) as foundational quality management tool"
+  - "Taguchi Method implementation following Genichi Taguchi's principles"
+  - "Orthogonal array designs based on standard Taguchi arrays"
+  - "Signal-to-Noise ratio calculations per Taguchi's quality engineering"
 
 references:
   methodology_sources:
@@ -260,6 +477,16 @@ references:
     - "ISO standards for process capability"
     - "Mechanical Tolerance Stack-Up Analysis"
     - "Geometric Dimensioning and Tolerancing (GD&T)"
+    - "Weibull, W. (1951). A Statistical Distribution Function of Wide Applicability"
+    - "Reliability Engineering Handbook"
+    - "Shewhart, Walter A. (1931). Economic Control of Quality of Manufactured Product"
+    - "Deming, W. Edwards (1986). Out of the Crisis"
+    - "PDCA Cycle (Plan-Do-Check-Act) methodology"
+    - "Kaizen and Continuous Improvement principles"
+    - "Taguchi, G. (1986). Introduction to Quality Engineering"
+    - "Taguchi, G. (1987). System of Experimental Design"
+    - "Taguchi Methods for Quality Engineering"
+    - "Orthogonal Array Designs (Taguchi)"
   
   algorithm_sources:
     - "SheetJS for Excel export functionality"
@@ -269,5 +496,10 @@ references:
     - "Acklam, P. J. (2003). Normal quantile algorithm"
     - "Box-Muller Transform (1958)"
     - "Acceptance-Rejection Method (von Neumann, 1951)"
+    - "Lanczos approximation for Gamma function"
+    - "Weibull probability plotting techniques"
+    - "Taguchi Signal-to-Noise ratio formulas"
+    - "ANOVA F-test methodology"
+    - "Orthogonal array construction methods"
 
-disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. This Control Plan tool is based on established methodologies but is not affiliated with AIAG or any standards body."
+disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG or any standards body."

@@ -5,6 +5,9 @@ Sigma Exacta provides a comprehensive suite of engineering tools including:
 1. Control Plan Creator
 2. Process Capability Calculator (Cp, Cpk, Pp, Ppk)
 3. Tolerance Stack-Up Analysis Calculator
+4. Weibull Analysis for Failure Prediction
+5. PDCA Cycle (Plan-Do-Check-Act)
+6. Taguchi DOE Calculator & Analyzer
 
 All tools are designed for professional engineering analysis with educational value.
 
@@ -152,58 +155,6 @@ ERROR HANDLING:
    - Basic error handling for Excel export
    - Graceful handling of empty tables
    - Robust input handling in textareas
-
-COMMON FEATURES ACROSS ALL TOOLS:
-
-1. UI ARCHITECTURE:
-   - Wizard-style tab navigation
-   - Responsive design for all devices
-   - Consistent styling and color scheme
-   - Header/footer consistency
-
-2. DATA MANAGEMENT:
-   - Client-side only processing
-   - No server communication
-   - Excel export functionality
-   - Example data loading
-
-3. EDUCATIONAL VALUE:
-   - Theoretical explanations in Theory tabs
-   - Step-by-step instructions
-   - Real-world application examples
-   - Best practices guidance
-
-4. ERROR HANDLING:
-   - Input validation
-   - Informative error messages
-   - Graceful degradation
-
-TESTING RECOMMENDATIONS FOR ALL TOOLS:
-   - Test with example data provided
-   - Test export functionality
-   - Test responsive design on different devices
-   - Test edge cases (empty inputs, large datasets)
-   - Verify calculations against known standards
-
-SECURITY NOTES FOR ALL TOOLS:
-   - All calculations occur client-side
-   - No data sent to servers
-   - Input sanitization for data export
-
-MAINTENANCE FOR ALL TOOLS:
-   - Keep external libraries updated
-   - Monitor for browser compatibility issues
-   - Regular testing of calculation accuracy
-   - Update example data as needed
-
-EXTENSION POINTS FOR ALL TOOLS:
-   1. Additional import functionality (from Excel)
-   2. Cloud saving/loading of plans
-   3. Additional predefined options
-   4. Custom template creation
-   5. Collaboration features
-   6. Advanced filtering and sorting
-   7. Report generation in multiple formats
 
 ================================================================================
 TOOL 2: PROCESS CAPABILITY CALCULATOR
@@ -445,5 +396,552 @@ PERFORMANCE CONSIDERATIONS:
 - Monte Carlo simulation uses up to 1,000,000 samples (configurable)
 - Efficient algorithms for vector diagram rendering
 - Calculations run synchronously but are optimized for performance
+
+================================================================================
+TOOL 4: WEIBULL ANALYSIS FOR FAILURE PREDICTION
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a Weibull Analysis tool for reliability engineering that calculates Weibull parameters from failure time data. The tool performs probability plotting, calculates Mean Time To Failure (MTTF), and predicts failure probabilities at specific times.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Single textarea for entering failure times (comma-separated)
+   - Optional field for predicting failure probability at a specific time
+   - Auto-expanding textarea for better user experience
+   - Example data loading for demonstration
+
+2. CALCULATION ENGINE:
+   - Weibull parameter estimation (Beta β, Eta η) using probability plotting method
+   - Mean Time To Failure (MTTF) calculation using Gamma function
+   - Failure probability prediction at user-specified times
+   - Gamma function implementation using Lanczos approximation
+
+3. VISUALIZATION SYSTEM:
+   - Weibull probability plot with log-scale x-axis
+   - Data points and regression line visualization
+   - Aggregated results display in card format
+   - Interactive chart with tooltips
+
+4. UI STRUCTURE:
+   - Wizard-style tabs: Theory & Info, Calculator Tool, Results, Formulas
+   - Main action buttons above tabs (Load Example, Reset All)
+   - Responsive design with full-width layout
+   - Results visibility toggle
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with empty input fields
+   - Event listeners are set up for form submission, buttons, etc.
+   - Chart.js, SheetJS, and KaTeX are loaded from CDN
+   - Empty chart is initialized
+
+B. CORE FUNCTIONS:
+
+   1. calculateWeibull()
+      - Main calculation function triggered by form submission
+      - Parses failure times, validates input (minimum 2 points)
+      - Performs median rank estimation and linear regression
+      - Calculates Weibull parameters and MTTF
+      - Updates results and visualizations
+
+   2. gamma(z)
+      - Implements Lanczos approximation for Gamma function
+      - Used for accurate MTTF calculation
+
+   3. plotChart(points, slope, intercept)
+      - Creates Weibull probability plot with Chart.js
+      - Shows data points and regression line
+      - Uses logarithmic scale for x-axis
+
+   4. addResultToList()
+      - Adds current analysis to aggregated results list
+      - Creates result cards with timestamp and parameters
+      - Enables export functionality
+
+   5. exportExcel()
+      - Exports aggregated results to Excel using SheetJS
+      - Includes headers and formatted data
+
+C. DATA FLOW:
+   1. User enters failure times → parse and validate
+   2. Form submission → calculateWeibull() processes data
+   3. Results displayed in Results tab
+   4. User can add to aggregated list
+   5. Export creates Excel file with all aggregated analyses
+
+D. UI UPDATES:
+   - Auto-expanding textarea adjusts to content
+   - Results become visible after calculation
+   - Chart updates with data points and regression line
+   - Aggregated results displayed as cards
+   - Tabs switch with smooth animation
+
+E. EXPORT FUNCTIONALITY:
+   - exportExcel() creates XLSX file with aggregated results
+   - Includes calculation ID, timestamp, failure data, and parameters
+   - Custom headers and formatting
+
+IMPORTANT ALGORITHMS:
+
+1. WEIBULL PARAMETER ESTIMATION:
+   - Median rank estimation: (rank - 0.5) / n
+   - Coordinate transformation: x = ln(t), y = ln(ln(1/(1-F(t))))
+   - Linear regression on transformed coordinates
+   - Parameter extraction: β = slope, η = exp(-intercept/slope)
+
+2. GAMMA FUNCTION IMPLEMENTATION:
+   - Lanczos approximation with 7 coefficients
+   - Accurate for positive real numbers
+   - Recursive implementation for values < 0.5
+
+3. PROBABILITY PREDICTION:
+   - Uses Weibull CDF: F(t) = 1 - exp(-(t/η)^β)
+   - Converts to percentage for display
+
+EDGE CASE HANDLING:
+- Insufficient data (minimum 2 failure times)
+- Invalid or non-positive time values
+- Empty input fields
+- Numerical stability in Gamma function
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. Chart.js for probability plot visualization
+3. SheetJS for Excel export
+4. KaTeX for mathematical formula rendering
+5. Font Awesome for icons
+
+PERFORMANCE CONSIDERATIONS:
+- Efficient linear regression algorithm
+- Optimized chart rendering
+- Client-side only processing
+- Smooth animations for UI elements
+
+ERROR HANDLING:
+- Input validation with descriptive alerts
+- Graceful handling of edge cases
+- Informative error messages
+- Fallback for chart rendering issues
+
+================================================================================
+TOOL 5: PDCA CYCLE (PLAN-DO-CHECK-ACT)
+================================================================================
+
+APPLICATION OVERVIEW:
+This is an interactive PDCA (Plan-Do-Check-Act) Cycle tool, also known as the Deming Wheel or Shewhart Cycle. It provides a structured framework for continuous improvement projects, allowing users to document each phase of the PDCA cycle and generate comprehensive reports.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Four-phase data collection: Plan, Do, Check, Act
+   - Each phase has specific input fields:
+     • Plan: Problem/Opportunity, Goal/Hypothesis, Action Plan
+     • Do: Execution Record, Problems/Observations
+     • Check: Data & Results, Analysis
+     • Act: Conclusions/Learnings, Next Steps
+   - Auto-expanding textareas for all input fields
+   - Tab navigation with subtabs for each PDCA phase
+
+2. VISUALIZATION SYSTEM:
+   - Interactive PDCA wheel with four color-coded quadrants
+   - Hover effects and animations on wheel segments
+   - Rotating center circle icon
+   - Phase-based content display with smooth transitions
+
+3. REPORTING SYSTEM:
+   - Consolidated report generation in tabular format
+   - Color-coded rows for each PDCA phase
+   - Export to Excel with structured format
+   - Results table with phase-specific styling
+
+4. UI STRUCTURE:
+   - Three main tabs: Start & Info, PDCA Tool, Report
+   - Subtabs within PDCA Tool for each phase (Plan, Do, Check, Act)
+   - Kano-style main action buttons (Load Example, Reset All)
+   - Tab navigation buttons between phases
+   - Responsive design for all device sizes
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with empty input fields
+   - Event listeners are set up for tab switching, buttons, etc.
+   - SheetJS library loaded for Excel export
+   - Global cycleData object initialized
+
+B. CORE FUNCTIONS:
+
+   1. switchTab(tabId)
+      - Switches between main tabs (Start & Info, PDCA Tool, Report)
+      - Updates active tab styling
+      - Scrolls to top smoothly
+      - Updates textarea heights
+
+   2. switchSubTab(subTabId)
+      - Switches between PDCA phase subtabs (Plan, Do, Check, Act)
+      - Updates active subtab styling
+      - Scrolls to subtab content
+      - Updates textarea heights
+
+   3. autoResizeTextarea(textarea)
+      - Automatically adjusts textarea height based on content
+      - Called on input for all textareas
+
+   4. resetTool()
+      - Clears all input fields and resets cycleData object
+      - Shows confirmation dialog before resetting
+      - Displays notification after reset
+
+   5. loadExample()
+      - Populates all PDCA phases with example data
+      - Demonstrates realistic improvement project scenario
+      - Switches to PDCA Tool tab after loading
+      - Shows notification after loading
+
+   6. generateReport()
+      - Gathers data from all PDCA phases into cycleData object
+      - Validates that at least Plan phase has data
+      - Calls displayResults() to show report
+      - Switches to Report tab
+
+   7. displayResults()
+      - Creates formatted HTML table with all PDCA data
+      - Applies phase-specific styling and color coding
+      - Includes export button for Excel download
+      - Shows results container
+
+   8. exportToExcel()
+      - Uses SheetJS to create Excel workbook
+      - Formats data with headers and phase labels
+      - Downloads file as "PDCA_Report_Sigma_Exacta_[date].xlsx"
+      - Shows notification after export
+
+   9. showNotification(message)
+      - Displays temporary notification message
+      - Uses CSS animations for slide-in and fade-out
+      - Automatically removes after 3 seconds
+
+C. DATA FLOW:
+   1. User enters data in PDCA phase subtabs or loads example
+   2. Textareas auto-expand as content is added
+   3. User navigates between phases using tab buttons
+   4. Generate Report collects all data into cycleData object
+   5. Results displayed in formatted table in Report tab
+   6. Export creates Excel file with structured PDCA report
+
+D. UI UPDATES:
+   - PDCA wheel quadrants have hover effects and animations
+   - Tabs and subtabs switch with smooth transitions
+   - Textareas auto-expand based on content
+   - Results table shows with color-coded phases
+   - Notifications provide user feedback
+
+E. VISUALIZATION FEATURES:
+   - PDCA wheel with four interactive quadrants
+   - Each quadrant has icon, phase name, and description
+   - Center circle rotates continuously
+   - Hover effects include scaling, shadows, and brightness
+   - Quadrant colors: Plan (blue), Do (orange), Check (green), Act (purple)
+
+IMPORTANT ALGORITHMS:
+
+1. TAB NAVIGATION SYSTEM:
+   - Manages both main tabs and subtabs
+   - Maintains active state for proper UI feedback
+   - Handles smooth scrolling and content updates
+
+2. EXCEL EXPORT FORMATTING:
+   - Creates structured worksheet with phase headers
+   - Uses appropriate column widths for readability
+   - Includes date stamp in filename
+
+3. TEXTAREA AUTO-RESIZING:
+   - element.style.height = 'auto'
+   - element.style.height = (element.scrollHeight) + 'px'
+   - Applied to all textareas on input and tab switch
+
+4. DATA VALIDATION:
+   - Checks for minimum data before report generation
+   - Confirms destructive actions (reset)
+   - Validates example loading when data exists
+
+EDGE CASE HANDLING:
+- Empty data validation for report generation
+- Confirmation for reset actions
+- Graceful handling of missing or invalid data
+- Responsive design for various screen sizes
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. SheetJS 0.18.5 for Excel export
+3. Font Awesome 6.4.0 for icons
+4. Google Fonts (Nunito) for typography
+5. External CSS for styling
+
+PERFORMANCE CONSIDERATIONS:
+- Efficient DOM manipulation for tab switching
+- Optimized textarea resizing algorithm
+- Smooth animations for PDCA wheel interactions
+- Client-side only processing
+
+ERROR HANDLING:
+- Input validation with descriptive alerts
+- Confirmation dialogs for destructive actions
+- Notification system for user feedback
+- Graceful degradation for unsupported browsers
+
+EDUCATIONAL VALUE:
+- PDCA cycle theory and history (Shewhart, Deming)
+- Continuous improvement methodology
+- Real-world example of improvement project
+- Structured problem-solving approach
+- Quality management principles
+
+================================================================================
+TOOL 6: TAGUCHI DOE CALCULATOR & ANALYZER
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a Robust Design (Taguchi Method) tool for Design of Experiments (DOE) using orthogonal arrays. The tool helps plan and analyze experiments to optimize products and processes for quality, calculating Signal-to-Noise (S/N) ratios, factor effects, ANOVA, and optimal factor levels.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Five main tabs: Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas
+   - Dynamic factor and level management with add/remove functionality
+   - Orthogonal array selection (L4, L8, L9, L16) with automatic recommendation
+   - Signal-to-Noise ratio type selection (Smaller/Larger/Nominal is best)
+   - Interactive data entry table for experimental results
+   - Example data loading for demonstration
+
+2. CALCULATION ENGINE:
+   - Orthogonal array generation based on selected design
+   - Signal-to-Noise ratio calculations per Taguchi formulas
+   - Factor effects analysis with range calculation
+   - ANOVA with F-critical value lookup tables
+   - Optimal factor level determination for robustness
+   - Predicted outcome calculation based on optimal settings
+
+3. VISUALIZATION SYSTEM:
+   - Main effects plots for each factor
+   - Pareto chart of factor importance
+   - Orthogonal array visualization in tabular format
+   - ANOVA table with significance indicators
+   - Executive summary with optimal settings
+
+4. UI STRUCTURE:
+   - Wizard-style five-tab interface following Kano tool pattern
+   - Responsive design for all device sizes
+   - Main action buttons (Load Example, Reset All) above tabs
+   - Tab navigation buttons between phases
+   - Notification system for user feedback
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with empty input fields
+   - Event listeners are set up for tab switching, buttons, etc.
+   - TaguchiCalculator module loaded from external JS file
+   - Chart.js and KaTeX are loaded from CDN
+   - Global experimentData object initialized
+
+B. CORE FUNCTIONS:
+
+   1. switchWizardTab(tabId)
+      - Switches between main tabs (Start & Info, Setup Experiment, Design & Data, Analysis & Report, Formulas)
+      - Updates active tab styling
+      - Scrolls to top smoothly
+
+   2. addFactorInput(name, levels)
+      - Adds a new factor input row to the setup form
+      - Includes name and levels (comma-separated) fields
+      - Attaches remove button functionality
+
+   3. generateDesign()
+      - Validates setup data and generates orthogonal array design
+      - Creates interactive data entry table for experimental runs
+      - Automatically selects appropriate array if not specified
+      - Shows notification upon completion
+
+   4. runFullAnalysis()
+      - Collects data from design table and validates completeness
+      - Calls TaguchiCalculator.runAnalysis() with experiment data
+      - Generates comprehensive analysis report with visualizations
+      - Switches to Analysis & Report tab
+
+   5. createAndDisplayReportBlock(runId)
+      - Creates formatted analysis report with multiple sections:
+        • Executive summary with optimal settings
+        • Effects analysis with Pareto chart
+        • Main effects plots for each factor
+        • Factor effects tables
+        • ANOVA table with significance testing
+        • Signal-to-Noise ratio analysis
+        • Export functionality
+
+   6. createParetoChart(runId)
+      - Creates Pareto chart of factor importance using Chart.js
+      - Sorts factors by effect range from most to least influential
+      - Uses blue color scheme for consistency
+
+   7. createMainEffectsCharts(runId)
+      - Creates main effects plots for each factor
+      - Shows average response at each factor level
+      - Uses line charts with different colors for each factor
+
+   8. exportToExcelTaguchi(runId)
+      - Exports complete Taguchi analysis to Excel using SheetJS
+      - Creates multiple sheets: Summary, Design Data, ANOVA
+      - Includes all calculated results and settings
+      - Downloads file with experiment name in filename
+
+C. DATA FLOW:
+   1. User sets up experiment with factors and levels
+   2. Generate Design creates orthogonal array and data entry table
+   3. User enters experimental results for each run
+   4. Calculate Full Analysis processes data through TaguchiCalculator
+   5. Results displayed with visualizations in Analysis & Report tab
+   6. Export creates Excel file with comprehensive analysis
+
+D. TAGUCHICALCULATOR MODULE:
+   The core calculation logic is encapsulated in the TaguchiCalculator module:
+
+   1. Orthogonal Arrays: Predefined L4, L8, L9, L16 arrays
+   2. Signal-to-Noise Ratio Calculations:
+      - Smaller is better: S/N = -10 log10(y²)
+      - Larger is better: S/N = -10 log10(1/y²)
+      - Nominal is best: S/N = -10 log10((y-T)²)
+   3. Factor Effects Analysis: Calculates average response per factor level
+   4. ANOVA Calculation: Computes sum of squares, F-values, significance
+   5. Optimal Level Determination: Finds levels that maximize S/N ratio
+   6. F-Critical Values: Lookup table with conservative interpolation
+
+E. UI UPDATES:
+   - Dynamic factor management with real-time validation
+   - Interactive data entry table with change tracking
+   - Automatic orthogonal array selection based on factors
+   - Charts update dynamically based on analysis results
+   - Tab switching with smooth animations
+   - Notification system for user feedback
+
+IMPORTANT ALGORITHMS:
+
+1. ORTHOGONAL ARRAY SELECTION:
+   - Automatically selects appropriate array based on:
+     • Maximum number of levels among factors
+     • Number of factors
+   - Falls back to manual selection if automatic fails
+
+2. SIGNAL-TO-NOISE RATIO CALCULATIONS:
+   - Follows Taguchi's formulas for different quality characteristics
+   - Handles edge cases (zero values, null results)
+   - Converts to dB scale for interpretation
+
+3. FACTOR EFFECTS ANALYSIS:
+   - Calculates average response for each factor level
+   - Computes range (max-min) to determine factor importance
+   - Uses orthogonal array structure for proper averaging
+
+4. ANOVA CALCULATION:
+   - Computes sum of squares for factors and error
+   - Calculates degrees of freedom
+   - Looks up F-critical values with conservative interpolation
+   - Determines statistical significance (p < 0.05)
+
+5. OPTIMAL LEVEL DETERMINATION:
+   - Selects levels that maximize Signal-to-Noise ratio
+   - Associates response values with optimal levels
+   - Calculates predicted outcome based on optimal settings
+
+EDGE CASE HANDLING:
+- Missing or invalid response data validation
+- Conservative F-critical value interpolation when exact DF not available
+- Handling of nominal target when S/N type is nominal
+- Automatic orthogonal array fallback when manual selection invalid
+- Mobile-responsive data entry table
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. TaguchiCalculator module for core calculations
+3. Chart.js for visualizations (Pareto, main effects)
+4. SheetJS for Excel export
+5. KaTeX for mathematical formula rendering in Formulas tab
+6. Font Awesome for icons
+
+PERFORMANCE CONSIDERATIONS:
+- Efficient orthogonal array processing
+- Optimized chart rendering with Chart.js
+- Client-side only calculations
+- Smooth tab switching without page reloads
+
+ERROR HANDLING:
+- Comprehensive input validation with descriptive alerts
+- Graceful handling of incomplete data
+- Notification system for user feedback
+- Fallback for chart rendering issues
+- Conservative statistical calculations to avoid errors
+
+EDUCATIONAL VALUE:
+- Taguchi Method theory and history (Genichi Taguchi)
+- Orthogonal array design principles
+- Signal-to-Noise ratio concepts for quality engineering
+- Robust design methodology for process optimization
+- ANOVA and statistical significance in experimental design
+- Real-world example of experimental design and analysis
+
+COMMON FEATURES ACROSS ALL TOOLS:
+
+1. UI ARCHITECTURE:
+   - Wizard-style tab navigation
+   - Responsive design for all devices
+   - Consistent styling and color scheme
+   - Header/footer consistency
+
+2. DATA MANAGEMENT:
+   - Client-side only processing
+   - No server communication
+   - Excel export functionality
+   - Example data loading
+
+3. EDUCATIONAL VALUE:
+   - Theoretical explanations in Theory tabs
+   - Step-by-step instructions
+   - Real-world application examples
+   - Best practices guidance
+
+4. ERROR HANDLING:
+   - Input validation
+   - Informative error messages
+   - Graceful degradation
+
+TESTING RECOMMENDATIONS FOR ALL TOOLS:
+   - Test with example data provided
+   - Test export functionality
+   - Test responsive design on different devices
+   - Test edge cases (empty inputs, large datasets)
+   - Verify calculations against known standards
+
+SECURITY NOTES FOR ALL TOOLS:
+   - All calculations occur client-side
+   - No data sent to servers
+   - Input sanitization for data export
+
+MAINTENANCE FOR ALL TOOLS:
+   - Keep external libraries updated
+   - Monitor for browser compatibility issues
+   - Regular testing of calculation accuracy
+   - Update example data as needed
+
+EXTENSION POINTS FOR ALL TOOLS:
+   1. Additional import functionality (from Excel)
+   2. Cloud saving/loading of plans
+   3. Additional predefined options
+   4. Custom template creation
+   5. Collaboration features
+   6. Advanced filtering and sorting
+   7. Report generation in multiple formats
 
 Information provided by http://SigmaExacta.com
