@@ -1738,6 +1738,227 @@ EDUCATIONAL VALUE:
 - Historical context for TRIZ development and key contributors
 
 ================================================================================
+TOOL 12: ISHIKAWA (FISHBONE) DIAGRAM GENERATOR
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a free online Fishbone Cause and Effect (Ishikawa) Diagram generator for root cause analysis.
+The tool helps teams brainstorm, categorize, and visualize potential causes of a problem using the 6M categories
+(Manpower, Methods, Machines, Materials, Environment, Measurement). It creates an interactive SVG diagram that
+can be customized and exported.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Wizard-style tabs: Theory & Info, Data Input, Diagram
+- Problem statement input field for defining the main issue
+- Six 6M categories with hierarchical cause structure:
+  • Main causes (level 1)
+  • Sub-causes (level 2)
+  • Sub-sub-causes (level 3)
+- Dynamic category tabs for organized data entry
+- Interactive cause management with add/remove functionality
+
+2. VISUALIZATION SYSTEM:
+- Interactive SVG fishbone diagram with drag-and-drop text positioning
+- Color-coded categories with consistent visual identity
+- Automatic layout with collision avoidance
+- Legend showing category-color mapping
+- Real-time diagram updates as data changes
+
+3. CALCULATION ENGINE:
+- Hierarchical data structure for cause organization
+- SVG coordinate calculation for optimal diagram layout
+- Text wrapping and positioning algorithms
+- Mobile-responsive diagram scaling
+
+4. UI STRUCTURE:
+- Three main wizard tabs following consistent Sigma Exacta pattern
+- Main action buttons (Load Next Example, Reset All) above tabs
+- Category sub-tabs within Data Input for organized cause entry
+- Responsive design optimized for mobile and desktop
+- Tab navigation with smooth transitions
+
+5. URL PARAMETER SUPPORT:
+- problem: Problem statement text
+- manpower: Pipe-separated main causes (e.g., Cause1|Cause2|Cause3)
+- methods: Pipe-separated main causes
+- machines: Pipe-separated main causes
+- materials: Pipe-separated main causes
+- environment: Pipe-separated main causes
+- measurement: Pipe-separated main causes
+- example: Example type (manufacturing, healthcare, software)
+- auto_calculate: Trigger for automatic diagram generation
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty input fields
+- Event listeners are set up for tab switching, buttons, form controls
+- SVG diagram container initialized
+- Global variables: currentData, categoryData, diagramNodes, currentExampleIndex
+- External libraries: SheetJS for Excel export, html2canvas for JPG export
+
+B. CORE FUNCTIONS:
+
+1. switchWizardTab(tabId)
+   - Switches between main wizard tabs (Theory & Info, Data Input, Diagram)
+   - Updates active tab styling and scrolls to top
+
+2. initializeSubTabs()
+   - Creates category sub-tab content for all 6M categories
+   - Sets up sub-tab navigation event listeners
+
+3. switchSubTab(subtabId)
+   - Switches between category sub-tabs within Data Input
+   - Updates active sub-tab styling and content visibility
+
+4. createCategoryUI()
+   - Initializes the category UI structure
+   - Sets up currentData.categories object structure
+
+5. addCauseBlock(categoryKey, causeText, subCauses)
+   - Adds a new cause block to the specified category
+   - Handles hierarchical cause-subcause structure
+   - Updates diagram after addition
+
+6. addSubCauseInput(button)
+   - Adds sub-cause input field to a main cause
+   - Updates diagram after addition
+
+7. addSubSubCauseInput(button)
+   - Adds sub-sub-cause input field to a sub-cause
+   - Updates diagram after addition
+
+8. collectDataFromDOM()
+   - Collects all cause data from input fields into structured object
+   - Returns categories object with hierarchical cause structure
+
+9. generateIshikawa()
+   - Main diagram generation function
+   - Validates problem statement input
+   - Calls drawIshikawa() with collected data
+
+10. drawIshikawa(problem, categories)
+    - Creates SVG fishbone diagram using calculated coordinates
+    - Handles text wrapping and collision avoidance
+    - Implements drag-and-drop functionality for text elements
+    - Updates diagramNodes map for drag functionality
+
+11. makeDraggable(element)
+    - Implements drag-and-drop functionality for SVG text elements
+    - Updates connected lines when elements are moved
+    - Maintains hierarchical relationships during dragging
+
+12. updateTreePosition(element, dx, dy)
+    - Updates position of element and its children during drag
+    - Maintains connection lines between elements
+
+13. loadExample(type)
+    - Loads example data (manufacturing, healthcare, or software)
+    - Populates all categories with example causes
+    - Generates diagram automatically
+    - Shows notification after loading
+
+14. resetData(redraw)
+    - Clears all input fields and resets currentData
+    - Optionally redraws empty diagram
+
+15. exportToExcel()
+    - Exports cause data to Excel using SheetJS
+    - Creates structured worksheet with problem and hierarchical causes
+    - Downloads file as "Ishikawa_Diagram_Data_Sigma_Exacta.xlsx"
+
+16. exportToJpg()
+    - Exports diagram to JPG image using html2canvas
+    - Handles SVG to canvas conversion
+    - Downloads file as "Ishikawa_Diagram_Sigma_Exacta.jpg"
+
+C. DATA FLOW:
+1. User enters problem statement → stored in currentData.problem
+2. User adds causes to categories → stored in currentData.categories
+3. Generate Diagram → collectDataFromDOM() gathers all data
+4. drawIshikawa() creates SVG visualization
+5. User can drag text elements to adjust layout
+6. Export functions create Excel or JPG output
+
+D. UI UPDATES:
+- Diagram updates in real-time as causes are added/removed
+- Text wrapping adjusts based on available space
+- Collision avoidance prevents text overlap
+- Mobile-responsive diagram scaling
+- Tab switching with smooth animations
+
+E. EXPORT FUNCTIONALITY:
+- Excel export includes hierarchical cause structure
+- JPG export captures current diagram state
+- Both exports include problem statement and timestamp
+
+IMPORTANT ALGORITHMS:
+
+1. FISHBONE DIAGRAM LAYOUT:
+- Spine calculation: horizontal line with arrow at problem end
+- Category bone placement: diagonal lines at calculated angles
+- Cause branch placement: perpendicular lines from category bones
+- Sub-cause placement: angled lines from cause branches
+- Automatic spacing based on number of causes per category
+
+2. TEXT WRAPPING AND COLLISION AVOIDANCE:
+- wrapText() function implements multi-line text with tspan elements
+- adjustBranchCollisions() prevents text overlap in branches
+- Dynamic positioning based on text length and available space
+
+3. DRAG-AND-DROP MECHANISM:
+- SVG element dragging with mouse events
+- updateTreePosition() maintains hierarchical relationships
+- Line connections update dynamically during drag
+
+4. URL PARAMETER PARSING:
+- Pipe-separated cause lists for each category
+- Example type parameter for quick example loading
+- Auto-calculation trigger for automatic diagram generation
+
+EDGE CASE HANDLING:
+- Empty problem statement validation
+- Handling of special characters in text inputs
+- Mobile-responsive diagram scaling
+- Empty category handling in diagram generation
+- Large text content wrapping and positioning
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. SheetJS 0.18.5 for Excel export
+3. html2canvas 1.4.1 for JPG export
+4. Font Awesome 6.4.0 for icons
+5. Google Fonts (Nunito) for typography
+
+PERFORMANCE CONSIDERATIONS:
+- Efficient SVG rendering for complex diagrams
+- Event delegation for dynamic cause management
+- Optimized collision detection algorithms
+- Client-side only processing
+
+ERROR HANDLING:
+- Input validation with descriptive alerts
+- Graceful handling of empty diagram exports
+- Notification system for user feedback
+- Fallback for browser compatibility issues
+
+URL PARAMETER INTEGRATION:
+- Supports Ishikawa-specific parameter injection
+- Special handlers for pipe-separated cause lists
+- Example type parameter for quick loading
+- Auto-calculation trigger for demonstrations
+- Parameter validation before processing
+
+EDUCATIONAL VALUE:
+- Teaches Ishikawa diagram methodology and history
+- Demonstrates 6M categorization for root cause analysis
+- Provides real-world examples across industries
+- Visualizes cause-effect relationships
+- Encourages systematic problem-solving approach
+
+================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:

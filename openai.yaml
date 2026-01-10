@@ -1,7 +1,7 @@
 app_name: "Sigma Exacta Engineering Tools Suite"
 app_url: "http://SigmaExacta.com"
 app_version: "2.0"
-description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, QFD, Pugh Matrix, VAVE, and TRIZ for quality, reliability, value engineering, and inventive problem solving"
+description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, QFD, Pugh Matrix, VAVE, TRIZ, and Ishikawa Diagram for quality, reliability, value engineering, inventive problem solving, and root cause analysis"
 author: "SigmaExacta"
 license: "Open Source"
 
@@ -154,6 +154,22 @@ tools_suite:
       - "Load example problems for demonstration"
       - "Responsive design for all devices"
 
+  - name: "Ishikawa (Cause and Effect) Diagram"
+    url: "/ishikawa"
+    description: "Visual root cause analysis tool using Fishbone (Ishikawa) diagram methodology. Brainstorm, categorize, and visualize potential causes of problems using 6M categories."
+    features:
+      - "Interactive Fishbone diagram with drag-and-drop text adjustment"
+      - "6M categories: Manpower, Methods, Machines, Materials, Environment, Measurement"
+      - "Three-level cause hierarchy (main cause, sub-cause, sub-sub-cause)"
+      - "Multiple example scenarios (manufacturing, healthcare, software)"
+      - "Export diagram as JPG image"
+      - "Export cause data to Excel"
+      - "Real-time diagram generation and updates"
+      - "Wizard-style interface with theory, input, and diagram tabs"
+      - "Sub-tabs for each 6M category"
+      - "Load example data with sequential cycling"
+      - "Responsive design optimized for all devices"
+
 functionality:
   control_plan:
     primary_features:
@@ -296,6 +312,20 @@ functionality:
       - "Load example problems across different domains"
       - "Responsive design optimized for all devices"
 
+  ishikawa:
+    primary_features:
+      - "Problem statement definition as fish head"
+      - "6M category management (Manpower, Methods, Machines, Materials, Environment, Measurement)"
+      - "Three-level cause hierarchy (main cause, sub-cause, sub-sub-cause)"
+      - "Interactive cause input with add/remove functionality"
+      - "Real-time diagram generation and updates"
+      - "Drag-and-drop text adjustment in diagram"
+      - "Multiple example scenarios with sequential cycling"
+      - "Export diagram as JPG image"
+      - "Export cause data to Excel"
+      - "Sub-tab navigation for each 6M category"
+      - "Wizard-style interface with theory, input, and diagram tabs"
+
   input_requirements:
     control_plan:
       - "Process Name (manufacturing step)"
@@ -396,6 +426,13 @@ functionality:
       - "Physical contradiction: conflicting parameter and intersection test selection"
       - "Su-Field systems: object (S1), tool (S2), field (F), problem type"
       - "Matrix version selection (classic or 2003)"
+    
+    ishikawa:
+      - "Problem statement (text description)"
+      - "Main causes for each 6M category (text)"
+      - "Sub-causes for each main cause (text)"
+      - "Sub-sub-causes for each sub-cause (text, optional)"
+      - "Minimum: 1 problem statement and at least 1 cause in any category"
 
   url_parameters:
     taguchi_doe:
@@ -428,6 +465,9 @@ functionality:
       - "auto_calculate: Auto-calculation trigger"
     
     triz:
+      - "No URL parameter injection implemented"
+    
+    ishikawa:
       - "No URL parameter injection implemented"
 
   calculations:
@@ -514,6 +554,15 @@ functionality:
       - "9 Windows matrix data organization"
       - "Ideal Final Result (IFR) formulation guidance"
       - "40 inventive principles lookup and display"
+    
+    ishikawa_methods:
+      - "Fishbone diagram layout algorithm with 6M categories"
+      - "Three-level cause hierarchy positioning"
+      - "SVG coordinate calculation for bones, causes, and sub-causes"
+      - "Text wrapping and collision detection for diagram elements"
+      - "Drag-and-drop coordinate recalculation"
+      - "Excel data structure generation for export"
+      - "JPG export via html2canvas with scaling options"
 
   visualizations:
     control_plan:
@@ -599,6 +648,16 @@ functionality:
       - "76 standard solutions matrix with applicability indicators"
       - "40 principles cards with icons and examples"
       - "Infographic flow diagram of 8-step TRIZ methodology"
+    
+    ishikawa:
+      - "Interactive Fishbone diagram with SVG rendering"
+      - "Color-coded 6M category bones"
+      - "Three-level cause hierarchy visualization"
+      - "Drag-and-drop text adjustment"
+      - "Real-time diagram updates"
+      - "Legend for 6M categories"
+      - "Problem statement box (fish head)"
+      - "Bone arrows and spine visualization"
 
   statistical_tests:
     normality_tests:
@@ -642,6 +701,12 @@ functionality:
       - "LDST law mapping based on system life cycle"
       - "Function Analysis interaction mapping"
       - "9 Windows time-system level analysis"
+    
+    ishikawa_methods:
+      - "Cause and effect (Fishbone) diagram methodology"
+      - "6M categorization system"
+      - "Root cause analysis brainstorming techniques"
+      - "Visual hierarchy and layout algorithms"
 
   precision:
     - "High-precision normal CDF (Hart algorithm, error < 1e-12)"
@@ -654,6 +719,7 @@ functionality:
     - "Value Index calculations with 4 decimal precision"
     - "URL parameter decoding and normalization algorithms"
     - "TRIZ matrix lookup with accurate principle recommendations"
+    - "Fishbone diagram coordinate calculations with collision detection"
 
 ui_features:
   common_features:
@@ -772,6 +838,18 @@ ui_features:
     - "Export comprehensive TRIZ report to Excel"
     - "Load example problems across different domains"
     - "Responsive design optimized for mobile devices"
+  
+  ishikawa_specific:
+    - "Three main tabs: Theory & Info, Data Input, Diagram"
+    - "Sub-tabs within Data Input for each 6M category"
+    - "Kano-style main action buttons (Load Example, Reset All)"
+    - "Three-level cause input hierarchy (cause, sub-cause, sub-sub-cause)"
+    - "Drag-and-drop text adjustment in diagram"
+    - "Real-time diagram updates"
+    - "Export as JPG and Excel"
+    - "Sequential example loading (manufacturing, healthcare, software)"
+    - "Color-coded 6M categories with legend"
+    - "Responsive SVG diagram with collision detection"
 
 technical_specifications:
   frontend:
@@ -785,6 +863,7 @@ technical_specifications:
       - "Chart.js 4.4.2 with annotation plugin (for other tools)"
       - "KaTeX 0.16.9 for mathematical formula rendering (for other tools)"
       - "vis.js 4.21.0 for network diagram visualization (FMEA, VAVE)"
+      - "html2canvas 1.4.1 for JPG export (Ishikawa)"
     query_handling:
       - "query-handler.js for URL parameter processing"
       - "Intelligent field mapping system"
@@ -882,6 +961,17 @@ usage_scenarios:
   - "Ideal Final Result (IFR) formulation"
   - "9 Windows system operator analysis"
   - "Breakthrough solution generation"
+  - "Root cause analysis and problem-solving"
+  - "Brainstorming and cause identification sessions"
+  - "Quality improvement team meetings"
+  - "Process failure investigation"
+  - "Product defect analysis"
+  - "Service quality issue analysis"
+  - "Healthcare process improvement"
+  - "Software bug root cause analysis"
+  - "Manufacturing defect investigation"
+  - "Safety incident investigation"
+  - "Customer complaint analysis"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
@@ -962,6 +1052,15 @@ educational_value:
   - "Systematic innovation methodology"
   - "Problem-solving algorithms in TRIZ"
   - "Evolution patterns of technical systems"
+  - "Ishikawa Diagram theory and Kaoru Ishikawa's work"
+  - "Fishbone diagram methodology and 6M categories"
+  - "Root cause analysis techniques"
+  - "Brainstorming and cause categorization"
+  - "Visual problem-solving methods"
+  - "Quality circles and team-based problem solving"
+  - "Historical development of Ishikawa diagram (Japan, 1960s)"
+  - "Application in manufacturing, healthcare, software, and services"
+  - "Cause hierarchy and detailed analysis techniques"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -1001,6 +1100,13 @@ performance_characteristics:
   - "Handles multiple Su-Field systems simultaneously"
   - "Fast 9 Windows matrix data processing"
   - "Efficient physical contradiction algorithm execution"
+  - "Fast Fishbone diagram generation with SVG"
+  - "Real-time diagram updates during input"
+  - "Smooth drag-and-drop interaction for text adjustment"
+  - "Efficient collision detection for diagram elements"
+  - "Handles up to 10 causes per category with sub-causes"
+  - "Quick JPG export via html2canvas"
+  - "Fast Excel data export for cause hierarchy"
 
 error_handling:
   - "Robust input validation"
@@ -1033,6 +1139,11 @@ error_handling:
   - "Su-Field system completeness validation"
   - "Function Analysis component validation"
   - "Physical contradiction algorithm step validation"
+  - "Problem statement validation for Ishikawa diagram"
+  - "Empty cause validation before diagram generation"
+  - "JPG export error handling"
+  - "SVG rendering error handling"
+  - "Drag-and-drop boundary validation"
 
 implementation_notes:
   - "Professional-grade control plan implementation"
@@ -1079,6 +1190,13 @@ implementation_notes:
   - "Function Analysis with Mermaid.js integration"
   - "9 Windows implementation following system operator concept"
   - "Comprehensive example problems across different domains"
+  - "Ishikawa implementation based on Kaoru Ishikawa's methodology"
+  - "6M category system (Manpower, Methods, Machines, Materials, Environment, Measurement)"
+  - "Three-level cause hierarchy for detailed analysis"
+  - "Drag-and-drop text adjustment for diagram refinement"
+  - "Multiple real-world examples across industries"
+  - "SVG-based diagram with responsive design"
+  - "Export functionality for both JPG and Excel formats"
 
 references:
   methodology_sources:
@@ -1130,6 +1248,12 @@ references:
     - "Laws of Development of Technical Systems (LDST)"
     - "9 Windows (System Operator)"
     - "Ideal Final Result (IFR)"
+    - "Ishikawa, Kaoru (1968). Guide to Quality Control"
+    - "Ishikawa, Kaoru (1985). What is Total Quality Control? The Japanese Way"
+    - "Ishikawa Diagram (Fishbone Diagram) methodology"
+    - "6M Categories: Man, Method, Machine, Material, Measurement, Environment"
+    - "Seven Basic Tools of Quality (Ishikawa)"
+    - "Root Cause Analysis techniques"
   
   algorithm_sources:
     - "SheetJS for Excel export functionality"
@@ -1156,5 +1280,9 @@ references:
     - "Su-Field standard solution matching algorithms"
     - "LDST life cycle mapping algorithms"
     - "9 Windows matrix data organization algorithms"
+    - "SVG coordinate calculation algorithms for Ishikawa diagram"
+    - "Text wrapping and collision detection algorithms"
+    - "Fishbone diagram layout algorithms"
+    - "html2canvas for JPG export"
 
-disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG, VDA, or any standards body. URL parameter functionality is for convenience and data sharing purposes. TRIZ tool implements classical TRIZ methodology as developed by Genrich Altshuller and subsequent researchers."
+disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG, VDA, or any standards body. URL parameter functionality is for convenience and data sharing purposes. TRIZ tool implements classical TRIZ methodology as developed by Genrich Altshuller and subsequent researchers. Ishikawa tool implements the Cause and Effect Diagram methodology developed by Dr. Kaoru Ishikawa."
