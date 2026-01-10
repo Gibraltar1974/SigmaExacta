@@ -1046,8 +1046,21 @@
     <script src="query-handler.js"></script>
 
     <script>
+        // ===== INICIALIZACIÓN GLOBAL INMEDIATA =====
+        // Esto debe ejecutarse ANTES de cualquier otra cosa
+        (function () {
+            window.experimentData = window.experimentData || {};
+            window.allCharts = window.allCharts || [];
+            window.calculationCount = window.calculationCount || 0;
+
+            console.log('=== INICIALIZACIÓN GLOBAL COMPLETADA ===');
+            console.log('window.experimentData definido:', window.experimentData !== undefined);
+        })();
+
         // Código JavaScript que funcionará con el header
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOMContentLoaded - experimentData:', window.experimentData);
+
             // Función para cambiar entre tabs (IDÉNTICA A KANO)
             window.switchWizardTab = function (tabId) {
                 // Quitar clase active de todos los botones y contenidos
@@ -1112,9 +1125,6 @@
                 }
             }
 
-            // Variables globales - RESTAURADAS DEL ORIGINAL
-            let experimentData = {}, allCharts = [], calculationCount = 0;
-
             // Elementos del DOM - RESTAURADOS DEL ORIGINAL
             const DOM = {
                 addFactorBtn: document.getElementById('add-factor'),
@@ -1177,7 +1187,13 @@
 
             function generateDesign() {
                 console.log('=== GENERATE DESIGN INICIADO ===');
-                console.log('window.experimentData:', window.experimentData);
+                console.log('window.experimentData disponible:', window.experimentData);
+
+                // Asegurar que experimentData existe
+                if (!window.experimentData) {
+                    console.error('ERROR CRÍTICO: window.experimentData no está definido');
+                    window.experimentData = {};
+                }
 
                 // MODIFICADO: Capturar datos previos antes de resetear
                 let previousResults = [];
@@ -1192,11 +1208,11 @@
 
                 // Limpiar análisis anterior
                 DOM.analysisHistoryContainer.innerHTML = '';
-                if (allCharts.length > 0) {
-                    allCharts.forEach(c => c.destroy());
-                    allCharts = [];
+                if (window.allCharts.length > 0) {
+                    window.allCharts.forEach(c => c.destroy());
+                    window.allCharts = [];
                 }
-                calculationCount = 0;
+                window.calculationCount = 0;
                 DOM.analysisOutputSection.classList.add('hidden');
                 DOM.noAnalysisMsg.style.display = 'block';
 
@@ -1273,6 +1289,7 @@
                 showNotification('Taguchi design generated successfully!');
                 console.log('=== GENERATE DESIGN COMPLETADO ===');
             }
+
             // Agrega esta función después de generateDesign()
             function forceGenerateDesignWithParams(factorsArray, levelsArray) {
                 console.log('Forzando generación de diseño con:', factorsArray, levelsArray);
@@ -1306,22 +1323,22 @@
                 return true;
             }
 
-
             function resetExperimentData() {
-                experimentData = {
+                window.experimentData = {
                     name: '', objective: '', factors: [], responseVariable: '',
                     selectedArray: null, results: [], snrType: 'smaller', nominalTarget: null,
                     factorEffects: {}, anova: {}, predictedResult: null, optimalSettings: {}
                 };
+                console.log('resetExperimentData ejecutado:', window.experimentData);
             }
 
             function generateDesignTable() {
-                DOM.experimentInfoDiv.innerHTML = `<p><strong>Experiment Name:</strong> ${experimentData.name}</p><p><strong>Objective:</strong> ${experimentData.objective}</p>`;
-                let tableHTML = `<table><thead><tr><th>Run</th>${experimentData.factors.map(f => `<th>${f.name}</th>`).join('')}<th>${experimentData.responseVariable}</th></tr></thead><tbody>`;
-                experimentData.selectedArray.array.forEach((run, index) => {
+                DOM.experimentInfoDiv.innerHTML = `<p><strong>Experiment Name:</strong> ${window.experimentData.name}</p><p><strong>Objective:</strong> ${window.experimentData.objective}</p>`;
+                let tableHTML = `<table><thead><tr><th>Run</th>${window.experimentData.factors.map(f => `<th>${f.name}</th>`).join('')}<th>${window.experimentData.responseVariable}</th></tr></thead><tbody>`;
+                window.experimentData.selectedArray.array.forEach((run, index) => {
                     tableHTML += `<tr><td>${index + 1}</td>`;
-                    for (let i = 0; i < experimentData.factors.length; i++) {
-                        const factor = experimentData.factors[i];
+                    for (let i = 0; i < window.experimentData.factors.length; i++) {
+                        const factor = window.experimentData.factors[i];
                         const levelIndex = Math.min(run[i] - 1, factor.levels.length - 1);
                         tableHTML += `<td>${factor.levels[levelIndex]}</td>`;
                     }
@@ -1329,10 +1346,10 @@
                 });
                 tableHTML += '</tbody></table>';
                 DOM.orthogonalArrayDiv.innerHTML = tableHTML;
-                experimentData.results = Array(experimentData.selectedArray.runs).fill(null);
+                window.experimentData.results = Array(window.experimentData.selectedArray.runs).fill(null);
                 document.querySelectorAll('.response-input').forEach((input, index) => {
                     input.addEventListener('change', () => {
-                        experimentData.results[index] = parseFloat(input.value);
+                        window.experimentData.results[index] = parseFloat(input.value);
                     });
                 });
             }
@@ -1345,20 +1362,20 @@
                     currentInputs.forEach((input, index) => {
                         const val = input.value.trim();
                         if (val !== "") {
-                            experimentData.results[index] = parseFloat(val);
+                            window.experimentData.results[index] = parseFloat(val);
                         } else {
-                            experimentData.results[index] = null;
+                            window.experimentData.results[index] = null;
                         }
                     });
                 }
 
-                if (experimentData.results.some(val => val === null || isNaN(val))) {
+                if (window.experimentData.results.some(val => val === null || isNaN(val))) {
                     alert('Please fill in all response values before running the analysis.');
                     return;
                 }
 
                 let target = null;
-                if (experimentData.snrType === 'nominal') {
+                if (window.experimentData.snrType === 'nominal') {
                     const targetInput = document.getElementById('nominal-target');
                     if (!targetInput.value || isNaN(parseFloat(targetInput.value))) {
                         alert('"Nominal is best" S/N ratio requires a Target Value. Please enter a target value before calculating.');
@@ -1368,20 +1385,20 @@
                     target = parseFloat(targetInput.value);
                 }
 
-                calculationCount++;
-                experimentData = TaguchiCalculator.runAnalysis(experimentData, target);
+                window.calculationCount++;
+                window.experimentData = TaguchiCalculator.runAnalysis(window.experimentData, target);
 
                 // Cambiar a la pestaña de análisis
                 switchWizardTab('tab-analysis');
                 DOM.noAnalysisMsg.style.display = 'none';
                 DOM.analysisOutputSection.classList.remove('hidden');
 
-                createAndDisplayReportBlock(calculationCount);
+                createAndDisplayReportBlock(window.calculationCount);
 
                 // Renderizar fórmulas matemáticas en el nuevo contenido
-                renderMathInElement(document.getElementById(`analysis-run-${calculationCount}`));
+                renderMathInElement(document.getElementById(`analysis-run-${window.calculationCount}`));
 
-                document.getElementById(`analysis-run-${calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById(`analysis-run-${window.calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                 showNotification('Analysis completed successfully!');
             }
@@ -1445,9 +1462,9 @@
 
             function displayExecutiveSummary(runId) {
                 const calculationDate = new Date().toLocaleString();
-                const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
+                const sortedFactors = Object.entries(window.experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
                 const mostInfluential = sortedFactors.length > 0 ? sortedFactors[0][0] : 'N/A';
-                const settingsList = Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><i class="fas fa-check-circle"></i><strong>${name}:</strong> ${setting.level}</li>`).join('');
+                const settingsList = Object.entries(window.experimentData.optimalSettings).map(([name, setting]) => `<li><i class="fas fa-check-circle"></i><strong>${name}:</strong> ${setting.level}</li>`).join('');
                 const summaryDiv = document.getElementById(`executive-summary-${runId}`);
                 summaryDiv.innerHTML = `
                 <div class="conclusion-box" style="border-left-color: var(--primary-color); background-color: #f8f9fa;">
@@ -1457,9 +1474,9 @@
                         <p style="margin: 0; font-weight: 600; color: #555;">Calculation Time: ${calculationDate}</p>
                     </div>
                     <ul>
-                        <li><i class="fas fa-chart-line"></i><div class="summary-text">The most influential factor on '<strong>${experimentData.responseVariable}</strong>' is <strong>${mostInfluential}</strong>.</div></li>
+                        <li><i class="fas fa-chart-line"></i><div class="summary-text">The most influential factor on '<strong>${window.experimentData.responseVariable}</strong>' is <strong>${mostInfluential}</strong>.</div></li>
                         <li><i class="fas fa-cogs"></i><div class="summary-text">To achieve a <strong>robust process</strong> (maximized S/N Ratio), the recommended optimal settings are: <ul style="margin-left: 20px; margin-top: 10px; list-style-type: none; padding-left: 0;">${settingsList}</ul></div></li>
-                        <li><i class="fas fa-calculator"></i><div class="summary-text">With these settings, the predicted result for '<strong>${experimentData.responseVariable}</strong>' is approximately <strong>${experimentData.predictedResult.toFixed(3)}</strong>.</div></li>
+                        <li><i class="fas fa-calculator"></i><div class="summary-text">With these settings, the predicted result for '<strong>${window.experimentData.responseVariable}</strong>' is approximately <strong>${window.experimentData.predictedResult.toFixed(3)}</strong>.</div></li>
                     </ul>
                 </div>`;
             }
@@ -1467,13 +1484,13 @@
             function displayFactorEffectsTables(runId) {
                 const container = document.getElementById(`factor-effects-content-${runId}`);
                 let html = '';
-                const sortedFactors = Object.keys(experimentData.factorEffects).sort((a, b) => experimentData.factorEffects[b].range - experimentData.factorEffects[a].range);
+                const sortedFactors = Object.keys(window.experimentData.factorEffects).sort((a, b) => window.experimentData.factorEffects[b].range - window.experimentData.factorEffects[a].range);
                 sortedFactors.forEach(factorName => {
-                    const factor = experimentData.factorEffects[factorName];
+                    const factor = window.experimentData.factorEffects[factorName];
                     html += `<div class="factor-table"><table><thead><tr><th colspan="2">${factorName} (Effect Range: ${factor.range.toFixed(3)})</th></tr>`;
                     html += '<tr><th>Level</th><th>Average Response</th></tr></thead><tbody>';
                     Object.entries(factor.levels).forEach(([level, avg]) => {
-                        const isOptimal = level === experimentData.optimalSettings[factorName].level;
+                        const isOptimal = level === window.experimentData.optimalSettings[factorName].level;
                         html += `<tr class="${isOptimal ? 'highlight' : ''}"><td>${level}</td><td>${avg.toFixed(3)}</td></tr>`;
                     });
                     html += '</tbody></table></div>';
@@ -1484,15 +1501,15 @@
             function displayAnovaTable(runId) {
                 const container = document.getElementById(`anova-table-container-${runId}`);
                 let html = `<table class="anova-table"><thead><tr><th>Source</th><th>Sum of Squares (SS)</th><th>DF</th><th>Mean Square (MS)</th><th>F-Value</th><th>Significant?</th></tr></thead><tbody>`;
-                Object.keys(experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
-                    const d = experimentData.anova[factorName];
+                Object.keys(window.experimentData.anova).filter(k => k !== 'error' && k !== 'total').forEach(factorName => {
+                    const d = window.experimentData.anova[factorName];
                     const sigText = typeof d.isSignificant === 'boolean' ? (d.isSignificant ? 'Yes' : 'No') : d.isSignificant;
                     const sigClass = d.isSignificant === true ? 'significant' : '';
                     html += `<tr class="${sigClass}"><td class="${sigClass}">${factorName}</td><td>${d.ss.toFixed(3)}</td><td>${d.df}</td><td>${(d.ms || 0).toFixed(3)}</td><td>${(d.f === Infinity ? '∞' : (d.f || 0).toFixed(3))}</td><td>${sigText}</td></tr>`;
                 });
-                const e = experimentData.anova.error;
+                const e = window.experimentData.anova.error;
                 html += `<tr><td>Error</td><td>${(e.ss || 0).toFixed(3)}</td><td>${e.df}</td><td>${(e.ms || 0).toFixed(3)}</td><td></td><td></td></tr>`;
-                const t = experimentData.anova.total;
+                const t = window.experimentData.anova.total;
                 html += `<tr><td><strong>Total</strong></td><td><strong>${(t.ss || 0).toFixed(3)}</strong></td><td><strong>${t.df}</strong></td><td></td><td></td><td></td></tr>`;
                 html += '</tbody></table>';
                 if (e.df <= 0) {
@@ -1502,17 +1519,17 @@
             }
 
             function displaySnrResults(runId) {
-                const overallSnr = experimentData.snrEffects.perRun.reduce((a, b) => a + b, 0) / experimentData.snrEffects.perRun.length;
-                document.getElementById(`snr-results-content-${runId}`).innerHTML = `<p><strong>Overall S/N Ratio (${getSnrTypeName(experimentData.snrType)}):</strong> <span class="snr-value" style="font-weight: bold; color: var(--primary-color);">${(overallSnr || 0).toFixed(2)} dB</span></p>`;
+                const overallSnr = window.experimentData.snrEffects.perRun.reduce((a, b) => a + b, 0) / window.experimentData.snrEffects.perRun.length;
+                document.getElementById(`snr-results-content-${runId}`).innerHTML = `<p><strong>Overall S/N Ratio (${getSnrTypeName(window.experimentData.snrType)}):</strong> <span class="snr-value" style="font-weight: bold; color: var(--primary-color);">${(overallSnr || 0).toFixed(2)} dB</span></p>`;
                 const optimalDiv = document.getElementById(`optimal-levels-${runId}`);
                 let html = `<h4>Optimal Levels for Robustness</h4><p>These are the settings that maximize the Signal-to-Noise ratio, making your process less sensitive to variation.</p><ul>`;
-                html += Object.entries(experimentData.optimalSettings).map(([name, setting]) => `<li><strong>${name}:</strong> ${setting.level} (Avg S/N: ${setting.snr_avg.toFixed(2)} dB)</li>`).join('');
+                html += Object.entries(window.experimentData.optimalSettings).map(([name, setting]) => `<li><strong>${name}:</strong> ${setting.level} (Avg S/N: ${setting.snr_avg.toFixed(2)} dB)</li>`).join('');
                 html += '</ul>';
                 optimalDiv.innerHTML = html;
             }
 
             function createParetoChart(runId) {
-                const sortedFactors = Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
+                const sortedFactors = Object.entries(window.experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range);
                 const labels = sortedFactors.map(f => f[0]);
                 const data = sortedFactors.map(f => f[1].range);
                 const paretoChart = new Chart(document.getElementById(`pareto-chart-${runId}`).getContext('2d'), {
@@ -1520,18 +1537,18 @@
                     data: { labels, datasets: [{ label: 'Factor Effect (Range)', data, backgroundColor: 'rgba(52, 152, 219, 0.7)' }] },
                     options: {
                         responsive: true, maintainAspectRatio: false, indexAxis: 'x',
-                        plugins: { title: { display: true, text: `Impact of Factors on ${experimentData.responseVariable}` } },
+                        plugins: { title: { display: true, text: `Impact of Factors on ${window.experimentData.responseVariable}` } },
                         layout: { padding: { top: 45 } }
                     }
                 });
-                allCharts.push(paretoChart);
+                window.allCharts.push(paretoChart);
             }
 
             function createMainEffectsCharts(runId) {
                 const container = document.getElementById(`charts-parent-container-${runId}`);
                 container.innerHTML = '';
-                Object.keys(experimentData.factorEffects).forEach(factorName => {
-                    const factorData = experimentData.factorEffects[factorName];
+                Object.keys(window.experimentData.factorEffects).forEach(factorName => {
+                    const factorData = window.experimentData.factorEffects[factorName];
                     const chartWrapper = document.createElement('div');
                     chartWrapper.className = 'chart-wrapper';
                     const canvas = document.createElement('canvas');
@@ -1545,15 +1562,15 @@
                             plugins: { title: { display: true, text: `Main Effect: ${factorName}` } }
                         }
                     });
-                    allCharts.push(chart);
+                    window.allCharts.push(chart);
                 });
             }
 
             function getSnrTypeName(type) {
                 const names = { 'smaller': 'Smaller is Better', 'larger': 'Larger is Better', 'nominal': 'Nominal is Best' };
                 let name = names[type] || type;
-                if (type === 'nominal' && experimentData.nominalTarget !== null) {
-                    name += ` (Target: ${experimentData.nominalTarget})`;
+                if (type === 'nominal' && window.experimentData.nominalTarget !== null) {
+                    name += ` (Target: ${window.experimentData.nominalTarget})`;
                 }
                 return name;
             }
@@ -1565,7 +1582,7 @@
 
             // Función de exportación restaurada del original
             window.exportToExcelTaguchi = function (runId) {
-                if (!experimentData.predictedResult) {
+                if (!window.experimentData.predictedResult) {
                     alert("Please run at least one analysis before exporting.");
                     return;
                 }
@@ -1576,31 +1593,31 @@
                 const summaryData = [
                     ['Taguchi Analysis Report (Last Run)'],
                     ['Calculation Date', new Date().toLocaleString()],
-                    ['Experiment Name', experimentData.name],
-                    ['Objective', experimentData.objective],
+                    ['Experiment Name', window.experimentData.name],
+                    ['Objective', window.experimentData.objective],
                     [],
                     ['Executive Summary'],
-                    ['Most Influential Factor', Object.entries(experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range)[0][0]],
-                    ['Predicted Result', experimentData.predictedResult.toFixed(4)],
+                    ['Most Influential Factor', Object.entries(window.experimentData.factorEffects).sort((a, b) => b[1].range - a[1].range)[0][0]],
+                    ['Predicted Result', window.experimentData.predictedResult.toFixed(4)],
                     [''],
                     ['Optimal Settings (for Robustness):'],
                     ['Factor', 'Optimal Level', 'Avg. S/N (dB)'],
-                    ...Object.entries(experimentData.optimalSettings).map(([name, setting]) => [name, setting.level, setting.snr_avg.toFixed(2)])
+                    ...Object.entries(window.experimentData.optimalSettings).map(([name, setting]) => [name, setting.level, setting.snr_avg.toFixed(2)])
                 ];
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
 
                 // Design Data Sheet
                 const designData = [
                     ['Experiment Design & Data'],
-                    ['Run', ...experimentData.factors.map(f => f.name), experimentData.responseVariable, `S/N Ratio (${getSnrTypeName(experimentData.snrType)})`],
-                    ...experimentData.selectedArray.array.map((run, index) => {
+                    ['Run', ...window.experimentData.factors.map(f => f.name), window.experimentData.responseVariable, `S/N Ratio (${getSnrTypeName(window.experimentData.snrType)})`],
+                    ...window.experimentData.selectedArray.array.map((run, index) => {
                         const row = [index + 1];
-                        for (let i = 0; i < experimentData.factors.length; i++) {
-                            const factor = experimentData.factors[i];
+                        for (let i = 0; i < window.experimentData.factors.length; i++) {
+                            const factor = window.experimentData.factors[i];
                             row.push(factor.levels[Math.min(run[i] - 1, factor.levels.length - 1)]);
                         }
-                        row.push(experimentData.results[index] || '');
-                        row.push(experimentData.snrEffects.perRun[index].toFixed(2));
+                        row.push(window.experimentData.results[index] || '');
+                        row.push(window.experimentData.snrEffects.perRun[index].toFixed(2));
                         return row;
                     })
                 ];
@@ -1610,17 +1627,17 @@
                 const anovaData = [
                     ['ANOVA Table'],
                     ['Source', 'SS', 'DF', 'MS', 'F-Value', 'Significant?'],
-                    ...Object.keys(experimentData.anova).filter(k => k !== 'total' && k !== 'error').map(key => {
-                        const val = experimentData.anova[key];
+                    ...Object.keys(window.experimentData.anova).filter(k => k !== 'total' && k !== 'error').map(key => {
+                        const val = window.experimentData.anova[key];
                         const sigText = typeof val.isSignificant === 'boolean' ? (val.isSignificant ? 'Yes' : 'No') : val.isSignificant;
                         return [key, val.ss, val.df, val.ms, val.f === Infinity ? 'N/A' : val.f, sigText];
                     }),
-                    ['Error', experimentData.anova.error.ss, experimentData.anova.error.df, experimentData.anova.error.ms, '', ''],
-                    ['Total', experimentData.anova.total.ss, experimentData.anova.total.df, '', '', '']
+                    ['Error', window.experimentData.anova.error.ss, window.experimentData.anova.error.df, window.experimentData.anova.error.ms, '', ''],
+                    ['Total', window.experimentData.anova.total.ss, window.experimentData.anova.total.df, '', '', '']
                 ];
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(anovaData), 'ANOVA');
 
-                const fileName = `Taguchi_Analysis_${experimentData.name.replace(/[^a-z0-9]/gi, '_')}.xlsx`;
+                const fileName = `Taguchi_Analysis_${window.experimentData.name.replace(/[^a-z0-9]/gi, '_')}.xlsx`;
                 XLSX.writeFile(wb, fileName);
 
                 showNotification('Excel file exported successfully!');
@@ -1689,9 +1706,9 @@
                     DOM.analysisHistoryContainer.innerHTML = '';
 
                     // Resetear datos
-                    experimentData = {};
-                    allCharts = [];
-                    calculationCount = 0;
+                    resetExperimentData();
+                    window.allCharts = [];
+                    window.calculationCount = 0;
 
                     // Volver a la primera pestaña
                     switchWizardTab('tab-start');
@@ -1744,10 +1761,18 @@
                 }, 3000);
             }
 
+            // ===== VERIFICACIÓN GLOBAL =====
+            console.log('Estado global antes de init:');
+            console.log('- window.experimentData:', window.experimentData);
+            console.log('- typeof addFactorInput:', typeof addFactorInput);
+            console.log('- typeof generateDesign:', typeof generateDesign);
+            console.log('- typeof runFullAnalysis:', typeof runFullAnalysis);
+
             // Exponer funciones necesarias para QueryHandler
             window.addFactorInput = addFactorInput;
             window.generateDesign = generateDesign;
             window.runFullAnalysis = runFullAnalysis;
+            window.forceGenerateDesignWithParams = forceGenerateDesignWithParams;
 
             // Inicializar la aplicación
             init();
@@ -1758,8 +1783,7 @@
                     window.QueryHandler.initialize();
                 }
             }, 1000);
-        });
-        // Agrega al final, justo antes del cierre del script
+
             console.log('=== DIAGNÓSTICO ===');
             console.log('TaguchiCalculator disponible:', typeof TaguchiCalculator);
             console.log('TaguchiCalculator.orthogonalArrays:', TaguchiCalculator.orthogonalArrays);
@@ -1773,7 +1797,8 @@
                 console.log('factors-container:', document.getElementById('factors-container'));
                 console.log('generate-design button:', document.getElementById('generate-design'));
             }, 1000);
-            </script>
-    </body>
-    
-    </html>
+        });
+    </script>
+</body>
+
+</html>
