@@ -1,6 +1,9 @@
 // query-handler.js
 // Sistema inteligente de manejo de parámetros URL para Sigma Exacta Engineering Tools
 // Compatible con Taguchi DOE, Process Capability, Weibull Analysis, Tolerance Stack-Up y más
+console.log('Query Handler v2.1 loaded - Sigma Exacta Engineering Tools');
+console.log('URL actual:', window.location.href);
+console.log('Parámetros URL:', window.location.search);
 
 const QueryHandler = (function () {
     // Configuración de mapeo de campos por herramienta
@@ -93,25 +96,73 @@ const QueryHandler = (function () {
                     }, 500);
                 }
             },
+            // En query-handler.js, busca la sección taguchi_doe y actualiza el postProcess:
             postProcess: function (params) {
                 // Generar diseño automáticamente si hay factores
                 if (params.has('factors') && params.has('levels')) {
-                    setTimeout(() => {
-                        const generateBtn = document.getElementById('generate-design');
-                        if (generateBtn) {
-                            generateBtn.click();
+                    console.log('POST-PROCESS: Generando diseño Taguchi...');
 
-                            // Ejecutar análisis si está configurado
-                            if (params.get('auto_calculate') === 'true' || params.get('auto_calculate') === '1') {
-                                setTimeout(() => {
-                                    const calculateBtn = document.getElementById('calculate-analysis');
-                                    if (calculateBtn) {
-                                        calculateBtn.click();
-                                    }
-                                }, 1000);
-                            }
+                    // Esperar a que el DOM esté completamente listo
+                    setTimeout(() => {
+                        // Verificar que las funciones necesarias existen
+                        if (typeof window.generateDesign !== 'function') {
+                            console.error('ERROR: generateDesign no está disponible');
+                            return;
                         }
-                    }, 300);
+
+                        // Generar el diseño llamando directamente a la función
+                        try {
+                            console.log('Llamando a generateDesign()...');
+                            window.generateDesign();
+
+                            // Esperar a que se genere el diseño y la tabla
+                            setTimeout(() => {
+                                // Llenar resultados si existen
+                                if (params.has('results')) {
+                                    console.log('Llenando resultados...');
+                                    const results = params.get('results').split(',').map(r => {
+                                        const val = parseFloat(r.trim());
+                                        return isNaN(val) ? null : val;
+                                    }).filter(r => r !== null);
+
+                                    const responseInputs = document.querySelectorAll('.response-input');
+                                    console.log(`Inputs encontrados: ${responseInputs.length}, Resultados: ${results.length}`);
+
+                                    responseInputs.forEach((input, index) => {
+                                        if (results[index] !== undefined && results[index] !== null) {
+                                            input.value = results[index];
+                                            // Disparar eventos para actualizar experimentData
+                                            const inputEvent = new Event('input', { bubbles: true });
+                                            const changeEvent = new Event('change', { bubbles: true });
+                                            input.dispatchEvent(inputEvent);
+                                            input.dispatchEvent(changeEvent);
+                                        }
+                                    });
+
+                                    // Actualizar experimentData.results
+                                    if (window.experimentData && window.experimentData.results) {
+                                        window.experimentData.results = results.slice(0, responseInputs.length);
+                                    }
+                                }
+
+                                // Ejecutar análisis si está configurado
+                                if (params.get('auto_calculate') === 'true' || params.get('auto_calculate') === '1') {
+                                    console.log('Auto-calculating analysis...');
+                                    setTimeout(() => {
+                                        if (typeof window.runFullAnalysis === 'function') {
+                                            console.log('Llamando a runFullAnalysis()...');
+                                            window.runFullAnalysis();
+                                        } else {
+                                            console.error('ERROR: runFullAnalysis no está disponible');
+                                        }
+                                    }, 1500); // Dar más tiempo para que todo se establezca
+                                }
+                            }, 1000); // Esperar a que generateDesign() complete
+
+                        } catch (error) {
+                            console.error('Error en postProcess:', error);
+                        }
+                    }, 500); // Esperar inicial
                 }
             }
         },
@@ -348,10 +399,25 @@ const QueryHandler = (function () {
 
 // Auto-inicialización cuando se carga el script
 (function () {
-    // Pequeño retraso para asegurar que el DOM esté listo
-    setTimeout(() => {
-        QueryHandler.initialize();
-    }, 100);
+    // Esperar a que el DOM esté completamente cargado
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pequeño retraso para asegurar que todo esté listo
+            setTimeout(() => {
+                if (!window.queryHandlerInitialized) {
+                    QueryHandler.initialize();
+                    window.queryHandlerInitialized = true;
+                }
+            }, 100);
+        });
+    } else {
+        setTimeout(() => {
+            if (!window.queryHandlerInitialized) {
+                QueryHandler.initialize();
+                window.queryHandlerInitialized = true;
+            }
+        }, 100);
+    }
 })();
 
 // Exportar para uso global
