@@ -1,7 +1,7 @@
 app_name: "Sigma Exacta Engineering Tools Suite"
 app_url: "http://SigmaExacta.com"
 app_version: "2.0"
-description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, and Taguchi DOE"
+description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, and FMEA for quality and reliability engineering"
 author: "SigmaExacta"
 license: "Open Source"
 
@@ -73,6 +73,20 @@ tools_suite:
       - "Pareto chart of factor importance"
       - "Excel export with comprehensive results"
 
+  - name: "FMEA (Failure Modes and Effects Analysis)"
+    url: "/fmea"
+    description: "Proactively prevent problems with FMEA tool for Design (DFMEA) & Process (PFMEA) analysis. Generate visual structure charts and auto-calculate Risk Priority Number (RPN)"
+    features:
+      - "Interactive structure definition with components, contacts, and functions"
+      - "Automatic network diagram visualization"
+      - "Generate FMEA tables for each function"
+      - "Calculate Risk Priority Number (RPN) from Severity, Occurrence, and Detection"
+      - "Add multiple failure modes per function"
+      - "Export FMEA table to Excel"
+      - "Export structure chart as image"
+      - "AIAG & VDA 7-Step FMEA process support"
+      - "Design FMEA (DFMEA) and Process FMEA (PFMEA)"
+
 functionality:
   control_plan:
     primary_features:
@@ -142,6 +156,20 @@ functionality:
       - "Main effects plots and Pareto chart visualization"
       - "Excel export with all analysis results"
 
+  fmea:
+    primary_features:
+      - "Structure definition with components, contacts, and functions"
+      - "External/internal component classification"
+      - "Function assignment to specific contacts"
+      - "Automatic FMEA table generation from functions"
+      - "Multiple failure modes per function"
+      - "RPN calculation (Severity × Occurrence × Detection)"
+      - "Recommended actions management for each failure mode"
+      - "Multiple FMEA analyses versioning"
+      - "Network diagram visualization of system structure"
+      - "Excel export of FMEA tables"
+      - "Chart export as JPG image"
+
   input_requirements:
     control_plan:
       - "Process Name (manufacturing step)"
@@ -188,6 +216,21 @@ functionality:
       - "Signal-to-Noise ratio type selection"
       - "Target value for nominal-is-best analysis"
       - "Measured results for each experimental run"
+    
+    fmea:
+      - "Component names (system/process elements)"
+      - "External/internal classification for components"
+      - "Contact definitions between components"
+      - "Function names and types (primary/secondary)"
+      - "Function assignment to contacts"
+      - "Failure modes for each function"
+      - "Effects of failure"
+      - "Causes of failure"
+      - "Severity rating (1-10 scale)"
+      - "Occurrence rating (1-10 scale)"
+      - "Detection rating (1-10 scale)"
+      - "Current controls for prevention/detection"
+      - "Recommended actions for high-risk items"
 
   calculations:
     control_plan_methods:
@@ -230,6 +273,13 @@ functionality:
       - "Optimal level determination for robustness"
       - "Main effects analysis and range calculation"
       - "Predicted outcome based on optimal settings"
+    
+    fmea_methods:
+      - "Risk Priority Number (RPN) calculation: RPN = Severity × Occurrence × Detection"
+      - "Automatic FMEA table generation from system structure"
+      - "Network diagram layout with internal/external component separation"
+      - "Excel export with formatted columns and action items"
+      - "Chart export using Canvas API"
 
   visualizations:
     control_plan:
@@ -267,6 +317,16 @@ functionality:
       - "Orthogonal array visualization in tabular format"
       - "ANOVA table with significance indicators"
       - "Optimal settings summary display"
+    
+    fmea:
+      - "Interactive network diagram showing system structure"
+      - "Color-coded nodes for internal/external components"
+      - "Function visualization as curved edges with labels"
+      - "Dynamic layout with draggable nodes"
+      - "System boundary lines (dashed) for internal/external separation"
+      - "Interactive legend for function identification"
+      - "FMEA table with auto-expanding textareas"
+      - "RPN cell color coding (high/medium/low risk)"
 
   statistical_tests:
     normality_tests:
@@ -352,6 +412,17 @@ ui_features:
     - "Multiple chart visualizations (main effects, Pareto)"
     - "Executive summary with optimal settings"
     - "Comprehensive ANOVA table with significance testing"
+  
+  fmea_specific:
+    - "Four main tabs: Theory & Info, Define Structure, Visualize, FMEA Results"
+    - "Three-panel structure definition (Components, Contacts, Functions)"
+    - "Interactive network diagram with zoom and fit-to-view"
+    - "Automatic FMEA table generation from functions"
+    - "Multiple FMEA analyses versioning"
+    - "RPN color coding based on risk level"
+    - "Dynamic action items for each failure mode"
+    - "Chart export functionality"
+    - "Component external/internal classification"
 
 technical_specifications:
   frontend:
@@ -363,6 +434,7 @@ technical_specifications:
       - "Google Fonts (Nunito) for typography"
       - "Chart.js 4.4.2 with annotation plugin (for other tools)"
       - "KaTeX 0.16.9 for mathematical formula rendering (for other tools)"
+      - "vis.js 4.21.0 for network diagram visualization (FMEA)"
   
   compatibility:
     browsers: "Modern browsers with ES6 support"
@@ -399,6 +471,16 @@ usage_scenarios:
   - "Noise factor analysis and reduction"
   - "Process parameter optimization"
   - "Product development and improvement studies"
+  - "Design Failure Mode and Effects Analysis (DFMEA)"
+  - "Process Failure Mode and Effects Analysis (PFMEA)"
+  - "Risk assessment and mitigation planning"
+  - "System reliability analysis"
+  - "Safety-critical system design"
+  - "Automotive industry quality planning (AIAG/VDA)"
+  - "Aerospace system reliability analysis"
+  - "Medical device risk management (ISO 14971)"
+  - "Product design validation"
+  - "Preventive maintenance planning"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
@@ -426,6 +508,13 @@ educational_value:
   - "Orthogonal array design and analysis"
   - "Signal-to-Noise ratio concepts for quality engineering"
   - "ANOVA and statistical significance in experimental design"
+  - "FMEA methodology and 7-step AIAG/VDA process"
+  - "Risk Priority Number (RPN) calculation and interpretation"
+  - "System structure analysis and functional decomposition"
+  - "Failure mode identification and effects analysis"
+  - "Design vs. Process FMEA differences and applications"
+  - "Risk mitigation strategies and action planning"
+  - "Historical context of FMEA (military, aerospace, automotive)"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -440,6 +529,10 @@ performance_characteristics:
   - "Efficient tab switching without page reloads"
   - "Quick orthogonal array generation and factor effect calculations"
   - "Real-time ANOVA calculations with F-critical value lookup"
+  - "Efficient network diagram rendering with vis.js"
+  - "Handles complex system structures with multiple components"
+  - "Real-time RPN calculation and updating"
+  - "Smooth FMEA table generation and editing"
 
 error_handling:
   - "Robust input validation"
@@ -452,6 +545,10 @@ error_handling:
   - "Notification system for user feedback"
   - "Factor and level validation for Taguchi designs"
   - "Orthogonal array compatibility checking"
+  - "Component and contact relationship validation (FMEA)"
+  - "Minimum function validation for FMEA generation"
+  - "Invalid RPN rating prevention"
+  - "Chart export error handling"
 
 implementation_notes:
   - "Professional-grade control plan implementation"
@@ -466,6 +563,11 @@ implementation_notes:
   - "Taguchi Method implementation following Genichi Taguchi's principles"
   - "Orthogonal array designs based on standard Taguchi arrays"
   - "Signal-to-Noise ratio calculations per Taguchi's quality engineering"
+  - "FMEA implementation following AIAG & VDA 7-Step methodology"
+  - "System structure analysis based on functional modeling"
+  - "Network visualization using vis.js for interactive diagrams"
+  - "RPN calculation according to standard FMEA practice"
+  - "Support for both Design FMEA (DFMEA) and Process FMEA (PFMEA)"
 
 references:
   methodology_sources:
@@ -487,6 +589,11 @@ references:
     - "Taguchi, G. (1987). System of Experimental Design"
     - "Taguchi Methods for Quality Engineering"
     - "Orthogonal Array Designs (Taguchi)"
+    - "MIL-P-1629 (1949) - Military Procedure for Failure Mode, Effects and Criticality Analysis"
+    - "AIAG & VDA FMEA Handbook (2019) - Failure Mode and Effects Analysis"
+    - "SAE J1739 - Potential Failure Mode and Effects Analysis in Design and Manufacturing"
+    - "ISO 14971 - Medical devices - Application of risk management to medical devices"
+    - "NASA FMEA Handbook - Failure Mode and Effects Analysis"
   
   algorithm_sources:
     - "SheetJS for Excel export functionality"
@@ -501,5 +608,7 @@ references:
     - "Taguchi Signal-to-Noise ratio formulas"
     - "ANOVA F-test methodology"
     - "Orthogonal array construction methods"
+    - "vis.js for network diagram visualization"
+    - "Canvas API for chart export functionality"
 
 disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG or any standards body."

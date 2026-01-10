@@ -8,6 +8,7 @@ Sigma Exacta provides a comprehensive suite of engineering tools including:
 4. Weibull Analysis for Failure Prediction
 5. PDCA Cycle (Plan-Do-Check-Act)
 6. Taguchi DOE Calculator & Analyzer
+7. FMEA (Failure Mode and Effects Analysis)
 
 All tools are designed for professional engineering analysis with educational value.
 
@@ -892,6 +893,145 @@ EDUCATIONAL VALUE:
 - ANOVA and statistical significance in experimental design
 - Real-world example of experimental design and analysis
 
+================================================================================
+TOOL 7: FMEA (FAILURE MODE AND EFFECTS ANALYSIS)
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a Failure Mode and Effects Analysis (FMEA) tool for proactively identifying and mitigating potential failures in designs (DFMEA) and processes (PFMEA). The tool follows the modern AIAG & VDA 7-Step FMEA process, focusing on Structure, Function, and Failure Analysis steps. Users can define system components, contacts (interfaces), and functions, visualize the system structure with an interactive network diagram, and generate FMEA tables to analyze failure modes, effects, causes, and controls with automatic Risk Priority Number (RPN) calculation.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Three main data panels: Components, Contacts, and Functions
+   - Components can be marked as external (outside system boundary)
+   - Contacts define interfaces between components (from-to relationships)
+   - Functions describe what the system is supposed to do and are assigned to specific contacts
+   - Functions can be primary or secondary
+
+2. VISUALIZATION SYSTEM:
+   - Interactive network diagram (using vis.js) showing components as nodes and contacts as edges
+   - Functions are displayed as colored curved arrows overlaid on contacts
+   - Internal and external components are visually distinguished
+   - Users can drag nodes to rearrange the layout
+   - Legend shows function colors and labels
+
+3. FMEA ANALYSIS SYSTEM:
+   - Generate FMEA button creates a new analysis instance
+   - Each function gets a row in the FMEA table with ability to add multiple failure modes
+   - For each failure mode, users can define: failure mode, effects, severity (S), causes, occurrence (O), current controls, detection (D)
+   - RPN is automatically calculated as S × O × D and color-coded (high ≥100, medium ≥50)
+   - Recommended actions can be added for each failure mode
+   - Each analysis instance is timestamped and can be exported separately
+
+4. UI STRUCTURE:
+   - Wizard-style tabs: Theory & Info, Define Structure, Visualize, FMEA Results
+   - Main action buttons above tabs (Load Example, Reset All)
+   - Responsive design for all device sizes
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with empty data structures
+   - Event listeners are set up for buttons and form controls
+   - vis.js and SheetJS are loaded from CDN
+
+B. CORE FUNCTIONS:
+
+   1. loadExample()
+      - Populates components, contacts, and functions with example data
+      - Switches to Define Structure tab after loading
+
+   2. resetAll()
+      - Clears all data and resets counters
+      - Destroys and recreates the network visualization
+
+   3. addComponent(), addContact(), addFunction()
+      - Validate input and add new items to respective arrays
+      - Update all displays and visualizations
+
+   4. updateAll()
+      - Updates the components, contacts, and functions lists
+      - Updates the network visualization
+
+   5. updateNetworkVisualization()
+      - Creates or updates the vis.js network
+      - Internal components are placed in the center, external components above and below
+      - Contacts are drawn as straight lines, functions as curved arrows with labels
+
+   6. generateFMEA()
+      - Creates a new FMEA analysis block with a timestamp
+      - For each function, creates a table row with input fields for failure analysis
+      - Adds event listeners for dynamic RPN calculation and action management
+
+   7. exportTableToExcel(tableElement, fileName)
+      - Exports the FMEA table to an Excel file using SheetJS
+      - Includes all failure mode data and recommended actions
+
+   8. exportChart()
+      - Exports the network diagram as a JPG image
+
+C. DATA FLOW:
+   1. User adds components, then contacts between components, then functions assigned to contacts
+   2. The network diagram updates in real-time
+   3. User clicks Generate FMEA to create a new analysis table
+   4. In the table, user fills in failure modes, effects, causes, controls, and selects S, O, D values
+   5. RPN is calculated automatically and color-coded
+   6. User can add recommended actions for each failure mode
+   7. User can export the FMEA table to Excel or export the network diagram as an image
+
+D. UI UPDATES:
+   - Lists of components, contacts, and functions update as items are added or removed
+   - Network diagram updates dynamically
+   - New FMEA analysis blocks are added to the Results tab with smooth scrolling
+
+E. EXPORT FUNCTIONALITY:
+   - Each FMEA analysis can be exported to Excel with formatted columns
+   - Network diagram can be exported as JPG
+
+IMPORTANT ALGORITHMS:
+
+1. NETWORK LAYOUT:
+   - Internal components are arranged in two columns with vertical spacing
+   - External components are placed above and below the internal zone with horizontal spacing
+   - Contacts are drawn as straight lines, functions as curved arrows to avoid overlap
+
+2. RPN CALCULATION:
+   - RPN = Severity × Occurrence × Detection
+   - Color coding: red for RPN ≥100, yellow for RPN ≥50, no color otherwise
+
+3. DYNAMIC TABLE MANAGEMENT:
+   - Rows are added dynamically for each failure mode
+   - Textareas auto-expand based on content
+   - Action items can be added or removed dynamically
+
+EDGE CASE HANDLING:
+   - Preventing duplicate or self-contacts
+   - Handling deletion of components that are referenced by contacts or functions
+   - Validating input before adding new items
+   - Handling empty data sets in visualization
+
+INTEGRATION POINTS:
+   1. Header loaded dynamically from header.html
+   2. vis.js for network visualization
+   3. SheetJS for Excel export
+   4. Font Awesome for icons
+   5. Google Fonts for typography
+
+PERFORMANCE CONSIDERATIONS:
+   - Network visualization is optimized for up to 50 nodes and edges
+   - Dynamic table rows are added efficiently with event delegation
+
+ERROR HANDLING:
+   - Input validation with alerts for invalid data
+   - Graceful handling of missing data in exports
+
+EDUCATIONAL VALUE:
+   - Explains FMEA methodology and 7-step process
+   - Provides example data for a mechanical system
+   - Teaches risk assessment through RPN calculation
+
+================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:
