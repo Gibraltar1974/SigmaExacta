@@ -1,4 +1,3 @@
-
 This URL would:
 1. Set experiment name to "My Experiment"
 2. Create two factors: Temperature (levels: Low, High) and Pressure (levels: 10psi, 20psi)
@@ -1461,6 +1460,284 @@ EDUCATIONAL VALUE:
 - Demonstrates the difference between Primary and Secondary functions
 
 ================================================================================
+TOOL 11: TRIZ PROBLEM SOLVING TOOL & 40 PRINCIPLES
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a comprehensive TRIZ (Theory of Inventive Problem Solving) tool that implements the full TRIZ methodology for systematic innovation and invention. 
+The tool provides an 8-step structured approach to problem solving including LDST analysis, Ideal Final Result formulation, 9 Windows analysis, 
+Function Analysis, Technical Contradiction resolution using the Contradiction Matrix, Physical Contradiction resolution using Separation Principles, 
+and Su-Field Analysis with 76 Standard Solutions. It combines data-driven methodologies with visual modeling to guide users through the complete TRIZ process.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Three main wizard tabs: Start & Info, TRIZ Tools, Solve & Report
+- Eight sub-tabs within TRIZ Tools for systematic problem solving:
+  • Define Problem: System, function, and drawback identification
+  • LDST Analysis: Laws of Development of Technical Systems selection
+  • Formulate IFR: Ideal Final Result definition
+  • 9 Windows Analysis: Time and system level analysis matrix
+  • Function Analysis: Component interaction mapping with Mermaid diagrams
+  • Technical Contradiction: Contradiction Matrix with classic (39x39) and 2003 (48x48) versions
+  • Physical Contradiction: Intersection test algorithm with separation principles
+  • Su-Field Analysis: Substance-Field modeling with 76 Standard Solutions matrix
+- Dynamic component management for Function Analysis
+- Interactive matrix visualization for Technical Contradictions
+
+2. CALCULATION ENGINE:
+- LDST algorithm mapping system lifecycle stages to development laws
+- Technical Contradiction Matrix lookup (Classic 39x39 and 2003 48x48 versions)
+- Physical Contradiction resolution algorithm with intersection test
+- Su-Field problem classification and Standard Solutions matching
+- Function Analysis with Mermaid diagram generation
+- Comprehensive solution path generation combining all TRIZ methods
+
+3. VISUALIZATION SYSTEM:
+- Interactive Contradiction Matrix with hover effects
+- Su-Field diagrams with problem state visualization
+- Mermaid diagrams for Function Analysis
+- 9 Windows matrix with color-coded cells
+- Physical Contradiction flow diagram
+- Solution transformation visualizations (Before/After states)
+
+4. UI STRUCTURE:
+- Wizard-style main navigation with three primary tabs
+- Sub-tab navigation for 8-step TRIZ methodology
+- Responsive design optimized for mobile and desktop
+- Main action buttons (Load Example, Reset All) above tabs
+- Color-coded interface with consistent TRIZ theme
+
+5. URL PARAMETER SUPPORT:
+- system: System/Object to improve
+- function: Primary useful function
+- harm: Main drawback or problem
+- ifr: Ideal Final Result formulation
+- lifecycle-stage: LDST life cycle stage (birth, growth, maturity, decline, transition)
+- conflicting-parameter: Physical contradiction parameter
+- intersection-test: Physical contradiction intersection type (no-intersection, contiguous, total-intersection)
+- separation-type: Physical contradiction separation type (condition, system-level, neither)
+- matrix-version: TRIZ matrix version (classic, 2003)
+- improving-feature: Technical contradiction improving feature (1-39 or 1-48)
+- worsening-feature: Technical contradiction worsening feature (1-39 or 1-48)
+- sufield-object: Su-Field S1 object
+- sufield-tool: Su-Field S2 tool
+- sufield-field: Su-Field field type
+- sufield-type: Su-Field problem type (insufficient, harmful, difficult, missing, excessive, inefficient)
+- auto_calculate: Trigger for automatic calculation
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty input fields and default values
+- Event listeners are set up for tab switching, buttons, form controls
+- External TRIZ libraries loaded: trizcontradiction.js, trizcontradiction2003.js, physicalcontradictionprinciples1993.js, 76principlestriz.js, sufield-diagrams.js, ldst.js, trizconstants.js
+- Mermaid.js initialized for Function Analysis diagrams
+- SheetJS loaded for Excel export functionality
+- Global variables initialized: problemData, exampleIndex, improvingFeatureIndex, worseningFeatureIndex, currentMatrixVersion
+
+B. CORE FUNCTIONS:
+
+1. switchMainTab(tabId)
+   - Switches between main wizard tabs (Start & Info, TRIZ Tools, Solve & Report)
+   - Updates active tab styling and scrolls to top
+   - Ensures proper sub-tab visibility when switching to TRIZ Tools
+
+2. switchSubTab(subTabId)
+   - Switches between 8 TRIZ methodology sub-tabs
+   - Updates active sub-tab styling and content visibility
+   - Handles special initialization for Function Analysis and Technical Contradiction tabs
+
+3. init()
+   - Main initialization function called after DOM loads
+   - Sets default matrix version to classic
+   - Populates dropdowns and creates contradiction matrix
+   - Initializes LDST recommendations and Su-Field systems
+
+4. loadExampleAndGo()
+   - Loads example data and navigates to TRIZ Tools tab
+   - Cycles through multiple example scenarios
+   - Populates all TRIZ tools with coherent example data
+
+5. resetTool()
+   - Resets all input fields to default values
+   - Clears results container and resets global variables
+   - Returns to Start & Info tab
+
+6. updateLDSTRecommendations()
+   - Updates LDST recommendations based on selected lifecycle stage
+   - Highlights recommended laws in the laws table
+   - Updates recommendation text display
+
+7. changeMatrixVersion()
+   - Switches between Classic (39x39) and 2003 (48x48) contradiction matrices
+   - Updates dropdowns and matrix visualization
+   - Maintains selected contradiction if compatible
+
+8. populateDropdowns()
+   - Populates Technical Contradiction dropdowns with features
+   - Handles both Classic and 2003 matrix versions
+   - Maintains 1-based indexing for user display
+
+9. createContradictionMatrix()
+   - Generates interactive contradiction matrix HTML table
+   - Includes hover effects and click selection
+   - Displays principle numbers in matrix cells
+
+10. selectMatrixCell(row, col)
+    - Handles matrix cell selection for Technical Contradiction
+    - Updates dropdown values and global indices
+    - Highlights selected cell and updates display
+
+11. updatePhysicalStrategy()
+    - Implements Physical Contradiction resolution algorithm
+    - Processes intersection test and separation type decisions
+    - Determines recommended resolution strategy and principles
+
+12. initFunctionAnalysis()
+    - Initializes Function Analysis data structures
+    - Sets up component management system
+    - Prepares Mermaid diagram rendering
+
+13. updateFunctionAnalysis()
+    - Updates Function Analysis data from user inputs
+    - Regenerates interaction matrix and Mermaid diagram
+    - Maintains consistency between components and functions
+
+14. solveProblem()
+    - Main solution generation function
+    - Collects data from all TRIZ tools
+    - Processes contradictions and generates recommendations
+    - Calls displayResults() to render comprehensive solution
+
+15. displayResults()
+    - Generates comprehensive solution report
+    - Combines results from all TRIZ methodologies
+    - Includes visualizations and export functionality
+    - Renders Mermaid diagrams in results
+
+16. exportToExcel()
+    - Exports complete TRIZ analysis to Excel using SheetJS
+    - Includes all problem definitions, analyses, and recommendations
+    - Formats data with appropriate column widths
+
+C. DATA FLOW:
+1. User defines problem → System, function, drawback stored in problemData
+2. LDST analysis → Lifecycle stage mapped to development laws
+3. IFR formulation → Ideal solution definition stored
+4. 9 Windows analysis → Time/system level data captured in matrix
+5. Function Analysis → Components, interactions, and functions mapped with Mermaid
+6. Technical Contradiction → Matrix selection yields inventive principles
+7. Physical Contradiction → Intersection test yields separation principles
+8. Su-Field Analysis → Problem classification yields standard solutions
+9. Solve Problem → All data combined into comprehensive solution report
+10. Export → Complete analysis exported to Excel format
+
+D. UI UPDATES:
+- Tab switching with smooth animations and scroll positioning
+- Matrix visualization with real-time highlighting
+- Function Analysis diagrams update dynamically
+- Physical Contradiction flow shows/hides steps based on selections
+- Results container expands with comprehensive solution
+- Mobile-responsive layouts adapt to screen size
+
+E. EXPORT FUNCTIONALITY:
+- Excel export includes all TRIZ analyses in structured format
+- Multiple sheets for different analysis types
+- Formatted with appropriate column widths and headers
+- Timestamp and tool version included in filename
+
+IMPORTANT ALGORITHMS:
+
+1. LDST MAPPING ALGORITHM:
+- Maps system lifecycle stages to appropriate development laws
+- Birth → Law 4 (Ideality), Law 1 (System Integrity)
+- Growth → Law 5 (Uneven Development), Law 2 (Energy Conductivity)
+- Maturity → Law 3 (Harmony), Law 6 (Transition to Supersystem)
+- Decline → Law 7 (Transition to Micro-Level), Law 8 (Increased S-Field Complexity)
+- Transition → Law 4 (Ideality), Law 6 (Transition to Supersystem)
+
+2. TECHNICAL CONTRADICTION MATRIX LOOKUP:
+- Uses 1-based indexing for both Classic (1-39) and 2003 (1-48) matrices
+- Matrix cell lookup returns array of principle numbers
+- Cross-references principle numbers with detailed descriptions
+- Handles edge cases (invalid indices, empty results)
+
+3. PHYSICAL CONTRADICTION RESOLUTION ALGORITHM:
+- Step 1: Intersection Test (Space/Time analysis)
+  • No intersection → Separation in Space AND Time
+  • Contiguous → Satisfy contradictory demands
+  • Total intersection → Proceed to Step 2
+- Step 2: Separation Type analysis
+  • Condition → Separation in Relation
+  • System-level → Separation in System Level
+  • Neither → Bypass contradictory demands
+- Maps decisions to specific separation principle categories
+
+4. FUNCTION ANALYSIS DIAGRAM GENERATION:
+- Uses Mermaid.js for interactive diagram rendering
+- System components: Blue rectangles
+- Supersystem components: Orange hexagons
+- Target component: Yellow rounded rectangle
+- Useful functions: Solid/dashed lines based on performance
+- Harmful functions: Red thick lines
+- Dynamic label generation based on component relationships
+
+5. SU-FIELD PROBLEM CLASSIFICATION:
+- Six problem types: insufficient, harmful, difficult, missing, excessive, inefficient
+- Maps to 76 Standard Solutions through solutionMap object
+- Visual indication through different line styles and colors
+- Before/After state visualization for solution transformation
+
+EDGE CASE HANDLING:
+- Empty or invalid input validation with descriptive messages
+- Matrix index boundary checking for both Classic and 2003 versions
+- Physical Contradiction algorithm handles incomplete decision paths
+- Function Analysis handles empty component lists gracefully
+- Su-Field systems with default values when partially defined
+- Mobile responsive designs prevent horizontal scrolling
+- Excel export handles special characters and large datasets
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. SheetJS 0.18.5 for Excel export
+3. Mermaid.js 10 for diagram visualization
+4. Font Awesome 6.4.0 for icons
+5. Google Fonts (Nunito) for typography
+6. External TRIZ libraries for specialized calculations
+7. Chart.js available but not primary for this tool
+
+PERFORMANCE CONSIDERATIONS:
+- Matrix rendering optimized for up to 48x48 cells
+- Mermaid diagrams re-render only when data changes
+- Event delegation used for efficient matrix cell handling
+- Lazy loading of example data to improve initial load time
+- Efficient data structures for Function Analysis component management
+
+ERROR HANDLING:
+- Comprehensive input validation with user-friendly alerts
+- Graceful degradation when external libraries fail to load
+- Fallback visualizations when diagram rendering fails
+- Conservative error handling in contradiction matrix lookups
+- URL parameter validation with informative error messages
+
+URL PARAMETER INTEGRATION:
+- Supports comprehensive TRIZ parameter injection
+- Special handling for matrix versions and indices
+- Physical contradiction algorithm parameters
+- Su-Field system parameters with type classification
+- Auto-calculation triggers for demonstration purposes
+- Parameter validation before processing
+
+EDUCATIONAL VALUE:
+- Teaches complete TRIZ methodology from problem definition to solution
+- Demonstrates interconnections between different TRIZ tools
+- Provides real-world examples for each methodology step
+- Visualizes abstract concepts like contradictions and Su-Field models
+- Encourages systematic problem-solving approach
+- Historical context for TRIZ development and key contributors
+
+================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:
@@ -1468,23 +1745,28 @@ COMMON FEATURES ACROSS ALL TOOLS:
 - Responsive design for all devices
 - Consistent styling and color scheme
 - Header/footer consistency
+- Main action buttons (Load Example, Reset All) above tabs
 
 2. DATA MANAGEMENT:
 - Client-side only processing
 - No server communication
 - Excel export functionality
 - Example data loading
+- Global data objects for tool state management
 
 3. EDUCATIONAL VALUE:
 - Theoretical explanations in Theory tabs
 - Step-by-step instructions
 - Real-world application examples
 - Best practices guidance
+- Historical context and methodology origins
 
 4. ERROR HANDLING:
-- Input validation
+- Input validation with descriptive messages
 - Informative error messages
-- Graceful degradation
+- Graceful degradation for missing features
+- Fallback mechanisms for partial data
+- Confirmation dialogs for destructive actions
 
 5. URL PARAMETER SUPPORT:
 - Universal Query Handler for all tools
@@ -1492,6 +1774,7 @@ COMMON FEATURES ACROSS ALL TOOLS:
 - Auto-calculation triggering
 - Field mapping intelligence
 - Special handlers for tool-specific parameters
+- Parameter validation and error handling
 
 TESTING RECOMMENDATIONS FOR ALL TOOLS:
 - Test with example data provided
@@ -1500,12 +1783,16 @@ TESTING RECOMMENDATIONS FOR ALL TOOLS:
 - Test edge cases (empty inputs, large datasets)
 - Verify calculations against known standards
 - Test URL parameter functionality with various parameter combinations
+- Test tab navigation and state persistence
+- Test mobile interactions and touch events
 
 SECURITY NOTES FOR ALL TOOLS:
 - All calculations occur client-side
 - No data sent to servers
 - Input sanitization for data export
 - URL parameter validation to prevent injection attacks
+- No persistent storage of sensitive data
+- All libraries loaded from trusted CDNs
 
 MAINTENANCE FOR ALL TOOLS:
 - Keep external libraries updated
@@ -1513,6 +1800,8 @@ MAINTENANCE FOR ALL TOOLS:
 - Regular testing of calculation accuracy
 - Update example data as needed
 - Maintain URL parameter compatibility when updating tools
+- Document new features and changes
+- Monitor performance on mobile devices
 
 EXTENSION POINTS FOR ALL TOOLS:
 1. Additional import functionality (from Excel)
@@ -1525,5 +1814,10 @@ EXTENSION POINTS FOR ALL TOOLS:
 8. Enhanced URL parameter support for more tools
 9. API integration for external data sources
 10. Batch processing capabilities
+11. Multi-language support
+12. Accessibility enhancements
+13. Offline functionality
+14. Advanced visualization options
+15. Integration with other quality tools
 
 Information provided by http://SigmaExacta.com
