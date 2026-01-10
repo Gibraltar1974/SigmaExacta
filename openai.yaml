@@ -1,7 +1,7 @@
 app_name: "Sigma Exacta Engineering Tools Suite"
 app_url: "http://SigmaExacta.com"
 app_version: "2.0"
-description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, QFD, and Pugh Matrix for quality and reliability engineering"
+description: "A comprehensive suite of engineering tools including Control Plan Creator, Process Capability Analysis, Tolerance Stack-Up Analysis, Weibull Analysis, PDCA Cycle, Taguchi DOE, FMEA, QFD, Pugh Matrix, and VAVE for quality, reliability, and value engineering"
 author: "SigmaExacta"
 license: "Open Source"
 
@@ -120,6 +120,21 @@ tools_suite:
       - "Load example data for demonstration"
       - "Responsive design for mobile and desktop"
 
+  - name: "VAVE (Value Analysis & Value Engineering)"
+    url: "/vave"
+    description: "Systematic method for improving product value by analyzing functions and costs. Optimize value index through function-cost analysis for existing and new products."
+    features:
+      - "Interactive structure definition with components, contacts, and functions"
+      - "Network diagram visualization of system structure"
+      - "Function-based value analysis with cost and value scoring"
+      - "Value Index calculation (Value = Function / Cost)"
+      - "Priority classification (High/Medium/Low Value)"
+      - "Export VAVE analysis to Excel"
+      - "Export structure chart as image"
+      - "Load example data for demonstration"
+      - "Wizard-style interface with four main tabs"
+      - "Responsive design for mobile and desktop"
+
 functionality:
   control_plan:
     primary_features:
@@ -229,6 +244,22 @@ functionality:
       - "Example data loading"
       - "Data reset functionality"
 
+  vave:
+    primary_features:
+      - "Structure definition with components, contacts, and functions"
+      - "External/internal component classification"
+      - "Function assignment to specific contacts"
+      - "Network diagram visualization of system structure"
+      - "Cost input for each function"
+      - "Value score input (1-10 scale)"
+      - "Automatic Value Index calculation (Value Score / Cost)"
+      - "Priority classification based on Value Index thresholds"
+      - "Interactive VAVE analysis table with real-time updates"
+      - "Summary statistics (total cost, average value index, low/high value counts)"
+      - "Export VAVE analysis to Excel"
+      - "Chart export as JPG image"
+      - "Example data loading for demonstration"
+
   input_requirements:
     control_plan:
       - "Process Name (manufacturing step)"
@@ -304,6 +335,16 @@ functionality:
       - "Baseline concept selection"
       - "Weight for each criterion (numeric, 1-5 recommended)"
       - "Scores for each concept per criterion (+, S, -)"
+    
+    vave:
+      - "Component names (system elements)"
+      - "External/internal classification for components"
+      - "Contact definitions between components"
+      - "Function names and types (primary/secondary)"
+      - "Function assignment to contacts"
+      - "Cost for each function (numeric value)"
+      - "Value score for each function (1-10 scale)"
+      - "Minimum 1 component and 1 function required for analysis"
 
   calculations:
     control_plan_methods:
@@ -366,6 +407,15 @@ functionality:
       - "Score mapping: + = 1, S = 0, - = -1"
       - "Excel file generation with SheetJS"
       - "Dynamic table generation and update"
+    
+    vave_methods:
+      - "Value Index calculation: Value Index = Value Score / Cost"
+      - "Priority classification based on Value Index thresholds"
+      - "Network diagram layout with internal/external component separation"
+      - "Excel export with formatted VAVE analysis table"
+      - "Chart export using Canvas API"
+      - "Total cost and average value index calculations"
+      - "Low/High value function counting based on thresholds"
 
   visualizations:
     control_plan:
@@ -428,6 +478,17 @@ functionality:
       - "Winning concept highlighting"
       - "Total scores row"
       - "Weight and score input controls"
+    
+    vave:
+      - "Interactive network diagram showing system structure"
+      - "Color-coded nodes for internal/external components"
+      - "Function visualization as curved edges with colored labels"
+      - "Dynamic layout with draggable nodes"
+      - "System boundary lines (dashed) for internal/external separation"
+      - "Interactive legend for function identification"
+      - "VAVE analysis table with cost and value score inputs"
+      - "Value Index cell color coding (high/medium/low value)"
+      - "Summary statistics visualization"
 
   statistical_tests:
     normality_tests:
@@ -456,6 +517,12 @@ functionality:
       - "House of Quality matrix calculations"
       - "Correlation analysis for technical requirements"
       - "Priority scoring based on customer importance and relationships"
+    
+    vave_methods:
+      - "Value Analysis and Value Engineering (VAVE) methodology"
+      - "Function-based cost-value analysis"
+      - "Value Index calculation and threshold-based classification"
+      - "Network diagram layout algorithms"
 
   precision:
     - "High-precision normal CDF (Hart algorithm, error < 1e-12)"
@@ -465,6 +532,7 @@ functionality:
     - "Conservative F-critical value interpolation for ANOVA"
     - "Signal-to-Noise ratio calculations with dB scale"
     - "QFD priority calculations with proper weighting"
+    - "Value Index calculations with 4 decimal precision"
 
 ui_features:
   common_features:
@@ -552,6 +620,18 @@ ui_features:
     - "Results tab with read-only matrix and winning concept"
     - "Export to Excel button"
     - "Load example and reset buttons"
+  
+  vave_specific:
+    - "Four main tabs: Theory & Info, Define Structure, Visualize, VAVE Analysis"
+    - "Three-panel structure definition (Components, Contacts, Functions)"
+    - "Interactive network diagram with zoom and fit-to-view"
+    - "Automatic VAVE table generation from functions"
+    - "Value Index color coding based on value level"
+    - "Dynamic cost and value score inputs"
+    - "Chart export functionality"
+    - "Component external/internal classification"
+    - "Summary statistics display"
+    - "Tab navigation buttons between main tabs"
 
 technical_specifications:
   frontend:
@@ -563,7 +643,7 @@ technical_specifications:
       - "Google Fonts (Nunito) for typography"
       - "Chart.js 4.4.2 with annotation plugin (for other tools)"
       - "KaTeX 0.16.9 for mathematical formula rendering (for other tools)"
-      - "vis.js 4.21.0 for network diagram visualization (FMEA)"
+      - "vis.js 4.21.0 for network diagram visualization (FMEA, VAVE)"
   
   compatibility:
     browsers: "Modern browsers with ES6 support"
@@ -627,6 +707,20 @@ usage_scenarios:
   - "Supplier selection"
   - "Material selection"
   - "Process design alternatives"
+  - "Value Analysis (VA) for existing products"
+  - "Value Engineering (VE) for new product design"
+  - "Cost reduction initiatives"
+  - "Function optimization and value improvement"
+  - "Product redesign for better value"
+  - "Competitive product analysis"
+  - "Make vs. Buy decisions"
+  - "Material substitution analysis"
+  - "Manufacturing process improvement"
+  - "Lifecycle cost optimization"
+  - "Product simplification initiatives"
+  - "Standardization projects"
+  - "Waste elimination in product design"
+  - "Customer value enhancement"
 
 data_handling:
   storage: "No server-side storage (all calculations client-side)"
@@ -676,6 +770,15 @@ educational_value:
   - "Weighted criteria evaluation"
   - "Baseline comparison technique"
   - "Objective decision-making in engineering"
+  - "VAVE theory and Lawrence D. Miles methodology"
+  - "Value Analysis vs. Value Engineering differences"
+  - "Function analysis and cost-value optimization"
+  - "Value equation: Value = Function / Cost"
+  - "System structure modeling for value improvement"
+  - "Historical development of VAVE (General Electric, WWII)"
+  - "Application of VAVE in various industries"
+  - "Cost reduction strategies through function analysis"
+  - "Value improvement techniques and best practices"
 
 performance_characteristics:
   - "Handles large control plans with multiple rows"
@@ -701,6 +804,11 @@ performance_characteristics:
   - "Handles up to 20 criteria and 20 concepts efficiently"
   - "Fast matrix generation and score updates"
   - "Smooth Excel export for large matrices"
+  - "Efficient VAVE structure modeling and visualization"
+  - "Real-time Value Index calculation and updating"
+  - "Handles complex product structures with multiple functions"
+  - "Fast Excel export for VAVE analysis results"
+  - "Smooth network diagram rendering for system visualization"
 
 error_handling:
   - "Robust input validation"
@@ -713,15 +821,17 @@ error_handling:
   - "Notification system for user feedback"
   - "Factor and level validation for Taguchi designs"
   - "Orthogonal array compatibility checking"
-  - "Component and contact relationship validation (FMEA)"
-  - "Minimum function validation for FMEA generation"
-  - "Invalid RPN rating prevention"
+  - "Component and contact relationship validation (FMEA, VAVE)"
+  - "Minimum function validation for FMEA and VAVE generation"
+  - "Invalid RPN rating prevention (FMEA)"
   - "Chart export error handling"
   - "QFD data completeness validation before matrix generation"
   - "Customer requirement importance validation"
   - "Technical specification input validation"
-  - "Input validation for criteria and concepts"
+  - "Input validation for criteria and concepts (Pugh)"
   - "Minimum data validation (at least 1 criterion and 2 concepts)"
+  - "Cost and value score validation for VAVE analysis"
+  - "Minimum component and function validation for VAVE"
   - "Confirmation for reset actions"
   - "Notification system for user feedback"
 
@@ -752,6 +862,11 @@ implementation_notes:
   - "Interactive matrix built with vanilla JavaScript"
   - "Excel export using SheetJS library"
   - "Wizard-style interface following Sigma Exacta design pattern"
+  - "VAVE implementation based on Lawrence D. Miles' Value Analysis methodology"
+  - "Function-based value analysis following VAVE principles"
+  - "Network diagram visualization similar to FMEA for consistency"
+  - "Value Index calculation with threshold-based classification"
+  - "Example data based on real-world VAVE applications"
 
 references:
   methodology_sources:
@@ -784,6 +899,12 @@ references:
     - "Cohen, L. (1995). Quality Function Deployment: How to Make QFD Work for You"
     - "Pugh, S. (1991). Total Design: Integrated Methods for Successful Product Engineering"
     - "Pugh Matrix (Decision Matrix) methodology"
+    - "Miles, Lawrence D. (1961). Techniques of Value Analysis and Engineering"
+    - "Miles, Lawrence D. (1972). The Value Analysis Approach to Cost Reduction"
+    - "SAVE International (Society of American Value Engineers) Value Methodology Standard"
+    - "Value Analysis/Value Engineering (VAVE) methodology"
+    - "Function Analysis System Technique (FAST) diagrams"
+    - "Value = Function / Cost equation"
   
   algorithm_sources:
     - "SheetJS for Excel export functionality"
@@ -801,5 +922,6 @@ references:
     - "vis.js for network diagram visualization"
     - "Canvas API for chart export functionality"
     - "QFD prioritization algorithms based on standard methodology"
+    - "VAVE value index calculation algorithms"
 
 disclaimer: "For educational and informational purposes. For critical applications, consult specialized engineering software. These tools are based on established methodologies but are not affiliated with AIAG or any standards body."
