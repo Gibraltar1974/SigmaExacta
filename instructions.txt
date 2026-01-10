@@ -1,0 +1,449 @@
+INSTRUCTIONS FOR AI: SIGMA EXACTA ENGINEERING TOOLS HANDLING
+
+APPLICATION SUITE OVERVIEW:
+Sigma Exacta provides a comprehensive suite of engineering tools including:
+1. Control Plan Creator
+2. Process Capability Calculator (Cp, Cpk, Pp, Ppk)
+3. Tolerance Stack-Up Analysis Calculator
+
+All tools are designed for professional engineering analysis with educational value.
+
+================================================================================
+TOOL 1: CONTROL PLAN CREATOR
+================================================================================
+
+APPLICATION OVERVIEW:
+This is an interactive Control Plan Creator tool that allows users to create and manage manufacturing control plans following APQP principles. The tool provides a table-based interface for defining process steps, control characteristics, specifications, evaluation methods, and reaction plans.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Interactive table with rows for each process step
+   - Columns: Process Name, Machine/Tool, Characteristic, Spec/Tolerance, Evaluation Technique, Sample Size/Freq, Control Method, Reaction Plan, Action
+   - Textareas for free text input with auto-expand functionality
+   - Dropdowns for predefined options in Evaluation Technique, Control Method, and Reaction Plan
+   - Add Row button to create new process steps
+   - Delete button on each row to remove process steps
+
+2. PRE-DEFINED OPTIONS:
+   - Evaluation Techniques: Visual Inspection, Digital Caliper, Micrometer, Go/No-Go Gauge, CMM, Profilometer, Coating Thickness Gauge, Torque Wrench
+   - Control Methods: SPC Chart, First-off Inspection, 100% Inspection, Operator Checklist, Attribute Chart, Destructive Testing, Process Audit
+   - Reaction Plans: Stop Process & Quarantine, Adjust Machine/Tool, Notify Supervisor, Sort Suspect Material, Re-work/Repair Part, Check Tooling for Wear, Initiate 8D Report
+
+3. EXAMPLE AND RESET:
+   - Load Example button populates table with sample manufacturing data
+   - Reset All button clears the entire table
+   - Example data includes 5 process steps covering different manufacturing operations
+
+4. EXPORT FUNCTIONALITY:
+   - Export to Excel button generates XLSX file with complete control plan
+   - Excel file includes title, generation date, and formatted table
+   - Column widths optimized for readability
+
+5. UI STRUCTURE:
+   - Wizard-style tabs: Theory & Info, Control Plan Tool, Results
+   - Responsive design for all device sizes
+   - Main action buttons (Load Example, Reset All) above tabs
+   - Horizontal scrollable table for mobile devices
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with one empty row by default
+   - Event listeners are set up for buttons and table interactions
+   - Predefined arrays for dropdown options (evaluationTechniques, controlMethods, reactionPlans)
+   - Example data array for demonstration
+
+B. CORE FUNCTIONS:
+
+   1. createRow(data = {})
+      - Creates a new row in the table with provided data or empty fields
+      - Inserts textareas for free text fields
+      - Creates dropdowns for predefined option fields
+      - Attaches event listeners for auto-expanding textareas and delete button
+
+   2. autoGrow(element)
+      - Automatically adjusts the height of textareas based on content
+      - Called on input event for all textareas
+
+   3. createSelect(options, selectedValue)
+      - Creates dropdown select element with provided options
+      - Sets selected value if provided
+
+   4. loadExample()
+      - Clears existing table rows
+      - Iterates through exampleData array to create rows
+      - Switches to Control Plan Tool tab after loading
+
+   5. resetPlan()
+      - Clears all rows from the table
+      - Creates one empty row by default
+
+   6. listResults()
+      - Displays current control plan in formatted table in Results tab
+      - Creates read-only table showing all entered data
+      - Handles empty table case
+
+   7. exportToExcel()
+      - Uses SheetJS library to create Excel workbook
+      - Formats Excel with merged cells for title and date
+      - Sets appropriate column widths
+      - Downloads file as "Control_Plan_Sigma_Exacta.xlsx"
+
+   8. switchWizardTab(tabId)
+      - Switches between wizard tabs (Theory, Tool, Results)
+      - Updates active tab styling
+      - Smooth scroll to top
+
+C. DATA FLOW:
+   1. User adds rows via Add Row button or loads example
+   2. User edits textareas or selects from dropdowns
+   3. Textareas auto-expand based on content
+   4. User can delete individual rows
+   5. Results tab shows current data in read-only format
+   6. Export creates Excel file with all current data
+
+D. UI UPDATES:
+   - Table dynamically updates as rows are added or removed
+   - Results tab shows formatted table of current data
+   - Tabs switch with fade animation
+   - Mobile devices show horizontally scrollable table
+
+E. EXPORT FUNCTIONALITY:
+   - Excel file includes:
+     * Title row (merged cells across all columns)
+     * Generation date row (merged cells)
+     * Table headers
+     * All rows of data with current values
+   - Column widths set based on header length
+
+IMPORTANT ALGORITHMS:
+
+1. EXCEL GENERATION:
+   - Uses SheetJS XLSX.utils.aoa_to_sheet() for array to sheet conversion
+   - Merges cells for title and date rows using ws['!merges']
+   - Sets column widths using ws['!cols']
+
+2. AUTO-GROWING TEXTAREAS:
+   - element.style.height = 'auto'
+   - element.style.height = (element.scrollHeight) + 'px'
+
+3. TABLE MANAGEMENT:
+   - Dynamic row creation with template-based approach
+   - Event delegation for delete buttons
+
+EDGE CASE HANDLING:
+   - Empty table handling in listResults()
+   - Mobile responsive table with horizontal scrolling
+   - Special characters in Excel export
+
+INTEGRATION POINTS:
+   1. Header loaded dynamically from header.html
+   2. SheetJS for Excel export
+   3. Font Awesome for icons
+   4. Google Fonts for typography
+
+PERFORMANCE CONSIDERATIONS:
+   - Table can handle hundreds of rows efficiently
+   - Excel export optimized for performance
+   - Event delegation used for efficient event handling
+
+ERROR HANDLING:
+   - Basic error handling for Excel export
+   - Graceful handling of empty tables
+   - Robust input handling in textareas
+
+COMMON FEATURES ACROSS ALL TOOLS:
+
+1. UI ARCHITECTURE:
+   - Wizard-style tab navigation
+   - Responsive design for all devices
+   - Consistent styling and color scheme
+   - Header/footer consistency
+
+2. DATA MANAGEMENT:
+   - Client-side only processing
+   - No server communication
+   - Excel export functionality
+   - Example data loading
+
+3. EDUCATIONAL VALUE:
+   - Theoretical explanations in Theory tabs
+   - Step-by-step instructions
+   - Real-world application examples
+   - Best practices guidance
+
+4. ERROR HANDLING:
+   - Input validation
+   - Informative error messages
+   - Graceful degradation
+
+TESTING RECOMMENDATIONS FOR ALL TOOLS:
+   - Test with example data provided
+   - Test export functionality
+   - Test responsive design on different devices
+   - Test edge cases (empty inputs, large datasets)
+   - Verify calculations against known standards
+
+SECURITY NOTES FOR ALL TOOLS:
+   - All calculations occur client-side
+   - No data sent to servers
+   - Input sanitization for data export
+
+MAINTENANCE FOR ALL TOOLS:
+   - Keep external libraries updated
+   - Monitor for browser compatibility issues
+   - Regular testing of calculation accuracy
+   - Update example data as needed
+
+EXTENSION POINTS FOR ALL TOOLS:
+   1. Additional import functionality (from Excel)
+   2. Cloud saving/loading of plans
+   3. Additional predefined options
+   4. Custom template creation
+   5. Collaboration features
+   6. Advanced filtering and sorting
+   7. Report generation in multiple formats
+
+================================================================================
+TOOL 2: PROCESS CAPABILITY CALCULATOR
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a comprehensive Process Capability Calculator (Cp, Cpk, Pp, Ppk) with statistical testing and visualization capabilities. The application allows users to analyze process data against specification limits to determine process capability.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Multiple datasets can be added/removed dynamically
+   - Each dataset requires numeric measurements (comma/space separated)
+   - Common specification limits (LSL, USL, Target) apply to all datasets
+   - Example datasets are provided for demonstration
+
+2. CALCULATION ENGINE:
+   - Short-term indices (Cp, Cpk, Cpm) use moving range method (σ_within)
+   - Long-term indices (Pp, Ppk) use standard deviation (σ_overall)
+   - Professional normality tests (Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling)
+   - Defect rate calculation in PPM and percentage
+
+3. VISUALIZATION SYSTEM:
+   - Process distribution plots with normal curve overlay
+   - Individuals control charts (I-Charts)
+   - Separate visualizations for individual datasets and overall performance
+
+4. UI STRUCTURE:
+   - Wizard-style tabs: Theory, Calculator, Results, Formulas
+   - Responsive design for all device sizes
+   - Interactive dataset management
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with one dataset by default
+   - Event listeners are set up for form submission, buttons, etc.
+   - Chart.js and KaTeX are loaded from CDN
+
+B. CORE FUNCTIONS:
+
+   1. calculateStatistics(data, lsl, usl, target)
+      - Main calculation function
+      - Returns object with all capability indices and test results
+      - Handles edge cases (zero variance, identical values)
+
+   2. parseMeasurements(text)
+      - Converts text input to numeric array
+      - Supports comma, space, or semicolon separation
+
+   3. normality test functions:
+      - shapiroWilkTest(data) - Professional implementation
+      - kolmogorovSmirnovTest(data) - With Stephens correction
+      - andersonDarlingTest(data) - Stephens, 1974 implementation
+
+   4. visualization functions:
+      - plotChart() - Creates process distribution plot
+      - createControlChart() - Creates I-Chart
+      - plotOverallChart() and createOverallControlChart() for combined data
+
+   5. utility functions:
+      - normalCDF(x) - High-precision normal CDF (Hart algorithm)
+      - normalQuantile(p) - High-precision inverse normal (Acklam's algorithm)
+
+C. DATA FLOW:
+   1. User inputs data → parseMeasurements() converts to array
+   2. Form submission → calculateStatistics() processes each dataset
+   3. Results stored in 'datasets' array and 'overallStats' object
+   4. Visualizations generated using Chart.js
+   5. Results displayed in appropriate tabs
+
+D. UI UPDATES:
+   - updateDatasetTabs() creates tabs for each dataset + overall
+   - displayResults() shows individual dataset results
+   - displayOverallResults() shows combined analysis
+   - All charts are responsive and update dynamically
+
+E. EXPORT FUNCTIONALITY:
+   - exportToExcel() creates XLSX file with two sheets:
+     * Summary sheet with all calculated indices
+     * Raw data sheet with all measurements
+
+IMPORTANT ALGORITHMS:
+
+1. SHORT-TERM SIGMA CALCULATION:
+   σ_within = MR_bar / 1.128 (where 1.128 is d2 for n=2)
+   MR_bar = average of moving ranges between consecutive points
+
+2. NORMALITY TESTS:
+   - All tests use standardized implementations from statistical literature
+   - Include sample size corrections and accurate p-value calculations
+   - Return 'Pass' (p > 0.05) or 'Fail' (p ≤ 0.05) results
+
+3. DEFECT CALCULATION:
+   Uses normal distribution probabilities based on distance from limits
+
+EDGE CASE HANDLING:
+- Zero variance datasets (all identical values)
+- Extremely large or small datasets
+- Invalid specification limits (USL ≤ LSL)
+- Insufficient data points (<2 for calculations, <3 for normality tests)
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. Chart.js with annotation plugin for visualizations
+3. KaTeX for mathematical formula rendering
+4. SheetJS for Excel export
+
+PERFORMANCE CONSIDERATIONS:
+- Algorithms optimized for up to 5000 data points
+- Charts destroy and recreate instead of updating for simplicity
+- Calculations run synchronously but are efficient
+
+ERROR HANDLING:
+- Input validation with descriptive alerts
+- Graceful handling of edge cases
+- Fallback values for undefined calculations
+
+================================================================================
+TOOL 3: TOLERANCE STACK-UP ANALYSIS
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a comprehensive Tolerance Stack-Up Analysis tool that calculates the cumulative effect of dimensional variations in an assembly. The tool supports multiple distribution types for components and uses arithmetic (worst-case), probabilistic (RSS), and Monte Carlo simulation methods.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+   - Multiple dimensions can be added/removed dynamically
+   - Each dimension requires a nominal value and distribution type
+   - Supported distributions: Normal, Homogeneous (Uniform), Triangular, Weibull, Lognormal, Beta, Exponential
+   - For Normal distribution, parameters can be defined by tolerance limits, standard deviation, or Cpk
+   - Each dimension has a sign (+ or -) to indicate direction in the stack
+
+2. CALCULATION ENGINE:
+   - Arithmetic method: sums nominal values and tolerances in worst-case scenario
+   - Probabilistic method: uses Root Sum Square (RSS) for all-normal distributions
+   - Monte Carlo simulation: used when any non-normal distribution is present
+   - Intelligent validation system checks distribution parameters
+
+3. VISUALIZATION SYSTEM:
+   - Vector diagram showing the stack-up of dimensions
+   - Distribution chart for Monte Carlo results
+   - Toggle between horizontal and vertical orientation
+
+4. UI STRUCTURE:
+   - Wizard-style tabs: Theory, Calculator, Results, Formulas
+   - Responsive design for all device sizes
+   - Interactive dimension management
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+   - The application loads with no dimensions by default
+   - Event listeners are set up for form controls, buttons, etc.
+   - Chart.js is loaded for visualizations
+
+B. CORE FUNCTIONS:
+
+   1. addDimension(name, nominal, tolerance, distribution, normalParams, sign, specificParams)
+      - Adds a new dimension to the analysis
+      - Parameters can be customized or left to defaults
+
+   2. calculate()
+      - Main calculation function
+      - Performs validation, then runs arithmetic, probabilistic, and/or Monte Carlo calculations
+      - Updates results and visualizations
+
+   3. updateVisualization()
+      - Redraws the vector diagram based on current dimensions
+
+   4. loadExampleData()
+      - Loads a set of example dimensions with various distributions
+
+   5. resetData()
+      - Clears all dimensions and results
+
+   6. listResults()
+      - Displays detailed calculation history
+
+   7. exportToExcel()
+      - Exports the calculation history to an Excel file
+
+C. SUPPORTING FUNCTIONS:
+
+   1. DistributionValidator class
+      - Validates parameters for each distribution type
+      - Provides real-time feedback on parameter validity
+
+   2. Statistical sampling functions:
+      - getRandomNormal(), getRandomUniform(), getRandomTriangular()
+      - getRandomWeibull(), getRandomLognormal(), getRandomBeta(), getRandomExponential()
+
+   3. Mathematical functions:
+      - gamma() - Accurate gamma function implementation
+      - boxMullerTransform() - For normal distribution sampling
+
+D. DATA FLOW:
+   1. User adds dimensions → each dimension is stored in the dimensions array
+   2. User clicks Calculate → calculate() processes all dimensions
+   3. Results are stored in calculationHistory array
+   4. Visualizations are updated
+
+E. VALIDATION SYSTEM:
+   - DistributionValidator class validates parameters for each distribution
+   - Real-time validation provides feedback on parameter errors or warnings
+   - Calculation proceeds only if all dimensions are valid
+
+IMPORTANT ALGORITHMS:
+
+1. MONTE CARLO SIMULATION:
+   - Generates random samples from each dimension's distribution
+   - Sums samples according to dimension signs
+   - Calculates statistics from the resulting distribution
+
+2. ROOT SUM SQUARE (RSS):
+   - σ_total = √(Σ σ_i²) for all dimensions
+   - Assumes all dimensions follow normal distribution
+   - More realistic than worst-case analysis
+
+3. DISTRIBUTION SAMPLING:
+   - Box-Muller transform for normal distribution
+   - Inverse transform for uniform and triangular
+   - Acceptance-rejection for Beta distribution
+
+EDGE CASE HANDLING:
+- Zero or negative parameters for distributions that require positive values
+- Invalid ranges (e.g., min >= max)
+- Insufficient data for calculations
+- Numerical instability in gamma function calculations
+
+INTEGRATION POINTS:
+1. Header loaded dynamically from header.html
+2. Chart.js for visualizations
+3. SheetJS for Excel export
+4. KaTeX for mathematical formula rendering in Formulas tab
+
+PERFORMANCE CONSIDERATIONS:
+- Monte Carlo simulation uses up to 1,000,000 samples (configurable)
+- Efficient algorithms for vector diagram rendering
+- Calculations run synchronously but are optimized for performance
+
+Information provided by http://SigmaExacta.com
