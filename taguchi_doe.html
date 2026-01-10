@@ -1176,6 +1176,9 @@
             }
 
             function generateDesign() {
+                console.log('=== GENERATE DESIGN INICIADO ===');
+                console.log('window.experimentData:', window.experimentData);
+
                 // MODIFICADO: Capturar datos previos antes de resetear
                 let previousResults = [];
                 const existingInputs = document.querySelectorAll('.response-input');
@@ -1201,11 +1204,11 @@
                 resetExperimentData();
 
                 // Obtener datos del formulario
-                experimentData.name = document.getElementById('experiment-name').value;
-                experimentData.objective = document.getElementById('objective').value;
-                experimentData.responseVariable = document.getElementById('response-variable').value;
-                experimentData.snrType = document.querySelector('input[name="snr-type"]:checked').value;
-                experimentData.factors = [];
+                window.experimentData.name = document.getElementById('experiment-name').value;
+                window.experimentData.objective = document.getElementById('objective').value;
+                window.experimentData.responseVariable = document.getElementById('response-variable').value;
+                window.experimentData.snrType = document.querySelector('input[name="snr-type"]:checked').value;
+                window.experimentData.factors = [];
 
                 // Obtener factores
                 document.querySelectorAll('.factor-inputs').forEach(input => {
@@ -1214,12 +1217,20 @@
                     if (name && levelsStr) {
                         const levels = levelsStr.split(',').map(level => level.trim()).filter(Boolean);
                         if (levels.length >= 2) {
-                            experimentData.factors.push({ name, levels });
+                            window.experimentData.factors.push({ name, levels });
                         }
                     }
                 });
 
-                if (!experimentData.name || !experimentData.objective || !experimentData.responseVariable || experimentData.factors.length === 0) {
+                console.log('Datos recopilados:', {
+                    name: window.experimentData.name,
+                    objective: window.experimentData.objective,
+                    responseVariable: window.experimentData.responseVariable,
+                    factors: window.experimentData.factors
+                });
+
+                if (!window.experimentData.name || !window.experimentData.objective || !window.experimentData.responseVariable || window.experimentData.factors.length === 0) {
+                    console.error('ERROR: Faltan datos obligatorios');
                     alert('Please fill in all experiment information and add at least one factor.');
                     return;
                 }
@@ -1227,8 +1238,8 @@
                 const selectedArray = document.getElementById('array-select').value;
                 let arrayKey = selectedArray;
                 if (!arrayKey) {
-                    const maxLevels = Math.max(...experimentData.factors.map(f => f.levels.length));
-                    const numFactors = experimentData.factors.length;
+                    const maxLevels = Math.max(...window.experimentData.factors.map(f => f.levels.length));
+                    const numFactors = window.experimentData.factors.length;
                     if (maxLevels <= 2) {
                         if (numFactors <= 3) arrayKey = 'L4';
                         else if (numFactors <= 7) arrayKey = 'L8';
@@ -1240,23 +1251,61 @@
                     }
                 }
 
-                experimentData.selectedArray = TaguchiCalculator.orthogonalArrays[arrayKey];
+                console.log('Array seleccionado:', arrayKey);
+                window.experimentData.selectedArray = TaguchiCalculator.orthogonalArrays[arrayKey];
+                console.log('selectedArray:', window.experimentData.selectedArray);
+
                 generateDesignTable();
 
                 // MODIFICADO: Restaurar datos si la longitud del array coincide
-                if (previousResults.length === experimentData.selectedArray.runs) {
+                if (previousResults.length === window.experimentData.selectedArray.runs) {
                     const newInputs = document.querySelectorAll('.response-input');
+                    console.log('Inputs encontrados después de generar:', newInputs.length);
                     newInputs.forEach((input, index) => {
                         const val = previousResults[index];
                         if (val !== null) {
                             input.value = val;
-                            experimentData.results[index] = val;
+                            window.experimentData.results[index] = val;
                         }
                     });
                 }
 
                 showNotification('Taguchi design generated successfully!');
+                console.log('=== GENERATE DESIGN COMPLETADO ===');
             }
+            // Agrega esta función después de generateDesign()
+            function forceGenerateDesignWithParams(factorsArray, levelsArray) {
+                console.log('Forzando generación de diseño con:', factorsArray, levelsArray);
+
+                // Limpiar factores existentes
+                DOM.factorsContainer.innerHTML = '';
+
+                // Crear factores dinámicamente
+                factorsArray.forEach((factorName, index) => {
+                    const levels = levelsArray[index] ? levelsArray[index] : 'Level1,Level2';
+                    addFactorInput(factorName, levels);
+                });
+
+                // Rellenar campos básicos si están vacíos
+                if (!document.getElementById('experiment-name').value) {
+                    document.getElementById('experiment-name').value = 'Auto-generated Experiment';
+                }
+                if (!document.getElementById('objective').value) {
+                    document.getElementById('objective').value = 'Automated optimization';
+                }
+                if (!document.getElementById('response-variable').value) {
+                    document.getElementById('response-variable').value = 'Response Variable';
+                }
+
+                // Seleccionar array automático
+                document.getElementById('array-select').value = '';
+
+                // Generar diseño
+                generateDesign();
+
+                return true;
+            }
+
 
             function resetExperimentData() {
                 experimentData = {

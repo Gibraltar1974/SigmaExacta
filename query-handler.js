@@ -40,29 +40,39 @@ const QueryHandler = (function () {
                     // Formato: Factor1|Factor2|Factor3
                     const factors = value.split('|').map(f => f.trim());
 
-                    // Limpiar factores existentes
-                    const factorsContainer = document.getElementById('factors-container');
-                    if (factorsContainer) {
-                        factorsContainer.innerHTML = '';
+                    // Usar la función de fuerza si existe
+                    if (typeof window.forceGenerateDesignWithParams === 'function') {
+                        // Parsear niveles si existen
+                        const levelsParam = new URLSearchParams(window.location.search).get('levels');
+                        const levelsArray = levelsParam ? levelsParam.split('|').map(l => l.trim()) : [];
 
-                        // Agregar cada factor
-                        factors.forEach(factorName => {
-                            if (window.addFactorInput) {
-                                window.addFactorInput(factorName, '');
-                            } else {
-                                // Crear elemento directamente si la función no está disponible
-                                const factorDiv = document.createElement('div');
-                                factorDiv.className = 'factor-inputs';
-                                factorDiv.innerHTML = `
-                                    <input type="text" class="factor-name" placeholder="Factor name" value="${factorName}" required>
-                                    <input type="text" class="factor-levels" placeholder="Levels (comma separated)" value="" required>
-                                    <button type="button" class="remove-factor btn-danger" title="Remove factor">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                `;
-                                factorsContainer.appendChild(factorDiv);
-                            }
-                        });
+                        console.log('Llamando a forceGenerateDesignWithParams con:', factors, levelsArray);
+                        window.forceGenerateDesignWithParams(factors, levelsArray);
+                    } else {
+                        // Código original como fallback
+                        const factorsContainer = document.getElementById('factors-container');
+                        if (factorsContainer) {
+                            factorsContainer.innerHTML = '';
+
+                            // Agregar cada factor
+                            factors.forEach(factorName => {
+                                if (window.addFactorInput) {
+                                    window.addFactorInput(factorName, '');
+                                } else {
+                                    // Crear elemento directamente si la función no está disponible
+                                    const factorDiv = document.createElement('div');
+                                    factorDiv.className = 'factor-inputs';
+                                    factorDiv.innerHTML = `
+                        <input type="text" class="factor-name" placeholder="Factor name" value="${factorName}" required>
+                        <input type="text" class="factor-levels" placeholder="Levels (comma separated)" value="" required>
+                        <button type="button" class="remove-factor btn-danger" title="Remove factor">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                                    factorsContainer.appendChild(factorDiv);
+                                }
+                            });
+                        }
                     }
                 },
                 'levels': function (value) {
@@ -96,11 +106,28 @@ const QueryHandler = (function () {
                     }, 500);
                 }
             },
-            // En query-handler.js, busca la sección taguchi_doe y actualiza el postProcess:
             postProcess: function (params) {
                 // Generar diseño automáticamente si hay factores
                 if (params.has('factors') && params.has('levels')) {
                     console.log('POST-PROCESS: Generando diseño Taguchi...');
+
+                    // Configurar campos opcionales si no existen
+                    if (!document.getElementById('experiment-name').value && params.has('experiment-name')) {
+                        document.getElementById('experiment-name').value = params.get('experiment-name');
+                    }
+
+                    if (!document.getElementById('response-variable').value) {
+                        document.getElementById('response-variable').value = 'Response';
+                    }
+
+                    if (!document.getElementById('objective').value) {
+                        document.getElementById('objective').value = 'Optimization experiment';
+                    }
+
+                    // Cambiar a pestaña de Setup para asegurar visibilidad
+                    if (typeof window.switchWizardTab === 'function') {
+                        window.switchWizardTab('tab-setup');
+                    }
 
                     // Esperar a que el DOM esté completamente listo
                     setTimeout(() => {
@@ -119,43 +146,66 @@ const QueryHandler = (function () {
                             setTimeout(() => {
                                 // Llenar resultados si existen
                                 if (params.has('results')) {
-                                    console.log('Llenando resultados...');
-                                    const results = params.get('results').split(',').map(r => {
-                                        const val = parseFloat(r.trim());
-                                        return isNaN(val) ? null : val;
-                                    }).filter(r => r !== null);
+                                    console.log('Esperando para llenar resultados...');
 
-                                    const responseInputs = document.querySelectorAll('.response-input');
-                                    console.log(`Inputs encontrados: ${responseInputs.length}, Resultados: ${results.length}`);
+                                    // Intentar varias veces porque la tabla puede tardar en renderizar
+                                    let attempts = 0;
+                                    const maxAttempts = 10;
 
-                                    responseInputs.forEach((input, index) => {
-                                        if (results[index] !== undefined && results[index] !== null) {
-                                            input.value = results[index];
-                                            // Disparar eventos para actualizar experimentData
-                                            const inputEvent = new Event('input', { bubbles: true });
-                                            const changeEvent = new Event('change', { bubbles: true });
-                                            input.dispatchEvent(inputEvent);
-                                            input.dispatchEvent(changeEvent);
-                                        }
-                                    });
+                                    const tryFillResults = () => {
+                                        const responseInputs = document.querySelectorAll('.response-input');
+                                        console.log(`Intento ${attempts + 1}: Inputs encontrados: ${responseInputs.length}`);
 
-                                    // Actualizar experimentData.results
-                                    if (window.experimentData && window.experimentData.results) {
-                                        window.experimentData.results = results.slice(0, responseInputs.length);
-                                    }
-                                }
+                                        if (responseInputs.length > 0) {
+                                            const results = params.get('results').split(',').map(r => {
+                                                const val = parseFloat(r.trim());
+                                                return isNaN(val) ? null : val;
+                                            }).filter(r => r !== null);
 
-                                // Ejecutar análisis si está configurado
-                                if (params.get('auto_calculate') === 'true' || params.get('auto_calculate') === '1') {
-                                    console.log('Auto-calculating analysis...');
-                                    setTimeout(() => {
-                                        if (typeof window.runFullAnalysis === 'function') {
-                                            console.log('Llamando a runFullAnalysis()...');
-                                            window.runFullAnalysis();
+                                            console.log(`Llenando ${results.length} resultados en ${responseInputs.length} inputs`);
+
+                                            responseInputs.forEach((input, index) => {
+                                                if (results[index] !== undefined && results[index] !== null) {
+                                                    input.value = results[index];
+                                                    // Disparar eventos para actualizar experimentData
+                                                    const inputEvent = new Event('input', { bubbles: true });
+                                                    const changeEvent = new Event('change', { bubbles: true });
+                                                    input.dispatchEvent(inputEvent);
+                                                    input.dispatchEvent(changeEvent);
+                                                }
+                                            });
+
+                                            // Cambiar a pestaña de análisis
+                                            if (typeof window.switchWizardTab === 'function') {
+                                                window.switchWizardTab('tab-analysis');
+                                            }
+
+                                            // Ejecutar análisis si está configurado
+                                            if (params.get('auto_calculate') === 'true' || params.get('auto_calculate') === '1') {
+                                                console.log('Auto-calculating analysis...');
+                                                setTimeout(() => {
+                                                    if (typeof window.runFullAnalysis === 'function') {
+                                                        console.log('Llamando a runFullAnalysis()...');
+                                                        // Verificar que el array está disponible
+                                                        if (window.experimentData && window.experimentData.selectedArray) {
+                                                            window.runFullAnalysis();
+                                                        } else {
+                                                            console.error('ERROR: selectedArray no disponible');
+                                                        }
+                                                    } else {
+                                                        console.error('ERROR: runFullAnalysis no está disponible');
+                                                    }
+                                                }, 2000); // Dar más tiempo
+                                            }
+                                        } else if (attempts < maxAttempts) {
+                                            attempts++;
+                                            setTimeout(tryFillResults, 500);
                                         } else {
-                                            console.error('ERROR: runFullAnalysis no está disponible');
+                                            console.error('ERROR: No se encontraron inputs después de varios intentos');
                                         }
-                                    }, 1500); // Dar más tiempo para que todo se establezca
+                                    };
+
+                                    tryFillResults();
                                 }
                             }, 1000); // Esperar a que generateDesign() complete
 
