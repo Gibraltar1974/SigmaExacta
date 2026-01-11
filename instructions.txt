@@ -21,6 +21,113 @@ I. EXTENSION POINTS:
 - Support for array/object parameters in JSON format
 
 ================================================================================
+TOOL 0: 8D PROBLEM SOLVING TOOL & REPORT GENERATOR
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a free online 8D (Eight Disciplines) Problem Solving tool that guides users through the structured 8D methodology to identify root causes, implement corrective actions, and generate professional reports. The tool is designed for manufacturing, engineering, and quality teams.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Three main tabs: Start & Info, 8D Form, Report
+- 8D Form tab with 8 sub-tabs for each discipline (D0 to D7)
+- Each sub-tab contains form fields for the corresponding discipline
+- Auto-expanding textareas for better user experience
+
+2. CALCULATION ENGINE:
+- Data collection from all 8 disciplines
+- Generation of a summary report
+- Export to Excel with detailed data
+
+3. VISUALIZATION SYSTEM:
+- Summary report display in the Report tab
+- Printable report section
+
+4. UI STRUCTURE:
+- Wizard-style tabs and sub-tabs
+- Main action buttons (Load Example, Reset All) above tabs
+- Responsive design for all device sizes
+
+5. URL PARAMETER SUPPORT:
+- Parameters for each form field (see field mapping below)
+- tab: Main tab to display (tab-start, tab-form, tab-report)
+- sub_tab: Sub-tab within 8D Form (sub-tab-d0, sub-tab-d1, ... sub-tab-d7)
+- auto_calculate: Trigger automatic report generation (1 or true)
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty form fields
+- Event listeners are set up for tab switching, buttons, etc.
+- SheetJS library is loaded for Excel export
+
+B. CORE FUNCTIONS:
+
+1. switchTab(tabId)
+   - Switches between main tabs
+   - Updates active tab styling
+
+2. switchSubTab(subTabId)
+   - Switches between sub-tabs in the 8D Form
+   - Updates active sub-tab styling
+
+3. loadExample()
+   - Populates all form fields with example data
+   - Switches to the 8D Form tab and first sub-tab
+
+4. resetTool()
+   - Resets all form fields and hides the results
+
+5. generateReportSummary()
+   - Validates the form and generates a summary report
+   - Displays the report in the Report tab
+
+6. exportToExcel()
+   - Exports the complete 8D data to an Excel file
+
+C. DATA FLOW:
+1. User enters data in the 8D Form sub-tabs
+2. Generate Report Summary collects the data and displays a summary
+3. Export to Excel creates a detailed Excel file
+
+D. UI UPDATES:
+- Tabs and sub-tabs switch with smooth animations
+- Textareas auto-expand based on content
+- Report section becomes visible after generation
+
+E. URL PARAMETER INTEGRATION:
+- The Query Handler will inject parameters into the corresponding form fields.
+- Field mapping: Parameter names are derived from the field IDs by converting to lowercase and replacing hyphens with underscores. For example, 'teamLeader' becomes 'team_leader'.
+- Special parameters:
+  - 'tab' sets the active main tab.
+  - 'sub_tab' sets the active sub-tab within the 8D Form.
+  - 'auto_calculate' triggers the report generation automatically.
+
+Example URL:
+https://sigmaexacta.com/8d.html?team_leader=John&problem_statement=Defect&tab=tab-form&sub_tab=sub-tab-d1&auto_calculate=1
+
+This URL would:
+1. Set team leader to "John"
+2. Set problem statement to "Defect"
+3. Open the 8D Form tab
+4. Open the D1 sub-tab
+5. Automatically generate the report
+
+F. UI FEEDBACK:
+- Notification system for actions (load example, reset, export)
+- Smooth scrolling when switching tabs
+
+G. ERROR HANDLING:
+- Form validation before generating report
+- Confirmation dialog for reset
+
+H. EXTENSION POINTS:
+- Additional languages for internationalization
+- Custom templates for different industries
+- Integration with other tools (FMEA, Control Plan, etc.)
+
+================================================================================
 TOOL 1: CONTROL PLAN CREATOR
 ================================================================================
 
@@ -458,7 +565,7 @@ KEY COMPONENTS:
 
 4. UI STRUCTURE:
 - Wizard-style tabs: Theory & Info, Calculator Tool, Results, Formulas
-- Main action buttons above tabs (Load Example, Reset All)
+- Main action buttons (Load Example, Reset All) above tabs
 - Responsive design with full-width layout
 - Results visibility toggle
 
@@ -1000,7 +1107,7 @@ KEY COMPONENTS:
 
 4. UI STRUCTURE:
 - Wizard-style tabs: Theory & Info, Define Structure, Visualize, FMEA Results
-- Main action buttons above tabs (Load Example, Reset All)
+- Main action buttons (Load Example, Reset All) above tabs
 - Responsive design for all device sizes
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
