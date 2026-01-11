@@ -2648,6 +2648,280 @@ H. EXTENSION POINTS:
 - Integration with data sources for automatic KPI updates
 
 ================================================================================
+TOOL 18: EFQM (ORGANIZATIONAL MATURITY ASSESSMENT)
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a free online Organizational Maturity Assessment tool based on business excellence principles to diagnose organizational performance. It evaluates leadership, strategy, processes, and results with a holistic framework, providing visual dashboards, automated analysis, and exportable reports.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Three main wizard tabs: Theory & Info, Data Input & Assessment, Results & Export
+- Assessment accordion with 7 criteria (Leadership & Strategy, People & Culture, Stakeholder Focus, Process Mgmt., Innovation & Tech, Stakeholder Results, Business Results)
+- Each criterion has sub-criteria with sliders (0-100%) for scoring
+- Auto-expanding textarea for action plan notes
+
+2. CALCULATION ENGINE:
+- Real-time score calculation for each criterion and overall totals
+- Maturity level classification (Getting Started, Developing, Mature, Role Model)
+- Automated analysis identifying key strengths and opportunities for improvement
+- Weighted scoring system (Foundations: 300 pts, Processes: 400 pts, Outcomes: 400 pts, Total: 1000 pts)
+
+3. VISUALIZATION SYSTEM:
+- Radar chart showing organizational excellence profile
+- Color-coded dashboard with pillar scores and maturity level
+- Detailed results table with score breakdown
+- Progress indicators for each criterion
+
+4. UI STRUCTURE:
+- Wizard-style tab navigation with consistent Sigma Exacta styling
+- Main action buttons (Load Example, Reset All) above tabs
+- Responsive design for all device sizes
+- Tab navigation buttons between phases
+
+5. URL PARAMETER SUPPORT:
+- tab: Main tab to display (tab-theory, tab-input, tab-results)
+- auto_calculate: Trigger automatic calculation and results display (1 or true)
+- actionPlan: Text content for the action plan textarea
+- Criteria-specific slider parameters: Parameter names are derived from field IDs by converting to lowercase and replacing hyphens with underscores. For example, 'c1-sub-slider-0-0' becomes 'c1_sub_slider_0_0' (where c1 is criterion 1, first sub-criterion).
+- Note: The universal Query Handler will inject parameters into the corresponding form fields.
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty criteria data and zero scores
+- Event listeners are set up for tab switching, buttons, and sliders
+- Chart.js, SheetJS, and html2canvas are loaded from CDN
+- Global variables: criteriaData, excellenceChart, resultsVisible
+
+B. CORE FUNCTIONS:
+
+1. switchWizardTab(tabId)
+   - Switches between main wizard tabs (Theory & Info, Data Input & Assessment, Results & Export)
+   - Updates active tab styling and scrolls to top
+   - Updates chart if switching to Results tab
+
+2. renderAccordion()
+   - Dynamically renders the assessment accordion with sliders
+   - Attaches slider event listeners for real-time updates
+
+3. updateUI()
+   - Calculates scores for each criterion and overall totals
+   - Updates dashboard displays and maturity level
+   - Refreshes radar chart with current data
+   - Generates automated analysis of strengths and opportunities
+
+4. generateAnalysis()
+   - Identifies top 3 strengths (scores > 60%)
+   - Identifies bottom 3 opportunities for improvement (scores < 50%)
+   - Updates strengths and OFI lists in the results
+
+5. toggleResultsVisibility()
+   - Shows/hides the results container and detailed table
+   - Updates button text and styling accordingly
+
+6. loadExample()
+   - Loads example assessment data with pre-filled scores
+   - Populates action plan with example text
+   - Updates UI and switches to Data Input tab
+
+7. resetAll()
+   - Resets all sliders to zero and clears action plan
+   - Hides results and resets chart
+   - Re-renders accordion
+
+8. exportToExcel()
+   - Exports comprehensive assessment report to Excel with 4 sheets:
+     * Summary: Overall scores, maturity level, strengths, OFIs
+     * Detailed Scores: Criterion and sub-criterion scores with points
+     * Action Plan: Notes and action items
+     * Chart Data: Numerical data for radar chart
+
+9. exportToJpg()
+   - Exports results dashboard as JPG image using html2canvas
+   - Includes header with generation date and Sigma Exacta branding
+
+C. DATA FLOW:
+1. User adjusts sliders in Data Input tab → scores update in real-time
+2. Results tab shows updated dashboard, chart, and analysis
+3. User can show/hide detailed results table
+4. User adds notes to action plan textarea
+5. Export functions generate Excel report or JPG image
+
+D. UI UPDATES:
+- Slider values update immediately with percentage display
+- Radar chart animates when data changes
+- Maturity level badge updates with color coding
+- Results visibility toggles with smooth transitions
+- Tab switching with fade animations
+
+E. URL PARAMETER INTEGRATION:
+- The Query Handler will inject parameters into the corresponding form fields.
+- Slider parameters follow the pattern: criterion_index-sub_index (e.g., c1_sub_slider_0_0)
+- Special parameters:
+  - 'tab' sets the active main tab.
+  - 'auto_calculate' triggers the results calculation and display automatically.
+  - 'actionPlan' sets the content of the action plan textarea.
+
+F. UI FEEDBACK:
+- Real-time score updates as sliders are adjusted
+- Visual indicators for maturity level (color-coded badges)
+- Notification system for actions (load example, reset, export)
+- Smooth animations for chart updates and tab switching
+
+G. ERROR HANDLING:
+- Input validation for slider values (0-100%)
+- Graceful handling of empty assessment data
+- Confirmation dialog for reset action
+- Fallback for chart rendering issues
+
+H. EXTENSION POINTS:
+- Additional assessment frameworks (Baldrige, ISO, etc.)
+- Custom weighting systems for different industries
+- Historical tracking and trend analysis
+- Team collaboration features
+- Advanced reporting with benchmarking
+
+================================================================================
+TOOL 19: SWOT ANALYSIS
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a free online SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis interactive tool for strategic business planning, marketing, and personal projects. It provides a structured matrix for identifying internal and external factors, with example data, real-time editing, and export capabilities.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Three wizard tabs: Theory & Info, SWOT Matrix, Results
+- Four quadrants: Strengths, Weaknesses, Opportunities, Threats
+- Each quadrant has input field and add button for entering items
+- Dynamic lists with delete buttons for each item
+- Color-coded categories for visual distinction
+
+2. CALCULATION ENGINE:
+- Real-time item counting per category
+- Results compilation for export
+- No complex calculations - focused on data organization
+
+3. VISUALIZATION SYSTEM:
+- Color-coded quadrants with consistent visual identity
+- Infographic in Theory tab explaining SWOT components
+- Results display in tabular format
+- Mobile-responsive grid layout
+
+4. UI STRUCTURE:
+- Wizard-style tab navigation with consistent Sigma Exacta styling
+- Main action buttons (Load Example, Reset All) above tabs
+- Responsive design for all device sizes
+- Tab navigation buttons between phases
+
+5. URL PARAMETER SUPPORT:
+- tab: Main tab to display (tab-theory, tab-matrix, tab-results)
+- auto_calculate: Trigger automatic results listing (1 or true)
+- Category-specific item parameters: Parameters can be injected into input fields based on field IDs. For example, 'strengths_input' maps to the strengths input field.
+- Note: The universal Query Handler will map parameters to field IDs by converting to lowercase and replacing underscores with hyphens.
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty SWOT lists
+- Event listeners are set up for form inputs, buttons, and tab navigation
+- SheetJS library is loaded for Excel export
+- Global variables for managing SWOT items
+
+B. CORE FUNCTIONS:
+
+1. switchWizardTab(tabId)
+   - Switches between main wizard tabs (Theory & Info, SWOT Matrix, Results)
+   - Updates active tab styling and scrolls to top
+
+2. processAddItem(category)
+   - Gets text from input field for specified category
+   - Adds item to the corresponding list if not empty
+   - Clears input field and refocuses
+
+3. addEntry(category, point)
+   - Creates new list item with text and delete button
+   - Appends to the appropriate quadrant list
+   - Attaches delete functionality
+
+4. loadExample()
+   - Loads example SWOT data with 2 items per category
+   - Switches to SWOT Matrix tab
+   - Shows success notification
+
+5. resetAll(confirmReset)
+   - Clears all SWOT items from all quadrants
+   - Resets input fields
+   - Clears results display
+   - Shows confirmation dialog if confirmReset is true
+
+6. displayResults()
+   - Compiles all SWOT items into categorized display
+   - Shows in Results tab with color-coded sections
+   - Handles empty state with appropriate message
+
+7. exportToExcel()
+   - Exports SWOT analysis to Excel with four columns
+   - Creates worksheet with headers for each category
+   - Downloads file as "SWOT_Analysis_Sigma_Exacta.xlsx"
+
+8. showToast(message, type)
+   - Displays temporary notification message
+   - Uses CSS animations for slide-in and fade-out
+   - Automatically removes after 3 seconds
+
+C. DATA FLOW:
+1. User adds items via input fields or loads example
+2. Items are stored in DOM lists (not global array)
+3. Results tab compiles items from DOM when requested
+4. Export gathers data directly from DOM elements
+
+D. UI UPDATES:
+- Items appear immediately in quadrant lists with delete buttons
+- Results display updates dynamically when listed
+- Toast notifications provide user feedback
+- Tab switching with smooth animations
+- Mobile-responsive grid adapts to screen size
+
+E. URL PARAMETER INTEGRATION:
+- The Query Handler will inject parameters into the corresponding form fields.
+- Field mapping: Parameter names are derived from field IDs by converting to lowercase and replacing underscores with hyphens.
+- Special parameters:
+  - 'tab' sets the active main tab.
+  - 'auto_calculate' triggers the results listing automatically.
+
+Example URL:
+https://sigmaexacta.com/swot.html?strengths_input=Strong%20brand&weaknesses_input=High%20costs&tab=tab-matrix&auto_calculate=1
+
+This URL would:
+1. Set strengths input to "Strong brand"
+2. Set weaknesses input to "High costs"
+3. Open the SWOT Matrix tab
+4. Automatically list results in Results tab
+
+F. UI FEEDBACK:
+- Toast notifications for actions (add item, delete, load example, reset)
+- Visual feedback via color-coded quadrants
+- Smooth animations for item addition/deletion
+- Hover effects on interactive elements
+
+G. ERROR HANDLING:
+- Input validation for empty items
+- Confirmation dialog for reset action
+- Graceful handling of empty exports
+- Mobile-responsive error messages
+
+H. EXTENSION POINTS:
+- Drag-and-drop reordering of items
+- Prioritization or weighting of items
+- Integration with strategic planning templates
+- Collaboration features for team SWOT
+- Advanced analytics (frequency analysis, trend identification)
+- Export to additional formats (PDF, PNG)
+
+================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:
