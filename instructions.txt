@@ -2424,6 +2424,230 @@ H. EXTENSION POINTS:
 - Integration with calendar tools
 
 ================================================================================
+TOOL 16: APQP/PPAP PLANNING TOOL
+================================================================================
+
+APPLICATION OVERVIEW:
+This is a dynamic APQP (Advanced Product Quality Planning) and PPAP (Production Part Approval Process) planning tool that helps manage new product development projects according to industry standards. It allows users to track phases, tasks, and PPAP elements, generate Gantt charts, and export reports. It is designed for quality engineers and project managers.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Project setup with basic information (project name, part number, customer, lead, team members)
+- Five APQP phases (Plan & Define, Product Design, Process Design, Validation, Feedback) with dynamic task management
+- PPAP checklist with 18 standard elements
+- Interactive forms for adding, editing, and deleting tasks and elements
+
+2. CALCULATION ENGINE:
+- Automatic generation of Gantt charts based on task dates
+- Automatic action plan generation from pending and in-progress tasks
+- Status tracking for tasks and PPAP elements
+
+3. VISUALIZATION SYSTEM:
+- Gantt chart visualization for project timeline
+- Color-coded status indicators for tasks (pending, in progress, completed, N/A)
+- Action plan table for tracking open items
+
+4. UI STRUCTURE:
+- Wizard-style tabs: Theory & Info, Project Setup, Gantt, Action Plan
+- Subtabs within Project Setup for each APQP phase and PPAP checklist
+- Responsive design for all device sizes
+
+5. URL PARAMETER SUPPORT:
+- tab: Main tab to display (tab-theory, tab-project-setup, tab-gantt, tab-action-plan)
+- sub_tab: Sub-tab within Project Setup (subtab-project-config, subtab-phase1, subtab-phase2, subtab-phase3, subtab-phase4, subtab-phase5, subtab-ppap)
+- auto_calculate: Trigger automatic Gantt generation or action plan generation (1 or true)
+- Note: The universal Query Handler can inject values into form fields based on field IDs.
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty project data or example data
+- Event listeners are set up for form inputs, buttons, and tab navigation
+
+B. CORE FUNCTIONS:
+
+1. switchMainTab(tabId)
+   - Switches between main tabs (Theory & Info, Project Setup, Gantt, Action Plan)
+   - Updates active tab styling and content visibility
+
+2. switchSubTab(subTabId)
+   - Switches between subtabs within the Project Setup tab (for each APQP phase and PPAP checklist)
+   - Updates active subtab styling and content visibility
+
+3. renderProjectSetup()
+   - Renders the project setup form with current project information
+
+4. renderApqpPhases()
+   - Renders the task tables for each APQP phase
+
+5. renderPpapChecklist()
+   - Renders the PPAP checklist table
+
+6. loadExample()
+   - Loads example project data with tasks and PPAP elements
+   - Switches to the Project Setup tab and first subtab
+
+7. resetForm()
+   - Resets all project data to initial state
+
+8. generateGantt()
+   - Generates a Gantt chart based on task start and end dates
+
+9. generateActionItems()
+   - Generates an action plan table with pending and in-progress tasks from APQP and PPAP
+
+10. exportGanttToExcel(), exportGanttToImage(), exportActionPlanToExcel()
+    - Export functionality for Gantt chart and action plan
+
+C. DATA FLOW:
+1. User enters project information and team members
+2. User adds tasks to each APQP phase and updates PPAP checklist
+3. User generates Gantt chart to visualize timeline
+4. User generates action plan to track open items
+5. User can export data to Excel or images
+
+D. UI UPDATES:
+- Dynamic table updates as tasks are added or removed
+- Gantt chart updates with task bars and timeline
+- Action plan table updates with current open items
+- Tab and subtab switching with smooth animations
+
+E. URL PARAMETER INTEGRATION:
+- The Query Handler will inject parameters into the corresponding form fields.
+- Field mapping: Parameter names are derived from the field IDs by converting to lowercase and replacing hyphens with underscores.
+- Special parameters:
+  - 'tab' sets the active main tab.
+  - 'sub_tab' sets the active sub-tab within the Project Setup tab.
+  - 'auto_calculate' triggers the Gantt generation or action plan generation automatically.
+
+F. UI FEEDBACK:
+- Notifications for actions (load example, reset, etc.)
+- Visual feedback for task status (color coding)
+
+G. ERROR HANDLING:
+- Confirmation dialog for reset action
+- Validation for task dates
+
+H. EXTENSION POINTS:
+- Additional export formats (PDF, etc.)
+- Integration with project management tools
+- Advanced reporting features
+
+================================================================================
+TOOL 17: STRATEGIC PERFORMANCE SCORECARD (BALANCED SCORECARD)
+================================================================================
+
+APPLICATION OVERVIEW:
+This is an interactive Strategic Performance Scorecard tool, inspired by the Balanced Scorecard framework. It helps organizations track performance across four perspectives: Financial, Customer, Internal Processes, and Learning & Growth. Users can define objectives, KPIs, targets, and initiatives, and monitor performance with visual indicators.
+
+KEY COMPONENTS:
+
+1. DATA INPUT SYSTEM:
+- Form for adding metrics with perspective, objective, measure (KPI), target, actual value, and initiative
+- Dynamic dropdowns for objectives and measures based on selected perspective
+- Option to enter custom objectives and measures
+- Four tables (one per perspective) for displaying metrics
+
+2. CALCULATION ENGINE:
+- Automatic calculation of performance percentage (actual vs target)
+- Performance categorization (Good, Average, Poor) based on achievement
+- Summary progress bars for each perspective
+
+3. VISUALIZATION SYSTEM:
+- Progress bars for each perspective showing average performance
+- Color-coded badges for each metric (green, yellow, red)
+- Results table for consolidated view
+
+4. UI STRUCTURE:
+- Wizard-style tabs: Theory & Info, Scorecard Builder, Results
+- Responsive design for all device sizes
+
+5. URL PARAMETER SUPPORT:
+- tab: Main tab to display (tab-theory, tab-builder, tab-results)
+- auto_calculate: Trigger automatic results listing (1 or true)
+- perspective: Selected perspective (financial, customer, internal, learning)
+- objective: Objective text or selection
+- measure: Measure (KPI) text or selection
+- target: Target value
+- actual: Actual value
+- initiative: Strategic initiative text
+- Note: The universal Query Handler will map parameters to field IDs by converting to lowercase and replacing underscores with hyphens.
+
+HOW TO INTERACT WITH THE JAVASCRIPT:
+
+A. INITIALIZATION:
+- The application loads with empty tables and form
+- Event listeners are set up for form inputs, buttons, and tab navigation
+
+B. CORE FUNCTIONS:
+
+1. switchWizardTab(tabId)
+   - Switches between main tabs (Theory & Info, Scorecard Builder, Results)
+   - Updates active tab styling and content visibility
+
+2. updateObjectiveDropdown()
+   - Updates the objective dropdown based on selected perspective
+
+3. updateMeasureDropdown()
+   - Updates the measure dropdown based on selected perspective and objective
+
+4. validateForm()
+   - Validates form inputs and enables/disables the add button
+
+5. addEntryToTable()
+   - Adds a new metric to the corresponding perspective table
+   - Calculates performance and updates summaries
+
+6. updateSummaries()
+   - Updates the progress bars for each perspective based on current metrics
+
+7. loadExample()
+   - Loads example metrics across all perspectives
+
+8. resetAll()
+   - Resets all metrics and form
+
+9. listResults()
+   - Generates a read-only results view in the Results tab
+
+10. exportToExcel()
+    - Exports all metrics to an Excel file with separate sheets per perspective
+
+C. DATA FLOW:
+1. User selects perspective, objective, and measure (or enters custom)
+2. User enters target, actual value, and initiative
+3. Metric is added to the table with calculated performance
+4. Progress bars update automatically
+5. User can view results and export data
+
+D. UI UPDATES:
+- Dynamic table updates as metrics are added or deleted
+- Progress bars update in real-time
+- Results view updates when generated
+- Toast notifications for user actions
+
+E. URL PARAMETER INTEGRATION:
+- The Query Handler will inject parameters into the corresponding form fields.
+- Field mapping: Parameter names are derived from field IDs by converting to lowercase and replacing underscores with hyphens.
+- Special parameters:
+  - 'tab' sets the active main tab.
+  - 'auto_calculate' triggers the results listing automatically.
+
+F. UI FEEDBACK:
+- Toast notifications for actions (add, delete, reset, etc.)
+- Visual feedback for performance (badges and progress bars)
+
+G. ERROR HANDLING:
+- Form validation with required fields
+- Confirmation dialog for delete actions
+
+H. EXTENSION POINTS:
+- Additional perspectives or custom perspectives
+- Historical tracking and trend analysis
+- Integration with data sources for automatic KPI updates
+
+================================================================================
 COMMON FEATURES ACROSS ALL TOOLS:
 
 1. UI ARCHITECTURE:
