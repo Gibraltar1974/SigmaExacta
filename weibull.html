@@ -1386,7 +1386,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- CÓDIGO MEJORADO CON FÓRMULAS CORRECTAS ---
+    // --- CÓDIGO CORREGIDO ---
     let weibullChart, pdfChart, cdfChart, hazardChart, reliabilityChart;
     let lastResult = null;
     let aggregatedResultsData = [];
@@ -1481,11 +1481,7 @@
       };
     }
 
-    // ==============================================
-    // FÓRMULAS CORRECTAS DE WEIBULL (COMO JASP)
-    // ==============================================
-
-    // MLE - Maximum Likelihood Estimation (forma más precisa)
+    // MLE - Maximum Likelihood Estimation
     function calculateWeibullMLE(points, failureTimes, suspensionTimes) {
       const regression = performLinearRegression(points);
       let beta = regression.slope;
@@ -1600,9 +1596,7 @@
       const sorted = [...failureTimes].sort((a, b) => a - b);
 
       const mean = sorted.reduce((a, b) => a + b, 0) / n;
-      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / n;
-      const stdDev = Math.sqrt(variance);
-      const cv = stdDev / mean;
+      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1); // CORRECCIÓN: varianza muestral
 
       if (n <= 5) {
         beta *= 1.08;
@@ -1635,45 +1629,43 @@
     }
 
     // ==============================================
-    // FÓRMULAS DE DISTRIBUCIÓN CORRECTAS
+    // FÓRMULAS CORRECTAS - IDÉNTICAS A JASP
     // ==============================================
 
-    // PDF de Weibull - fórmula correcta (como JASP)
+    // PDF de Weibull - FÓRMULA CORRECTA (igual que JASP)
     function weibullPDF(t, eta, beta) {
-      if (t < 0) return 0;
+      if (t <= 0) return 0;
       if (eta <= 0 || beta <= 0) return 0;
 
-      const x = t / eta;
-      if (x <= 0) return 0;
-
-      return (beta / eta) * Math.pow(x, beta - 1) * Math.exp(-Math.pow(x, beta));
+      const ratio = t / eta;
+      return (beta / eta) * Math.pow(ratio, beta - 1) * Math.exp(-Math.pow(ratio, beta));
     }
 
     // CDF de Weibull
     function weibullCDF(t, eta, beta) {
-      if (t < 0) return 0;
+      if (t <= 0) return 0;
       if (eta <= 0 || beta <= 0) return 0;
 
-      const x = t / eta;
-      return 1 - Math.exp(-Math.pow(x, beta));
+      const ratio = t / eta;
+      return 1 - Math.exp(-Math.pow(ratio, beta));
     }
 
     // Hazard function
     function weibullHazard(t, eta, beta) {
-      if (t < 0) return 0;
+      if (t <= 0) return 0;
       if (eta <= 0 || beta <= 0) return 0;
 
-      const x = t / eta;
-      return (beta / eta) * Math.pow(x, beta - 1);
+      const ratio = t / eta;
+      return (beta / eta) * Math.pow(ratio, beta - 1);
     }
 
     // Reliability function
     function weibullReliability(t, eta, beta) {
-      if (t < 0) return 1;
+      if (t <= 0) return 1;
       if (eta <= 0 || beta <= 0) return 1;
 
-      const x = t / eta;
-      return Math.exp(-Math.pow(x, beta));
+      const ratio = t / eta;
+      return Math.exp(-Math.pow(ratio, beta));
     }
 
     // Calculate confidence intervals
@@ -1746,7 +1738,7 @@
       return { b10, b50, b90 };
     }
 
-    // Calculate descriptive statistics
+    // Calculate descriptive statistics - CORREGIDO para varianza muestral
     function calculateDescriptiveStatistics(failureTimes) {
       const n = failureTimes.length;
       const sorted = [...failureTimes].sort((a, b) => a - b);
@@ -1760,7 +1752,8 @@
         ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2
         : sorted[Math.floor(n / 2)];
 
-      const variance = failureTimes.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / n;
+      // CORRECCIÓN CRÍTICA: Varianza muestral (n-1) no poblacional (n)
+      const variance = failureTimes.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1);
       const stdDev = Math.sqrt(variance);
       const cv = mean > 0 ? (stdDev / mean) * 100 : 0;
 
@@ -2110,7 +2103,7 @@
       }
     }
 
-    // Update distribution chart
+    // Update distribution chart - CORREGIDO para escala correcta
     function updateDistributionChart(chart, data, label, xMax) {
       if (!chart || !chart.data) return;
 
@@ -2129,12 +2122,13 @@
           chart.options.scales.x.max = xMax;
         }
         if (chart.options.scales.y) {
+          // Para PDF: escalar dinámicamente basado en el valor máximo real
           if (label.includes('PDF')) {
-            chart.options.scales.y.max = maxY * 1.2;
+            chart.options.scales.y.max = maxY * 1.1;
           } else if (label.includes('CDF') || label.includes('Reliability')) {
             chart.options.scales.y.max = 1;
           } else if (label.includes('Hazard') && maxY > 0) {
-            chart.options.scales.y.max = maxY * 1.5;
+            chart.options.scales.y.max = maxY * 1.2;
           }
         }
       }
@@ -2142,17 +2136,20 @@
       chart.update('none');
     }
 
-    // Plot distribution functions - FÓRMULAS CORRECTAS
+    // Plot distribution functions - CORREGIDO (rango X correcto)
     function plotDistributionFunctions(eta, beta, maxTime = null) {
       try {
         if (!eta || !beta || isNaN(eta) || isNaN(beta) || eta <= 0) return;
 
+        // Rango X CORRECTO: basado en eta y percentiles reales
         if (!maxTime) {
-          const p999 = eta * Math.pow(-Math.log(1 - 0.999), 1 / beta);
-          maxTime = Math.max(p999, eta * 3, 100);
+          // Usar percentil 95 o 2*eta, lo que sea mayor
+          const p95 = eta * Math.pow(-Math.log(1 - 0.95), 1 / beta);
+          maxTime = Math.max(p95, eta * 2, 1000);
         }
 
-        const numPoints = 300;
+        // Número de puntos - suficiente para una curva suave
+        const numPoints = 500;
         const step = maxTime / numPoints;
 
         const pdfData = [];
@@ -2160,12 +2157,14 @@
         const hazardData = [];
         const reliabilityData = [];
 
-        for (let i = 1; i <= numPoints; i++) {
+        // Calcular valores para t desde 0 hasta maxTime
+        for (let i = 0; i <= numPoints; i++) {
           const t = i * step;
 
-          if (t < 0.0001) continue;
+          // Saltar t=0 para evitar problemas
+          if (t === 0) continue;
 
-          // Usar las funciones CORRECTAS
+          // Usar las fórmulas CORRECTAS
           const pdf = weibullPDF(t, eta, beta);
           const cdf = weibullCDF(t, eta, beta);
           const hazard = weibullHazard(t, eta, beta);
@@ -2188,6 +2187,7 @@
           }
         }
 
+        // Actualizar gráficos con escala CORRECTA
         updateDistributionChart(pdfChart, pdfData, 'PDF', maxTime);
         updateDistributionChart(cdfChart, cdfData, 'CDF', maxTime);
         updateDistributionChart(hazardChart, hazardData, 'Hazard', maxTime);
@@ -2236,18 +2236,10 @@
           <div class="stat-label">Coefficient of Variation</div>
           <div class="stat-value">${stats.cv.toFixed(1)}%</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Q1 (25th percentile)</div>
-          <div class="stat-value">${stats.q1.toFixed(0)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Q3 (75th percentile)</div>
-          <div class="stat-value">${stats.q3.toFixed(0)}</div>
-        </div>
       `;
     }
 
-    // Main calculation function
+    // Main calculation function - CORREGIDO
     function calculateWeibull() {
       try {
         // Get inputs
@@ -2277,7 +2269,7 @@
         // Sort failure times
         failureTimes.sort((a, b) => a - b);
 
-        // Calculate descriptive statistics
+        // Calculate descriptive statistics - USARÁ varianza muestral
         const stats = calculateDescriptiveStatistics(failureTimes);
         displayDescriptiveStatistics(stats);
 
@@ -2368,12 +2360,12 @@
             initializeDistributionCharts();
           }
 
+          // Rango X CORRECTO para el PDF
           const maxTimeForChart = Math.max(
-            eta * Math.pow(-Math.log(1 - 0.999), 1 / beta),
-            eta * 2.5,
-            stats.max * 1.2,
-            percentiles.b90 * 1.5,
-            100
+            eta * 3,  // 3 veces eta
+            stats.max * 1.5,
+            percentiles.b90 * 2,
+            1000  // Mínimo razonable
           );
 
           plotDistributionFunctions(eta, beta, maxTimeForChart);
