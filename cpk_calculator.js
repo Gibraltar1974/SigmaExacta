@@ -363,9 +363,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (chartInstances.cpkChart) chartInstances.cpkChart.destroy();
 
         const histogramData = generateHistogramData(data);
-        const frequencyData = histogramData.labels.map(function (label, index) {
-            return { x: label, y: histogramData.bins[index] };
-        });
         const curvePoints = generateNormalCurveData(data, mean, deviation, histogramData.binWidth);
 
         const canvas = document.getElementById("cpkChartCanvas").getContext("2d");
@@ -374,19 +371,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const processUpperLimit = mean + 3 * deviation;
 
         chartInstances.cpkChart = new Chart(canvas, {
+            type: 'bar',
             data: {
+                labels: histogramData.labels,
                 datasets: [
                     {
                         label: 'Frequency',
-                        type: 'scatter',
-                        data: frequencyData,
-                        showLine: true,
-                        borderColor: 'rgba(52, 152, 219, 1)',
+                        data: histogramData.bins,
+                        type: 'bar',
                         backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                        borderWidth: 1.5,
-                        fill: false,
-                        pointRadius: 4,
-                        tension: 0.1
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        borderRadius: 2
                     },
                     {
                         label: 'Normal Curve',
@@ -396,7 +392,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         backgroundColor: 'transparent',
                         pointRadius: 0,
                         borderWidth: 2,
-                        yAxisID: 'y'
+                        fill: false,
+                        tension: 0.1
                     }
                 ]
             },
@@ -407,7 +404,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        title: { display: true, text: 'Value' }
+                        title: { display: true, text: 'Value' },
+                        offset: true
                     },
                     y: {
                         beginAtZero: true,
@@ -506,9 +504,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (chartInstances.overallChart) chartInstances.overallChart.destroy();
 
         const histogramData = generateHistogramData(data);
-        const frequencyData = histogramData.labels.map(function (label, index) {
-            return { x: label, y: histogramData.bins[index] };
-        });
         const curvePoints = generateNormalCurveData(data, mean, deviation, histogramData.binWidth);
 
         const canvas = document.getElementById("overallChartCanvas").getContext("2d");
@@ -517,19 +512,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const processUpperLimit = mean + 3 * deviation;
 
         chartInstances.overallChart = new Chart(canvas, {
+            type: 'bar',
             data: {
+                labels: histogramData.labels,
                 datasets: [
                     {
                         label: 'Frequency',
-                        type: 'scatter',
-                        data: frequencyData,
-                        showLine: true,
-                        borderColor: 'rgba(52, 152, 219, 1)',
+                        data: histogramData.bins,
+                        type: 'bar',
                         backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                        borderWidth: 1.5,
-                        fill: false,
-                        pointRadius: 4,
-                        tension: 0.1
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        borderRadius: 2
                     },
                     {
                         label: 'Normal Curve',
@@ -539,7 +533,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         backgroundColor: 'transparent',
                         pointRadius: 0,
                         borderWidth: 2,
-                        yAxisID: 'y'
+                        fill: false,
+                        tension: 0.1
                     }
                 ]
             },
@@ -550,7 +545,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        title: { display: true, text: 'Value' }
+                        title: { display: true, text: 'Value' },
+                        offset: true
                     },
                     y: {
                         beginAtZero: true,
