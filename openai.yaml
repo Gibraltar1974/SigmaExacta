@@ -40,14 +40,20 @@ tools_suite:
   
   - name: "Weibull Analysis"
     url: "/weibull"
-    description: "Perform Weibull analysis for failure prediction and reliability engineering with probability plotting"
+    description: "Advanced Weibull analysis for failure prediction and reliability engineering with MLE and linear regression methods. Calculate Weibull parameters (Beta β, Eta η), MTTF, percentiles, and generate comprehensive distribution plots"
     features:
-      - "Calculate Weibull parameters (Beta β, Eta η) from failure data"
-      - "Mean Time To Failure (MTTF) calculation"
-      - "Probability of failure prediction at specific times"
-      - "Weibull probability plot visualization"
+      - "Two calculation methods: Maximum Likelihood Estimation (MLE) and Linear Regression"
+      - "Calculate Weibull parameters (Beta β, Eta η) from failure data with suspension support"
+      - "Mean Time To Failure (MTTF) calculation using Gamma function"
+      - "Percentile life calculation (B10, B50, B90)"
+      - "Confidence intervals for parameters (90%, 95%, 99%)"
+      - "Failure mode analysis and classification (Infant Mortality, Random, Wear-Out)"
+      - "Weibull probability plot visualization with log scale"
+      - "Four distribution plots: PDF, CDF, Hazard Function, Reliability Function"
+      - "Descriptive statistics calculation"
       - "Aggregate multiple analyses and export to Excel"
-      - "Gamma function implementation for accurate calculations"
+      - "Support for censored data (suspension times)"
+      - "Rank method selection: Median Rank and Benard's method"
   
   - name: "PDCA Cycle (Plan-Do-Check-Act)"
     url: "/pdca"
@@ -339,13 +345,21 @@ functionality:
   
   weibull_analysis:
     primary_features:
-      - "Calculate Weibull parameters (Beta β, Eta η) from failure times"
+      - "Two calculation methods: Maximum Likelihood Estimation (MLE) and Linear Regression"
+      - "Calculate Weibull parameters (Beta β, Eta η) from failure times with censored data support"
       - "Mean Time To Failure (MTTF) calculation using Gamma function"
       - "Probability of failure prediction at specific times"
+      - "Percentile life calculation (B10, B50, B90)"
+      - "Confidence intervals for parameters"
+      - "Failure mode classification based on Beta parameter"
+      - "Descriptive statistics calculation"
+      - "Four distribution visualizations: PDF, CDF, Hazard Function, Reliability Function"
       - "Weibull probability plot with regression line"
       - "Aggregate multiple analyses in list format"
       - "Export aggregated results to Excel"
-      - "Failure mode interpretation based on Beta parameter"
+      - "Rank method selection: Median Rank and Benard's method"
+      - "Time unit selection (hours, days, weeks, months, cycles, km, etc.)"
+      - "Support for suspension/censored data"
   
   pdca_cycle:
     primary_features:
@@ -600,7 +614,12 @@ functionality:
       - "Sign (+/-) for dimension direction"
     
     weibull_analysis:
-      - "Failure times (comma-separated numeric values)"
+      - "Failure times (comma-separated numeric values, minimum 2)"
+      - "Suspension times (comma-separated, optional)"
+      - "Time units selection (hours, days, weeks, months, cycles, km, other)"
+      - "Calculation method selection (MLE or Linear Regression)"
+      - "Rank method selection (Median Rank or Benard's)"
+      - "Confidence level selection (90%, 95%, 99%)"
       - "Optional prediction time for probability calculation"
       - "Minimum 2 valid positive failure times required"
     
@@ -794,6 +813,11 @@ functionality:
     
     weibull_analysis:
       - "data: Failure times, comma-separated"
+      - "suspensions: Suspension times, comma-separated"
+      - "method: Calculation method (MLE or linear-regression)"
+      - "rank_method: Rank method (medianRank or benard)"
+      - "confidence: Confidence level (90, 95, 99)"
+      - "units: Time units (hours, days, weeks, months, cycles, km, other)"
       - "auto_calculate: Auto-calculation trigger"
     
     tolerance_stack_up:
@@ -853,11 +877,22 @@ functionality:
       - "Intelligent validation of distribution parameters"
     
     weibull_analysis_methods:
+      - "Two parameter estimation methods: Maximum Likelihood Estimation (MLE) and Linear Regression"
+      - "Gamma function implementation (Lanczos approximation)"
       - "Median rank estimation for probability plotting"
       - "Linear regression on transformed Weibull coordinates"
-      - "Gamma function implementation (Lanczos approximation)"
       - "Weibull parameter extraction from regression slope/intercept"
       - "Cumulative distribution function calculations"
+      - "Percentile life calculation formula: t_p = η [-ln(1-p)]^{1/β}"
+      - "Confidence interval calculation for parameters"
+      - "Descriptive statistics with sample variance correction"
+      - "Failure mode classification algorithm based on Beta parameter"
+      - "Support for censored/suspension data in MLE method"
+      - "Weibull PDF formula: f(t) = (β/η)(t/η)^{β-1} e^{-(t/η)^β}"
+      - "Weibull CDF formula: F(t) = 1 - e^{-(t/η)^β}"
+      - "Reliability function: R(t) = e^{-(t/η)^β}"
+      - "Hazard function: h(t) = (β/η)(t/η)^{β-1}"
+      - "MTTF calculation: η × Γ(1 + 1/β)"
     
     pdca_cycle_methods:
       - "Data collection and organization by PDCA phases"
@@ -1021,10 +1056,15 @@ functionality:
       - "Interactive visualization of tolerance accumulation"
     
     weibull_analysis:
-      - "Weibull probability plot with log-scale x-axis"
-      - "Failure data points and regression line overlay"
-      - "Interactive scatter plot with tooltips"
-      - "Aggregated results cards for multiple analyses"
+      - "Weibull probability plot with log-scale x-axis and regression line"
+      - "Failure data points with tooltips"
+      - "Four distribution function plots: PDF, CDF, Hazard Function, Reliability Function"
+      - "Interactive scatter plot with categorized failure modes"
+      - "Aggregated results cards for multiple analyses with descriptive statistics"
+      - "Color-coded failure mode indicators"
+      - "Percentile life visualization"
+      - "Confidence interval display for parameters"
+      - "Time unit labeling on all charts"
     
     pdca_cycle:
       - "Interactive PDCA wheel with four color-coded quadrants"
@@ -1183,9 +1223,14 @@ functionality:
       - "Inverse transform sampling for various distributions"
     
     weibull_methods:
-      - "Median rank estimation for probability plotting"
+      - "Maximum Likelihood Estimation (MLE) algorithm for Weibull parameters"
       - "Linear regression on transformed Weibull coordinates"
       - "Gamma function implementation (Lanczos approximation)"
+      - "Confidence interval calculation for Weibull parameters"
+      - "Percentile life estimation algorithms"
+      - "Median rank estimation methods (Median Rank, Benard's method)"
+      - "Descriptive statistics with sample variance correction"
+      - "Failure mode classification based on Beta parameter thresholds"
     
     taguchi_methods:
       - "Signal-to-Noise ratio calculations for different quality characteristics"
@@ -1293,6 +1338,10 @@ functionality:
     - "APQP Gantt chart date calculations with accurate month markers"
     - "Balanced Scorecard achievement percentage calculations with 1 decimal precision"
     - "SWOT analysis data organization with proper categorization"
+    - "Weibull parameter estimation with MLE convergence to tolerance 1e-8"
+    - "Percentile life calculations with 1 decimal precision"
+    - "Confidence interval calculations for Weibull parameters"
+    - "Sample variance calculation with Bessel's correction (n-1)"
     - "Organizational maturity scoring with weighted calculations and 1 decimal precision"
     - "Radar chart data point calculation with accurate scaling"
 
@@ -1327,11 +1376,20 @@ ui_features:
     - "Monte Carlo sample size control"
   
   weibull_analysis_specific:
-    - "Auto-expanding textarea for failure times"
-    - "Results visibility toggle"
-    - "Aggregated results card display"
-    - "Weibull probability plot with log scale"
-    - "Failure mode interpretation based on Beta value"
+    - "Four wizard tabs: Theory & Info, Calculator Tool, Results, Formulas"
+    - "Main action buttons above tabs (Load Example, Reset All)"
+    - "Method selector for MLE vs Linear Regression"
+    - "Time unit selection dropdown"
+    - "Rank method selection (Median Rank, Benard's)"
+    - "Confidence level selection (90%, 95%, 99%)"
+    - "Auto-expanding textareas for failure and suspension times"
+    - "Results panel with parameters, percentiles, confidence intervals"
+    - "Failure mode classification with color-coded indicators"
+    - "Four distribution charts: PDF, CDF, Hazard, Reliability"
+    - "Descriptive statistics panel"
+    - "Aggregated results container with cards"
+    - "Export to Excel button for all results"
+    - "Notification system for user feedback"
   
   pdca_cycle_specific:
     - "Three main tabs: Start & Info, PDCA Tool, Report"
@@ -1540,12 +1598,11 @@ technical_specifications:
       - "SheetJS 0.18.5 for Excel export functionality"
       - "Font Awesome 6.4.0 for icons"
       - "Google Fonts (Nunito) for typography"
+      - "Chart.js 4.4.2 for chart visualizations (Weibull, distribution plots)"
+      - "KaTeX 0.16.9 for mathematical formula rendering"
       - "Mermaid.js 10.0 for diagram visualization (TRIZ)"
-      - "Chart.js 4.4.2 with annotation plugin (for other tools)"
-      - "KaTeX 0.16.9 for mathematical formula rendering (for other tools)"
       - "vis.js 4.21.0 for network diagram visualization (FMEA, VAVE)"
       - "html2canvas 1.4.1 for JPG export (Ishikawa, APQP/PPAP, Organizational Maturity Assessment)"
-      - "Chart.js for radar chart visualization (Organizational Maturity Assessment)"
     query_handling:
       - "query-handler.js for URL parameter processing"
       - "Intelligent field mapping system"
@@ -1674,7 +1731,7 @@ usage_scenarios:
   - "Product lifecycle management"
   - "Design Thinking workshops for human-centered innovation"
   - "Human-centered design projects"
-  - "Product and service innovation"
+      - "Product and service innovation"
   - "User experience (UX) research and design"
   - "Customer journey mapping and empathy building"
   - "Problem framing and reframing"
@@ -1937,7 +1994,7 @@ performance_characteristics:
   - "Efficient calculation algorithms for real-time updates"
   - "Optimized chart rendering for smooth performance"
   - "Monte Carlo simulation up to 1,000,000 samples (other tools)"
-  - "Fast Weibull parameter estimation and plotting"
+  - "Fast Weibull parameter estimation with MLE convergence"
   - "Smooth PDCA wheel animations and interactions"
   - "Efficient tab switching without page reloads"
   - "Quick orthogonal array generation and factor effect calculations"
@@ -2320,6 +2377,10 @@ references:
     - "Acceptance-Rejection Method (von Neumann, 1951)"
     - "Lanczos approximation for Gamma function"
     - "Weibull probability plotting techniques"
+    - "Maximum Likelihood Estimation algorithms for Weibull parameters"
+    - "Linear regression with variance correction for small samples"
+    - "Median rank estimation methods (Median Rank, Benard's)"
+    - "Confidence interval calculation for Weibull parameters"
     - "Taguchi Signal-to-Noise ratio formulas"
     - "ANOVA F-test methodology"
     - "Orthogonal array construction methods"
