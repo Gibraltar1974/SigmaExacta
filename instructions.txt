@@ -540,140 +540,213 @@ TOOL 4: WEIBULL ANALYSIS FOR FAILURE PREDICTION
 ================================================================================
 
 APPLICATION OVERVIEW:
-This is a Weibull Analysis tool for reliability engineering that calculates Weibull parameters from failure time data.
-The tool performs probability plotting, calculates Mean Time To Failure (MTTF), and predicts failure probabilities at specific times.
+This is a comprehensive Weibull Analysis tool for reliability engineering that calculates Weibull parameters from failure time data using Maximum Likelihood Estimation (MLE) and Linear Regression methods. The tool performs probability plotting, calculates Mean Time To Failure (MTTF), predicts failure probabilities at specific times, and provides detailed distribution analysis with percentile calculations and four complementary visualizations.
 
 KEY COMPONENTS:
 
 1. DATA INPUT SYSTEM:
-- Single textarea for entering failure times (comma-separated)
-- Optional field for predicting failure probability at a specific time
+- Single textarea for entering failure times (comma-separated) with support for suspended (censored) data
+- Method selection: MLE (Maximum Likelihood Estimation) or Linear Regression (Rank Regression)
+- Optional field for predicting failure probability at specific times
 - Auto-expanding textarea for better user experience
-- Example data loading for demonstration
+- Example data loading for demonstration with different distribution shapes
 
 2. CALCULATION ENGINE:
-- Weibull parameter estimation (Beta β, Eta η) using probability plotting method
-- Mean Time To Failure (MTTF) calculation using Gamma function
-- Failure probability prediction at user-specified times
-- Gamma function implementation using Lanczos approximation
+- Weibull parameter estimation (Beta β - shape, Eta η - scale) using:
+  • Maximum Likelihood Estimation (MLE) with Newton-Raphson optimization
+  • Linear Regression (Rank Regression) with median rank estimation (Benard's approximation)
+- Gamma function implementation using Lanczos approximation for accurate calculations
+- Mean Time To Failure (MTTF) calculation: η * Γ(1 + 1/β)
+- Percentile calculations (B-life): t_p = η * [-ln(1-p)]^(1/β)
+- Distribution functions: PDF, CDF, Reliability R(t), Hazard h(t)
+- Confidence intervals for parameters using Fisher Information Matrix (MLE) or linear approximation
 
 3. VISUALIZATION SYSTEM:
-- Weibull probability plot with log-scale x-axis
-- Data points and regression line visualization
-- Aggregated results display in card format
-- Interactive chart with tooltips
+- Four complementary distribution plots:
+  • Probability Plot with fitted line and data points
+  • PDF (Probability Density Function) plot showing failure density
+  • CDF (Cumulative Distribution Function) plot showing cumulative failure probability
+  • Hazard Function plot showing failure rate over time
+- Interactive charts with tooltips, zoom, and pan capabilities
+- Chart annotations for key percentiles (B1, B10, B50 life)
 
 4. UI STRUCTURE:
 - Wizard-style tabs: Theory & Info, Calculator Tool, Results, Formulas
 - Main action buttons (Load Example, Reset All) above tabs
 - Responsive design with full-width layout
-- Results visibility toggle
+- Advanced options panel for method selection and confidence intervals
+- Results visibility toggle with detailed statistics display
 
 5. URL PARAMETER SUPPORT:
-- data: Comma-separated failure times
-- auto_calculate: Trigger for automatic calculation
+- data: Comma-separated failure times (required)
+- suspended: Comma-separated suspended times (optional)
+- method: Calculation method (mle or regression, default: mle)
+- predict_time: Time for probability prediction (optional)
+- confidence: Confidence level (0.90, 0.95, or 0.99, default: 0.95)
+- auto_calculate: Trigger for automatic calculation (1 or true)
 
 HOW TO INTERACT WITH THE JAVASCRIPT:
 
 A. INITIALIZATION:
-- The application loads with empty input fields
-- Event listeners are set up for form submission, buttons, etc.
+- The application loads with empty input fields and default method (MLE)
+- Event listeners are set up for form submission, buttons, method selection, etc.
 - Chart.js, SheetJS, and KaTeX are loaded from CDN
-- Empty chart is initialized
+- Four chart canvases are initialized for the visualization system
 
 B. CORE FUNCTIONS:
 
 1. calculateWeibull()
    - Main calculation function triggered by form submission
-   - Parses failure times, validates input (minimum 2 points)
-   - Performs median rank estimation and linear regression
-   - Calculates Weibull parameters and MTTF
-   - Updates results and visualizations
+   - Parses failure times and suspended data (if any), validates input (minimum 2 failure points)
+   - Calls appropriate estimation method (MLE or Linear Regression)
+   - Calculates Weibull parameters, MTTF, percentiles, and confidence intervals
+   - Updates all four visualizations and detailed results display
 
-2. gamma(z)
+2. estimateWeibullMLE(failureTimes, suspendedTimes)
+   - Implements Maximum Likelihood Estimation using Newton-Raphson method
+   - Handles suspended (censored) data using likelihood function for Type I censoring
+   - Calculates Fisher Information Matrix for confidence intervals
+   - Returns object with parameters, standard errors, and log-likelihood
+
+3. estimateWeibullRegression(failureTimes)
+   - Implements Linear Regression (Rank Regression) on transformed coordinates
+   - Uses median rank estimation (Benard's approximation): F_i = (i - 0.3)/(n + 0.4)
+   - Performs least squares regression on: x = ln(t), y = ln(ln(1/(1-F)))
+   - Returns parameters with regression statistics (R², standard error)
+
+4. gamma(z)
    - Implements Lanczos approximation for Gamma function
-   - Used for accurate MTTF calculation
+   - Accurate for positive real numbers, recursive for values < 0.5
+   - Used for MTTF calculation: η * Γ(1 + 1/β)
 
-3. plotChart(points, slope, intercept)
-   - Creates Weibull probability plot with Chart.js
-   - Shows data points and regression line
-   - Uses logarithmic scale for x-axis
+5. calculatePercentiles(beta, eta, probabilities)
+   - Calculates B-life percentiles: t_p = η * [-ln(1-p)]^(1/β)
+   - Returns array of percentiles for common reliability values (0.01, 0.10, 0.50, 0.90)
 
-4. addResultToList()
+6. createVisualizations(beta, eta, failureTimes, suspendedTimes)
+   - Creates all four distribution plots using Chart.js:
+     • Probability Plot: ln(t) vs ln(ln(1/(1-F))) with regression line
+     • PDF Plot: f(t) = (β/η)*(t/η)^(β-1)*exp(-(t/η)^β)
+     • CDF Plot: F(t) = 1 - exp(-(t/η)^β)
+     • Hazard Plot: h(t) = (β/η)*(t/η)^(β-1)
+   - Adds annotations for key percentiles and MTTF
+
+7. addResultToList()
    - Adds current analysis to aggregated results list
-   - Creates result cards with timestamp and parameters
-   - Enables export functionality
+   - Creates result cards with timestamp, method, parameters, and key statistics
+   - Enables comparison between different analyses
 
-5. exportExcel()
-   - Exports aggregated results to Excel using SheetJS
-   - Includes headers and formatted data
+8. exportExcel()
+   - Exports comprehensive analysis to Excel using SheetJS
+   - Includes multiple sheets: Parameters, Percentiles, Distribution Data, Raw Data
+   - Includes all visualizations as embedded charts (if supported by SheetJS)
 
 C. DATA FLOW:
-1. User enters failure times → parse and validate
-2. Form submission → calculateWeibull() processes data
-3. Results displayed in Results tab
-4. User can add to aggregated list
-5. Export creates Excel file with all aggregated analyses
+1. User enters failure times (and optionally suspended times) → parse and validate
+2. User selects estimation method (MLE or Regression) and confidence level
+3. Form submission → calculateWeibull() processes data using selected method
+4. Results displayed in Results tab with detailed statistics
+5. All four visualizations updated simultaneously
+6. User can add to aggregated list for comparison
+7. Export creates comprehensive Excel file with all analyses and charts
 
 D. UI UPDATES:
 - Auto-expanding textarea adjusts to content
-- Results become visible after calculation
-- Chart updates with data points and regression line
-- Aggregated results displayed as cards
+- Method selection toggles between MLE and Regression interfaces
+- Confidence interval options appear when MLE is selected
+- All four charts update simultaneously with smooth animations
+- Detailed statistics panel shows parameters, percentiles, goodness-of-fit measures
+- Aggregated results displayed as cards for comparison
 - Tabs switch with smooth animation
 
 E. EXPORT FUNCTIONALITY:
-- exportExcel() creates XLSX file with aggregated results
-- Includes calculation ID, timestamp, failure data, and parameters
-- Custom headers and formatting
+- exportExcel() creates comprehensive XLSX file with:
+  • Parameters sheet: β, η, MTTF, confidence intervals, log-likelihood/R²
+  • Percentiles sheet: B1, B10, B50, B90 life with confidence bounds
+  • Distribution sheet: PDF, CDF, Reliability, Hazard values at time points
+  • Raw data sheet: failure times, suspended times, ranks, median ranks
+  • Charts as embedded images (base64 encoded)
 
 F. URL PARAMETER INTEGRATION:
-- Query Handler injects failure time data from URL
+- Query Handler injects failure time data, suspended data, method, and prediction time
 - Auto-calculation triggered when auto_calculate parameter is set
-- Field mapping for data parameter
+- Field mapping for all Weibull-specific parameters
+- Validation of method parameter (mle or regression)
 
 IMPORTANT ALGORITHMS:
 
-1. WEIBULL PARAMETER ESTIMATION:
-- Median rank estimation: (rank - 0.5) / n
-- Coordinate transformation: x = ln(t), y = ln(ln(1/(1-F(t))))
-- Linear regression on transformed coordinates
-- Parameter extraction: β = slope, η = exp(-intercept/slope)
+1. MAXIMUM LIKELIHOOD ESTIMATION:
+- Log-likelihood function: LL = Σ[ln(β/η) + (β-1)ln(t_i/η) - (t_i/η)^β] for failures + Σ[-(t_j/η)^β] for suspended
+- Newton-Raphson iteration for β: β_{k+1} = β_k - f(β_k)/f'(β_k)
+- η calculated from β: η = [Σ t_i^β / r]^(1/β) where r is number of failures
+- Fisher Information Matrix: I(β,η) = -E[∂²LL/∂θ∂θ'] for confidence intervals
 
-2. GAMMA FUNCTION IMPLEMENTATION:
-- Lanczos approximation with 7 coefficients
-- Accurate for positive real numbers
-- Recursive implementation for values < 0.5
+2. LINEAR REGRESSION (RANK REGRESSION):
+- Median rank estimation: F_i = (i - 0.3)/(n + 0.4) (Benard's approximation)
+- Coordinate transformation: x_i = ln(t_i), y_i = ln(ln(1/(1-F_i)))
+- Least squares: β = slope, η = exp(-intercept/β)
+- Goodness-of-fit: R² = 1 - SSE/SST
 
-3. PROBABILITY PREDICTION:
-- Uses Weibull CDF: F(t) = 1 - exp(-(t/η)^β)
-- Converts to percentage for display
+3. CONFIDENCE INTERVALS:
+- For MLE: Using Fisher Information: θ ± z_{α/2} * se(θ) where se(θ) = sqrt(diag(I^{-1}))
+- For Regression: Using linear regression confidence bands on transformed scale
+- Percentile intervals: Using delta method or Monte Carlo simulation
+
+4. PERCENTILE CALCULATIONS:
+- B_p life: t_p = η * [-ln(1-p)]^(1/β)
+- Confidence intervals for percentiles using propagation of uncertainty
+
+5. DISTRIBUTION FUNCTIONS:
+- PDF: f(t) = (β/η)*(t/η)^(β-1)*exp(-(t/η)^β)
+- CDF: F(t) = 1 - exp(-(t/η)^β)
+- Reliability: R(t) = exp(-(t/η)^β)
+- Hazard: h(t) = (β/η)*(t/η)^(β-1)
 
 EDGE CASE HANDLING:
-- Insufficient data (minimum 2 failure times)
+- Insufficient data validation (minimum 2 failure times for MLE, 3 for regression)
+- Handling of suspended (censored) data with proper likelihood formulation
+- Numerical stability in Newton-Raphson (step size limitation, convergence criteria)
+- Extreme parameter values (β → 0 or β → ∞)
 - Invalid or non-positive time values
 - Empty input fields
-- Numerical stability in Gamma function
+- Confidence interval calculation when Hessian is near-singular
 
 INTEGRATION POINTS:
 1. Header loaded dynamically from header.html
-2. Chart.js for probability plot visualization
-3. SheetJS for Excel export
+2. Chart.js with annotation plugin for visualizations
+3. SheetJS for Excel export with advanced formatting
 4. KaTeX for mathematical formula rendering
 5. Font Awesome for icons
 6. Query Handler for URL parameter support
 
 PERFORMANCE CONSIDERATIONS:
-- Efficient linear regression algorithm
-- Optimized chart rendering
-- Client-side only processing
-- Smooth animations for UI elements
+- Efficient MLE algorithm with convergence in typically <10 iterations
+- Optimized chart rendering for four simultaneous plots
+- Client-side only processing with Web Workers for large datasets (>1000 points)
+- Lazy loading of visualization libraries
+- Caching of Gamma function calculations
 
-ERROR HANDLING:
-- Input validation with descriptive alerts
-- Graceful handling of edge cases
-- Informative error messages
-- Fallback for chart rendering issues
+ACCURACY FEATURES:
+- High-precision Gamma function (Lanczos approximation with 15-digit accuracy)
+- Newton-Raphson with adaptive step size and convergence tolerance 1e-8
+- Fisher Information Matrix with numerical differentiation (central differences)
+- Median rank calculation using exact formula for small samples
+- Confidence intervals with appropriate small-sample corrections
+
+USE CASE SCENARIOS:
+1. Reliability Engineering: Estimate product lifetime and warranty periods
+2. Maintenance Planning: Predict failure times for preventive maintenance scheduling
+3. Quality Control: Analyze failure data to improve product design
+4. Warranty Analysis: Estimate warranty claims and costs
+5. Accelerated Life Testing: Analyze time-to-failure data from stress tests
+6. Comparative Analysis: Compare different designs or materials using shape parameter β
+
+EDUCATIONAL VALUE:
+- Demonstrates two fundamental parameter estimation methods (MLE vs Regression)
+- Shows relationship between Weibull parameters and distribution characteristics
+- Visualizes four complementary aspects of failure data
+- Teaches confidence interval concepts for reliability parameters
+- Provides real-world examples with different β values (β<1: infant mortality, β≈1: random failures, β>1: wear-out)
 
 ================================================================================
 TOOL 5: PDCA CYCLE (PLAN-DO-CHECK-ACT)
