@@ -286,6 +286,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_total').textContent = overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
         document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
+
+        // Mostrar valores short-term para overall
+        document.getElementById('overall_dev_short').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
+        document.getElementById('overall_cp_short').textContent = isFinite(stats.cp) ? stats.cp.toFixed(4) : 'N/A';
+        document.getElementById('overall_cpk_short').textContent = isFinite(stats.cpk) ? stats.cpk.toFixed(4) : 'N/A';
+        document.getElementById('overall_cpm_short').textContent = isFinite(stats.cpm) ? stats.cpm.toFixed(4) : 'N/A';
+
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
         document.getElementById('overall_failures').textContent = stats.failures_ppm_lt.toFixed(2);
@@ -900,6 +907,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('long-term-charts-wrapper').style.display = 'none';
         document.getElementById('datasetTabsContainer').style.display = 'none';
 
+        // Resetear los nuevos valores overall
+        document.getElementById('overall_cp_short').textContent = '-';
+        document.getElementById('overall_cpk_short').textContent = '-';
+        document.getElementById('overall_cpm_short').textContent = '-';
+        document.getElementById('overall_dev_short').textContent = '-';
+
         document.getElementById('exportBtn').disabled = true;
 
         // Resetear también los gráficos
@@ -930,16 +943,32 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Target:", document.getElementById('target').value],
             [],
             ["Overall (Long-Term) Results"],
-            ["Total Points", document.getElementById('overall_total').textContent],
-            ["Overall Mean", document.getElementById('overall_mean').textContent],
-            ["Overall Std Dev", document.getElementById('overall_dev').textContent],
-            ["Pp", document.getElementById('overall_pp').textContent],
-            ["Ppk", document.getElementById('overall_ppk').textContent],
-            ["Expected Failures (ppm)", document.getElementById('overall_failures').textContent],
-            ["Defective Parts", document.getElementById('overall_defective').textContent],
+            ["Total Points", overallData.length],
+            ["Overall Mean", overallStats.mean.toFixed(4)],
+            ["Overall Std Dev (long-term)", overallStats.sigmaOverall.toFixed(4)],
+            ["Pp", overallStats.pp.toFixed(4)],
+            ["Ppk", overallStats.ppk.toFixed(4)],
+            ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
+            ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
+            [],
+            ["Overall (Short-Term) Results"],
+            ["Overall Std Dev (short-term)", overallStats.sigmaWithin.toFixed(4)],
+            ["Cp (overall short-term)", isFinite(overallStats.cp) ? overallStats.cp.toFixed(4) : 'N/A'],
+            ["Cpk (overall short-term)", isFinite(overallStats.cpk) ? overallStats.cpk.toFixed(4) : 'N/A'],
+            ["Cpm (overall short-term)", isFinite(overallStats.cpm) ? overallStats.cpm.toFixed(4) : 'N/A'],
+            ["Expected Failures (ppm)", overallStats.failures_ppm.toFixed(2)],
+            ["Defective Parts", overallStats.defective_percentage.toFixed(4)],
+            [],
+            ["Overall Normality Tests"],
+            ["Shapiro-Wilk", overallStats.shapiro.result + ' (W=' + overallStats.shapiro.statistic.toFixed(4) + ', p=' + (overallStats.shapiro.pValue ? overallStats.shapiro.pValue.toFixed(4) : 'N/A') + ')'],
+            ["Kolmogorov-Smirnov", overallStats.kolmogorov.result + ' (D=' + overallStats.kolmogorov.statistic.toFixed(4) + ', p=' + (overallStats.kolmogorov.pValue ? overallStats.kolmogorov.pValue.toFixed(4) : 'N/A') + ')'],
+            ["Anderson-Darling", overallStats.anderson.result + ' (A²=' + overallStats.anderson.statistic.toFixed(4) + ', crit=' + (overallStats.anderson.criticalValue ? overallStats.anderson.criticalValue.toFixed(4) : 'N/A') + ')'],
             [],
             ["Individual Dataset Results"],
-            ["Dataset", "Mean", "Std Dev (Within)", "Cp", "Cpk", "Cpm", "Failures (ppm)", "Defective"]
+            ["Dataset", "Mean", "Std Dev (short-term)", "Cp", "Cpk", "Cpm", "Failures (ppm)", "Defective",
+                "Shapiro-Wilk Result", "Shapiro-Wilk Statistic", "Shapiro-Wilk p-value",
+                "Kolmogorov Result", "Kolmogorov Statistic", "Kolmogorov p-value",
+                "Anderson-Darling Result", "Anderson-Darling Statistic", "Anderson-Darling Critical Value"]
         ];
 
         datasets.forEach(function (d) {
@@ -951,16 +980,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 isFinite(d.cpk) ? d.cpk.toFixed(4) : 'N/A',
                 isFinite(d.cpm) ? d.cpm.toFixed(4) : 'N/A',
                 d.failures_ppm.toFixed(2),
-                d.defective_percentage.toFixed(4)
+                d.defective_percentage.toFixed(4),
+                d.shapiro.result,
+                d.shapiro.statistic.toFixed(4),
+                d.shapiro.pValue ? d.shapiro.pValue.toFixed(4) : 'N/A',
+                d.kolmogorov.result,
+                d.kolmogorov.statistic.toFixed(4),
+                d.kolmogorov.pValue ? d.kolmogorov.pValue.toFixed(4) : 'N/A',
+                d.anderson.result,
+                d.anderson.statistic.toFixed(4),
+                d.anderson.criticalValue ? d.anderson.criticalValue.toFixed(4) : 'N/A'
             ]);
         });
 
-        const rawDataSheet = [["All Data Points"]];
+        // Datos brutos por dataset
+        datasets.forEach(function (d, index) {
+            const datasetData = [["Dataset #" + d.id + " - Raw Data"]];
+            d.measurements.forEach(function (point) {
+                datasetData.push([point]);
+            });
+            const wsDataset = XLSX.utils.aoa_to_sheet(datasetData);
+            XLSX.utils.book_append_sheet(wb, wsDataset, "Dataset " + (index + 1));
+        });
+
+        // Todos los datos brutos combinados
+        const rawDataSheet = [["All Data Points (Combined)"]];
         overallData.forEach(function (d) {
             rawDataSheet.push([d]);
         });
         const wsRawData = XLSX.utils.aoa_to_sheet(rawDataSheet);
-        XLSX.utils.book_append_sheet(wb, wsRawData, "Raw Data");
+        XLSX.utils.book_append_sheet(wb, wsRawData, "All Raw Data");
 
         const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
         XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
