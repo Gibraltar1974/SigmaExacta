@@ -638,10 +638,6 @@
       min-width: 200px;
     }
 
-    .input-group label {
-      margin-bottom: 0.5rem;
-    }
-
     .statistics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -849,6 +845,14 @@
 
     .descriptive-stats-full-width .statistics-grid {
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    /* Estilo para los botones de acción en resultados */
+    .results-action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+      flex-wrap: wrap;
     }
 
     @media (max-width: 992px) {
@@ -1330,7 +1334,7 @@
                 </p>
               </div>
 
-              <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to List</button>
+              <!-- Botón Add to List REMOVIDO de aquí -->
             </div>
           </div>
 
@@ -1400,8 +1404,11 @@
           <div class="calculation-title">Analysis History</div>
           <div id="aggregatedResultsContainer">
           </div>
-          <button id="exportBtn" style="margin-top: 10px;"><i class="fas fa-file-excel"></i> Export All Results to
-            Excel</button>
+          <!-- Botón Add to List movido AQUÍ, a la izquierda de Export to Excel -->
+          <div class="results-action-buttons">
+            <button type="button" id="addBtn" disabled><i class="fas fa-plus"></i> Add to List</button>
+            <button id="exportBtn"><i class="fas fa-file-excel"></i> Export All Results to Excel</button>
+          </div>
         </div>
       </div>
 
@@ -1740,7 +1747,7 @@
       const sorted = [...failureTimes].sort((a, b) => a - b);
 
       const mean = sorted.reduce((a, b) => a + b, 0) / n;
-      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1); // CORRECCIÓN: varianza muestral
+      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1);
 
       if (n <= 5) {
         beta *= 1.08;
@@ -1812,7 +1819,7 @@
       return Math.exp(-Math.pow(ratio, beta));
     }
 
-    // Calculate confidence intervals
+    // Calculate confidence intervals - CRITERIO ALGORÍTMICO BASADO EN MÉTODOS ESTÁNDAR
     function calculateConfidenceIntervals(beta, eta, n, confidenceLevel, method = 'accurate') {
       if (n < 3) {
         return {
@@ -1823,26 +1830,44 @@
 
       const z = confidenceLevel === 90 ? 1.645 : confidenceLevel === 95 ? 1.96 : 2.576;
 
-      let seBeta, seEta;
+      // CRITERIO ALGORÍTMICO: Basado en el método del delta (transformación logarítmica)
+      // y en la matriz de información de Fisher para Weibull
 
       if (method === 'accurate') {
-        seBeta = beta / Math.sqrt(n) * 0.8;
-        seEta = eta / Math.sqrt(n) * 0.7;
+        // Para MLE: Usar la matriz de información de Fisher asintótica
+        // Varianza(log(beta)) ≈ 1.1087 / n
+        // Varianza(log(eta)) ≈ 0.6079 / n
+        // Estos valores son aproximaciones estándar para MLE de Weibull
+        const varLogBeta = 1.1087 / n;
+        const varLogEta = 0.6079 / n;
+
+        const betaLower = beta * Math.exp(-z * Math.sqrt(varLogBeta));
+        const betaUpper = beta * Math.exp(z * Math.sqrt(varLogBeta));
+
+        const etaLower = eta * Math.exp(-z * Math.sqrt(varLogEta));
+        const etaUpper = eta * Math.exp(z * Math.sqrt(varLogEta));
+
+        return {
+          beta: `${Math.max(0.01, betaLower).toFixed(3)} - ${betaUpper.toFixed(3)}`,
+          eta: `${Math.max(1, Math.round(etaLower))} - ${Math.round(etaUpper)}`
+        };
       } else {
-        seBeta = beta / Math.sqrt(n - 1) * 1.1;
-        seEta = eta / Math.sqrt(n) * 1.05;
+        // Para regresión lineal: Usar un enfoque más conservador
+        // basado en el error estándar de la regresión
+        const varLogBeta = 1.5 / n;  // Más conservador que MLE
+        const varLogEta = 1.0 / n;   // Más conservador que MLE
+
+        const betaLower = beta * Math.exp(-z * Math.sqrt(varLogBeta));
+        const betaUpper = beta * Math.exp(z * Math.sqrt(varLogBeta));
+
+        const etaLower = eta * Math.exp(-z * Math.sqrt(varLogEta));
+        const etaUpper = eta * Math.exp(z * Math.sqrt(varLogEta));
+
+        return {
+          beta: `${Math.max(0.01, betaLower).toFixed(3)} - ${betaUpper.toFixed(3)}`,
+          eta: `${Math.max(1, Math.round(etaLower))} - ${Math.round(etaUpper)}`
+        };
       }
-
-      const betaLower = beta * Math.exp(-z * seBeta / beta);
-      const betaUpper = beta * Math.exp(z * seBeta / beta);
-
-      const etaLower = eta * Math.exp(-z * seEta / eta);
-      const etaUpper = eta * Math.exp(z * seEta / eta);
-
-      return {
-        beta: `${Math.max(0.01, betaLower).toFixed(3)} - ${betaUpper.toFixed(3)}`,
-        eta: `${Math.max(1, Math.round(etaLower))} - ${Math.round(etaUpper)}`
-      };
     }
 
     // Classify failure mode
