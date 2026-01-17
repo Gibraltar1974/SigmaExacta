@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     let exampleIndex = 0;
-    let overallStats = null; // Variable para almacenar resultados overall
+    let overallStats = null;
 
     const exampleDataSetsCollection = [
         // Example Set 1 (Three Datasets: Centered, Shifted, Spread)
@@ -108,12 +108,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         datasets = [];
         overallData = [];
+
+        // Primero, procesar cada dataset individualmente
         document.querySelectorAll('.dataset-container').forEach(function (el) {
             const id = parseInt(el.dataset.id);
             const measurements = parseMeasurements(el.querySelector('.measurements-input').value);
             if (measurements.length >= 2) {
-                const stats = calculateStatistics(measurements, lsl, usl, target);
-                datasets.push({ id: id, measurements: measurements, ...stats });
+                const stats = calculateDatasetStatistics(measurements, lsl, usl, target);
+                datasets.push({
+                    id: id,
+                    measurements: measurements,
+                    ...stats
+                });
                 overallData.push.apply(overallData, measurements);
             }
         });
@@ -123,18 +129,58 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // CALCULAR overallStats SIEMPRE que haya datos overall
+        // Calcular estadísticas overall usando el método CORREGIDO
         if (overallData.length >= 2) {
-            overallStats = calculateStatistics(overallData, lsl, usl, target);
+            // Calcular pooled sigma within (método estadístico correcto)
+            const pooledSigmaWithin = calculatePooledSigmaWithin(datasets);
+
+            overallStats = calculateOverallStatistics(
+                overallData,
+                lsl,
+                usl,
+                target,
+                pooledSigmaWithin  // Pasar el sigma within agrupado
+            );
         } else {
             overallStats = null;
         }
 
         // Mostrar los resultados del primer dataset
-        displayResults(datasets[0], 0);
+        if (datasets.length > 0) {
+            displayResults(datasets[0], 0);
+        }
         updateDatasetTabs();
 
         document.getElementById('exportBtn').disabled = false;
+    }
+
+    // NUEVA FUNCIÓN: Calcular pooled sigma within (método estadístico correcto)
+    function calculatePooledSigmaWithin(datasets) {
+        if (datasets.length === 0) return 0;
+
+        if (datasets.length === 1) {
+            // Si solo hay un dataset, usar su sigma within directamente
+            return datasets[0].sigmaWithin;
+        }
+
+        // Calcular pooled variance: s²_pooled = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
+        let sumSquaredDeviations = 0;
+        let totalDegreesOfFreedom = 0;
+
+        datasets.forEach(dataset => {
+            const n = dataset.measurements.length;
+            if (n > 1) {
+                const df = n - 1;
+                const variance = Math.pow(dataset.sigmaWithin, 2);
+                sumSquaredDeviations += df * variance;
+                totalDegreesOfFreedom += df;
+            }
+        });
+
+        if (totalDegreesOfFreedom === 0) return 0;
+
+        const pooledVariance = sumSquaredDeviations / totalDegreesOfFreedom;
+        return Math.sqrt(pooledVariance);
     }
 
     function parseMeasurements(text) {
@@ -145,7 +191,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function calculateStatistics(data, lsl, usl, target) {
+    // Función para calcular estadísticas de un dataset individual
+    function calculateDatasetStatistics(data, lsl, usl, target) {
         if (data.length < 2) return null;
         const n = data.length;
 
@@ -200,28 +247,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const mean = data.reduce(function (a, b) { return a + b; }, 0) / n;
 
-        // Calculate sigma within using moving ranges (exact method)
+        // Calcular sigma within usando moving ranges (método exacto)
         const movingRanges = [];
         for (let i = 1; i < data.length; i++) {
             movingRanges.push(Math.abs(data[i] - data[i - 1]));
         }
         const mrBar = movingRanges.reduce(function (a, b) { return a + b; }, 0) / movingRanges.length;
-        const sigmaWithin = mrBar / 1.128; // d2 for n=2
+        const sigmaWithin = mrBar / 1.128; // d2 para n=2
 
-        // Calculate sigma overall (traditional standard deviation)
+        // Calcular sigma overall (desviación estándar tradicional)
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // Calculate short-term indices using sigma within
+        // Calcular índices short-term usando sigma within
         const cp = (usl - lsl) / (6 * sigmaWithin);
         const cpk = Math.min((usl - mean) / (3 * sigmaWithin), (mean - lsl) / (3 * sigmaWithin));
         const cpm = (usl - lsl) / (6 * Math.sqrt(Math.pow(sigmaWithin, 2) + Math.pow(mean - target, 2)));
 
-        // Calculate long-term indices using sigma overall
+        // Calcular índices long-term usando sigma overall
         const pp = (usl - lsl) / (6 * sigmaOverall);
         const ppk = Math.min((usl - mean) / (3 * sigmaOverall), (mean - lsl) / (3 * sigmaOverall));
 
-        // Cálculo correcto de defectos - usar sigmaWithin para short-term y sigmaOverall para long-term
+        // Cálculo de defectos
         const zUpperST = (usl - mean) / sigmaWithin;
         const zLowerST = (lsl - mean) / sigmaWithin;
         const probDefectiveST = (1 - normalCDF(zUpperST)) + normalCDF(zLowerST);
@@ -248,14 +295,133 @@ document.addEventListener('DOMContentLoaded', function () {
             cpm: cpm,
             pp: pp,
             ppk: ppk,
-            failures_ppm: probDefectiveST * 1e6, // Usar short-term para resultados individuales
+            failures_ppm: probDefectiveST * 1e6,
             defective_percentage: probDefectiveST * 100,
-            failures_ppm_lt: probDefectiveLT * 1e6, // Guardar también long-term para uso general
+            failures_ppm_lt: probDefectiveLT * 1e6,
             defective_percentage_lt: probDefectiveLT * 100,
             shapiro: shapiroWilkTest(data),
             kolmogorov: kolmogorovSmirnovTest(data),
             anderson: andersonDarlingTest(data),
-            // Intervalos de confianza
+            cpCI: cpCI,
+            cpkCI: cpkCI,
+            cpmCI: cpmCI,
+            ppCI: ppCI,
+            ppkCI: ppkCI
+        };
+    }
+
+    // Función para calcular estadísticas overall - CORREGIDA
+    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithin) {
+        if (data.length < 2) return null;
+        const n = data.length;
+
+        // Verificar si todos los valores son iguales
+        const allEqual = data.every(val => val === data[0]);
+
+        if (allEqual) {
+            const mean = data[0];
+            const centered = (mean > lsl && mean < usl);
+            const onTarget = (mean === target);
+
+            if (centered) {
+                return {
+                    mean: mean,
+                    sigmaWithin: 0,
+                    sigmaOverall: 0,
+                    cp: Infinity,
+                    cpk: Infinity,
+                    cpm: onTarget ? Infinity : 0,
+                    pp: Infinity,
+                    ppk: Infinity,
+                    failures_ppm: 0,
+                    defective_percentage: 0,
+                    failures_ppm_lt: 0,
+                    defective_percentage_lt: 0,
+                    shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
+                };
+            } else {
+                return {
+                    mean: mean,
+                    sigmaWithin: 0,
+                    sigmaOverall: 0,
+                    cp: 0,
+                    cpk: 0,
+                    cpm: 0,
+                    pp: 0,
+                    ppk: 0,
+                    failures_ppm: 1000000,
+                    defective_percentage: 100,
+                    failures_ppm_lt: 1000000,
+                    defective_percentage_lt: 100,
+                    shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
+                };
+            }
+        }
+
+        const mean = data.reduce(function (a, b) { return a + b; }, 0) / n;
+
+        // Calcular sigma overall (desviación estándar tradicional de todos los datos)
+        const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
+        const sigmaOverall = Math.sqrt(variance);
+
+        // USAR el sigma within proporcionado (pooled sigma within)
+        // Si sigmaWithin es 0, usar un valor muy pequeño para evitar división por cero
+        const effectiveSigmaWithin = sigmaWithin || 1e-10;
+
+        // Calculate short-term indices usando sigma within proporcionado
+        const cp = (usl - lsl) / (6 * effectiveSigmaWithin);
+        const cpk = Math.min(
+            (usl - mean) / (3 * effectiveSigmaWithin),
+            (mean - lsl) / (3 * effectiveSigmaWithin)
+        );
+        const cpm = (usl - lsl) / (6 * Math.sqrt(
+            Math.pow(effectiveSigmaWithin, 2) + Math.pow(mean - target, 2)
+        ));
+
+        // Calculate long-term indices usando sigma overall
+        const pp = (usl - lsl) / (6 * sigmaOverall);
+        const ppk = Math.min(
+            (usl - mean) / (3 * sigmaOverall),
+            (mean - lsl) / (3 * sigmaOverall)
+        );
+
+        // Cálculo de defectos
+        const zUpperST = (usl - mean) / effectiveSigmaWithin;
+        const zLowerST = (lsl - mean) / effectiveSigmaWithin;
+        const probDefectiveST = (1 - normalCDF(zUpperST)) + normalCDF(zLowerST);
+
+        const zUpperLT = (usl - mean) / sigmaOverall;
+        const zLowerLT = (lsl - mean) / sigmaOverall;
+        const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
+
+        // Calcular intervalos de confianza
+        const confidenceLevel = 0.95;
+        const cpCI = calculateCpConfidenceInterval(cp, n, confidenceLevel);
+        const cpkCI = calculateCpkConfidenceInterval(cpk, n, confidenceLevel);
+        const cpmCI = calculateCpmConfidenceInterval(cpm, n, confidenceLevel);
+        const ppCI = calculateCpConfidenceInterval(pp, n, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceInterval(ppk, n, confidenceLevel);
+
+        return {
+            mean: mean,
+            sigmaWithin: effectiveSigmaWithin,
+            sigmaOverall: sigmaOverall,
+            cp: cp,
+            cpk: cpk,
+            cpm: cpm,
+            pp: pp,
+            ppk: ppk,
+            failures_ppm: probDefectiveST * 1e6,
+            defective_percentage: probDefectiveST * 100,
+            failures_ppm_lt: probDefectiveLT * 1e6,
+            defective_percentage_lt: probDefectiveLT * 100,
+            shapiro: shapiroWilkTest(data),
+            kolmogorov: kolmogorovSmirnovTest(data),
+            anderson: andersonDarlingTest(data),
             cpCI: cpCI,
             cpkCI: cpkCI,
             cpmCI: cpmCI,
@@ -303,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return { lower: NaN, upper: NaN };
         }
 
-        // Aproximación para Cpm (similar a Cp pero con más incertidumbre)
+        // Aproximación para Cpm
         const alpha = 1 - confidenceLevel;
         const z = Math.abs(normalQuantile(1 - alpha / 2));
         const se = cpm * Math.sqrt(1 / (n - 1));
@@ -365,9 +531,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('overall_total').textContent = overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
-        document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
 
-        // Mostrar valores short-term para overall
+        // Mostrar valores short-term para overall (Process Capability)
         document.getElementById('overall_dev_short').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
         document.getElementById('overall_cp_short').textContent = isFinite(stats.cp) ? stats.cp.toFixed(4) : 'N/A';
         document.getElementById('overall_cp_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpCI)}`;
@@ -376,10 +541,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_cpm_short').textContent = isFinite(stats.cpm) ? stats.cpm.toFixed(4) : 'N/A';
         document.getElementById('overall_cpm_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpmCI)}`;
 
+        // Mostrar valores long-term (Process Performance)
+        document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
         document.getElementById('overall_pp_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppCI)}`;
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
         document.getElementById('overall_ppk_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppkCI)}`;
+
+        // Mostrar defectos usando long-term
         document.getElementById('overall_failures').textContent = stats.failures_ppm_lt.toFixed(2);
         document.getElementById('overall_defective').textContent = stats.defective_percentage_lt.toFixed(4);
 
@@ -407,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const min = Math.min.apply(null, data);
         const max = Math.max.apply(null, data);
         const numBins = Math.ceil(Math.sqrt(data.length));
-        // MEJORA 4: Manejo robusto de binWidth
+        // Manejo robusto de binWidth
         const binWidth = (max - min) > 0 ? (max - min) / numBins : Math.max(0.1, min * 0.01);
 
         let bins = Array(numBins).fill(0);
@@ -426,11 +595,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return { labels: labels, bins: bins, binWidth: binWidth };
     }
 
-    // MEJORA 5: Función mejorada para generar curva normal
     function generateNormalCurveData(data, mean, stdDev, binWidth) {
         if (stdDev === 0 || data.length === 0) return [];
 
-        // Si binWidth es 0 o muy pequeño, calcular uno adecuado
         const effectiveBinWidth = binWidth > 0 ? binWidth : Math.max(0.1, (Math.max(...data) - Math.min(...data)) / 10);
         const scaleFactor = data.length * effectiveBinWidth;
 
@@ -438,7 +605,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const curvePoints = [];
 
-        // Mejora en el cálculo del rango para incluir la dispersión de los datos
         const dataRange = Math.max(...data) - Math.min(...data);
         const stdDevRange = 4.5 * stdDev;
         const curveMin = Math.min(mean - stdDevRange, Math.min(...data) - 0.1 * dataRange);
@@ -470,7 +636,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Calcular cuantiles teóricos
         const theoreticalQuantiles = [];
         for (let i = 0; i < n; i++) {
-            // Usar la fórmula de Blom para posiciones de trazado
             const p = (i + 1 - 0.375) / (n + 0.25);
             theoreticalQuantiles.push(normalQuantile(p));
         }
@@ -1080,13 +1245,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // MEJORA 6: Inicialización correcta y robusta
     function resetFormData() {
         document.getElementById('cpkForm').reset();
         const dsContainer = document.getElementById('datasetsContainer');
         dsContainer.innerHTML = '';
         currentDatasetId = 1;
-        overallStats = null; // Limpiar overallStats al resetear
+        overallStats = null;
 
         // Crear primer dataset directamente
         const newDatasetEl = document.createElement('div');
@@ -1095,7 +1259,6 @@ document.addEventListener('DOMContentLoaded', function () {
         newDatasetEl.innerHTML = '<div class="dataset-header"><span class="dataset-title">Measurements (Dataset #' + currentDatasetId + ')</span><button type="button" class="remove-dataset-btn" style="display:none;"><i class="fas fa-times"></i> Remove</button></div><textarea class="measurements-input" rows="1" placeholder="Enter values or click \'Fill Example\'" required></textarea>';
         dsContainer.appendChild(newDatasetEl);
 
-        // Añadir el listener al botón de remover, aunque esté oculto
         const removeBtn = newDatasetEl.querySelector('.remove-dataset-btn');
         removeBtn.addEventListener('click', function () {
             if (document.querySelectorAll('.dataset-container').length > 1) {
@@ -1248,7 +1411,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ====================================================================
-    // 1. FUNCIONES AUXILIARES DE ALTA PRECISIÓN (normalCDF y normalQuantile)
+    // FUNCIONES AUXILIARES DE ALTA PRECISIÓN
     // ====================================================================
 
     /**
@@ -1263,14 +1426,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return x > 0 ? 1 : 0;
         }
 
-        // Hart algorithm (1966) - double precision
         const t = 1 / (1 + 0.2316419 * absX);
         const d = 0.3989422804014327 * Math.exp(-x * x / 2);
 
         const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
 
-        // p calcula la cola superior: P(Z > |x|).
-        // Si x > 0, queremos 1 - P(Z > x). Si x < 0, queremos P(Z < x) = P(Z > |x|).
         return x > 0 ? 1 - p : p;
     }
 
@@ -1311,17 +1471,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let q, r;
 
         if (p < 0.02425) {
-            // Rational approximation for lower region
             q = Math.sqrt(-2 * Math.log(p));
             return (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
                 ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
         } else if (p > 0.97575) {
-            // Rational approximation for upper region
             q = Math.sqrt(-2 * Math.log(1 - p));
             return -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
                 ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
         } else {
-            // Rational approximation for central region
             q = p - 0.5;
             r = q * q;
             return (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
@@ -1329,19 +1486,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
     // ====================================================================
-    // 2. SHAPIRO-WILK TEST - IMPLEMENTACIÓN CORREGIDA
+    // SHAPIRO-WILK TEST
     // ====================================================================
 
-    /**
-     * SHAPIRO-WILK TEST IMPLEMENTATION - Versión corregida
-     * Basado en el algoritmo de Royston para n <= 5000
-     */
     function shapiroWilkTest(data) {
         const n = data.length;
 
-        // Validación de parámetros
         if (n < 3) {
             return { statistic: NaN, pValue: NaN, result: 'N/A', message: 'Sample size too small (n < 3 required)' };
         }
@@ -1349,7 +1500,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return { statistic: NaN, pValue: NaN, result: 'N/A', message: 'Sample size too large (n > 5000 not supported)' };
         }
 
-        // Paso 1: Verificar si todos los valores son iguales
         const allEqual = data.every(val => val === data[0]);
         if (allEqual) {
             return {
@@ -1360,24 +1510,16 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         }
 
-        // Paso 2: Ordenar datos
         const sorted = data.slice().sort(function (a, b) { return a - b; });
-
-        // Paso 3: Calcular la media
         const mean = sorted.reduce(function (a, b) { return a + b; }, 0) / n;
 
-        // Paso 4: Calcular varianza
         let variance = 0;
         for (let i = 0; i < n; i++) {
             variance += Math.pow(sorted[i] - mean, 2);
         }
         variance = variance / (n - 1);
 
-        // NUEVO: Verificar si la varianza es extremadamente pequeña
-        // Si la varianza es < 1e-10, considerarla como varianza cero para propósitos de la prueba
         if (variance < 1e-10) {
-            // Para datos con variación mínima, usar una aproximación simplificada
-            // En este caso, los datos son prácticamente constantes, lo que es "perfectamente normal"
             return {
                 statistic: 1.0,
                 pValue: 1.0,
@@ -1386,13 +1528,8 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         }
 
-        // Paso 5: Calcular los coeficientes de Shapiro-Wilk usando aproximación
         const a = calculateShapiroWilkCoefficients(n);
-
-        // Paso 6: Calcular estadístico W con protección numérica
         const W = calculateShapiroWStatisticRobust(sorted, a, n, mean, variance);
-
-        // Paso 7: Calcular p-value usando transformación de Royston
         const pValue = calculateShapiroWilkPValue(W, n);
 
         return {
@@ -1406,11 +1543,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function calculateShapiroWStatisticRobust(sorted, a, n, mean, variance) {
         const k = Math.floor(n / 2);
 
-        // Calcular el numerador con protección contra underflow
         let numerator = 0;
         for (let i = 0; i < k; i++) {
             const diff = sorted[n - 1 - i] - sorted[i];
-            // Si la diferencia es muy pequeña pero no cero, usar un valor mínimo
             if (Math.abs(diff) < 1e-15 && diff !== 0) {
                 numerator += a[i] * 1e-15;
             } else if (i < a.length) {
@@ -1418,49 +1553,39 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Asegurarse de que el numerador sea positivo
         numerator = Math.max(1e-15, Math.abs(numerator));
         numerator = Math.pow(numerator, 2);
 
-        // Usar la varianza precalculada como denominador
         const denominator = variance * (n - 1);
 
-        // Evitar división por cero
         if (denominator === 0 || denominator < 1e-15) {
-            return 1.0; // Datos perfectamente correlacionados
+            return 1.0;
         }
 
         const W = numerator / denominator;
 
-        // Asegurar que W esté en el rango [0, 1]
         return Math.max(0, Math.min(1, W));
     }
 
     function calculateShapiroWilkCoefficients(n) {
-        // Para n <= 50, usar aproximación con cuantiles normales
-        // Para n > 50, usar la aproximación estándar
         const a = new Array(Math.floor(n / 2));
 
         if (n <= 50) {
-            // Usar aproximación basada en cuantiles normales
             for (let i = 0; i < a.length; i++) {
                 const u = (i + 1 - 0.375) / (n + 0.25);
                 a[i] = normalQuantile(u);
             }
 
-            // Normalizar los coeficientes
             const norm = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
             for (let i = 0; i < a.length; i++) {
                 a[i] = a[i] / norm;
             }
         } else {
-            // Para n grande, usar aproximación más simple pero efectiva
             for (let i = 0; i < a.length; i++) {
                 const u = (i + 1 - 0.375) / (n + 0.25);
                 a[i] = normalQuantile(u);
             }
 
-            // Ajuste para n grande
             const scale = Math.sqrt(n);
             for (let i = 0; i < a.length; i++) {
                 a[i] = a[i] / scale;
@@ -1470,39 +1595,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return a;
     }
 
-    function calculateShapiroWStatistic(sorted, a, n, mean) {
-        const k = Math.floor(n / 2);
-
-        // Calcular el numerador
-        let numerator = 0;
-        for (let i = 0; i < k; i++) {
-            const diff = sorted[n - 1 - i] - sorted[i];
-            // Manejar el caso de diff = 0
-            if (diff !== 0 && i < a.length) {
-                numerator += a[i] * diff;
-            }
-        }
-
-        // Asegurarse de que el numerador sea positivo
-        numerator = Math.max(0, numerator);
-        numerator = Math.pow(numerator, 2);
-
-        // Calcular el denominador (varianza)
-        let denominator = 0;
-        for (let i = 0; i < n; i++) {
-            denominator += Math.pow(sorted[i] - mean, 2);
-        }
-
-        // Evitar división por cero
-        if (denominator === 0) {
-            return 1.0; // Datos perfectamente correlacionados
-        }
-
-        return numerator / denominator;
-    }
-
     function calculateShapiroWilkPValue(W, n) {
-        // Transformación de Royston mejorada
         if (n <= 11) {
             const gamma = 0.459 * n - 2.273;
             const sigma = Math.exp(0.5440 - 0.39978 * n + 0.025054 * Math.pow(n, 2) - 0.0006714 * Math.pow(n, 3));
@@ -1510,12 +1603,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const z = (y - gamma) / sigma;
             return 1 - normalCDF(z);
         } else {
-            // Para n > 11
             const u = Math.log(n);
             const mu = -1.5861 - 0.31082 * u - 0.083751 * u * u + 0.0038915 * u * u * u;
             const sigma = Math.exp(-0.4803 - 0.082676 * u + 0.0030302 * u * u);
 
-            // Manejar casos donde W está cerca de 1
             const safeW = Math.min(0.999999, Math.max(W, 0.000001));
             const y = Math.log(1 - safeW);
             const z = (y - mu) / sigma;
@@ -1524,9 +1615,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
     // ====================================================================
-    // 3. KOLMOGOROV-SMIRNOV TEST - MEJORADO
+    // KOLMOGOROV-SMIRNOV TEST
     // ====================================================================
 
     function kolmogorovSmirnovTest(data) {
@@ -1536,7 +1626,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return { statistic: NaN, pValue: NaN, result: 'N/A', message: 'Sample size too small (n < 5 required)' };
         }
 
-        // Estandarizar datos
         const sorted = data.slice().sort(function (a, b) { return a - b; });
         const mean = sorted.reduce(function (a, b) { return a + b; }, 0) / n;
         const stdDev = Math.sqrt(sorted.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1));
@@ -1550,7 +1639,6 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         }
 
-        // Calcular estadístico D
         let Dplus = 0;
         let Dminus = 0;
 
@@ -1564,8 +1652,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const D = Math.max(Dplus, Dminus);
-
-        // Calcular p-value usando la fórmula de Stephens
         const pValue = calculateKSPValue(D, n);
 
         return {
@@ -1577,13 +1663,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function calculateKSPValue(D, n) {
-        // Fórmula de Stephens para p-value
         if (n <= 100) {
             const D_corrected = D * (Math.sqrt(n) + 0.12 + 0.11 / Math.sqrt(n));
             const term = -2 * D_corrected * D_corrected;
             return Math.max(0, Math.min(1, 1 - Math.exp(term)));
         } else {
-            // Para n grande
             const K = D * Math.sqrt(n);
             let sum = 0;
             for (let k = 1; k <= 100; k++) {
@@ -1595,14 +1679,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
     // ====================================================================
-    // 4. ANDERSON-DARLING TEST
+    // ANDERSON-DARLING TEST
     // ====================================================================
 
-    /**
-     * PROFESSIONAL ANDERSON-DARLING TEST IMPLEMENTATION (Stephens, 1974)
-     */
     function andersonDarlingTest(data) {
         const n = data.length;
 
@@ -1610,7 +1690,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return { statistic: NaN, criticalValue: NaN, result: 'N/A', message: 'Sample size too small (n < 8 required)' };
         }
 
-        // Paso 1: Estandarizar datos
         const sorted = data.slice().sort(function (a, b) { return a - b; });
         const mean = sorted.reduce(function (a, b) { return a + b; }, 0) / n;
         const variance = sorted.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
@@ -1620,13 +1699,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return { statistic: 0, criticalValue: 0, pValue: 1.0, result: 'Pass', message: 'All values identical (perfect fit to normal distribution)' };
         }
 
-        // Paso 2: Calcular estadístico A²
         let A2 = calculateAndersonDarlingStatistic(sorted, mean, stdDev, n);
-
-        // Paso 3: Aplicar corrección para tamaño de muestra
         const A2_corrected = applyAndersonDarlingCorrection(A2, n);
-
-        // Paso 4: Obtener valor crítico y p-value aproximado
         const criticalValue = getAndersonDarlingCriticalValue(n);
         const pValue = estimateAndersonDarlingPValue(A2_corrected, n);
 
@@ -1641,13 +1715,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function calculateAndersonDarlingStatistic(sorted, mean, stdDev, n) {
         let sum = 0;
-        const epsilon = 1e-10; // CÓDIGO DE ROBUSTEZ: Previene Math.log(0) o Math.log(1)
+        const epsilon = 1e-10;
 
         for (let i = 0; i < n; i++) {
             const z = (sorted[i] - mean) / stdDev;
             const F = normalCDF(z);
 
-            // Asegurar que F esté entre un valor muy pequeño (epsilon) y 1 - epsilon
             const F_robust = Math.max(epsilon, Math.min(1 - epsilon, F));
 
             const logF = Math.log(F_robust);
@@ -1663,17 +1736,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyAndersonDarlingCorrection(A2, n) {
-        // Corrección de Stephens (1974) para estadístico A²
         if (n >= 20) {
             return A2 * (1 + 0.75 / n + 2.25 / (n * n));
         } else {
-            // Corrección más simple para muestras pequeñas
             return A2 * (1 + 0.3 / n);
         }
     }
 
     function getAndersonDarlingCriticalValue(n) {
-        // Valores críticos de D'Agostino (1986) para alpha = 0.05
         const criticalValues = {
             8: 0.736, 9: 0.768, 10: 0.805, 11: 0.839, 12: 0.870,
             13: 0.900, 14: 0.928, 15: 0.954, 16: 0.979, 17: 1.002,
@@ -1684,7 +1754,6 @@ document.addEventListener('DOMContentLoaded', function () {
             500: 3.516, 1000: 4.318
         };
 
-        // Interpolación para valores intermedios
         const sizes = Object.keys(criticalValues).map(Number).sort(function (a, b) { return a - b; });
 
         if (n <= sizes[0]) return criticalValues[sizes[0]];
@@ -1697,11 +1766,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        return 0.752; // Valor por defecto si falla la lógica
+        return 0.752;
     }
 
     function estimateAndersonDarlingPValue(A2, n) {
-        // Estimación aproximada del p-value (útil si no se usa una función CDF específica)
         if (A2 <= 0.2) return 0.99;
         if (A2 <= 0.5) return 0.90;
         if (A2 <= 0.8) return 0.70;
