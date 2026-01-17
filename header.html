@@ -10,33 +10,9 @@
             align-items: center;
             padding: 10px 20px;
             background-color: #222;
-            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .logo-container-link {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .main-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-        }
-
-        .logo-text {
-            color: #fff;
-            font-weight: 800;
-            font-size: 1.5rem;
-        }
-
+        .logo-text,
         .navigation .nav-link,
         .nav-toggle {
             color: #fff;
@@ -48,7 +24,6 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 5px;
         }
 
         .navigation .nav-menu {
@@ -57,7 +32,6 @@
             margin: 0;
             padding: 0;
             align-items: center;
-            gap: 5px;
         }
 
         .navigation .nav-link {
@@ -65,12 +39,6 @@
             text-decoration: none;
             font-weight: 600;
             display: block;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .navigation .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .navigation .nav-link i {
@@ -100,50 +68,18 @@
             color: #333;
         }
 
-        .dropdown-link {
-            display: block;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 3px;
-            transition: background-color 0.3s ease;
-        }
-
         .dropdown-link:hover {
             background-color: #f1f1f1;
         }
 
         .dropdown-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
         }
 
         .nav-item-dropdown:hover>.dropdown-menu {
             display: block;
-        }
-
-        /* Estilo para escritorio - Hover del dropdown */
-        @media (min-width: 993px) {
-            .nav-item-dropdown:hover>.dropdown-menu {
-                display: block;
-                animation: fadeIn 0.3s ease;
-            }
-
-            .dropdown-menu {
-                border: 1px solid #ddd;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         @media (max-width: 992px) {
@@ -158,15 +94,12 @@
                 top: 100%;
                 left: 0;
                 width: 100%;
-                background-color: #222;
-                border-top: 1px solid #444;
-                padding: 10px 0;
+                background-color: #fff;
+                border-top: 1px solid #eee;
             }
 
             .navigation .nav-menu .nav-link {
-                color: #fff;
-                width: 100%;
-                padding: 15px 20px;
+                color: #333;
             }
 
             .navigation .nav-menu.show-menu {
@@ -189,20 +122,14 @@
                 position: static;
                 width: 100%;
                 box-shadow: none;
-                border-top: 1px solid #444;
+                border-top: 1px solid #f0f0f0;
                 padding: 10px 0 10px 30px;
                 min-width: unset;
-                background-color: rgba(0, 0, 0, 0.2);
-            }
-
-            .dropdown-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
+                background-color: #f9f9f9;
             }
 
             .dropdown-menu.show-submenu {
                 display: block;
-                animation: slideDown 0.3s ease;
             }
 
             .nav-item-dropdown:hover>.dropdown-menu {
@@ -215,18 +142,6 @@
 
             .nav-item-dropdown.active>.nav-link i {
                 transform: rotate(180deg);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                max-height: 0;
-                opacity: 0;
-            }
-
-            to {
-                max-height: 500px;
-                opacity: 1;
             }
         }
     </style>
@@ -288,4 +203,64 @@
             <li class="nav-item"><a href="mailto:contact@sigmaexacta.com" class="nav-link">Contact</a></li>
         </ul>
     </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                    if (!navMenu.classList.contains('show-menu')) {
+                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+                    }
+                });
+            }
+
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "SigmaExacta",
+      "url": "https://sigmaexacta.com",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Professional online engineering tools for Quality Control, Six Sigma, and Process Improvement. Includes Cpk Calculator, FMEA, DOE, and Control Plans.",
+      "featureList": "Cpk Calculator, Weibull Analysis, Control Plan Creator, FMEA, Taguchi DOE, Tolerance Stack-up, QFD",
+      "softwareHelp": {
+        "@type": "CreativeWork",
+        "url": "https://sigmaexacta.com/documentation.html"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "SigmaExacta",
+        "url": "https://sigmaexacta.com"
+      }
+    }
+    </script>
 </header>
