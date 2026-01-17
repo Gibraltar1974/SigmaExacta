@@ -131,15 +131,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Calcular estadísticas overall usando el método CORREGIDO
         if (overallData.length >= 2) {
-            // Calcular pooled sigma within (método estadístico correcto)
-            const pooledSigmaWithin = calculatePooledSigmaWithin(datasets);
+            // Calcular sigma within overall usando el método de JASP (pooled within)
+            const sigmaWithinOverall = calculateSigmaWithinOverall(datasets);
 
             overallStats = calculateOverallStatistics(
                 overallData,
                 lsl,
                 usl,
                 target,
-                pooledSigmaWithin  // Pasar el sigma within agrupado
+                sigmaWithinOverall  // Pasar el sigma within calculado correctamente
             );
         } else {
             overallStats = null;
@@ -154,32 +154,34 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('exportBtn').disabled = false;
     }
 
-    // NUEVA FUNCIÓN: Calcular pooled sigma within (método estadístico correcto)
-    function calculatePooledSigmaWithin(datasets) {
+    // FUNCIÓN CORREGIDA: Calcular sigma within overall como en JASP
+    function calculateSigmaWithinOverall(datasets) {
         if (datasets.length === 0) return 0;
 
+        // Si solo hay un dataset, usar su sigma within directamente
         if (datasets.length === 1) {
-            // Si solo hay un dataset, usar su sigma within directamente
             return datasets[0].sigmaWithin;
         }
 
-        // Calcular pooled variance: s²_pooled = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
-        let sumSquaredDeviations = 0;
-        let totalDegreesOfFreedom = 0;
+        // Calcular pooled variance usando el método de JASP
+        // s²_pooled = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
+        let numerator = 0;
+        let denominator = 0;
 
         datasets.forEach(dataset => {
             const n = dataset.measurements.length;
             if (n > 1) {
                 const df = n - 1;
-                const variance = Math.pow(dataset.sigmaWithin, 2);
-                sumSquaredDeviations += df * variance;
-                totalDegreesOfFreedom += df;
+                // Usar la varianza within del dataset (calculada con moving range)
+                const varianceWithin = Math.pow(dataset.sigmaWithin, 2);
+                numerator += df * varianceWithin;
+                denominator += df;
             }
         });
 
-        if (totalDegreesOfFreedom === 0) return 0;
+        if (denominator === 0) return 0;
 
-        const pooledVariance = sumSquaredDeviations / totalDegreesOfFreedom;
+        const pooledVariance = numerator / denominator;
         return Math.sqrt(pooledVariance);
     }
 
@@ -311,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Función para calcular estadísticas overall - CORREGIDA
-    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithin) {
+    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall) {
         if (data.length < 2) return null;
         const n = data.length;
 
@@ -368,11 +370,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // USAR el sigma within proporcionado (pooled sigma within)
-        // Si sigmaWithin es 0, usar un valor muy pequeño para evitar división por cero
-        const effectiveSigmaWithin = sigmaWithin || 1e-10;
+        // USAR el sigma within overall proporcionado (calculado con pooled variance)
+        // Si sigmaWithinOverall es 0, usar un valor muy pequeño para evitar división por cero
+        const effectiveSigmaWithin = sigmaWithinOverall || 1e-10;
 
-        // Calculate short-term indices usando sigma within proporcionado
+        // Calculate short-term indices usando sigma within overall (método JASP)
         const cp = (usl - lsl) / (6 * effectiveSigmaWithin);
         const cpk = Math.min(
             (usl - mean) / (3 * effectiveSigmaWithin),
@@ -389,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
             (mean - lsl) / (3 * sigmaOverall)
         );
 
-        // Cálculo de defectos
+        // Cálculo de defectos (short-term y long-term)
         const zUpperST = (usl - mean) / effectiveSigmaWithin;
         const zLowerST = (lsl - mean) / effectiveSigmaWithin;
         const probDefectiveST = (1 - normalCDF(zUpperST)) + normalCDF(zLowerST);
