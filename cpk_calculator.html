@@ -456,7 +456,8 @@
         }
 
         input[type="text"],
-        textarea {
+        textarea,
+        select {
             width: 100%;
             padding: 0.6rem;
             border: 1px solid #ddd;
@@ -472,6 +473,17 @@
         textarea {
             resize: vertical;
             min-height: 80px;
+        }
+
+        select {
+            cursor: pointer;
+            background-color: white;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
 
         button {
@@ -870,6 +882,19 @@
             gap: 0.5rem;
         }
 
+        .sigma-method-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sigma-method-info strong {
+            color: var(--primary-color);
+        }
+
         @media (max-width: 768px) {
 
             .results-container,
@@ -1060,6 +1085,9 @@
                             <li><strong>Enter Process Data and Specifications:</strong> Add one or more datasets using
                                 the "Add Dataset" button. Fill in measurements for each dataset, along with the common
                                 Lower (LSL), Upper (USL), and Target values.</li>
+                            <li><strong>Select Calculation Method:</strong> Choose the method for calculating σ within
+                                (short-term standard deviation): Moving Range (recommended), Pooled Variance, or
+                                Subgroup Standard Deviation.</li>
                             <li><strong>Calculate Results:</strong> Press the <strong>Calculate</strong> button. The
                                 tool will compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term
                                 indices (Pp, Ppk) combining all datasets, perform normality tests, and display process
@@ -1114,6 +1142,25 @@
                                 <input type="text" id="usl" required />
                                 <label for="target"><i class="fas fa-bullseye"></i> Target (T):</label>
                                 <input type="text" id="target" required />
+
+                                <div style="margin-bottom: 1rem;">
+                                    <label for="sigmaMethod"><i class="fas fa-calculator"></i> Method for σ within
+                                        calculation:</label>
+                                    <select id="sigmaMethod">
+                                        <option value="moving_range" selected>Moving Range (d₂=1.128) - Recommended
+                                        </option>
+                                        <option value="pooled">Pooled Variance (like JASP)</option>
+                                        <option value="subgroup_std">Subgroup Standard Deviation</option>
+                                    </select>
+                                    <div class="sigma-method-info">
+                                        <strong>Moving Range</strong>: Best for individual data points. Uses
+                                        consecutive differences.<br>
+                                        <strong>Pooled Variance</strong>: Best for multiple rational subgroups. Combines
+                                        variances weighted by degrees of freedom.<br>
+                                        <strong>Subgroup Standard Deviation</strong>: Alternative to Pooled Variance for
+                                        subgroup analysis.
+                                    </div>
+                                </div>
 
                                 <div class="button-group" style="margin-top:0; margin-left:0;">
                                     <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
@@ -1225,6 +1272,8 @@
                                         <div class="results-subsection-title">
                                             <i class="fas fa-bullseye"></i> Process Capability (Within)
                                         </div>
+                                        <p><i class="fas fa-calculator"></i> <b>Method:</b> <span
+                                                id="sigma-method-display" class="result-value">Moving Range</span></p>
                                         <p><i class="fas fa-chart-bar"></i> <b>Std Dev (within):</b> <span
                                                 id="overall_dev_short" class="result-value">-</span></p>
                                         <p><i class="fas fa-ruler-combined"></i> <b>Cp:</b> <span id="overall_cp_short"
@@ -1334,10 +1383,16 @@
                         <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
                         <div class="formula-grid">
                             <div class="formula-item">
-                                <h3>Sigma Within (Short-Term)</h3>
+                                <h3>Sigma Within (Moving Range)</h3>
                                 <div class="katex-content">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$
                                 </div>
                                 <p>Where $d_2 = 1.128$ for $n=2$</p>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Pooled Variance</h3>
+                                <div class="katex-content">$$ \sigma_{\text{pooled}} =
+                                    \sqrt{\frac{\sum_{i=1}^{k}(n_i-1)s_i^2}{\sum_{i=1}^{k}(n_i-1)}} $$</div>
+                                <p>Where $k$ = number of subgroups</p>
                             </div>
                             <div class="formula-item">
                                 <h3>Cp (Capability)</h3>
@@ -1391,6 +1446,13 @@
                                 <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)
                                 </li>
                                 <li><code>CI</code>: Confidence Interval (95% by default)</li>
+                            </ul>
+                            <h3>Calculation Methods</h3>
+                            <ul>
+                                <li><strong>Moving Range</strong>: Uses consecutive differences, best for individual
+                                    data points</li>
+                                <li><strong>Pooled Variance</strong>: Combines variances from multiple subgroups</li>
+                                <li><strong>Subgroup Std Dev</strong>: Uses standard deviation within each subgroup</li>
                             </ul>
                         </div>
                     </div>

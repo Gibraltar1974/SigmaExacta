@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let datasets = [];
     let currentDatasetId = 1;
     let overallData = [];
+    let selectedSigmaMethod = 'moving_range'; // Método por defecto
     let chartInstances = {
         cpkChart: null,
         controlChart: null,
@@ -94,12 +95,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exportBtn').addEventListener('click', exportToExcel);
     document.getElementById('addDatasetBtn').addEventListener('click', addNewDataset);
 
+    // FUNCIÓN PRINCIPAL CORREGIDA
     function handleFormSubmit(e) {
         e.preventDefault();
 
         const lsl = parseFloat(document.getElementById('lsl').value);
         const usl = parseFloat(document.getElementById('usl').value);
         const target = parseFloat(document.getElementById('target').value);
+        selectedSigmaMethod = document.getElementById('sigmaMethod').value;
 
         if (isNaN(lsl) || isNaN(usl) || isNaN(target) || usl <= lsl) {
             alert('Please enter valid LSL, USL, and Target values. USL must be greater than LSL.');
@@ -109,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         datasets = [];
         overallData = [];
 
-        // Primero, procesar cada dataset individualmente
+        // Procesar cada dataset
         document.querySelectorAll('.dataset-container').forEach(function (el) {
             const id = parseInt(el.dataset.id);
             const measurements = parseMeasurements(el.querySelector('.measurements-input').value);
@@ -129,23 +132,42 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Calcular estadísticas overall usando el método CORREGIDO
-        if (overallData.length >= 2) {
-            // Calcular sigma within overall usando el método de JASP (pooled within)
-            const sigmaWithinOverall = calculateSigmaWithinOverall(datasets);
+        // Calcular sigma within overall según el método seleccionado
+        let sigmaWithinOverall;
 
+        if (datasets.length === 1) {
+            // Si solo hay un dataset, usar su sigma within
+            sigmaWithinOverall = datasets[0].sigmaWithin;
+        } else {
+            switch (selectedSigmaMethod) {
+                case 'moving_range':
+                    sigmaWithinOverall = calculateMovingRangeSigmaWithin(datasets);
+                    break;
+                case 'pooled':
+                    sigmaWithinOverall = calculatePooledSigmaWithin(datasets);
+                    break;
+                case 'subgroup_std':
+                    sigmaWithinOverall = calculateSubgroupStdSigmaWithin(datasets);
+                    break;
+                default:
+                    sigmaWithinOverall = calculateMovingRangeSigmaWithin(datasets);
+            }
+        }
+
+        // Calcular estadísticas overall
+        if (overallData.length >= 2) {
             overallStats = calculateOverallStatistics(
                 overallData,
                 lsl,
                 usl,
                 target,
-                sigmaWithinOverall  // Pasar el sigma within calculado correctamente
+                sigmaWithinOverall
             );
         } else {
             overallStats = null;
         }
 
-        // Mostrar los resultados del primer dataset
+        // Mostrar resultados
         if (datasets.length > 0) {
             displayResults(datasets[0], 0);
         }
@@ -154,35 +176,97 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('exportBtn').disabled = false;
     }
 
-    // FUNCIÓN CORREGIDA: Calcular sigma within overall como en JASP
-    function calculateSigmaWithinOverall(datasets) {
-        if (datasets.length === 0) return 0;
+    // Función para calcular sigma within con Moving Range combinado
+    function calculateMovingRangeSigmaWithin(datasets) {
+        // Calcular moving ranges combinados de todos los datasets
+        let allMovingRanges = [];
+        let totalDataPoints = 0;
 
-        // Si solo hay un dataset, usar su sigma within directamente
-        if (datasets.length === 1) {
-            return datasets[0].sigmaWithin;
-        }
+        datasets.forEach(dataset => {
+            const data = dataset.measurements;
+            totalDataPoints += data.length;
 
-        // Calcular pooled variance usando el método de JASP
-        // s²_pooled = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
-        let numerator = 0;
-        let denominator = 0;
+            // Calcular moving ranges para este dataset
+            for (let i = 1; i < data.length; i++) {
+                allMovingRanges.push(Math.abs(data[i] - data[i - 1]));
+            }
+        });
+
+        if (allMovingRanges.length === 0) return 0;
+
+        // Calcular el promedio de todos los moving ranges
+        const mrBar = allMovingRanges.reduce((sum, mr) => sum + mr, 0) / allMovingRanges.length;
+
+        // Sigma within = mrBar / d2 (d2 = 1.128 para n=2)
+        return mrBar / 1.128;
+    }
+
+    // Nueva función para pooled variance
+    function calculatePooledSigmaWithin(datasets) {
+        let totalSS = 0;  // Suma de cuadrados total
+        let totalDF = 0;  // Grados de libertad total
 
         datasets.forEach(dataset => {
             const n = dataset.measurements.length;
             if (n > 1) {
-                const df = n - 1;
-                // Usar la varianza within del dataset (calculada con moving range)
-                const varianceWithin = Math.pow(dataset.sigmaWithin, 2);
-                numerator += df * varianceWithin;
-                denominator += df;
+                // Calcular varianza within para este dataset
+                const mean = dataset.measurements.reduce((a, b) => a + b) / n;
+                const ss = dataset.measurements.reduce((sum, val) => {
+                    return sum + Math.pow(val - mean, 2);
+                }, 0);
+
+                totalSS += ss;
+                totalDF += (n - 1);
             }
         });
 
-        if (denominator === 0) return 0;
+        if (totalDF === 0) return 0;
 
-        const pooledVariance = numerator / denominator;
+        // Varianza pooled (media ponderada de varianzas)
+        const pooledVariance = totalSS / totalDF;
+
         return Math.sqrt(pooledVariance);
+    }
+
+    // Función para calcular sigma within usando desviación estándar dentro de cada subgrupo
+    function calculateSubgroupStdSigmaWithin(datasets) {
+        if (datasets.length === 0) return 0;
+
+        let totalVariance = 0;
+        let totalDF = 0;
+
+        datasets.forEach(dataset => {
+            const n = dataset.measurements.length;
+            if (n > 1) {
+                // Calcular varianza dentro de este subgrupo
+                const mean = dataset.measurements.reduce((a, b) => a + b) / n;
+                const ss = dataset.measurements.reduce((sum, val) => {
+                    return sum + Math.pow(val - mean, 2);
+                }, 0);
+
+                totalVariance += ss;
+                totalDF += (n - 1);
+            }
+        });
+
+        if (totalDF === 0) return 0;
+
+        // Calcular desviación estándar combinada (raíz de la varianza promedio)
+        const averageVariance = totalVariance / totalDF;
+        return Math.sqrt(averageVariance);
+    }
+
+    // Función para desviación estándar simple
+    function calculateOverallSigma(data) {
+        const n = data.length;
+        if (n < 2) return 0;
+
+        const mean = data.reduce((a, b) => a + b) / n;
+        const variance = data.reduce((sum, val) => {
+            return sum + Math.pow(val - mean, 2);
+        }, 0) / (n - 1);
+
+        return Math.sqrt(variance);
     }
 
     function parseMeasurements(text) {
@@ -370,11 +454,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // USAR el sigma within overall proporcionado (calculado con pooled variance)
+        // USAR el sigma within overall proporcionado (calculado con el método seleccionado)
         // Si sigmaWithinOverall es 0, usar un valor muy pequeño para evitar división por cero
         const effectiveSigmaWithin = sigmaWithinOverall || 1e-10;
 
-        // Calculate short-term indices usando sigma within overall (método JASP)
+        // Calculate short-term indices usando sigma within overall (método seleccionado)
         const cp = (usl - lsl) / (6 * effectiveSigmaWithin);
         const cpk = Math.min(
             (usl - mean) / (3 * effectiveSigmaWithin),
@@ -534,6 +618,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_total').textContent = overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
 
+        // Mostrar el método usado
+        document.getElementById('sigma-method-display').textContent = getMethodName(selectedSigmaMethod);
+
         // Mostrar valores short-term para overall (Process Capability)
         document.getElementById('overall_dev_short').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
         document.getElementById('overall_cp_short').textContent = isFinite(stats.cp) ? stats.cp.toFixed(4) : 'N/A';
@@ -572,6 +659,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const resultClass = test.result === 'Pass' ? 'pass' : 'fail';
         const pVal = test.pValue ? `(p=${test.pValue.toFixed(4)})` : (test.criticalValue ? `(crit=${test.criticalValue.toFixed(4)})` : '');
         return `${test.statistic.toFixed(4)} ${pVal} <span class="${resultClass}">${test.result}</span>`;
+    }
+
+    // Función auxiliar para obtener nombre del método
+    function getMethodName(method) {
+        switch (method) {
+            case 'moving_range': return 'Moving Range (d₂=1.128)';
+            case 'pooled': return 'Pooled Variance';
+            case 'subgroup_std': return 'Subgroup Standard Deviation';
+            default: return method;
+        }
     }
 
     function generateHistogramData(data) {
@@ -1226,6 +1323,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('usl').value = currentExample.usl;
         document.getElementById('target').value = currentExample.target;
 
+        // Establecer el método por defecto (moving range)
+        document.getElementById('sigmaMethod').value = 'moving_range';
+        selectedSigmaMethod = 'moving_range';
+
         currentExample.datasets.forEach(function (ex) {
             currentDatasetId++;
             const newDatasetEl = document.createElement('div');
@@ -1253,12 +1354,16 @@ document.addEventListener('DOMContentLoaded', function () {
         dsContainer.innerHTML = '';
         currentDatasetId = 1;
         overallStats = null;
+        selectedSigmaMethod = 'moving_range';
+
+        // Resetear selector al método por defecto
+        document.getElementById('sigmaMethod').value = 'moving_range';
 
         // Crear primer dataset directamente
         const newDatasetEl = document.createElement('div');
         newDatasetEl.className = 'dataset-container';
         newDatasetEl.dataset.id = currentDatasetId;
-        newDatasetEl.innerHTML = '<div class="dataset-header"><span class="dataset-title">Measurements (Dataset #' + currentDatasetId + ')</span><button type="button" class="remove-dataset-btn" style="display:none;"><i class="fas fa-times"></i> Remove</button></div><textarea class="measurements-input" rows="1" placeholder="Enter values or click \'Fill Example\'" required></textarea>';
+        newDatasetEl.innerHTML = '<div class="dataset-header"><span class="dataset-title">Measurements (Dataset #' + currentDatasetId + ')</span><button type="button" class="remove-dataset-btn" style="display:none;"><i class="fas fa-times"></i> Remove</button></div><textarea class="measurements-input" rows="1" placeholder="Enter values or click \'Load Example\'" required></textarea>';
         dsContainer.appendChild(newDatasetEl);
 
         const removeBtn = newDatasetEl.querySelector('.remove-dataset-btn');
@@ -1282,6 +1387,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_cpk_short').textContent = '-';
         document.getElementById('overall_cpm_short').textContent = '-';
         document.getElementById('overall_dev_short').textContent = '-';
+        document.getElementById('sigma-method-display').textContent = 'Moving Range';
 
         // Resetear intervalos de confianza
         document.getElementById('cp_ci').textContent = '95% CI: -';
@@ -1323,6 +1429,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ["LSL:", document.getElementById('lsl').value],
             ["USL:", document.getElementById('usl').value],
             ["Target:", document.getElementById('target').value],
+            ["Sigma Within Method:", getMethodName(selectedSigmaMethod)],
             [],
             ["Overall (Long-Term) Results"],
             ["Total Points", overallData.length],
@@ -1338,6 +1445,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
             [],
             ["Overall (Short-Term) Results"],
+            ["Sigma Within Method", getMethodName(selectedSigmaMethod)],
             ["Overall Std Dev (short-term)", overallStats.sigmaWithin.toFixed(4)],
             ["Cp (overall short-term)", isFinite(overallStats.cp) ? overallStats.cp.toFixed(4) : 'N/A'],
             ["Cp 95% CI Lower", formatConfidenceInterval(overallStats.cpCI).split('[')[1]?.split(',')[0] || 'N/A'],
