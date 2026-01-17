@@ -570,7 +570,8 @@
         .cpk-chart-container,
         .overall-chart-container,
         .control-chart-container,
-        .overall-control-chart-container {
+        .overall-control-chart-container,
+        .qq-chart-container {
             background: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -829,6 +830,29 @@
             stroke-width: 2;
         }
 
+        /* Estilos para intervalos de confianza */
+        .confidence-interval {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 0.25rem;
+            margin-left: 1.5rem;
+        }
+
+        .confidence-interval-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .confidence-interval-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Estilos para gráficas de normalidad */
+        .qq-chart-container {
+            height: 480px;
+        }
+
         @media (max-width: 768px) {
 
             .results-container,
@@ -876,6 +900,18 @@
                 box-sizing: border-box;
                 overflow-x: hidden;
             }
+
+            .charts-wrapper {
+                flex-direction: column;
+            }
+
+            .charts-wrapper>div {
+                height: 400px;
+            }
+
+            .qq-chart-container {
+                height: 400px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -901,6 +937,10 @@
             .dataset-tabs {
                 overflow-x: auto;
                 flex-wrap: nowrap;
+            }
+
+            .qq-chart-container {
+                height: 350px;
             }
         }
     </style>
@@ -1086,11 +1126,15 @@
                                             class="result-value">-</span></p>
                                     <p><i class="fas fa-ruler-combined"></i> Cp: <span id="cp"
                                             class="result-value">-</span>
+                                    <div class="confidence-interval" id="cp_ci">95% CI: -</div>
                                     </p>
                                     <p><i class="fas fa-tachometer-alt"></i> Cpk: <span id="cpk"
-                                            class="result-value">-</span></p>
+                                            class="result-value">-</span>
+                                    <div class="confidence-interval" id="cpk_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-crosshairs"></i> Cpm: <span id="cpm"
                                             class="result-value">-</span>
+                                    <div class="confidence-interval" id="cpm_ci">95% CI: -</div>
                                     </p>
                                     <p><i class="fas fa-exclamation-triangle"></i> Expected Failures: <span
                                             id="failures_ppm" class="result-value">-</span> ppm</p>
@@ -1141,6 +1185,11 @@
                                         class="chart-watermark">
                                     <canvas id="controlChartCanvas" class="chart-canvas"></canvas>
                                 </div>
+                                <div id="qqChartContainer" class="qq-chart-container" style="display: none;">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="qqChartCanvas" class="chart-canvas"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -1158,15 +1207,25 @@
                                     <p><i class="fas fa-chart-bar"></i> <b>Overall Std Dev (short-term):</b> <span
                                             id="overall_dev_short" class="result-value">-</span></p>
                                     <p><i class="fas fa-ruler-combined"></i> <b>Cp (overall short-term):</b> <span
-                                            id="overall_cp_short" class="result-value">-</span></p>
+                                            id="overall_cp_short" class="result-value">-</span>
+                                    <div class="confidence-interval" id="overall_cp_short_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-tachometer-alt"></i> <b>Cpk (overall short-term):</b> <span
-                                            id="overall_cpk_short" class="result-value">-</span></p>
+                                            id="overall_cpk_short" class="result-value">-</span>
+                                    <div class="confidence-interval" id="overall_cpk_short_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-crosshairs"></i> <b>Cpm (overall short-term):</b> <span
-                                            id="overall_cpm_short" class="result-value">-</span></p>
+                                            id="overall_cpm_short" class="result-value">-</span>
+                                    <div class="confidence-interval" id="overall_cpm_short_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
-                                            class="result-value">-</span></p>
+                                            class="result-value">-</span>
+                                    <div class="confidence-interval" id="overall_pp_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-tachometer-alt"></i> <b>Ppk:</b> <span id="overall_ppk"
-                                            class="result-value">-</span></p>
+                                            class="result-value">-</span>
+                                    <div class="confidence-interval" id="overall_ppk_ci">95% CI: -</div>
+                                    </p>
                                     <p><i class="fas fa-exclamation-triangle"></i> <b>Expected Failures:</b> <span
                                             id="overall_failures" class="result-value">-</span> ppm</p>
                                     <p><i class="fas fa-percentage"></i> <b>Defective Parts:</b> <span
@@ -1217,6 +1276,11 @@
                                         class="chart-watermark">
                                     <canvas id="overallControlChartCanvas" class="chart-canvas"></canvas>
                                 </div>
+                                <div id="overallQQChartContainer" class="qq-chart-container" style="display: none;">
+                                    <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Watermark"
+                                        class="chart-watermark">
+                                    <canvas id="overallQQChartCanvas" class="chart-canvas"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1265,6 +1329,16 @@
                                     \mu}{3\sigma_{\text{overall}}}, \frac{\mu - LSL}{3\sigma_{\text{overall}}} \right)
                                     $$</div>
                             </div>
+                            <div class="formula-item">
+                                <h3>Confidence Interval for Cp</h3>
+                                <div class="katex-content">$$ CI_{Cp} = C_p \pm Z_{\alpha/2} \sqrt{\frac{1}{2(n-1)}} $$
+                                </div>
+                            </div>
+                            <div class="formula-item">
+                                <h3>Confidence Interval for Cpk</h3>
+                                <div class="katex-content">$$ CI_{Cpk} = C_{pk} \pm Z_{\alpha/2} \sqrt{\frac{1}{9n} +
+                                    \frac{C_{pk}^2}{2(n-1)}} $$</div>
+                            </div>
                         </div>
                         <div class="legend">
                             <h3>Capability Legend</h3>
@@ -1281,6 +1355,7 @@
                                     variation)</li>
                                 <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)
                                 </li>
+                                <li><code>CI</code>: Confidence Interval (95% by default)</li>
                             </ul>
                         </div>
                     </div>

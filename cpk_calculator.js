@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
         cpkChart: null,
         controlChart: null,
         overallChart: null,
-        overallControlChart: null
+        overallControlChart: null,
+        qqChart: null,
+        overallQQChart: null
     };
 
     let exampleIndex = 0;
@@ -228,6 +230,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const zLowerLT = (lsl - mean) / sigmaOverall;
         const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
 
+        // Calcular intervalos de confianza
+        const confidenceLevel = 0.95;
+        const cpCI = calculateCpConfidenceInterval(cp, n, confidenceLevel);
+        const cpkCI = calculateCpkConfidenceInterval(cpk, n, confidenceLevel);
+        const cpmCI = calculateCpmConfidenceInterval(cpm, n, confidenceLevel);
+        const ppCI = calculateCpConfidenceInterval(pp, n, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceInterval(ppk, n, confidenceLevel);
+
         return {
             mean: mean,
             sigmaWithin: sigmaWithin,
@@ -244,8 +254,71 @@ document.addEventListener('DOMContentLoaded', function () {
             defective_percentage_lt: probDefectiveLT * 100,
             shapiro: shapiroWilkTest(data),
             kolmogorov: kolmogorovSmirnovTest(data),
-            anderson: andersonDarlingTest(data)
+            anderson: andersonDarlingTest(data),
+            // Intervalos de confianza
+            cpCI: cpCI,
+            cpkCI: cpkCI,
+            cpmCI: cpmCI,
+            ppCI: ppCI,
+            ppkCI: ppkCI
         };
+    }
+
+    // ====================================================================
+    // FUNCIONES PARA INTERVALOS DE CONFIANZA
+    // ====================================================================
+
+    function calculateCpConfidenceInterval(cp, n, confidenceLevel) {
+        if (n <= 1 || !isFinite(cp) || cp === 0) {
+            return { lower: NaN, upper: NaN };
+        }
+
+        const alpha = 1 - confidenceLevel;
+        const z = Math.abs(normalQuantile(1 - alpha / 2));
+        const se = cp * Math.sqrt(1 / (2 * (n - 1)));
+
+        return {
+            lower: Math.max(0, cp - z * se),
+            upper: cp + z * se
+        };
+    }
+
+    function calculateCpkConfidenceInterval(cpk, n, confidenceLevel) {
+        if (n <= 1 || !isFinite(cpk)) {
+            return { lower: NaN, upper: NaN };
+        }
+
+        const alpha = 1 - confidenceLevel;
+        const z = Math.abs(normalQuantile(1 - alpha / 2));
+        const se = Math.sqrt(1 / (9 * n) + Math.pow(cpk, 2) / (2 * (n - 1)));
+
+        return {
+            lower: Math.max(0, cpk - z * se),
+            upper: cpk + z * se
+        };
+    }
+
+    function calculateCpmConfidenceInterval(cpm, n, confidenceLevel) {
+        if (n <= 1 || !isFinite(cpm) || cpm === 0) {
+            return { lower: NaN, upper: NaN };
+        }
+
+        // Aproximación para Cpm (similar a Cp pero con más incertidumbre)
+        const alpha = 1 - confidenceLevel;
+        const z = Math.abs(normalQuantile(1 - alpha / 2));
+        const se = cpm * Math.sqrt(1 / (n - 1));
+
+        return {
+            lower: Math.max(0, cpm - z * se),
+            upper: cpm + z * se
+        };
+    }
+
+    function formatConfidenceInterval(ci) {
+        if (!ci || isNaN(ci.lower) || isNaN(ci.upper)) {
+            return '[N/A]';
+        }
+        return `[${ci.lower.toFixed(4)}, ${ci.upper.toFixed(4)}]`;
     }
 
     function displayResults(dataset, index) {
@@ -260,8 +333,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('mean').textContent = isFinite(dataset.mean) ? dataset.mean.toFixed(4) : 'N/A';
         document.getElementById('deviation').textContent = isFinite(dataset.sigmaWithin) ? dataset.sigmaWithin.toFixed(4) : 'N/A';
         document.getElementById('cp').textContent = isFinite(dataset.cp) ? dataset.cp.toFixed(4) : 'N/A';
+        document.getElementById('cp_ci').textContent = `95% CI: ${formatConfidenceInterval(dataset.cpCI)}`;
         document.getElementById('cpk').textContent = isFinite(dataset.cpk) ? dataset.cpk.toFixed(4) : 'N/A';
+        document.getElementById('cpk_ci').textContent = `95% CI: ${formatConfidenceInterval(dataset.cpkCI)}`;
         document.getElementById('cpm').textContent = isFinite(dataset.cpm) ? dataset.cpm.toFixed(4) : 'N/A';
+        document.getElementById('cpm_ci').textContent = `95% CI: ${formatConfidenceInterval(dataset.cpmCI)}`;
         document.getElementById('failures_ppm').textContent = dataset.failures_ppm.toFixed(2);
         document.getElementById('defective_percentage').textContent = dataset.defective_percentage.toFixed(4);
 
@@ -272,6 +348,10 @@ document.addEventListener('DOMContentLoaded', function () {
         plotChart(dataset.mean, dataset.sigmaWithin, parseFloat(document.getElementById('lsl').value),
             parseFloat(document.getElementById('usl').value), dataset.measurements, index);
         createControlChart(dataset, index);
+        createQQPlot(dataset.measurements, 'qqChartCanvas', 'Q-Q Plot - Dataset #' + (index + 1));
+
+        // Mostrar el contenedor del gráfico Q-Q
+        document.getElementById('qqChartContainer').style.display = 'block';
     }
 
     function displayOverallResults(stats) {
@@ -290,11 +370,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Mostrar valores short-term para overall
         document.getElementById('overall_dev_short').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
         document.getElementById('overall_cp_short').textContent = isFinite(stats.cp) ? stats.cp.toFixed(4) : 'N/A';
+        document.getElementById('overall_cp_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpCI)}`;
         document.getElementById('overall_cpk_short').textContent = isFinite(stats.cpk) ? stats.cpk.toFixed(4) : 'N/A';
+        document.getElementById('overall_cpk_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpkCI)}`;
         document.getElementById('overall_cpm_short').textContent = isFinite(stats.cpm) ? stats.cpm.toFixed(4) : 'N/A';
+        document.getElementById('overall_cpm_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpmCI)}`;
 
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
+        document.getElementById('overall_pp_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppCI)}`;
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
+        document.getElementById('overall_ppk_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppkCI)}`;
         document.getElementById('overall_failures').textContent = stats.failures_ppm_lt.toFixed(2);
         document.getElementById('overall_defective').textContent = stats.defective_percentage_lt.toFixed(4);
 
@@ -305,6 +390,10 @@ document.addEventListener('DOMContentLoaded', function () {
         plotOverallChart(stats.mean, stats.sigmaOverall, parseFloat(document.getElementById('lsl').value),
             parseFloat(document.getElementById('usl').value), overallData);
         createOverallControlChart(stats);
+        createQQPlot(overallData, 'overallQQChartCanvas', 'Overall Q-Q Plot');
+
+        // Mostrar el contenedor del gráfico Q-Q
+        document.getElementById('overallQQChartContainer').style.display = 'block';
     }
 
     function formatNormalityResult(test) {
@@ -364,6 +453,120 @@ document.addEventListener('DOMContentLoaded', function () {
             curvePoints.push({ x: x, y: y * scaleFactor });
         }
         return curvePoints;
+    }
+
+    // ====================================================================
+    // FUNCIÓN PARA GRÁFICO Q-Q PLOT
+    // ====================================================================
+
+    function createQQPlot(data, canvasId, title) {
+        if (chartInstances[canvasId === 'qqChartCanvas' ? 'qqChart' : 'overallQQChart']) {
+            chartInstances[canvasId === 'qqChartCanvas' ? 'qqChart' : 'overallQQChart'].destroy();
+        }
+
+        const sortedData = data.slice().sort((a, b) => a - b);
+        const n = sortedData.length;
+
+        // Calcular cuantiles teóricos
+        const theoreticalQuantiles = [];
+        for (let i = 0; i < n; i++) {
+            // Usar la fórmula de Blom para posiciones de trazado
+            const p = (i + 1 - 0.375) / (n + 0.25);
+            theoreticalQuantiles.push(normalQuantile(p));
+        }
+
+        // Calcular media y desviación estándar para la línea de referencia
+        const mean = sortedData.reduce((a, b) => a + b, 0) / n;
+        const stdDev = Math.sqrt(sortedData.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1));
+
+        // Calcular puntos para la línea de referencia (y = mean + stdDev * x)
+        const minTheoretical = Math.min(...theoreticalQuantiles);
+        const maxTheoretical = Math.max(...theoreticalQuantiles);
+        const referenceLine = [
+            { x: minTheoretical, y: mean + stdDev * minTheoretical },
+            { x: maxTheoretical, y: mean + stdDev * maxTheoretical }
+        ];
+
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Data Points',
+                        data: theoreticalQuantiles.map((x, i) => ({ x, y: sortedData[i] })),
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Reference Line',
+                        data: referenceLine,
+                        type: 'line',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        showLine: true,
+                        tension: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: title,
+                        font: { size: 16 }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                if (context.dataset.label === 'Data Points') {
+                                    return `Theoretical: ${context.parsed.x.toFixed(4)}, Sample: ${context.parsed.y.toFixed(4)}`;
+                                }
+                                return context.dataset.label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Theoretical Quantiles'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Sample Quantiles'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Guardar la instancia del gráfico
+        if (canvasId === 'qqChartCanvas') {
+            chartInstances.qqChart = chart;
+        } else {
+            chartInstances.overallQQChart = chart;
+        }
+
+        return chart;
     }
 
     function plotChart(mean, deviation, lsl, usl, data, index) {
@@ -906,12 +1109,24 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('short-term-charts-wrapper').style.display = 'none';
         document.getElementById('long-term-charts-wrapper').style.display = 'none';
         document.getElementById('datasetTabsContainer').style.display = 'none';
+        document.getElementById('qqChartContainer').style.display = 'none';
+        document.getElementById('overallQQChartContainer').style.display = 'none';
 
         // Resetear los nuevos valores overall
         document.getElementById('overall_cp_short').textContent = '-';
         document.getElementById('overall_cpk_short').textContent = '-';
         document.getElementById('overall_cpm_short').textContent = '-';
         document.getElementById('overall_dev_short').textContent = '-';
+
+        // Resetear intervalos de confianza
+        document.getElementById('cp_ci').textContent = '95% CI: -';
+        document.getElementById('cpk_ci').textContent = '95% CI: -';
+        document.getElementById('cpm_ci').textContent = '95% CI: -';
+        document.getElementById('overall_cp_short_ci').textContent = '95% CI: -';
+        document.getElementById('overall_cpk_short_ci').textContent = '95% CI: -';
+        document.getElementById('overall_cpm_short_ci').textContent = '95% CI: -';
+        document.getElementById('overall_pp_ci').textContent = '95% CI: -';
+        document.getElementById('overall_ppk_ci').textContent = '95% CI: -';
 
         document.getElementById('exportBtn').disabled = true;
 
@@ -923,7 +1138,9 @@ document.addEventListener('DOMContentLoaded', function () {
             cpkChart: null,
             controlChart: null,
             overallChart: null,
-            overallControlChart: null
+            overallControlChart: null,
+            qqChart: null,
+            overallQQChart: null
         };
     }
 
@@ -947,15 +1164,25 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Overall Mean", overallStats.mean.toFixed(4)],
             ["Overall Std Dev (long-term)", overallStats.sigmaOverall.toFixed(4)],
             ["Pp", overallStats.pp.toFixed(4)],
+            ["Pp 95% CI Lower", formatConfidenceInterval(overallStats.ppCI).split('[')[1]?.split(',')[0] || 'N/A'],
+            ["Pp 95% CI Upper", formatConfidenceInterval(overallStats.ppCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Ppk", overallStats.ppk.toFixed(4)],
+            ["Ppk 95% CI Lower", formatConfidenceInterval(overallStats.ppkCI).split('[')[1]?.split(',')[0] || 'N/A'],
+            ["Ppk 95% CI Upper", formatConfidenceInterval(overallStats.ppkCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
             [],
             ["Overall (Short-Term) Results"],
             ["Overall Std Dev (short-term)", overallStats.sigmaWithin.toFixed(4)],
             ["Cp (overall short-term)", isFinite(overallStats.cp) ? overallStats.cp.toFixed(4) : 'N/A'],
+            ["Cp 95% CI Lower", formatConfidenceInterval(overallStats.cpCI).split('[')[1]?.split(',')[0] || 'N/A'],
+            ["Cp 95% CI Upper", formatConfidenceInterval(overallStats.cpCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Cpk (overall short-term)", isFinite(overallStats.cpk) ? overallStats.cpk.toFixed(4) : 'N/A'],
+            ["Cpk 95% CI Lower", formatConfidenceInterval(overallStats.cpkCI).split('[')[1]?.split(',')[0] || 'N/A'],
+            ["Cpk 95% CI Upper", formatConfidenceInterval(overallStats.cpkCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Cpm (overall short-term)", isFinite(overallStats.cpm) ? overallStats.cpm.toFixed(4) : 'N/A'],
+            ["Cpm 95% CI Lower", formatConfidenceInterval(overallStats.cpmCI).split('[')[1]?.split(',')[0] || 'N/A'],
+            ["Cpm 95% CI Upper", formatConfidenceInterval(overallStats.cpmCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Expected Failures (ppm)", overallStats.failures_ppm.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage.toFixed(4)],
             [],
@@ -965,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Anderson-Darling", overallStats.anderson.result + ' (A²=' + overallStats.anderson.statistic.toFixed(4) + ', crit=' + (overallStats.anderson.criticalValue ? overallStats.anderson.criticalValue.toFixed(4) : 'N/A') + ')'],
             [],
             ["Individual Dataset Results"],
-            ["Dataset", "Mean", "Std Dev (short-term)", "Cp", "Cpk", "Cpm", "Failures (ppm)", "Defective",
+            ["Dataset", "Mean", "Std Dev (short-term)", "Cp", "Cp 95% CI", "Cpk", "Cpk 95% CI", "Cpm", "Cpm 95% CI", "Failures (ppm)", "Defective",
                 "Shapiro-Wilk Result", "Shapiro-Wilk Statistic", "Shapiro-Wilk p-value",
                 "Kolmogorov Result", "Kolmogorov Statistic", "Kolmogorov p-value",
                 "Anderson-Darling Result", "Anderson-Darling Statistic", "Anderson-Darling Critical Value"]
@@ -977,8 +1204,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 d.mean.toFixed(4),
                 d.sigmaWithin.toFixed(4),
                 isFinite(d.cp) ? d.cp.toFixed(4) : 'N/A',
+                formatConfidenceInterval(d.cpCI),
                 isFinite(d.cpk) ? d.cpk.toFixed(4) : 'N/A',
+                formatConfidenceInterval(d.cpkCI),
                 isFinite(d.cpm) ? d.cpm.toFixed(4) : 'N/A',
+                formatConfidenceInterval(d.cpmCI),
                 d.failures_ppm.toFixed(2),
                 d.defective_percentage.toFixed(4),
                 d.shapiro.result,
