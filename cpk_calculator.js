@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let datasets = [];
     let currentDatasetId = 1;
     let overallData = [];
-    let selectedSigmaMethod = 'moving_range'; // Método por defecto
+    let sigmaWithinMethod = 'Automatic Selection';
     let chartInstances = {
         cpkChart: null,
         controlChart: null,
@@ -72,6 +72,41 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     ];
 
+    // Tablas de constantes d2 y c4 para diferentes tamaños de subgrupo
+    const d2Table = {
+        2: 1.128, 3: 1.693, 4: 2.059, 5: 2.326, 6: 2.534, 7: 2.704, 8: 2.847, 9: 2.970, 10: 3.078,
+        11: 3.173, 12: 3.258, 13: 3.336, 14: 3.407, 15: 3.472, 16: 3.532, 17: 3.588, 18: 3.640,
+        19: 3.689, 20: 3.735, 21: 3.778, 22: 3.819, 23: 3.858, 24: 3.895, 25: 3.931
+    };
+
+    const c4Table = {
+        2: 0.7979, 3: 0.8862, 4: 0.9213, 5: 0.9400, 6: 0.9515, 7: 0.9594, 8: 0.9650, 9: 0.9693,
+        10: 0.9727, 11: 0.9754, 12: 0.9776, 13: 0.9794, 14: 0.9810, 15: 0.9823, 16: 0.9835,
+        17: 0.9845, 18: 0.9854, 19: 0.9862, 20: 0.9869, 21: 0.9876, 22: 0.9882, 23: 0.9887,
+        24: 0.9892, 25: 0.9896
+    };
+
+    // Función para obtener d2 según tamaño del subgrupo
+    function getD2(n) {
+        if (n < 2) return 1.0;
+        if (n > 25) {
+            // Aproximación para n > 25 usando fórmula de Harter
+            return n / Math.sqrt(n - 1);
+        }
+        return d2Table[n] || 1.0;
+    }
+
+    // Función para obtener c4 según tamaño del subgrupo
+    function getC4(n) {
+        if (n < 2) return 1.0;
+        if (n > 25) {
+            // Aproximación para n > 25 usando fórmula Stirling
+            const t = 1.0 / (4 * (n - 1));
+            return 1.0 - t;
+        }
+        return c4Table[n] || 1.0;
+    }
+
     // Event Listeners
     document.getElementById('cpkForm').addEventListener('submit', handleFormSubmit);
 
@@ -95,14 +130,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exportBtn').addEventListener('click', exportToExcel);
     document.getElementById('addDatasetBtn').addEventListener('click', addNewDataset);
 
-    // FUNCIÓN PRINCIPAL CORREGIDA
+    // FUNCIÓN PRINCIPAL CON SELECCIÓN AUTOMÁTICA DE MÉTODO
     function handleFormSubmit(e) {
         e.preventDefault();
 
         const lsl = parseFloat(document.getElementById('lsl').value);
         const usl = parseFloat(document.getElementById('usl').value);
         const target = parseFloat(document.getElementById('target').value);
-        selectedSigmaMethod = document.getElementById('sigmaMethod').value;
 
         if (isNaN(lsl) || isNaN(usl) || isNaN(target) || usl <= lsl) {
             alert('Please enter valid LSL, USL, and Target values. USL must be greater than LSL.');
@@ -132,27 +166,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Calcular sigma within overall según el método seleccionado
-        let sigmaWithinOverall;
-
-        if (datasets.length === 1) {
-            // Si solo hay un dataset, usar su sigma within
-            sigmaWithinOverall = datasets[0].sigmaWithin;
-        } else {
-            switch (selectedSigmaMethod) {
-                case 'moving_range':
-                    sigmaWithinOverall = calculateMovingRangeSigmaWithin(datasets);
-                    break;
-                case 'pooled':
-                    sigmaWithinOverall = calculatePooledSigmaWithin(datasets);
-                    break;
-                case 'subgroup_std':
-                    sigmaWithinOverall = calculateSubgroupStdSigmaWithin(datasets);
-                    break;
-                default:
-                    sigmaWithinOverall = calculateMovingRangeSigmaWithin(datasets);
-            }
-        }
+        // Calcular sigma within overall AUTOMÁTICAMENTE según el tamaño de los subgrupos
+        const sigmaWithinOverallResult = calculateSigmaWithinOverallAuto(datasets);
+        const sigmaWithinOverall = sigmaWithinOverallResult.value;
+        sigmaWithinMethod = sigmaWithinOverallResult.method;
 
         // Calcular estadísticas overall
         if (overallData.length >= 2) {
@@ -161,7 +178,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 lsl,
                 usl,
                 target,
-                sigmaWithinOverall
+                sigmaWithinOverall,
+                sigmaWithinMethod
             );
         } else {
             overallStats = null;
@@ -176,17 +194,115 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('exportBtn').disabled = false;
     }
 
-    // Función para calcular sigma within con Moving Range combinado
-    function calculateMovingRangeSigmaWithin(datasets) {
-        // Calcular moving ranges combinados de todos los datasets
-        let allMovingRanges = [];
-        let totalDataPoints = 0;
+    // ====================================================================
+    // SELECCIÓN AUTOMÁTICA DEL MÉTODO PARA SIGMA WITHIN
+    // ====================================================================
+
+    function calculateSigmaWithinOverallAuto(datasets) {
+        // Si solo hay un dataset, usar Moving Range (MR/d₂)
+        if (datasets.length === 1) {
+            return {
+                value: calculateMovingRangeSigmaWithin(datasets),
+                method: 'Moving Range (MR/d₂) - Single dataset'
+            };
+        }
+
+        // Para múltiples datasets (subgrupos)
+        // Verificar si todos los subgrupos tienen el mismo tamaño y son ≤ 8
+        const firstSize = datasets[0].measurements.length;
+        const allSameSize = datasets.every(d => d.measurements.length === firstSize);
+        const allSmall = firstSize <= 8;
+
+        if (allSameSize && allSmall) {
+            // Usar R-bar (R̄/d₂) - método tradicional para subgrupos pequeños iguales
+            return {
+                value: calculateRBarSigmaWithin(datasets),
+                method: `R-bar (R̄/d₂) - Equal subgroups (n=${firstSize} ≤ 8)`
+            };
+        } else {
+            // Usar Pooled SD con corrección c4 - método estándar moderno
+            return {
+                value: calculatePooledSigmaWithC4(datasets),
+                method: 'Pooled SD with c₄ correction - Variable subgroup sizes or n>8'
+            };
+        }
+    }
+
+    // 1. Método R-bar (para subgrupos del mismo tamaño ≤ 8)
+    function calculateRBarSigmaWithin(datasets) {
+        // Calcular el rango (max-min) para cada dataset (subgrupo)
+        let ranges = [];
+        let subgroupSizes = [];
 
         datasets.forEach(dataset => {
             const data = dataset.measurements;
-            totalDataPoints += data.length;
+            const n = data.length;
+            if (n >= 2) {
+                const maxVal = Math.max(...data);
+                const minVal = Math.min(...data);
+                ranges.push(maxVal - minVal);
+                subgroupSizes.push(n);
+            }
+        });
 
-            // Calcular moving ranges para este dataset
+        if (ranges.length === 0) return 0;
+
+        // Calcular el promedio de rangos (R-bar)
+        const Rbar = ranges.reduce((sum, r) => sum + r, 0) / ranges.length;
+
+        // Usar el tamaño común (ya verificado que son iguales)
+        const n = subgroupSizes[0];
+
+        // Obtener d2 para el tamaño del subgrupo
+        const d2 = getD2(n);
+
+        // Sigma within = R-bar / d2
+        return Rbar / d2;
+    }
+
+    // 2. Método Pooled WITH c4 correction (MÉTODO EXACTO DE JASP PARA SUBGRUPOS)
+    function calculatePooledSigmaWithC4(datasets) {
+        // Para coincidir con JASP cuando hay múltiples subgrupos (columnas)
+        // JASP calcula la desviación estándar global y luego aplica corrección c4
+
+        if (datasets.length === 0) return 0;
+
+        // Combinar todos los datos de todos los datasets
+        let allData = [];
+        let totalN = 0;
+
+        datasets.forEach(dataset => {
+            allData.push(...dataset.measurements);
+            totalN += dataset.measurements.length;
+        });
+
+        if (totalN < 2) return 0;
+
+        // Calcular media global
+        const globalMean = allData.reduce((a, b) => a + b, 0) / totalN;
+
+        // Calcular varianza global (sin dividir por subgrupos)
+        const globalVariance = allData.reduce((sum, val) => {
+            return sum + Math.pow(val - globalMean, 2);
+        }, 0) / (totalN - 1);
+
+        const globalStdDev = Math.sqrt(globalVariance);
+
+        // Aplicar corrección c4 al tamaño total de la muestra
+        const c4 = getC4(totalN);
+
+        return globalStdDev / c4;
+    }
+
+    // 3. Método Moving Range (para datos individuales, no agrupados)
+    function calculateMovingRangeSigmaWithin(datasets) {
+        // Calcular moving ranges combinados de todos los datasets
+        let allMovingRanges = [];
+
+        datasets.forEach(dataset => {
+            const data = dataset.measurements;
+
+            // Calcular moving ranges para este dataset (longitud 2 como JASP/Minitab)
             for (let i = 1; i < data.length; i++) {
                 allMovingRanges.push(Math.abs(data[i] - data[i - 1]));
             }
@@ -201,74 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return mrBar / 1.128;
     }
 
-    // Nueva función para pooled variance
-    function calculatePooledSigmaWithin(datasets) {
-        let totalSS = 0;  // Suma de cuadrados total
-        let totalDF = 0;  // Grados de libertad total
-
-        datasets.forEach(dataset => {
-            const n = dataset.measurements.length;
-            if (n > 1) {
-                // Calcular varianza within para este dataset
-                const mean = dataset.measurements.reduce((a, b) => a + b) / n;
-                const ss = dataset.measurements.reduce((sum, val) => {
-                    return sum + Math.pow(val - mean, 2);
-                }, 0);
-
-                totalSS += ss;
-                totalDF += (n - 1);
-            }
-        });
-
-        if (totalDF === 0) return 0;
-
-        // Varianza pooled (media ponderada de varianzas)
-        const pooledVariance = totalSS / totalDF;
-
-        return Math.sqrt(pooledVariance);
-    }
-
-    // Función para calcular sigma within usando desviación estándar dentro de cada subgrupo
-    function calculateSubgroupStdSigmaWithin(datasets) {
-        if (datasets.length === 0) return 0;
-
-        let totalVariance = 0;
-        let totalDF = 0;
-
-        datasets.forEach(dataset => {
-            const n = dataset.measurements.length;
-            if (n > 1) {
-                // Calcular varianza dentro de este subgrupo
-                const mean = dataset.measurements.reduce((a, b) => a + b) / n;
-                const ss = dataset.measurements.reduce((sum, val) => {
-                    return sum + Math.pow(val - mean, 2);
-                }, 0);
-
-                totalVariance += ss;
-                totalDF += (n - 1);
-            }
-        });
-
-        if (totalDF === 0) return 0;
-
-        // Calcular desviación estándar combinada (raíz de la varianza promedio)
-        const averageVariance = totalVariance / totalDF;
-        return Math.sqrt(averageVariance);
-    }
-
-    // Función para desviación estándar simple
-    function calculateOverallSigma(data) {
-        const n = data.length;
-        if (n < 2) return 0;
-
-        const mean = data.reduce((a, b) => a + b) / n;
-        const variance = data.reduce((sum, val) => {
-            return sum + Math.pow(val - mean, 2);
-        }, 0) / (n - 1);
-
-        return Math.sqrt(variance);
-    }
-
     function parseMeasurements(text) {
         return text.split(/[\s,;]+/).map(function (val) {
             return parseFloat(val.trim());
@@ -278,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Función para calcular estadísticas de un dataset individual
+    // SIEMPRE usa Moving Range para datasets individuales
     function calculateDatasetStatistics(data, lsl, usl, target) {
         if (data.length < 2) return null;
         const n = data.length;
@@ -333,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const mean = data.reduce(function (a, b) { return a + b; }, 0) / n;
 
-        // Calcular sigma within usando moving ranges (método exacto)
+        // PARA DATASETS INDIVIDUALES: SIEMPRE usar Moving Range (MR/d₂)
         const movingRanges = [];
         for (let i = 1; i < data.length; i++) {
             movingRanges.push(Math.abs(data[i] - data[i - 1]));
@@ -345,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // Calcular índices short-term usando sigma within
+        // Calcular índices short-term usando sigma within (Moving Range)
         const cp = (usl - lsl) / (6 * sigmaWithin);
         const cpk = Math.min((usl - mean) / (3 * sigmaWithin), (mean - lsl) / (3 * sigmaWithin));
         const cpm = (usl - lsl) / (6 * Math.sqrt(Math.pow(sigmaWithin, 2) + Math.pow(mean - target, 2)));
@@ -396,8 +445,8 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    // Función para calcular estadísticas overall - CORREGIDA
-    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall) {
+    // Función para calcular estadísticas overall
+    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall, sigmaMethodUsed) {
         if (data.length < 2) return null;
         const n = data.length;
 
@@ -414,15 +463,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     mean: mean,
                     sigmaWithin: 0,
                     sigmaOverall: 0,
-                    cp: Infinity,
-                    cpk: Infinity,
-                    cpm: onTarget ? Infinity : 0,
+                    cp_within: Infinity,
+                    cpk_within: Infinity,
                     pp: Infinity,
                     ppk: Infinity,
                     failures_ppm: 0,
                     defective_percentage: 0,
                     failures_ppm_lt: 0,
                     defective_percentage_lt: 0,
+                    sigmaMethod: sigmaMethodUsed,
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
@@ -432,15 +481,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     mean: mean,
                     sigmaWithin: 0,
                     sigmaOverall: 0,
-                    cp: 0,
-                    cpk: 0,
-                    cpm: 0,
+                    cp_within: 0,
+                    cpk_within: 0,
                     pp: 0,
                     ppk: 0,
                     failures_ppm: 1000000,
                     defective_percentage: 100,
                     failures_ppm_lt: 1000000,
                     defective_percentage_lt: 100,
+                    sigmaMethod: sigmaMethodUsed,
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
@@ -454,63 +503,48 @@ document.addEventListener('DOMContentLoaded', function () {
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // USAR el sigma within overall proporcionado (calculado con el método seleccionado)
-        // Si sigmaWithinOverall es 0, usar un valor muy pequeño para evitar división por cero
-        const effectiveSigmaWithin = sigmaWithinOverall || 1e-10;
-
-        // Calculate short-term indices usando sigma within overall (método seleccionado)
-        const cp = (usl - lsl) / (6 * effectiveSigmaWithin);
-        const cpk = Math.min(
-            (usl - mean) / (3 * effectiveSigmaWithin),
-            (mean - lsl) / (3 * effectiveSigmaWithin)
+        // Calcular índices within usando sigma within overall
+        const cp_within = (usl - lsl) / (6 * sigmaWithinOverall);
+        const cpk_within = Math.min(
+            (usl - mean) / (3 * sigmaWithinOverall),
+            (mean - lsl) / (3 * sigmaWithinOverall)
         );
-        const cpm = (usl - lsl) / (6 * Math.sqrt(
-            Math.pow(effectiveSigmaWithin, 2) + Math.pow(mean - target, 2)
-        ));
 
-        // Calculate long-term indices usando sigma overall
+        // Calcular índices long-term (performance) usando sigma overall
         const pp = (usl - lsl) / (6 * sigmaOverall);
         const ppk = Math.min(
             (usl - mean) / (3 * sigmaOverall),
             (mean - lsl) / (3 * sigmaOverall)
         );
 
-        // Cálculo de defectos (short-term y long-term)
-        const zUpperST = (usl - mean) / effectiveSigmaWithin;
-        const zLowerST = (lsl - mean) / effectiveSigmaWithin;
-        const probDefectiveST = (1 - normalCDF(zUpperST)) + normalCDF(zLowerST);
-
+        // Cálculo de defectos (long-term)
         const zUpperLT = (usl - mean) / sigmaOverall;
         const zLowerLT = (lsl - mean) / sigmaOverall;
         const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
 
         // Calcular intervalos de confianza
         const confidenceLevel = 0.95;
-        const cpCI = calculateCpConfidenceInterval(cp, n, confidenceLevel);
-        const cpkCI = calculateCpkConfidenceInterval(cpk, n, confidenceLevel);
-        const cpmCI = calculateCpmConfidenceInterval(cpm, n, confidenceLevel);
+        const cp_within_ci = calculateCpConfidenceInterval(cp_within, n, confidenceLevel);
+        const cpk_within_ci = calculateCpkConfidenceInterval(cpk_within, n, confidenceLevel);
         const ppCI = calculateCpConfidenceInterval(pp, n, confidenceLevel);
         const ppkCI = calculateCpkConfidenceInterval(ppk, n, confidenceLevel);
 
         return {
             mean: mean,
-            sigmaWithin: effectiveSigmaWithin,
+            sigmaWithin: sigmaWithinOverall,
             sigmaOverall: sigmaOverall,
-            cp: cp,
-            cpk: cpk,
-            cpm: cpm,
+            cp_within: cp_within,
+            cpk_within: cpk_within,
             pp: pp,
             ppk: ppk,
-            failures_ppm: probDefectiveST * 1e6,
-            defective_percentage: probDefectiveST * 100,
             failures_ppm_lt: probDefectiveLT * 1e6,
             defective_percentage_lt: probDefectiveLT * 100,
+            sigmaMethod: sigmaMethodUsed,
             shapiro: shapiroWilkTest(data),
             kolmogorov: kolmogorovSmirnovTest(data),
             anderson: andersonDarlingTest(data),
-            cpCI: cpCI,
-            cpkCI: cpkCI,
-            cpmCI: cpmCI,
+            cp_within_ci: cp_within_ci,
+            cpk_within_ci: cpk_within_ci,
             ppCI: ppCI,
             ppkCI: ppkCI
         };
@@ -618,17 +652,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_total').textContent = overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
 
-        // Mostrar el método usado
-        document.getElementById('sigma-method-display').textContent = getMethodName(selectedSigmaMethod);
-
-        // Mostrar valores short-term para overall (Process Capability)
-        document.getElementById('overall_dev_short').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
-        document.getElementById('overall_cp_short').textContent = isFinite(stats.cp) ? stats.cp.toFixed(4) : 'N/A';
-        document.getElementById('overall_cp_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpCI)}`;
-        document.getElementById('overall_cpk_short').textContent = isFinite(stats.cpk) ? stats.cpk.toFixed(4) : 'N/A';
-        document.getElementById('overall_cpk_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpkCI)}`;
-        document.getElementById('overall_cpm_short').textContent = isFinite(stats.cpm) ? stats.cpm.toFixed(4) : 'N/A';
-        document.getElementById('overall_cpm_short_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpmCI)}`;
+        // Mostrar valores Process Performance (Within)
+        document.getElementById('overall_method').textContent = stats.sigmaMethod;
+        document.getElementById('overall_sigma_within').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
+        document.getElementById('overall_cp_within').textContent = isFinite(stats.cp_within) ? stats.cp_within.toFixed(4) : 'N/A';
+        document.getElementById('overall_cp_within_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cp_within_ci)}`;
+        document.getElementById('overall_cpk_within').textContent = isFinite(stats.cpk_within) ? stats.cpk_within.toFixed(4) : 'N/A';
+        document.getElementById('overall_cpk_within_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpk_within_ci)}`;
 
         // Mostrar valores long-term (Process Performance)
         document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
@@ -659,16 +689,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const resultClass = test.result === 'Pass' ? 'pass' : 'fail';
         const pVal = test.pValue ? `(p=${test.pValue.toFixed(4)})` : (test.criticalValue ? `(crit=${test.criticalValue.toFixed(4)})` : '');
         return `${test.statistic.toFixed(4)} ${pVal} <span class="${resultClass}">${test.result}</span>`;
-    }
-
-    // Función auxiliar para obtener nombre del método
-    function getMethodName(method) {
-        switch (method) {
-            case 'moving_range': return 'Moving Range (d₂=1.128)';
-            case 'pooled': return 'Pooled Variance';
-            case 'subgroup_std': return 'Subgroup Standard Deviation';
-            default: return method;
-        }
     }
 
     function generateHistogramData(data) {
@@ -1323,10 +1343,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('usl').value = currentExample.usl;
         document.getElementById('target').value = currentExample.target;
 
-        // Establecer el método por defecto (moving range)
-        document.getElementById('sigmaMethod').value = 'moving_range';
-        selectedSigmaMethod = 'moving_range';
-
         currentExample.datasets.forEach(function (ex) {
             currentDatasetId++;
             const newDatasetEl = document.createElement('div');
@@ -1354,10 +1370,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dsContainer.innerHTML = '';
         currentDatasetId = 1;
         overallStats = null;
-        selectedSigmaMethod = 'moving_range';
-
-        // Resetear selector al método por defecto
-        document.getElementById('sigmaMethod').value = 'moving_range';
+        sigmaWithinMethod = 'Automatic Selection';
 
         // Crear primer dataset directamente
         const newDatasetEl = document.createElement('div');
@@ -1381,23 +1394,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('datasetTabsContainer').style.display = 'none';
         document.getElementById('qqChartContainer').style.display = 'none';
         document.getElementById('overallQQChartContainer').style.display = 'none';
-
-        // Resetear los nuevos valores overall
-        document.getElementById('overall_cp_short').textContent = '-';
-        document.getElementById('overall_cpk_short').textContent = '-';
-        document.getElementById('overall_cpm_short').textContent = '-';
-        document.getElementById('overall_dev_short').textContent = '-';
-        document.getElementById('sigma-method-display').textContent = 'Moving Range';
-
-        // Resetear intervalos de confianza
-        document.getElementById('cp_ci').textContent = '95% CI: -';
-        document.getElementById('cpk_ci').textContent = '95% CI: -';
-        document.getElementById('cpm_ci').textContent = '95% CI: -';
-        document.getElementById('overall_cp_short_ci').textContent = '95% CI: -';
-        document.getElementById('overall_cpk_short_ci').textContent = '95% CI: -';
-        document.getElementById('overall_cpm_short_ci').textContent = '95% CI: -';
-        document.getElementById('overall_pp_ci').textContent = '95% CI: -';
-        document.getElementById('overall_ppk_ci').textContent = '95% CI: -';
 
         document.getElementById('exportBtn').disabled = true;
 
@@ -1429,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ["LSL:", document.getElementById('lsl').value],
             ["USL:", document.getElementById('usl').value],
             ["Target:", document.getElementById('target').value],
-            ["Sigma Within Method:", getMethodName(selectedSigmaMethod)],
+            ["Sigma Within Method (Automatic):", sigmaWithinMethod],
             [],
             ["Overall (Long-Term) Results"],
             ["Total Points", overallData.length],
@@ -1443,21 +1439,6 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Ppk 95% CI Upper", formatConfidenceInterval(overallStats.ppkCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
-            [],
-            ["Overall (Short-Term) Results"],
-            ["Sigma Within Method", getMethodName(selectedSigmaMethod)],
-            ["Overall Std Dev (short-term)", overallStats.sigmaWithin.toFixed(4)],
-            ["Cp (overall short-term)", isFinite(overallStats.cp) ? overallStats.cp.toFixed(4) : 'N/A'],
-            ["Cp 95% CI Lower", formatConfidenceInterval(overallStats.cpCI).split('[')[1]?.split(',')[0] || 'N/A'],
-            ["Cp 95% CI Upper", formatConfidenceInterval(overallStats.cpCI).split(',')[1]?.split(']')[0] || 'N/A'],
-            ["Cpk (overall short-term)", isFinite(overallStats.cpk) ? overallStats.cpk.toFixed(4) : 'N/A'],
-            ["Cpk 95% CI Lower", formatConfidenceInterval(overallStats.cpkCI).split('[')[1]?.split(',')[0] || 'N/A'],
-            ["Cpk 95% CI Upper", formatConfidenceInterval(overallStats.cpkCI).split(',')[1]?.split(']')[0] || 'N/A'],
-            ["Cpm (overall short-term)", isFinite(overallStats.cpm) ? overallStats.cpm.toFixed(4) : 'N/A'],
-            ["Cpm 95% CI Lower", formatConfidenceInterval(overallStats.cpmCI).split('[')[1]?.split(',')[0] || 'N/A'],
-            ["Cpm 95% CI Upper", formatConfidenceInterval(overallStats.cpmCI).split(',')[1]?.split(']')[0] || 'N/A'],
-            ["Expected Failures (ppm)", overallStats.failures_ppm.toFixed(2)],
-            ["Defective Parts", overallStats.defective_percentage.toFixed(4)],
             [],
             ["Overall Normality Tests"],
             ["Shapiro-Wilk", overallStats.shapiro.result + ' (W=' + overallStats.shapiro.statistic.toFixed(4) + ', p=' + (overallStats.shapiro.pValue ? overallStats.shapiro.pValue.toFixed(4) : 'N/A') + ')'],

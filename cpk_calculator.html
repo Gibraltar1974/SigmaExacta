@@ -1086,8 +1086,9 @@
                                 the "Add Dataset" button. Fill in measurements for each dataset, along with the common
                                 Lower (LSL), Upper (USL), and Target values.</li>
                             <li><strong>Select Calculation Method:</strong> Choose the method for calculating σ within
-                                (short-term standard deviation): Moving Range (recommended), Pooled Variance, or
-                                Subgroup Standard Deviation.</li>
+                                (short-term standard deviation). For multiple datasets (subgroups), use <strong>R-bar
+                                    (recommended)</strong> or <strong>S-bar</strong> to align with JASP and other
+                                statistical software.</li>
                             <li><strong>Calculate Results:</strong> Press the <strong>Calculate</strong> button. The
                                 tool will compute short-term indices (Cp, Cpk, Cpm) for each dataset, overall long-term
                                 indices (Pp, Ppk) combining all datasets, perform normality tests, and display process
@@ -1143,24 +1144,7 @@
                                 <label for="target"><i class="fas fa-bullseye"></i> Target (T):</label>
                                 <input type="text" id="target" required />
 
-                                <div style="margin-bottom: 1rem;">
-                                    <label for="sigmaMethod"><i class="fas fa-calculator"></i> Method for σ within
-                                        calculation:</label>
-                                    <select id="sigmaMethod">
-                                        <option value="moving_range" selected>Moving Range (d₂=1.128) - Recommended
-                                        </option>
-                                        <option value="pooled">Pooled Variance (like JASP)</option>
-                                        <option value="subgroup_std">Subgroup Standard Deviation</option>
-                                    </select>
-                                    <div class="sigma-method-info">
-                                        <strong>Moving Range</strong>: Best for individual data points. Uses
-                                        consecutive differences.<br>
-                                        <strong>Pooled Variance</strong>: Best for multiple rational subgroups. Combines
-                                        variances weighted by degrees of freedom.<br>
-                                        <strong>Subgroup Standard Deviation</strong>: Alternative to Pooled Variance for
-                                        subgroup analysis.
-                                    </div>
-                                </div>
+                               
 
                                 <div class="button-group" style="margin-top:0; margin-left:0;">
                                     <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
@@ -1267,26 +1251,22 @@
                                     <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span id="overall_mean"
                                             class="result-value">-</span></p>
 
-                                    <!-- Proceso Capability (Within) -->
+                                    <!-- Proceso Performance (Within) -->
                                     <div class="results-subsection">
                                         <div class="results-subsection-title">
-                                            <i class="fas fa-bullseye"></i> Process Capability (Within)
+                                            <i class="fas fa-chart-line"></i> Process Performance (Within)
                                         </div>
-                                        <p><i class="fas fa-calculator"></i> <b>Method:</b> <span
-                                                id="sigma-method-display" class="result-value">Moving Range</span></p>
+                                        <p><i class="fas fa-calculator"></i> <b>Sigma Within Method:</b> <span
+                                                id="overall_method" class="result-value">-</span></p>
                                         <p><i class="fas fa-chart-bar"></i> <b>Std Dev (within):</b> <span
-                                                id="overall_dev_short" class="result-value">-</span></p>
-                                        <p><i class="fas fa-ruler-combined"></i> <b>Cp:</b> <span id="overall_cp_short"
-                                                class="result-value">-</span>
-                                        <div class="confidence-interval" id="overall_cp_short_ci">95% CI: -</div>
+                                                id="overall_sigma_within" class="result-value">-</span></p>
+                                        <p><i class="fas fa-ruler-combined"></i> <b>Cp within:</b> <span
+                                                id="overall_cp_within" class="result-value">-</span>
+                                        <div class="confidence-interval" id="overall_cp_within_ci">95% CI: -</div>
                                         </p>
-                                        <p><i class="fas fa-tachometer-alt"></i> <b>Cpk:</b> <span
-                                                id="overall_cpk_short" class="result-value">-</span>
-                                        <div class="confidence-interval" id="overall_cpk_short_ci">95% CI: -</div>
-                                        </p>
-                                        <p><i class="fas fa-crosshairs"></i> <b>Cpm:</b> <span id="overall_cpm_short"
-                                                class="result-value">-</span>
-                                        <div class="confidence-interval" id="overall_cpm_short_ci">95% CI: -</div>
+                                        <p><i class="fas fa-tachometer-alt"></i> <b>Cpk within:</b> <span
+                                                id="overall_cpk_within" class="result-value">-</span>
+                                        <div class="confidence-interval" id="overall_cpk_within_ci">95% CI: -</div>
                                         </p>
                                     </div>
 
@@ -1383,16 +1363,16 @@
                         <h2><i class="fas fa-calculator"></i> Mathematical Formulas</h2>
                         <div class="formula-grid">
                             <div class="formula-item">
+                                <h3>Sigma Within (R-bar method)</h3>
+                                <div class="katex-content">$$ \sigma_{\text{within}} = \frac{\overline{R}}{d_2} $$
+                                </div>
+                                <p>Where $d_2$ depends on subgroup size $n$</p>
+                            </div>
+                            <div class="formula-item">
                                 <h3>Sigma Within (Moving Range)</h3>
                                 <div class="katex-content">$$ \sigma_{\text{within}} = \frac{\overline{MR}}{d_2} $$
                                 </div>
                                 <p>Where $d_2 = 1.128$ for $n=2$</p>
-                            </div>
-                            <div class="formula-item">
-                                <h3>Pooled Variance</h3>
-                                <div class="katex-content">$$ \sigma_{\text{pooled}} =
-                                    \sqrt{\frac{\sum_{i=1}^{k}(n_i-1)s_i^2}{\sum_{i=1}^{k}(n_i-1)}} $$</div>
-                                <p>Where $k$ = number of subgroups</p>
                             </div>
                             <div class="formula-item">
                                 <h3>Cp (Capability)</h3>
@@ -1447,12 +1427,13 @@
                                 </li>
                                 <li><code>CI</code>: Confidence Interval (95% by default)</li>
                             </ul>
-                            <h3>Calculation Methods</h3>
+                            <h3>Automatic Method Selection (Aligned with JASP & Minitab)</h3>
                             <ul>
-                                <li><strong>Moving Range</strong>: Uses consecutive differences, best for individual
-                                    data points</li>
-                                <li><strong>Pooled Variance</strong>: Combines variances from multiple subgroups</li>
-                                <li><strong>Subgroup Std Dev</strong>: Uses standard deviation within each subgroup</li>
+                                <li><strong>For individual datasets</strong>: Uses Moving Range (MR/d₂) with length 2
+                                </li>
+                                <li><strong>For multiple datasets (subgroups)</strong>: Automatically selects:<br>
+                                    &nbsp;&nbsp;&nbsp;- R-bar (R̄/d₂) if all subgroups have equal size ≤ 8<br>
+                                    &nbsp;&nbsp;&nbsp;- Pooled SD with c₄ correction otherwise</li>
                             </ul>
                         </div>
                     </div>
