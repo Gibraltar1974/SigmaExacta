@@ -1239,7 +1239,7 @@
                             </div>
                         </div>
 
-                        <!-- Contenedor para resultados overall (long-term) -->
+                        <!-- Contenedor para resultados overall (long-term) - MODIFICADO -->
                         <div id="overall-results-wrapper" class="dataset-results-wrapper">
                             <div class="results-box">
                                 <div class="results-content">
@@ -1249,25 +1249,12 @@
                                     <p><i class="fas fa-chart-line"></i> <b>Overall Mean:</b> <span id="overall_mean"
                                             class="result-value">-</span></p>
 
-                                    <!-- Sigma Within (Short-Term) Reference -->
+                                    <!-- Solo Process Performance (Total - Long Term) -->
                                     <div class="results-subsection">
                                         <div class="results-subsection-title">
-                                            <i class="fas fa-chart-line"></i> Sigma Within (Short-Term) Reference
+                                            <i class="fas fa-chart-line"></i> Process Performance (Total - Long Term)
                                         </div>
-                                        <p><i class="fas fa-calculator"></i> <b>Sigma Within Method:</b> <span
-                                                id="overall_method" class="result-value">-</span></p>
-                                        <p><i class="fas fa-chart-bar"></i> <b>Std Dev (within):</b> <span
-                                                id="overall_sigma_within" class="result-value">-</span></p>
-                                        <p><small><em>Note: Cp/Cpk are calculated per dataset, not for overall
-                                                    data</em></small></p>
-                                    </div>
-
-                                    <!-- Proceso Performance (Overall) -->
-                                    <div class="results-subsection">
-                                        <div class="results-subsection-title">
-                                            <i class="fas fa-chart-line"></i> Process Performance (Overall)
-                                        </div>
-                                        <p><i class="fas fa-chart-bar"></i> <b>Std Dev (total):</b> <span
+                                        <p><i class="fas fa-chart-bar"></i> <b>σ total (long-term):</b> <span
                                                 id="overall_dev" class="result-value">-</span></p>
                                         <p><i class="fas fa-ruler-combined"></i> <b>Pp:</b> <span id="overall_pp"
                                                 class="result-value">-</span>
@@ -1383,21 +1370,21 @@
                             </div>
                             <div class="formula-item">
                                 <h3>Pp (Performance)</h3>
-                                <div class="katex-content">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{overall}}} $$</div>
+                                <div class="katex-content">$$ P_p = \frac{USL - LSL}{6\sigma_{\text{total}}} $$</div>
                             </div>
                             <div class="formula-item">
                                 <h3>Ppk (Centering)</h3>
                                 <div class="katex-content">$$ P_{pk} = \min\left( \frac{USL -
-                                    \mu}{3\sigma_{\text{overall}}}, \frac{\mu - LSL}{3\sigma_{\text{overall}}} \right)
+                                    \mu}{3\sigma_{\text{total}}}, \frac{\mu - LSL}{3\sigma_{\text{total}}} \right)
                                     $$</div>
                             </div>
                             <div class="formula-item">
-                                <h3>Confidence Interval for Cp</h3>
-                                <div class="katex-content">$$ CI_{Cp} = C_p \pm Z_{\alpha/2} \sqrt{\frac{1}{2(n-1)}} $$
-                                </div>
+                                <h3>Confidence Interval for Cp (Chi-square)</h3>
+                                <div class="katex-content">$$ CI_{Cp} = C_p \sqrt{\frac{\chi^2_{\alpha/2, n-1}}{n-1}},
+                                    C_p \sqrt{\frac{\chi^2_{1-\alpha/2, n-1}}{n-1}} $$</div>
                             </div>
                             <div class="formula-item">
-                                <h3>Confidence Interval for Cpk</h3>
+                                <h3>Confidence Interval for Cpk (Improved)</h3>
                                 <div class="katex-content">$$ CI_{Cpk} = C_{pk} \pm Z_{\alpha/2} \sqrt{\frac{1}{9n} +
                                     \frac{C_{pk}^2}{2(n-1)}} $$</div>
                             </div>
@@ -1405,18 +1392,16 @@
                         <div class="legend">
                             <h3>Capability Legend</h3>
                             <ul>
-                                <li><code>Cp, Pp</code>: Process Capability/Performance - measures potential capability
-                                    if process is centered</li>
-                                <li><code>Cpk, Ppk</code>: Process Capability/Performance Index - accounts for process
-                                    centering</li>
-                                <li><code>Cpm</code>: Process Capability Index considering target value</li>
+                                <li><code>Cp, Cpk, Cpm</code>: Process Capability indices (short-term, within-subgroup
+                                    variation)</li>
+                                <li><code>Pp, Ppk</code>: Process Performance indices (long-term, total variation)</li>
                                 <li><code>LSL, USL</code>: Lower and Upper Specification Limits</li>
                                 <li><code>T</code>: Target value</li>
                                 <li><code>μ</code>: Process mean</li>
                                 <li><code>σ<sub>within</sub></code>: Short-term standard deviation (within-subgroup
                                     variation)</li>
-                                <li><code>σ<sub>overall</sub></code>: Long-term standard deviation (overall variation)
-                                </li>
+                                <li><code>σ<sub>total</sub></code>: Long-term standard deviation (overall/total
+                                    variation)</li>
                                 <li><code>CI</code>: Confidence Interval (95% by default)</li>
                             </ul>
                             <h3>Automatic Method Selection (Aligned with JASP & Minitab)</h3>
@@ -1424,7 +1409,7 @@
                                 <li><strong>For individual datasets</strong>: Uses Moving Range (MR/d₂) with length 2
                                 </li>
                                 <li><strong>For multiple datasets (subgroups)</strong>: Automatically selects:<br>
-                                    &nbsp;&nbsp;&nbsp;- R-bar (R̄/d₂) if all subgroups have equal size ≤ 8<br>
+                                    &nbsp;&nbsp;&nbsp;- R-bar (R̄/d₂) if all subgroups have equal size ≤ 10<br>
                                     &nbsp;&nbsp;&nbsp;- Pooled SD with c₄ correction otherwise</li>
                             </ul>
                         </div>

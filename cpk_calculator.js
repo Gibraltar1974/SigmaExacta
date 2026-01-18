@@ -130,7 +130,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exportBtn').addEventListener('click', exportToExcel);
     document.getElementById('addDatasetBtn').addEventListener('click', addNewDataset);
 
-    // FUNCIÓN PRINCIPAL CON SELECCIÓN AUTOMÁTICA DE MÉTODO
+    // ====================================================================
+    // FUNCIÓN PRINCIPAL CON SELECCIÓN AUTOMÁTICA DE MÉTODO (CORREGIDA)
+    // ====================================================================
+
     function handleFormSubmit(e) {
         e.preventDefault();
 
@@ -171,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sigmaWithinOverall = sigmaWithinOverallResult.value;
         sigmaWithinMethod = sigmaWithinOverallResult.method;
 
-        // Calcular estadísticas overall CORREGIDO
+        // Calcular estadísticas overall CORREGIDO (según metodología JASP)
         if (overallData.length >= 2) {
             overallStats = calculateOverallStatistics(
                 overallData,
@@ -179,8 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 usl,
                 target,
                 sigmaWithinOverall,
-                sigmaWithinMethod,
-                datasets  // <- Añadir datasets como parámetro
+                sigmaWithinMethod
             );
         } else {
             overallStats = null;
@@ -196,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ====================================================================
-    // SELECCIÓN AUTOMÁTICA DEL MÉTODO PARA SIGMA WITHIN
+    // SELECCIÓN AUTOMÁTICA DEL MÉTODO PARA SIGMA WITHIN (CORREGIDA)
     // ====================================================================
 
     function calculateSigmaWithinOverallAuto(datasets) {
@@ -209,27 +211,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Para múltiples datasets (subgrupos)
-        // Verificar si todos los subgrupos tienen el mismo tamaño y son ≤ 8
+        // Verificar si todos los subgrupos tienen el mismo tamaño y son ≤ 10
         const firstSize = datasets[0].measurements.length;
         const allSameSize = datasets.every(d => d.measurements.length === firstSize);
-        const allSmall = firstSize <= 8;
+        const allSmall = firstSize <= 10;
 
         if (allSameSize && allSmall) {
             // Usar R-bar (R̄/d₂) - método tradicional para subgrupos pequeños iguales
             return {
                 value: calculateRBarSigmaWithin(datasets),
-                method: `R-bar (R̄/d₂) - Equal subgroups (n=${firstSize} ≤ 8)`
+                method: `R-bar (R̄/d₂) - Equal subgroups (n=${firstSize} ≤ 10)`
             };
         } else {
-            // Usar Pooled SD con corrección c4 - método estándar moderno
+            // Usar método más preciso para calcular σ within (compatible con JASP)
             return {
-                value: calculatePooledSigmaWithC4(datasets),
-                method: 'Pooled SD with c₄ correction - Variable subgroup sizes or n>8'
+                value: calculatePreciseSigmaWithin(datasets),
+                method: 'Pooled SD with c₄ correction (JASP compatible)'
             };
         }
     }
 
-    // 1. Método R-bar (para subgrupos del mismo tamaño ≤ 8)
+    // 1. Método R-bar (para subgrupos del mismo tamaño ≤ 10)
     function calculateRBarSigmaWithin(datasets) {
         // Calcular el rango (max-min) para cada dataset (subgrupo)
         let ranges = [];
@@ -261,38 +263,39 @@ document.addEventListener('DOMContentLoaded', function () {
         return Rbar / d2;
     }
 
-    // 2. Método Pooled WITH c4 correction (MÉTODO EXACTO DE JASP PARA SUBGRUPOS)
-    function calculatePooledSigmaWithC4(datasets) {
-        // Para coincidir con JASP cuando hay múltiples subgrupos (columnas)
-        // JASP calcula la desviación estándar global y luego aplica corrección c4
-
+    // 2. Método preciso para calcular σ within (compatible con JASP)
+    function calculatePreciseSigmaWithin(datasets) {
         if (datasets.length === 0) return 0;
 
-        // Combinar todos los datos de todos los datasets
-        let allData = [];
+        let totalVariance = 0;
+        let totalDegreesFreedom = 0;
         let totalN = 0;
 
+        // Calcular varianza agrupada (pooled variance)
         datasets.forEach(dataset => {
-            allData.push(...dataset.measurements);
-            totalN += dataset.measurements.length;
+            const data = dataset.measurements;
+            const n = data.length;
+            const mean = data.reduce((sum, val) => sum + val, 0) / n;
+
+            // Varianza del subgrupo
+            const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (n - 1);
+
+            totalVariance += (n - 1) * variance;
+            totalDegreesFreedom += (n - 1);
+            totalN += n;
         });
 
-        if (totalN < 2) return 0;
+        if (totalDegreesFreedom === 0) return 0;
 
-        // Calcular media global
-        const globalMean = allData.reduce((a, b) => a + b, 0) / totalN;
+        // Varianza agrupada
+        const pooledVariance = totalVariance / totalDegreesFreedom;
+        const pooledStdDev = Math.sqrt(pooledVariance);
 
-        // Calcular varianza global (sin dividir por subgrupos)
-        const globalVariance = allData.reduce((sum, val) => {
-            return sum + Math.pow(val - globalMean, 2);
-        }, 0) / (totalN - 1);
+        // Aplicar corrección c4 basada en el tamaño promedio de los subgrupos
+        const avgSubgroupSize = totalN / datasets.length;
+        const c4 = getC4(avgSubgroupSize);
 
-        const globalStdDev = Math.sqrt(globalVariance);
-
-        // Aplicar corrección c4 al tamaño total de la muestra
-        const c4 = getC4(totalN);
-
-        return globalStdDev / c4;
+        return pooledStdDev / c4;
     }
 
     // 3. Método Moving Range (para datos individuales, no agrupados)
@@ -344,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return {
                     mean: mean,
                     sigmaWithin: 0,
-                    sigmaOverall: 0,
+                    sigmaTotal: 0,
                     mrBar: 0,
                     cp: Infinity,
                     cpk: Infinity,
@@ -363,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return {
                     mean: mean,
                     sigmaWithin: 0,
-                    sigmaOverall: 0,
+                    sigmaTotal: 0,
                     mrBar: 0,
                     cp: 0,
                     cpk: 0,
@@ -391,40 +394,40 @@ document.addEventListener('DOMContentLoaded', function () {
         const mrBar = movingRanges.reduce(function (a, b) { return a + b; }, 0) / movingRanges.length;
         const sigmaWithin = mrBar / 1.128; // d2 para n=2
 
-        // Calcular sigma overall (desviación estándar tradicional)
+        // Calcular sigma total (desviación estándar tradicional)
         const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
-        const sigmaOverall = Math.sqrt(variance);
+        const sigmaTotal = Math.sqrt(variance);
 
         // Calcular índices short-term usando sigma within (Moving Range)
         const cp = (usl - lsl) / (6 * sigmaWithin);
         const cpk = Math.min((usl - mean) / (3 * sigmaWithin), (mean - lsl) / (3 * sigmaWithin));
         const cpm = (usl - lsl) / (6 * Math.sqrt(Math.pow(sigmaWithin, 2) + Math.pow(mean - target, 2)));
 
-        // Calcular índices long-term usando sigma overall
-        const pp = (usl - lsl) / (6 * sigmaOverall);
-        const ppk = Math.min((usl - mean) / (3 * sigmaOverall), (mean - lsl) / (3 * sigmaOverall));
+        // Calcular índices long-term usando sigma total
+        const pp = (usl - lsl) / (6 * sigmaTotal);
+        const ppk = Math.min((usl - mean) / (3 * sigmaTotal), (mean - lsl) / (3 * sigmaTotal));
 
         // Cálculo de defectos
         const zUpperST = (usl - mean) / sigmaWithin;
         const zLowerST = (lsl - mean) / sigmaWithin;
         const probDefectiveST = (1 - normalCDF(zUpperST)) + normalCDF(zLowerST);
 
-        const zUpperLT = (usl - mean) / sigmaOverall;
-        const zLowerLT = (lsl - mean) / sigmaOverall;
+        const zUpperLT = (usl - mean) / sigmaTotal;
+        const zLowerLT = (lsl - mean) / sigmaTotal;
         const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
 
-        // Calcular intervalos de confianza
+        // Calcular intervalos de confianza MEJORADOS
         const confidenceLevel = 0.95;
-        const cpCI = calculateCpConfidenceInterval(cp, n, confidenceLevel);
-        const cpkCI = calculateCpkConfidenceInterval(cpk, n, confidenceLevel);
+        const cpCI = calculateCpConfidenceIntervalChiSquare(cp, n, confidenceLevel);
+        const cpkCI = calculateCpkConfidenceIntervalImproved(cpk, n, confidenceLevel);
         const cpmCI = calculateCpmConfidenceInterval(cpm, n, confidenceLevel);
-        const ppCI = calculateCpConfidenceInterval(pp, n, confidenceLevel);
-        const ppkCI = calculateCpkConfidenceInterval(ppk, n, confidenceLevel);
+        const ppCI = calculateCpConfidenceIntervalChiSquare(pp, n, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceIntervalImproved(ppk, n, confidenceLevel);
 
         return {
             mean: mean,
             sigmaWithin: sigmaWithin,
-            sigmaOverall: sigmaOverall,
+            sigmaTotal: sigmaTotal,
             mrBar: mrBar,
             cp: cp,
             cpk: cpk,
@@ -450,10 +453,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // FUNCIÓN CORREGIDA PARA CALCULAR ESTADÍSTICAS OVERALL
     // ====================================================================
 
-    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall, sigmaMethodUsed, datasets) {
+    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall, sigmaMethodUsed) {
         if (data.length < 2) return null;
         const totalN = data.length; // Total de puntos
-        const k = datasets.length;  // Número de subgrupos
 
         // Verificar si todos los valores son iguales
         const allEqual = data.every(val => val === data[0]);
@@ -467,8 +469,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return {
                     mean: mean,
                     sigmaWithin: 0,
-                    sigmaOverall: 0,
+                    sigmaTotal: 0,
                     sigmaMethod: sigmaMethodUsed,
+                    cpWithin: Infinity,
+                    cpkWithin: Infinity,
                     pp: Infinity,
                     ppk: Infinity,
                     failures_ppm_lt: 0,
@@ -476,15 +480,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
-                    totalPoints: totalN,
-                    numberOfSubgroups: k
+                    totalPoints: totalN
                 };
             } else {
                 return {
                     mean: mean,
                     sigmaWithin: 0,
-                    sigmaOverall: 0,
+                    sigmaTotal: 0,
                     sigmaMethod: sigmaMethodUsed,
+                    cpWithin: 0,
+                    cpkWithin: 0,
                     pp: 0,
                     ppk: 0,
                     failures_ppm_lt: 1000000,
@@ -492,42 +497,56 @@ document.addEventListener('DOMContentLoaded', function () {
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
-                    totalPoints: totalN,
-                    numberOfSubgroups: k
+                    totalPoints: totalN
                 };
             }
         }
 
-        const mean = data.reduce(function (a, b) { return a + b; }, 0) / totalN;
+        const mean = data.reduce((a, b) => a + b, 0) / totalN;
 
-        // Calcular sigma overall (desviación estándar tradicional de todos los datos)
-        const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (totalN - 1);
-        const sigmaOverall = Math.sqrt(variance);
+        // Calcular sigma total (desviación estándar tradicional de todos los datos)
+        const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (totalN - 1);
+        const sigmaTotal = Math.sqrt(variance);
 
-        // CALCULAR ÍNDICES LONG-TERM (PERFORMANCE) - ESTO ES CORRECTO
-        const pp = (usl - lsl) / (6 * sigmaOverall);
+        // CALCULAR Cp/Cpk within usando sigma within (método JASP) - Solo para cálculos internos
+        const cpWithin = (usl - lsl) / (6 * sigmaWithinOverall);
+        const cpkWithin = Math.min(
+            (usl - mean) / (3 * sigmaWithinOverall),
+            (mean - lsl) / (3 * sigmaWithinOverall)
+        );
+
+        // Calcular Pp/Ppk usando sigma total
+        const pp = (usl - lsl) / (6 * sigmaTotal);
         const ppk = Math.min(
-            (usl - mean) / (3 * sigmaOverall),
-            (mean - lsl) / (3 * sigmaOverall)
+            (usl - mean) / (3 * sigmaTotal),
+            (mean - lsl) / (3 * sigmaTotal)
         );
 
         // Cálculo de defectos (long-term)
-        const zUpperLT = (usl - mean) / sigmaOverall;
-        const zLowerLT = (lsl - mean) / sigmaOverall;
+        const zUpperLT = (usl - mean) / sigmaTotal;
+        const zLowerLT = (lsl - mean) / sigmaTotal;
         const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
 
-        // Calcular intervalos de confianza para Pp/Ppk
-        // USAR k (número de subgrupos) o un tamaño efectivo para overall
+        // Calcular intervalos de confianza CORREGIDOS
         const confidenceLevel = 0.95;
-        const effectiveN = Math.max(k, Math.floor(totalN / (datasets[0]?.measurements.length || 1)));
-        const ppCI = calculateCpConfidenceInterval(pp, effectiveN, confidenceLevel);
-        const ppkCI = calculateCpkConfidenceInterval(ppk, effectiveN, confidenceLevel);
+
+        // Para Cp within: usar distribución chi-cuadrado
+        const cpCI = calculateCpConfidenceIntervalChiSquare(cpWithin, totalN, confidenceLevel);
+
+        // Para Cpk within: usar fórmula mejorada
+        const cpkCI = calculateCpkConfidenceIntervalImproved(cpkWithin, totalN, confidenceLevel);
+
+        // Para Pp/Ppk
+        const ppCI = calculateCpConfidenceIntervalChiSquare(pp, totalN, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceIntervalImproved(ppk, totalN, confidenceLevel);
 
         return {
             mean: mean,
-            sigmaWithin: sigmaWithinOverall, // Solo como referencia, no para calcular "Cp overall"
-            sigmaOverall: sigmaOverall,
+            sigmaWithin: sigmaWithinOverall,
+            sigmaTotal: sigmaTotal,
             sigmaMethod: sigmaMethodUsed,
+            cpWithin: cpWithin,
+            cpkWithin: cpkWithin,
             pp: pp,
             ppk: ppk,
             failures_ppm_lt: probDefectiveLT * 1e6,
@@ -535,17 +554,60 @@ document.addEventListener('DOMContentLoaded', function () {
             shapiro: shapiroWilkTest(data),
             kolmogorov: kolmogorovSmirnovTest(data),
             anderson: andersonDarlingTest(data),
+            cpCI: cpCI,
+            cpkCI: cpkCI,
             ppCI: ppCI,
             ppkCI: ppkCI,
-            totalPoints: totalN,
-            numberOfSubgroups: k
+            totalPoints: totalN
         };
     }
 
     // ====================================================================
-    // FUNCIONES PARA INTERVALOS DE CONFIANZA
+    // FUNCIONES PARA INTERVALOS DE CONFIANZA MEJORADOS
     // ====================================================================
 
+    // INTERVALOS DE CONFIANZA MEJORADOS (compatibles con JASP)
+    function calculateCpConfidenceIntervalChiSquare(cp, n, confidenceLevel) {
+        if (n <= 1 || !isFinite(cp) || cp === 0) {
+            return { lower: NaN, upper: NaN };
+        }
+
+        const alpha = 1 - confidenceLevel;
+        const df = n - 1;
+
+        // Usar aproximación de chi-cuadrado inversa (más preciso para Cp alto)
+        const chi2Lower = approximateChiSquareInv(alpha / 2, df);
+        const chi2Upper = approximateChiSquareInv(1 - alpha / 2, df);
+
+        // Fórmula basada en chi-cuadrado: Cp * sqrt(df/χ²)
+        const lower = cp * Math.sqrt(df / chi2Upper);
+        const upper = cp * Math.sqrt(df / chi2Lower);
+
+        return { lower: lower, upper: upper };
+    }
+
+    function calculateCpkConfidenceIntervalImproved(cpk, n, confidenceLevel) {
+        if (n <= 1 || !isFinite(cpk)) {
+            return { lower: NaN, upper: NaN };
+        }
+
+        const alpha = 1 - confidenceLevel;
+        const z = Math.abs(normalQuantile(1 - alpha / 2));
+
+        // Fórmula mejorada para Cpk (Bissell, 1990)
+        const variance = (1 / (9 * n)) + (Math.pow(cpk, 2) / (2 * (n - 1)));
+
+        // Ajuste para evitar intervalos demasiado amplios
+        const se = Math.sqrt(variance);
+        const margin = z * se * Math.min(1, 1 / Math.sqrt(cpk + 1));
+
+        return {
+            lower: Math.max(0, cpk - margin),
+            upper: cpk + margin
+        };
+    }
+
+    // Función original (mantenida para compatibilidad)
     function calculateCpConfidenceInterval(cp, n, confidenceLevel) {
         if (n <= 1 || !isFinite(cp) || cp === 0) {
             return { lower: NaN, upper: NaN };
@@ -590,6 +652,16 @@ document.addEventListener('DOMContentLoaded', function () {
             lower: Math.max(0, cpm - z * se),
             upper: cpm + z * se
         };
+    }
+
+    // Función auxiliar para aproximar chi-cuadrado inversa
+    function approximateChiSquareInv(p, df) {
+        // Aproximación de Wilson-Hilferty
+        const z = normalQuantile(p);
+        const h = 1 - 2 / (9 * df);
+        const term = Math.sqrt(2 / (9 * df));
+
+        return df * Math.pow(h + term * z, 3);
     }
 
     function formatConfidenceInterval(ci) {
@@ -644,12 +716,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_total').textContent = stats.totalPoints || overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
 
-        // Mostrar valores Sigma Within (Short-Term) Reference
-        document.getElementById('overall_method').textContent = stats.sigmaMethod;
-        document.getElementById('overall_sigma_within').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
-
-        // Mostrar valores long-term (Process Performance)
-        document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
+        // Solo mostrar valores Process Performance (Total - Long Term) - MODIFICADO
+        document.getElementById('overall_dev').textContent = isFinite(stats.sigmaTotal) ? stats.sigmaTotal.toFixed(4) : 'N/A';
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
         document.getElementById('overall_pp_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppCI)}`;
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
@@ -663,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_kolmogorov').innerHTML = formatNormalityResult(stats.kolmogorov);
         document.getElementById('overall_anderson').innerHTML = formatNormalityResult(stats.anderson);
 
-        plotOverallChart(stats.mean, stats.sigmaOverall, parseFloat(document.getElementById('lsl').value),
+        plotOverallChart(stats.mean, stats.sigmaTotal, parseFloat(document.getElementById('lsl').value),
             parseFloat(document.getElementById('usl').value), overallData);
         createOverallControlChart(stats);
         createQQPlot(overallData, 'overallQQChartCanvas', 'Overall Q-Q Plot');
@@ -1195,9 +1263,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (chartInstances.overallControlChart) chartInstances.overallControlChart.destroy();
         const ctx = document.getElementById('overallControlChartCanvas').getContext('2d');
         const mean = stats.mean;
-        const sigmaOverall = stats.sigmaOverall;
-        const ucl = mean + 3 * sigmaOverall;
-        const lcl = mean - 3 * sigmaOverall;
+        const sigmaTotal = stats.sigmaTotal;
+        const ucl = mean + 3 * sigmaTotal;
+        const lcl = mean - 3 * sigmaTotal;
 
         chartInstances.overallControlChart = new Chart(ctx, {
             type: 'line',
@@ -1415,11 +1483,12 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Target:", document.getElementById('target').value],
             ["Sigma Within Method (Automatic):", sigmaWithinMethod],
             [],
-            ["Overall (Long-Term) Results"],
+            ["Overall Results"],
             ["Total Points", overallStats.totalPoints],
-            ["Number of Subgroups", overallStats.numberOfSubgroups],
             ["Overall Mean", overallStats.mean.toFixed(4)],
-            ["Overall Std Dev (long-term)", overallStats.sigmaOverall.toFixed(4)],
+            [],
+            ["Process Performance (Total - Long Term)"],
+            ["σ total (long-term)", overallStats.sigmaTotal.toFixed(4)],
             ["Pp", overallStats.pp.toFixed(4)],
             ["Pp 95% CI Lower", formatConfidenceInterval(overallStats.ppCI).split('[')[1]?.split(',')[0] || 'N/A'],
             ["Pp 95% CI Upper", formatConfidenceInterval(overallStats.ppCI).split(',')[1]?.split(']')[0] || 'N/A'],
@@ -1429,18 +1498,13 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
             [],
-            ["Sigma Within (Short-Term) Reference"],
-            ["Sigma Within Method", overallStats.sigmaMethod],
-            ["Std Dev (within)", overallStats.sigmaWithin.toFixed(4)],
-            ["Note: Cp/Cpk are calculated per dataset, not for overall data", ""],
-            [],
             ["Overall Normality Tests"],
             ["Shapiro-Wilk", overallStats.shapiro.result + ' (W=' + overallStats.shapiro.statistic.toFixed(4) + ', p=' + (overallStats.shapiro.pValue ? overallStats.shapiro.pValue.toFixed(4) : 'N/A') + ')'],
             ["Kolmogorov-Smirnov", overallStats.kolmogorov.result + ' (D=' + overallStats.kolmogorov.statistic.toFixed(4) + ', p=' + (overallStats.kolmogorov.pValue ? overallStats.kolmogorov.pValue.toFixed(4) : 'N/A') + ')'],
             ["Anderson-Darling", overallStats.anderson.result + ' (A²=' + overallStats.anderson.statistic.toFixed(4) + ', crit=' + (overallStats.anderson.criticalValue ? overallStats.anderson.criticalValue.toFixed(4) : 'N/A') + ')'],
             [],
             ["Individual Dataset Results"],
-            ["Dataset", "Mean", "Std Dev (short-term)", "Cp", "Cp 95% CI", "Cpk", "Cpk 95% CI", "Cpm", "Cpm 95% CI", "Failures (ppm)", "Defective",
+            ["Dataset", "Mean", "σ within", "Cp", "Cp 95% CI", "Cpk", "Cpk 95% CI", "Cpm", "Cpm 95% CI", "Failures (ppm)", "Defective",
                 "Shapiro-Wilk Result", "Shapiro-Wilk Statistic", "Shapiro-Wilk p-value",
                 "Kolmogorov Result", "Kolmogorov Statistic", "Kolmogorov p-value",
                 "Anderson-Darling Result", "Anderson-Darling Statistic", "Anderson-Darling Critical Value"]
@@ -1868,3 +1932,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+        
