@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sigmaWithinOverall = sigmaWithinOverallResult.value;
         sigmaWithinMethod = sigmaWithinOverallResult.method;
 
-        // Calcular estadísticas overall
+        // Calcular estadísticas overall CORREGIDO
         if (overallData.length >= 2) {
             overallStats = calculateOverallStatistics(
                 overallData,
@@ -179,7 +179,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 usl,
                 target,
                 sigmaWithinOverall,
-                sigmaWithinMethod
+                sigmaWithinMethod,
+                datasets  // <- Añadir datasets como parámetro
             );
         } else {
             overallStats = null;
@@ -445,10 +446,14 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    // Función para calcular estadísticas overall
-    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall, sigmaMethodUsed) {
+    // ====================================================================
+    // FUNCIÓN CORREGIDA PARA CALCULAR ESTADÍSTICAS OVERALL
+    // ====================================================================
+
+    function calculateOverallStatistics(data, lsl, usl, target, sigmaWithinOverall, sigmaMethodUsed, datasets) {
         if (data.length < 2) return null;
-        const n = data.length;
+        const totalN = data.length; // Total de puntos
+        const k = datasets.length;  // Número de subgrupos
 
         // Verificar si todos los valores son iguales
         const allEqual = data.every(val => val === data[0]);
@@ -463,54 +468,43 @@ document.addEventListener('DOMContentLoaded', function () {
                     mean: mean,
                     sigmaWithin: 0,
                     sigmaOverall: 0,
-                    cp_within: Infinity,
-                    cpk_within: Infinity,
+                    sigmaMethod: sigmaMethodUsed,
                     pp: Infinity,
                     ppk: Infinity,
-                    failures_ppm: 0,
-                    defective_percentage: 0,
                     failures_ppm_lt: 0,
                     defective_percentage_lt: 0,
-                    sigmaMethod: sigmaMethodUsed,
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
-                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
+                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    totalPoints: totalN,
+                    numberOfSubgroups: k
                 };
             } else {
                 return {
                     mean: mean,
                     sigmaWithin: 0,
                     sigmaOverall: 0,
-                    cp_within: 0,
-                    cpk_within: 0,
+                    sigmaMethod: sigmaMethodUsed,
                     pp: 0,
                     ppk: 0,
-                    failures_ppm: 1000000,
-                    defective_percentage: 100,
                     failures_ppm_lt: 1000000,
                     defective_percentage_lt: 100,
-                    sigmaMethod: sigmaMethodUsed,
                     shapiro: { statistic: 1.0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
                     kolmogorov: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
-                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' }
+                    anderson: { statistic: 0, pValue: 1.0, result: 'Pass', message: 'All values identical' },
+                    totalPoints: totalN,
+                    numberOfSubgroups: k
                 };
             }
         }
 
-        const mean = data.reduce(function (a, b) { return a + b; }, 0) / n;
+        const mean = data.reduce(function (a, b) { return a + b; }, 0) / totalN;
 
         // Calcular sigma overall (desviación estándar tradicional de todos los datos)
-        const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
+        const variance = data.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (totalN - 1);
         const sigmaOverall = Math.sqrt(variance);
 
-        // Calcular índices within usando sigma within overall
-        const cp_within = (usl - lsl) / (6 * sigmaWithinOverall);
-        const cpk_within = Math.min(
-            (usl - mean) / (3 * sigmaWithinOverall),
-            (mean - lsl) / (3 * sigmaWithinOverall)
-        );
-
-        // Calcular índices long-term (performance) usando sigma overall
+        // CALCULAR ÍNDICES LONG-TERM (PERFORMANCE) - ESTO ES CORRECTO
         const pp = (usl - lsl) / (6 * sigmaOverall);
         const ppk = Math.min(
             (usl - mean) / (3 * sigmaOverall),
@@ -522,31 +516,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const zLowerLT = (lsl - mean) / sigmaOverall;
         const probDefectiveLT = (1 - normalCDF(zUpperLT)) + normalCDF(zLowerLT);
 
-        // Calcular intervalos de confianza
+        // Calcular intervalos de confianza para Pp/Ppk
+        // USAR k (número de subgrupos) o un tamaño efectivo para overall
         const confidenceLevel = 0.95;
-        const cp_within_ci = calculateCpConfidenceInterval(cp_within, n, confidenceLevel);
-        const cpk_within_ci = calculateCpkConfidenceInterval(cpk_within, n, confidenceLevel);
-        const ppCI = calculateCpConfidenceInterval(pp, n, confidenceLevel);
-        const ppkCI = calculateCpkConfidenceInterval(ppk, n, confidenceLevel);
+        const effectiveN = Math.max(k, Math.floor(totalN / (datasets[0]?.measurements.length || 1)));
+        const ppCI = calculateCpConfidenceInterval(pp, effectiveN, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceInterval(ppk, effectiveN, confidenceLevel);
 
         return {
             mean: mean,
-            sigmaWithin: sigmaWithinOverall,
+            sigmaWithin: sigmaWithinOverall, // Solo como referencia, no para calcular "Cp overall"
             sigmaOverall: sigmaOverall,
-            cp_within: cp_within,
-            cpk_within: cpk_within,
+            sigmaMethod: sigmaMethodUsed,
             pp: pp,
             ppk: ppk,
             failures_ppm_lt: probDefectiveLT * 1e6,
             defective_percentage_lt: probDefectiveLT * 100,
-            sigmaMethod: sigmaMethodUsed,
             shapiro: shapiroWilkTest(data),
             kolmogorov: kolmogorovSmirnovTest(data),
             anderson: andersonDarlingTest(data),
-            cp_within_ci: cp_within_ci,
-            cpk_within_ci: cpk_within_ci,
             ppCI: ppCI,
-            ppkCI: ppkCI
+            ppkCI: ppkCI,
+            totalPoints: totalN,
+            numberOfSubgroups: k
         };
     }
 
@@ -649,16 +641,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('dataset-results-wrapper').classList.remove('active');
         document.getElementById('short-term-charts-wrapper').style.display = 'none';
 
-        document.getElementById('overall_total').textContent = overallData.length;
+        document.getElementById('overall_total').textContent = stats.totalPoints || overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
 
-        // Mostrar valores Process Performance (Within)
+        // Mostrar valores Sigma Within (Short-Term) Reference
         document.getElementById('overall_method').textContent = stats.sigmaMethod;
         document.getElementById('overall_sigma_within').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
-        document.getElementById('overall_cp_within').textContent = isFinite(stats.cp_within) ? stats.cp_within.toFixed(4) : 'N/A';
-        document.getElementById('overall_cp_within_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cp_within_ci)}`;
-        document.getElementById('overall_cpk_within').textContent = isFinite(stats.cpk_within) ? stats.cpk_within.toFixed(4) : 'N/A';
-        document.getElementById('overall_cpk_within_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.cpk_within_ci)}`;
 
         // Mostrar valores long-term (Process Performance)
         document.getElementById('overall_dev').textContent = isFinite(stats.sigmaOverall) ? stats.sigmaOverall.toFixed(4) : 'N/A';
@@ -1428,7 +1416,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Sigma Within Method (Automatic):", sigmaWithinMethod],
             [],
             ["Overall (Long-Term) Results"],
-            ["Total Points", overallData.length],
+            ["Total Points", overallStats.totalPoints],
+            ["Number of Subgroups", overallStats.numberOfSubgroups],
             ["Overall Mean", overallStats.mean.toFixed(4)],
             ["Overall Std Dev (long-term)", overallStats.sigmaOverall.toFixed(4)],
             ["Pp", overallStats.pp.toFixed(4)],
@@ -1439,6 +1428,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Ppk 95% CI Upper", formatConfidenceInterval(overallStats.ppkCI).split(',')[1]?.split(']')[0] || 'N/A'],
             ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
+            [],
+            ["Sigma Within (Short-Term) Reference"],
+            ["Sigma Within Method", overallStats.sigmaMethod],
+            ["Std Dev (within)", overallStats.sigmaWithin.toFixed(4)],
+            ["Note: Cp/Cpk are calculated per dataset, not for overall data", ""],
             [],
             ["Overall Normality Tests"],
             ["Shapiro-Wilk", overallStats.shapiro.result + ' (W=' + overallStats.shapiro.statistic.toFixed(4) + ', p=' + (overallStats.shapiro.pValue ? overallStats.shapiro.pValue.toFixed(4) : 'N/A') + ')'],
