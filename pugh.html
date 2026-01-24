@@ -764,13 +764,7 @@
                                 </div>
                                 <div id="concepts-list"></div>
 
-                                <div style="margin-top: 2rem;">
-                                    <button type="button" id="fillExampleBtn" class="example-btn"><i
-                                            class="fas fa-magic"></i> Fill
-                                        Example</button>
-                                    <button type="button" id="clearDataBtn" style="background-color: #e74c3c;"><i
-                                            class="fas fa-trash"></i> Clear Data</button>
-                                </div>
+                                <!-- SE HAN ELIMINADO LOS BOTONES "Fill Example" y "Clear Data" -->
                             </form>
 
                             <!-- Sección de la matriz en la misma pestaña -->
@@ -1126,8 +1120,118 @@
             validateDataInput();
             saveInputData();
 
+            // Generar matriz automáticamente con datos de ejemplo
+            setTimeout(() => {
+                if (criteriaData.length >= 1 && conceptsData.length >= 2) {
+                    generateMatrix();
+
+                    // Establecer pesos diferentes para cada criterio (1-5)
+                    const weights = [5, 4, 3, 2, 1]; // Pesos diferentes para cada criterio
+
+                    // Establecer puntuaciones para crear un ganador claro
+                    // Concepto 1 (Machined Aluminum) será peor en coste y peso, pero mejor en durabilidad y apariencia
+                    // Concepto 2 (3D Printed) será mejor en coste, peso y facilidad de ensamblaje
+
+                    setTimeout(() => {
+                        const table = document.getElementById('interactiveMatrix');
+                        if (table) {
+                            // Establecer baseline como primer concepto
+                            const baselineSelector = document.getElementById('baseline-selector');
+                            if (baselineSelector) {
+                                baselineSelector.value = 0; // Standard Plastic Case como baseline
+                                baselineSelector.dispatchEvent(new Event('change'));
+                            }
+
+                            // Establecer pesos
+                            const weightInputs = table.querySelectorAll('.weight-input');
+                            weightInputs.forEach((input, index) => {
+                                if (weights[index]) {
+                                    input.value = weights[index];
+                                }
+                            });
+
+                            // Establecer puntuaciones para crear un ganador claro
+                            // Concepto 1 (Machined Aluminum Case - índice 1): 
+                            // - Coste: peor (-), Peso: peor (-), Durabilidad: mejor (+), Apariencia: mejor (+), Ensamblaje: igual (S)
+
+                            // Concepto 2 (3D Printed Case - índice 2):
+                            // - Coste: mejor (+), Peso: mejor (+), Durabilidad: peor (-), Apariencia: peor (-), Ensamblaje: mejor (+)
+
+                            // Criterio 0: Manufacturing Cost
+                            const row1 = table.querySelector('tbody tr[data-criterion-index="0"]');
+                            if (row1) {
+                                // Concepto 1 (Machined Aluminum): peor (-)
+                                const select1 = row1.querySelector('td[data-concept-index="1"] select');
+                                if (select1) select1.value = "-1";
+
+                                // Concepto 2 (3D Printed): mejor (+)
+                                const select2 = row1.querySelector('td[data-concept-index="2"] select');
+                                if (select2) select2.value = "1";
+                            }
+
+                            // Criterio 1: Weight
+                            const row2 = table.querySelector('tbody tr[data-criterion-index="1"]');
+                            if (row2) {
+                                // Concepto 1: peor (-)
+                                const select1 = row2.querySelector('td[data-concept-index="1"] select');
+                                if (select1) select1.value = "-1";
+
+                                // Concepto 2: mejor (+)
+                                const select2 = row2.querySelector('td[data-concept-index="2"] select');
+                                if (select2) select2.value = "1";
+                            }
+
+                            // Criterio 2: Durability & Strength
+                            const row3 = table.querySelector('tbody tr[data-criterion-index="2"]');
+                            if (row3) {
+                                // Concepto 1: mejor (+)
+                                const select1 = row3.querySelector('td[data-concept-index="1"] select');
+                                if (select1) select1.value = "1";
+
+                                // Concepto 2: peor (-)
+                                const select2 = row3.querySelector('td[data-concept-index="2"] select');
+                                if (select2) select2.value = "-1";
+                            }
+
+                            // Criterio 3: Appearance
+                            const row4 = table.querySelector('tbody tr[data-criterion-index="3"]');
+                            if (row4) {
+                                // Concepto 1: mejor (+)
+                                const select1 = row4.querySelector('td[data-concept-index="1"] select');
+                                if (select1) select1.value = "1";
+
+                                // Concepto 2: peor (-)
+                                const select2 = row4.querySelector('td[data-concept-index="2"] select');
+                                if (select2) select2.value = "-1";
+                            }
+
+                            // Criterio 4: Ease of Assembly
+                            const row5 = table.querySelector('tbody tr[data-criterion-index="4"]');
+                            if (row5) {
+                                // Concepto 1: igual (S)
+                                const select1 = row5.querySelector('td[data-concept-index="1"] select');
+                                if (select1) select1.value = "0";
+
+                                // Concepto 2: mejor (+)
+                                const select2 = row5.querySelector('td[data-concept-index="2"] select');
+                                if (select2) select2.value = "1";
+                            }
+
+                            // Actualizar puntuaciones
+                            updateScores();
+
+                            // Ir directamente a Results para mostrar el ganador
+                            setTimeout(() => {
+                                switchWizardTab('tab-results');
+                                updateResultsView();
+                            }, 100);
+                        }
+                    }, 100);
+                }
+            }, 100);
+
             // Mostrar notificación
-            showNotification("Example data loaded successfully!");
+            showNotification("Example data loaded successfully! Matrix generated with predefined weights and scores. Check Results tab.");
         }
 
         function resetAllData() {
@@ -1260,8 +1364,6 @@
             const conceptsList = document.getElementById('concepts-list');
             const addCriterionBtn = document.getElementById('add-criterion-btn');
             const addConceptBtn = document.getElementById('add-concept-btn');
-            const fillExampleBtn = document.getElementById('fillExampleBtn');
-            const clearDataBtn = document.getElementById('clearDataBtn');
             const generateMatrixBtn = document.getElementById('generateMatrixBtn');
             const exportBtn = document.getElementById('exportBtn');
 
@@ -1326,19 +1428,6 @@
                     populateList(conceptsList, ['Concept A', 'Concept B'], 'Concept');
                 }
             };
-
-            if (fillExampleBtn) {
-                fillExampleBtn.addEventListener('click', () => {
-                    if (criteriaList && conceptsList) {
-                        populateList(criteriaList, ['Manufacturing Cost', 'Weight', 'Durability & Strength', 'Appearance', 'Ease of Assembly'], 'Criterion');
-                        populateList(conceptsList, ['Standard Plastic Case', 'Machined Aluminum Case', '3D Printed Case'], 'Concept');
-                    }
-                });
-            }
-
-            if (clearDataBtn) {
-                clearDataBtn.addEventListener('click', resetAllData);
-            }
 
             if (generateMatrixBtn) {
                 generateMatrixBtn.addEventListener('click', function () {
