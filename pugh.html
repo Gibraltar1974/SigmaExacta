@@ -763,8 +763,6 @@
                                         title="Add Concept">+</button>
                                 </div>
                                 <div id="concepts-list"></div>
-
-                                <!-- SE HAN ELIMINADO LOS BOTONES "Fill Example" y "Clear Data" -->
                             </form>
 
                             <!-- Sección de la matriz en la misma pestaña -->
@@ -772,16 +770,15 @@
                                 <div class="calculation-title">Matrix Builder</div>
 
                                 <div class="matrix-actions">
-                                    <button type="button" id="generateMatrixBtn"><i class="fas fa-table-cells"></i>
-                                        Generate
-                                        Matrix</button>
+                                    <button type="button" id="generateMatrixBtn"><i class="fas fa-sync-alt"></i>
+                                        Update Matrix</button>
                                 </div>
 
                                 <div id="matrix-container" style="margin-top: 2rem;">
                                     <p style="color: #7f8c8d; text-align: center; padding: 2rem;">
                                         <i class="fas fa-info-circle"
                                             style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                                        Click "Generate Matrix" to create your Pugh Matrix.
+                                        Click "Update Matrix" to create your Pugh Matrix.
                                     </p>
                                 </div>
                             </div>
@@ -873,6 +870,9 @@
         let conceptsData = [];
         let matrixGenerated = false;
         let matrixData = null;
+        let exampleLoaded = false;
+        let currentMatrixCriteria = [];
+        let currentMatrixConcepts = [];
 
         // Función para obtener valores de una lista de inputs
         function getValuesFromList(list) {
@@ -1125,13 +1125,7 @@
                 if (criteriaData.length >= 1 && conceptsData.length >= 2) {
                     generateMatrix();
 
-                    // Establecer pesos diferentes para cada criterio (1-5)
-                    const weights = [5, 4, 3, 2, 1]; // Pesos diferentes para cada criterio
-
-                    // Establecer puntuaciones para crear un ganador claro
-                    // Concepto 1 (Machined Aluminum) será peor en coste y peso, pero mejor en durabilidad y apariencia
-                    // Concepto 2 (3D Printed) será mejor en coste, peso y facilidad de ensamblaje
-
+                    // Dar un pequeño retraso para asegurar que la matriz se ha renderizado
                     setTimeout(() => {
                         const table = document.getElementById('interactiveMatrix');
                         if (table) {
@@ -1139,34 +1133,44 @@
                             const baselineSelector = document.getElementById('baseline-selector');
                             if (baselineSelector) {
                                 baselineSelector.value = 0; // Standard Plastic Case como baseline
-                                baselineSelector.dispatchEvent(new Event('change'));
+                                // Disparar evento de cambio
+                                const event = new Event('change');
+                                baselineSelector.dispatchEvent(event);
                             }
 
-                            // Establecer pesos
+                            // Establecer pesos diferentes para cada criterio (5, 4, 3, 2, 1)
                             const weightInputs = table.querySelectorAll('.weight-input');
+                            const weights = [5, 4, 3, 2, 1];
+
                             weightInputs.forEach((input, index) => {
                                 if (weights[index]) {
                                     input.value = weights[index];
+                                    // Disparar evento de cambio
+                                    const event = new Event('change');
+                                    input.dispatchEvent(event);
                                 }
                             });
 
                             // Establecer puntuaciones para crear un ganador claro
                             // Concepto 1 (Machined Aluminum Case - índice 1): 
-                            // - Coste: peor (-), Peso: peor (-), Durabilidad: mejor (+), Apariencia: mejor (+), Ensamblaje: igual (S)
-
                             // Concepto 2 (3D Printed Case - índice 2):
-                            // - Coste: mejor (+), Peso: mejor (+), Durabilidad: peor (-), Apariencia: peor (-), Ensamblaje: mejor (+)
 
                             // Criterio 0: Manufacturing Cost
                             const row1 = table.querySelector('tbody tr[data-criterion-index="0"]');
                             if (row1) {
                                 // Concepto 1 (Machined Aluminum): peor (-)
                                 const select1 = row1.querySelector('td[data-concept-index="1"] select');
-                                if (select1) select1.value = "-1";
+                                if (select1) {
+                                    select1.value = "-1";
+                                    select1.dispatchEvent(new Event('change'));
+                                }
 
                                 // Concepto 2 (3D Printed): mejor (+)
                                 const select2 = row1.querySelector('td[data-concept-index="2"] select');
-                                if (select2) select2.value = "1";
+                                if (select2) {
+                                    select2.value = "1";
+                                    select2.dispatchEvent(new Event('change'));
+                                }
                             }
 
                             // Criterio 1: Weight
@@ -1174,11 +1178,17 @@
                             if (row2) {
                                 // Concepto 1: peor (-)
                                 const select1 = row2.querySelector('td[data-concept-index="1"] select');
-                                if (select1) select1.value = "-1";
+                                if (select1) {
+                                    select1.value = "-1";
+                                    select1.dispatchEvent(new Event('change'));
+                                }
 
                                 // Concepto 2: mejor (+)
                                 const select2 = row2.querySelector('td[data-concept-index="2"] select');
-                                if (select2) select2.value = "1";
+                                if (select2) {
+                                    select2.value = "1";
+                                    select2.dispatchEvent(new Event('change'));
+                                }
                             }
 
                             // Criterio 2: Durability & Strength
@@ -1186,11 +1196,17 @@
                             if (row3) {
                                 // Concepto 1: mejor (+)
                                 const select1 = row3.querySelector('td[data-concept-index="1"] select');
-                                if (select1) select1.value = "1";
+                                if (select1) {
+                                    select1.value = "1";
+                                    select1.dispatchEvent(new Event('change'));
+                                }
 
                                 // Concepto 2: peor (-)
                                 const select2 = row3.querySelector('td[data-concept-index="2"] select');
-                                if (select2) select2.value = "-1";
+                                if (select2) {
+                                    select2.value = "-1";
+                                    select2.dispatchEvent(new Event('change'));
+                                }
                             }
 
                             // Criterio 3: Appearance
@@ -1198,11 +1214,17 @@
                             if (row4) {
                                 // Concepto 1: mejor (+)
                                 const select1 = row4.querySelector('td[data-concept-index="1"] select');
-                                if (select1) select1.value = "1";
+                                if (select1) {
+                                    select1.value = "1";
+                                    select1.dispatchEvent(new Event('change'));
+                                }
 
                                 // Concepto 2: peor (-)
                                 const select2 = row4.querySelector('td[data-concept-index="2"] select');
-                                if (select2) select2.value = "-1";
+                                if (select2) {
+                                    select2.value = "-1";
+                                    select2.dispatchEvent(new Event('change'));
+                                }
                             }
 
                             // Criterio 4: Ease of Assembly
@@ -1210,28 +1232,37 @@
                             if (row5) {
                                 // Concepto 1: igual (S)
                                 const select1 = row5.querySelector('td[data-concept-index="1"] select');
-                                if (select1) select1.value = "0";
+                                if (select1) {
+                                    select1.value = "0";
+                                    select1.dispatchEvent(new Event('change'));
+                                }
 
                                 // Concepto 2: mejor (+)
                                 const select2 = row5.querySelector('td[data-concept-index="2"] select');
-                                if (select2) select2.value = "1";
+                                if (select2) {
+                                    select2.value = "1";
+                                    select2.dispatchEvent(new Event('change'));
+                                }
                             }
 
-                            // Actualizar puntuaciones
+                            // Forzar una actualización completa
                             updateScores();
 
-                            // Ir directamente a Results para mostrar el ganador
-                            setTimeout(() => {
-                                switchWizardTab('tab-results');
-                                updateResultsView();
-                            }, 100);
+                            // Marcar que se cargó el ejemplo
+                            exampleLoaded = true;
+                            currentMatrixCriteria = [...criteriaData];
+                            currentMatrixConcepts = [...conceptsData];
+
+                            // NOTA: Ya NO vamos automáticamente a Results
+                            // El usuario puede ir manualmente cuando quiera
+                            // Se queda en la pestaña actual (Data Input & Matrix)
                         }
-                    }, 100);
+                    }, 200);
                 }
             }, 100);
 
-            // Mostrar notificación
-            showNotification("Example data loaded successfully! Matrix generated with predefined weights and scores. Check Results tab.");
+            // Mostrar notificación actualizada
+            showNotification("Example data loaded successfully! Matrix generated with predefined weights and scores.");
         }
 
         function resetAllData() {
@@ -1246,6 +1277,9 @@
                 conceptsData = [];
                 matrixGenerated = false;
                 matrixData = null;
+                exampleLoaded = false;
+                currentMatrixCriteria = [];
+                currentMatrixConcepts = [];
 
                 validateDataInput();
                 saveInputData();
@@ -1255,7 +1289,7 @@
                 if (matrixContainer) {
                     matrixContainer.innerHTML = `<p style="color: #7f8c8d; text-align: center; padding: 2rem;">
                         <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                        Click "Generate Matrix" to create your Pugh Matrix.
+                        Click "Update Matrix" to create your Pugh Matrix.
                     </p>`;
                 }
 
@@ -1321,6 +1355,185 @@
                     document.body.removeChild(notification);
                 }, 500);
             }, 3000);
+        }
+
+        // Función para generar la matriz
+        function generateMatrix() {
+            // Verificar si la matriz ya está generada y los criterios y conceptos no han cambiado
+            if (matrixGenerated) {
+                const criteriaChanged = JSON.stringify(criteriaData) !== JSON.stringify(currentMatrixCriteria);
+                const conceptsChanged = JSON.stringify(conceptsData) !== JSON.stringify(currentMatrixConcepts);
+
+                if (!criteriaChanged && !conceptsChanged) {
+                    // Si no hay cambios, solo actualizar los scores
+                    updateScores();
+                    return;
+                }
+            }
+
+            const matrixContainer = document.getElementById('matrix-container');
+            if (!matrixContainer) return;
+
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.getMonth() + 1;
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const timestamp = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+
+            let tableHTML = `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; flex-wrap: wrap; color: #7f8c8d; font-size: 0.9em;">
+            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" style="height: 35px; width: 35px; border-radius: 5px;">
+            <span>Generated on: ${timestamp}</span>
+        </div>`;
+
+            tableHTML += `<table class="pugh-matrix" id="interactiveMatrix"><thead><tr>`;
+            let baselineOptions = conceptsData.map((con, i) => `<option value="${i}">${con}</option>`).join('');
+            tableHTML += `
+          <th class="criterion-cell">
+              Criteria
+              <div style="margin-top:10px;">
+                <label for="baseline-selector" style="font-size: 0.8em; color: white; margin: 0; display:inline-block;">Select Baseline:</label>
+                <select id="baseline-selector" class="score-select" style="width:auto; min-width:100px; display:inline-block; vertical-align:middle;">${baselineOptions}</select>
+              </div>
+          </th>
+          <th>Weight</th>`;
+            conceptsData.forEach((concept, index) => {
+                tableHTML += `<th data-concept-index="${index}">${concept}</th>`;
+            });
+            tableHTML += `</tr></thead><tbody>`;
+            criteriaData.forEach((criterion, critIndex) => {
+                tableHTML += `<tr data-criterion-index="${critIndex}">`;
+                tableHTML += `<td class="criterion-cell">${criterion}</td>`;
+                tableHTML += `<td><input type="number" class="weight-input" value="1" min="1"></td>`;
+                conceptsData.forEach((concept, conIndex) => {
+                    tableHTML += `<td data-concept-index="${conIndex}">
+                  <select class="score-select">
+                      <option value="1">Better (+)</option>
+                      <option value="0" selected>Same (S)</option>
+                      <option value="-1">Worse (-)</option>
+                  </select>
+              </td>`;
+                });
+                tableHTML += `</tr>`;
+            });
+            tableHTML += `</tbody><tfoot><tr class="total-row"><td><strong>TOTALS</strong></td><td></td>`;
+            conceptsData.forEach((concept, index) => {
+                tableHTML += `<td data-concept-index="${index}">0</td>`;
+            });
+            tableHTML += `</tr></tfoot></table>`;
+
+            matrixContainer.innerHTML = tableHTML;
+
+            matrixGenerated = true;
+            exampleLoaded = false;
+            currentMatrixCriteria = [...criteriaData];
+            currentMatrixConcepts = [...conceptsData];
+
+            const goToResultsBtn = document.getElementById('go-to-results-btn');
+            if (goToResultsBtn) goToResultsBtn.disabled = false;
+
+            const baselineSelector = document.getElementById('baseline-selector');
+            if (baselineSelector) {
+                baselineSelector.addEventListener('change', updateScores);
+            }
+
+            document.querySelectorAll('.weight-input, .score-select').forEach(el => el.addEventListener('change', updateScores));
+
+            updateScores();
+        }
+
+        function updateScores() {
+            const table = document.getElementById('interactiveMatrix');
+            if (!table) return;
+
+            const baselineSelector = document.getElementById('baseline-selector');
+            if (!baselineSelector) return;
+
+            const baselineIndex = parseInt(baselineSelector.value);
+            const concepts = Array.from(table.querySelectorAll('thead th[data-concept-index]'));
+            const criteriaRows = table.querySelectorAll('tbody tr');
+            const totals = Array(concepts.length).fill(0);
+
+            concepts.forEach((th, index) => {
+                const cells = table.querySelectorAll(`td[data-concept-index="${index}"]`);
+                if (index === baselineIndex) {
+                    th.classList.add('baseline-cell');
+                    cells.forEach(cell => {
+                        cell.classList.add('baseline-cell');
+                        cell.innerHTML = '<strong>Baseline (B)</strong>';
+                    });
+                    const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
+                    if (totalCell) totalCell.classList.add('baseline-cell');
+                } else {
+                    th.classList.remove('baseline-cell');
+                    cells.forEach(cell => {
+                        if (!cell.querySelector('select')) {
+                            cell.innerHTML = `<select class="score-select">
+                                <option value="1">Better (+)</option>
+                                <option value="0" selected>Same (S)</option>
+                                <option value="-1">Worse (-)</option>
+                            </select>`;
+                            cell.querySelector('select').addEventListener('change', updateScores);
+                        }
+                        cell.classList.remove('baseline-cell');
+                    });
+                    const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
+                    if (totalCell) totalCell.classList.remove('baseline-cell');
+                }
+            });
+
+            criteriaRows.forEach(row => {
+                const weightInput = row.querySelector('.weight-input');
+                const weight = weightInput ? parseInt(weightInput.value) || 0 : 0;
+                concepts.forEach((th, conIndex) => {
+                    if (conIndex !== baselineIndex) {
+                        const scoreSelect = row.querySelector(`td[data-concept-index="${conIndex}"] select`);
+                        if (scoreSelect) {
+                            const score = parseInt(scoreSelect.value);
+                            totals[conIndex] += score * weight;
+                        }
+                    }
+                });
+            });
+
+            const totalCells = table.querySelectorAll('.total-row td[data-concept-index]');
+            totalCells.forEach((cell, index) => {
+                cell.textContent = (index === baselineIndex) ? '0' : totals[index];
+            });
+
+            highlightWinner(totals, baselineIndex);
+        }
+
+        function highlightWinner(totals, baselineIndex) {
+            const table = document.getElementById('interactiveMatrix');
+            if (!table) return;
+
+            let maxScore = -Infinity;
+            let winnerIndex = -1;
+
+            table.querySelectorAll('.winning-column, .winning-column-header').forEach(el => {
+                el.classList.remove('winning-column', 'winning-column-header');
+            });
+
+            totals.forEach((score, index) => {
+                if (index !== baselineIndex && score > maxScore) {
+                    maxScore = score;
+                    winnerIndex = index;
+                }
+            });
+
+            const isDraw = totals.filter((score, index) => index !== baselineIndex && score === maxScore).length > 1;
+
+            if (winnerIndex !== -1 && maxScore > 0 && !isDraw) {
+                const winnerHeader = table.querySelector(`thead th[data-concept-index="${winnerIndex}"]`);
+                if (winnerHeader) winnerHeader.classList.add('winning-column-header');
+                table.querySelectorAll(`tbody td[data-concept-index="${winnerIndex}"], tfoot td[data-concept-index="${winnerIndex}"]`).forEach(cell => {
+                    cell.classList.add('winning-column');
+                });
+            }
         }
 
         // ============================================
@@ -1438,162 +1651,6 @@
 
                     generateMatrix();
                 });
-            }
-
-            function generateMatrix() {
-                const matrixContainer = document.getElementById('matrix-container');
-                if (!matrixContainer) return;
-
-                const now = new Date();
-                const day = now.getDate();
-                const month = now.getMonth() + 1;
-                const year = now.getFullYear();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-
-                const timestamp = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-
-                let tableHTML = `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; flex-wrap: wrap; color: #7f8c8d; font-size: 0.9em;">
-            <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" style="height: 35px; width: 35px; border-radius: 5px;">
-            <span>Generated on: ${timestamp}</span>
-        </div>`;
-
-                tableHTML += `<table class="pugh-matrix" id="interactiveMatrix"><thead><tr>`;
-                let baselineOptions = conceptsData.map((con, i) => `<option value="${i}">${con}</option>`).join('');
-                tableHTML += `
-          <th class="criterion-cell">
-              Criteria
-              <div style="margin-top:10px;">
-                <label for="baseline-selector" style="font-size: 0.8em; color: white; margin: 0; display:inline-block;">Baseline:</label>
-                <select id="baseline-selector" class="score-select" style="width:auto; min-width:100px; display:inline-block; vertical-align:middle;">${baselineOptions}</select>
-              </div>
-          </th>
-          <th>Weight</th>`;
-                conceptsData.forEach((concept, index) => {
-                    tableHTML += `<th data-concept-index="${index}">${concept}</th>`;
-                });
-                tableHTML += `</tr></thead><tbody>`;
-                criteriaData.forEach((criterion, critIndex) => {
-                    tableHTML += `<tr data-criterion-index="${critIndex}">`;
-                    tableHTML += `<td class="criterion-cell">${criterion}</td>`;
-                    tableHTML += `<td><input type="number" class="weight-input" value="1" min="1"></td>`;
-                    conceptsData.forEach((concept, conIndex) => {
-                        tableHTML += `<td data-concept-index="${conIndex}">
-                  <select class="score-select">
-                      <option value="1">+</option><option value="0" selected>S</option><option value="-1">-</option>
-                  </select>
-              </td>`;
-                    });
-                    tableHTML += `</tr>`;
-                });
-                tableHTML += `</tbody><tfoot><tr class="total-row"><td><strong>TOTALS</strong></td><td></td>`;
-                conceptsData.forEach((concept, index) => {
-                    tableHTML += `<td data-concept-index="${index}">0</td>`;
-                });
-                tableHTML += `</tr></tfoot></table>`;
-
-                matrixContainer.innerHTML = tableHTML;
-
-                matrixGenerated = true;
-                const goToResultsBtn = document.getElementById('go-to-results-btn');
-                if (goToResultsBtn) goToResultsBtn.disabled = false;
-
-                const baselineSelector = document.getElementById('baseline-selector');
-                if (baselineSelector) {
-                    baselineSelector.addEventListener('change', updateScores);
-                }
-
-                document.querySelectorAll('.weight-input, .score-select').forEach(el => el.addEventListener('change', updateScores));
-
-                updateScores();
-            }
-
-            function updateScores() {
-                const table = document.getElementById('interactiveMatrix');
-                if (!table) return;
-
-                const baselineSelector = document.getElementById('baseline-selector');
-                if (!baselineSelector) return;
-
-                const baselineIndex = parseInt(baselineSelector.value);
-                const concepts = Array.from(table.querySelectorAll('thead th[data-concept-index]'));
-                const criteriaRows = table.querySelectorAll('tbody tr');
-                const totals = Array(concepts.length).fill(0);
-
-                concepts.forEach((th, index) => {
-                    const cells = table.querySelectorAll(`td[data-concept-index="${index}"]`);
-                    if (index === baselineIndex) {
-                        th.classList.add('baseline-cell');
-                        cells.forEach(cell => {
-                            cell.classList.add('baseline-cell');
-                            cell.innerHTML = '<strong>B</strong>';
-                        });
-                        const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
-                        if (totalCell) totalCell.classList.add('baseline-cell');
-                    } else {
-                        th.classList.remove('baseline-cell');
-                        cells.forEach(cell => {
-                            if (!cell.querySelector('select')) {
-                                cell.innerHTML = `<select class="score-select"><option value="1">+</option><option value="0" selected>S</option><option value="-1">-</option></select>`;
-                                cell.querySelector('select').addEventListener('change', updateScores);
-                            }
-                            cell.classList.remove('baseline-cell');
-                        });
-                        const totalCell = table.querySelector(`.total-row td[data-concept-index="${index}"]`);
-                        if (totalCell) totalCell.classList.remove('baseline-cell');
-                    }
-                });
-
-                criteriaRows.forEach(row => {
-                    const weightInput = row.querySelector('.weight-input');
-                    const weight = weightInput ? parseInt(weightInput.value) || 0 : 0;
-                    concepts.forEach((th, conIndex) => {
-                        if (conIndex !== baselineIndex) {
-                            const scoreSelect = row.querySelector(`td[data-concept-index="${conIndex}"] select`);
-                            if (scoreSelect) {
-                                const score = parseInt(scoreSelect.value);
-                                totals[conIndex] += score * weight;
-                            }
-                        }
-                    });
-                });
-
-                const totalCells = table.querySelectorAll('.total-row td[data-concept-index]');
-                totalCells.forEach((cell, index) => {
-                    cell.textContent = (index === baselineIndex) ? '0' : totals[index];
-                });
-
-                highlightWinner(totals, baselineIndex);
-            }
-
-            function highlightWinner(totals, baselineIndex) {
-                const table = document.getElementById('interactiveMatrix');
-                if (!table) return;
-
-                let maxScore = -Infinity;
-                let winnerIndex = -1;
-
-                table.querySelectorAll('.winning-column, .winning-column-header').forEach(el => {
-                    el.classList.remove('winning-column', 'winning-column-header');
-                });
-
-                totals.forEach((score, index) => {
-                    if (index !== baselineIndex && score > maxScore) {
-                        maxScore = score;
-                        winnerIndex = index;
-                    }
-                });
-
-                const isDraw = totals.filter((score, index) => index !== baselineIndex && score === maxScore).length > 1;
-
-                if (winnerIndex !== -1 && maxScore > 0 && !isDraw) {
-                    const winnerHeader = table.querySelector(`thead th[data-concept-index="${winnerIndex}"]`);
-                    if (winnerHeader) winnerHeader.classList.add('winning-column-header');
-                    table.querySelectorAll(`tbody td[data-concept-index="${winnerIndex}"], tfoot td[data-concept-index="${winnerIndex}"]`).forEach(cell => {
-                        cell.classList.add('winning-column');
-                    });
-                }
             }
 
             if (exportBtn) {
