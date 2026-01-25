@@ -424,6 +424,22 @@
             background-color: #c0392b;
         }
 
+        .btn-edit {
+            background-color: var(--secondary-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+        }
+
+        .btn-edit:hover {
+            background-color: #2980b9;
+        }
+
         button:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
@@ -440,19 +456,17 @@
             margin-top: -0.6rem;
         }
 
-        .scorecard-grid {
+        .perspectives-container {
             max-width: 100%;
             margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.25rem;
         }
 
-        .scorecard-grid>.block {
-            flex: 1 1 450px;
-            min-width: 320px;
-            max-width: none;
-            margin: 0;
+        .perspectives-container>.block {
+            margin-bottom: 1.25rem;
+        }
+
+        .perspectives-container>.block:last-child {
+            margin-bottom: 0;
         }
 
         table {
@@ -480,7 +494,7 @@
         }
 
         th.actions-col {
-            width: 70px;
+            width: 100px;
             text-align: center;
         }
 
@@ -738,6 +752,121 @@
             text-align: left;
             line-height: 1.6;
         }
+
+        /* Estilos para edición directa en tabla */
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .editable-cell:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .editable-cell.editing {
+            background-color: #f8f9fa;
+            padding: 0;
+        }
+
+        .editable-cell input,
+        .editable-cell textarea,
+        .editable-cell select {
+            width: 100%;
+            padding: 8px 10px;
+            margin: 0;
+            border: 2px solid var(--secondary-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: 'Nunito', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .editable-cell textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .editable-cell select {
+            padding: 7px 10px;
+        }
+
+        .kpi-type-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            background-color: #6c757d;
+            color: white;
+            cursor: pointer;
+        }
+
+        .kpi-type-badge:hover {
+            opacity: 0.8;
+        }
+
+        .kpi-type-badge.less {
+            background-color: #e74c3c;
+        }
+
+        .kpi-type-badge.more {
+            background-color: #27ae60;
+        }
+
+        .edit-mode {
+            background-color: #f9f9f9;
+        }
+
+        /* Botones en modo edición */
+        .edit-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .btn-save {
+            background-color: var(--success-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-save:hover {
+            background-color: #229954;
+        }
+
+        .btn-cancel {
+            background-color: var(--warning-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #d4ac0d;
+        }
+
+        /* Indicador visual de celda editable */
+        .cell-edit-icon {
+            opacity: 0;
+            margin-left: 5px;
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+            transition: opacity 0.2s;
+        }
+
+        .editable-cell:hover .cell-edit-icon {
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -866,6 +995,7 @@
                                             (KPI)</i>. If you can't find what you need, select "Other..." to type your
                                         own.
                                     </li>
+                                    <li>Select the <i>KPI Type</i> (More is Better or Less is Better).</li>
                                     <li>Enter the numeric values for the <i>Target</i> and <i>Actual Value</i>.</li>
                                     <li>Describe the associated <i>Strategic Initiative</i>, which is the action being
                                         taken to
@@ -878,6 +1008,8 @@
                                 calculated automatically and displayed with a percentage and a status badge (Good,
                                 Average, Poor).
                             </li>
+                            <li><strong>Edit Metrics Directly:</strong> Click on any metric in the table to edit it
+                                directly. No need for edit buttons!</li>
                             <li><strong>View Results:</strong> Go to the <strong>Results</strong> tab to see a
                                 consolidated view of all your metrics and export them to Excel.</li>
                         </ul>
@@ -912,14 +1044,23 @@
                                 <div>
                                     <label for="objective"><i class="fas fa-bullseye"></i> Objective</label>
                                     <select id="objective" required></select>
-                                    <div id="customObjectiveContainer" class="custom-input-container"><input type="text"
-                                            id="customObjective" placeholder="Enter custom objective"></div>
+                                    <div id="customObjectiveContainer" class="custom-input-container">
+                                        <input type="text" id="customObjective" placeholder="Enter custom objective">
+                                    </div>
                                 </div>
                                 <div>
                                     <label for="measure"><i class="fas fa-ruler-combined"></i> Measure (KPI)</label>
                                     <select id="measure" required></select>
-                                    <div id="customMeasureContainer" class="custom-input-container"><input type="text"
-                                            id="customMeasure" placeholder="Enter custom measure"></div>
+                                    <div id="customMeasureContainer" class="custom-input-container">
+                                        <input type="text" id="customMeasure" placeholder="Enter custom measure">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="kpiType"><i class="fas fa-chart-line"></i> KPI Type</label>
+                                    <select id="kpiType" required>
+                                        <option value="more">More is Better (e.g., Revenue, Satisfaction)</option>
+                                        <option value="less">Less is Better (e.g., Defects, Time to Market)</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label for="target"><i class="fas fa-flag-checkered"></i> Numeric Target</label>
@@ -934,9 +1075,10 @@
                             <textarea id="initiative" rows="2"
                                 placeholder="E.g., Optimize production costs and renegotiate with suppliers."
                                 required></textarea>
-                            <button type="submit" id="addBtn" class="btn-primary" disabled><i
-                                    class="fas fa-plus-circle"></i> Add to
-                                Scorecard</button>
+                            <div id="formButtons">
+                                <button type="submit" id="addBtn" class="btn-primary"><i class="fas fa-plus-circle"></i>
+                                    Add to Scorecard</button>
+                            </div>
                         </form>
                     </div>
 
@@ -966,9 +1108,15 @@
                         </div>
                     </div>
 
-                    <div class="scorecard-grid">
+                    <!-- CONTENEDOR DE PERSPECTIVAS EN FORMA DE BLOQUES APILADOS -->
+                    <div class="perspectives-container">
+                        <!-- Financial Perspective -->
                         <div class="block">
-                            <div class="block-title"><i class="fas fa-dollar-sign"></i> Financial Perspective</div>
+                            <div class="block-title" style="color: var(--financial-bg);">
+                                <i class="fas fa-dollar-sign"></i> Financial Perspective
+                                <span id="financial-count" style="font-size: 0.9rem; color: #777; margin-left: 8px;">(0
+                                    metrics)</span>
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -978,14 +1126,21 @@
                                         <th class="th-financial">Actual</th>
                                         <th class="th-financial">%</th>
                                         <th class="th-financial">Status</th>
+                                        <th class="th-financial">Initiative</th>
                                         <th class="th-financial actions-col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="financialTableBody"></tbody>
                             </table>
                         </div>
+
+                        <!-- Customer Perspective -->
                         <div class="block">
-                            <div class="block-title"><i class="fas fa-users"></i> Customer Perspective</div>
+                            <div class="block-title" style="color: var(--customer-bg);">
+                                <i class="fas fa-users"></i> Customer Perspective
+                                <span id="customer-count" style="font-size: 0.9rem; color: #777; margin-left: 8px;">(0
+                                    metrics)</span>
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -995,14 +1150,21 @@
                                         <th class="th-customer">Actual</th>
                                         <th class="th-customer">%</th>
                                         <th class="th-customer">Status</th>
+                                        <th class="th-customer">Initiative</th>
                                         <th class="th-customer actions-col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="customerTableBody"></tbody>
                             </table>
                         </div>
+
+                        <!-- Internal Processes Perspective -->
                         <div class="block">
-                            <div class="block-title"><i class="fas fa-cogs"></i> Internal Processes Perspective</div>
+                            <div class="block-title" style="color: var(--internal-bg);">
+                                <i class="fas fa-cogs"></i> Internal Processes Perspective
+                                <span id="internal-count" style="font-size: 0.9rem; color: #777; margin-left: 8px;">(0
+                                    metrics)</span>
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -1012,14 +1174,21 @@
                                         <th class="th-internal">Actual</th>
                                         <th class="th-internal">%</th>
                                         <th class="th-internal">Status</th>
+                                        <th class="th-internal">Initiative</th>
                                         <th class="th-internal actions-col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="internalTableBody"></tbody>
                             </table>
                         </div>
+
+                        <!-- Learning & Growth Perspective -->
                         <div class="block">
-                            <div class="block-title"><i class="fas fa-brain"></i> Learning & Growth Perspective</div>
+                            <div class="block-title" style="color: var(--learning-bg);">
+                                <i class="fas fa-brain"></i> Learning & Growth Perspective
+                                <span id="learning-count" style="font-size: 0.9rem; color: #777; margin-left: 8px;">(0
+                                    metrics)</span>
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -1029,6 +1198,7 @@
                                         <th class="th-learning">Actual</th>
                                         <th class="th-learning">%</th>
                                         <th class="th-learning">Status</th>
+                                        <th class="th-learning">Initiative</th>
                                         <th class="th-learning actions-col">Actions</th>
                                     </tr>
                                 </thead>
@@ -1149,6 +1319,7 @@
                                         <th style="background-color: ${color}; color: white;">%</th>
                                         <th style="background-color: ${color}; color: white;">Status</th>
                                         <th style="background-color: ${color}; color: white;">Initiative</th>
+                                        <th style="background-color: ${color}; color: white;">KPI Type</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1156,15 +1327,19 @@
 
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
+                        const kpiType = row.dataset.kpiType || 'more';
+                        const kpiTypeText = kpiType === 'less' ? 'Less is Better' : 'More is Better';
+
                         html += `
                             <tr>
                                 <td>${cells[0].textContent}</td>
-                                <td>${cells[1].textContent}</td>
+                                <td>${cells[1].innerHTML.replace(/<span[^>]*>.*?<\/span>/g, '')}</td>
                                 <td>${cells[2].textContent}</td>
                                 <td>${cells[3].textContent}</td>
                                 <td>${cells[4].textContent}</td>
                                 <td>${cells[5].innerHTML}</td>
-                                <td>${row.dataset.initiative || ''}</td>
+                                <td>${cells[6].textContent}</td>
+                                <td>${kpiTypeText}</td>
                             </tr>
                         `;
                     });
@@ -1189,6 +1364,19 @@
             updateResultsView();
             document.getElementById('resultsDisplayContainer').classList.add('show');
             showToast('Results generated successfully!', 'success');
+        }
+
+        // Función para actualizar los contadores de métricas
+        function updateMetricsCount() {
+            const perspectives = ['financial', 'customer', 'internal', 'learning'];
+            perspectives.forEach(perspective => {
+                const tableBody = document.getElementById(`${perspective}TableBody`);
+                const rows = tableBody.querySelectorAll('tr');
+                const countElement = document.getElementById(`${perspective}-count`);
+                if (countElement) {
+                    countElement.textContent = `(${rows.length} metrics)`;
+                }
+            });
         }
 
         // Funciones auxiliares
@@ -1265,7 +1453,7 @@
         }
 
         // ============================================
-        // CÓDIGO DE LA APLICACIÓN
+        // CÓDIGO DE LA APLICACIÓN CON EDICIÓN DIRECTA
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
             const bscForm = document.getElementById('bscForm');
@@ -1275,6 +1463,7 @@
             const perspectiveSelect = document.getElementById('perspective');
             const objectiveSelect = document.getElementById('objective');
             const measureSelect = document.getElementById('measure');
+            const kpiTypeSelect = document.getElementById('kpiType');
             const customObjectiveContainer = document.getElementById('customObjectiveContainer');
             const customMeasureContainer = document.getElementById('customMeasureContainer');
             const customObjectiveInput = document.getElementById('customObjective');
@@ -1306,17 +1495,36 @@
                 }
             };
 
+            // Identificar qué KPIs son "menos es mejor"
+            const lessIsBetterKPIs = [
+                'Process Cycle Time',
+                'Production Defect Rate',
+                'Time to Market for New Products',
+                'System Downtime Percentage',
+                'Staff Turnover Rate',
+                'Number of Complaints',
+                'Supplier Lead Time',
+                'Budget Variance',
+                'Cost of Goods Sold (COGS)',
+                'Operating Cost Ratio'
+            ];
+
             // Datos de ejemplo completos para todas las perspectivas
             const exampleData = [
-                { perspective: 'financial', objective: 'Improve Profitability', measure: 'Net Profit Margin (%)', target: '15', actual: '16.5', initiative: 'Implement cost-saving measures across all departments.' },
-                { perspective: 'financial', objective: 'Increase Revenue', measure: 'Revenue Growth Rate (%)', target: '10', actual: '12.3', initiative: 'Launch new marketing campaign and expand to new markets.' },
-                { perspective: 'customer', objective: 'Enhance Customer Satisfaction', measure: 'Net Promoter Score (NPS)', target: '50', actual: '45', initiative: 'Launch a new customer feedback program and act on insights.' },
-                { perspective: 'customer', objective: 'Improve Customer Loyalty', measure: 'Customer Retention Rate', target: '85', actual: '88', initiative: 'Implement loyalty program and improve after-sales service.' },
-                { perspective: 'internal', objective: 'Optimize Operational Processes', measure: 'On-time Delivery Rate', target: '95', actual: '97', initiative: 'Automate the logistics and dispatch system.' },
-                { perspective: 'internal', objective: 'Improve Supply Chain', measure: 'Inventory Turnover Rate', target: '8', actual: '7.5', initiative: 'Implement just-in-time inventory management.' },
-                { perspective: 'learning', objective: 'Develop Employee Skills', measure: 'Employee Training Hours', target: '40', actual: '42', initiative: 'Subscribe to an online learning platform for all staff.' },
-                { perspective: 'learning', objective: 'Enhance Corporate Culture', measure: 'Employee Engagement Score', target: '75', actual: '72', initiative: 'Conduct quarterly employee surveys and implement feedback.' }
+                { perspective: 'financial', objective: 'Improve Profitability', measure: 'Net Profit Margin (%)', kpiType: 'more', target: '15', actual: '16.5', initiative: 'Implement cost-saving measures across all departments.' },
+                { perspective: 'financial', objective: 'Increase Revenue', measure: 'Revenue Growth Rate (%)', kpiType: 'more', target: '10', actual: '12.3', initiative: 'Launch new marketing campaign and expand to new markets.' },
+                { perspective: 'customer', objective: 'Enhance Customer Satisfaction', measure: 'Net Promoter Score (NPS)', kpiType: 'more', target: '50', actual: '45', initiative: 'Launch a new customer feedback program and act on insights.' },
+                { perspective: 'customer', objective: 'Enhance Customer Satisfaction', measure: 'Number of Complaints', kpiType: 'less', target: '20', actual: '18', initiative: 'Improve customer service response time and quality.' },
+                { perspective: 'internal', objective: 'Optimize Operational Processes', measure: 'On-time Delivery Rate', kpiType: 'more', target: '95', actual: '97', initiative: 'Automate the logistics and dispatch system.' },
+                { perspective: 'internal', objective: 'Foster Innovation', measure: 'Time to Market for New Products', kpiType: 'less', target: '180', actual: '165', initiative: 'Streamline product development process.' },
+                { perspective: 'internal', objective: 'Improve Supply Chain', measure: 'Supplier Lead Time', kpiType: 'less', target: '30', actual: '28', initiative: 'Implement just-in-time inventory management.' },
+                { perspective: 'learning', objective: 'Develop Employee Skills', measure: 'Employee Training Hours', kpiType: 'more', target: '40', actual: '42', initiative: 'Subscribe to an online learning platform for all staff.' },
+                { perspective: 'learning', objective: 'Enhance Corporate Culture', measure: 'Employee Engagement Score', kpiType: 'more', target: '75', actual: '72', initiative: 'Conduct quarterly employee surveys and implement feedback.' }
             ];
+
+            // Variable para rastrear qué celda se está editando
+            let editingCell = null;
+            let originalContent = '';
 
             const updateObjectiveDropdown = () => {
                 const perspective = perspectiveSelect.value;
@@ -1338,6 +1546,13 @@
                 }
                 measureSelect.add(new Option('Other...', 'other'));
                 toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput);
+
+                // Auto-seleccionar el tipo de KPI basado en si es "menos es mejor"
+                if (measureSelect.value !== 'other' && lessIsBetterKPIs.includes(measureSelect.value)) {
+                    kpiTypeSelect.value = 'less';
+                } else if (measureSelect.value !== 'other') {
+                    kpiTypeSelect.value = 'more';
+                }
             };
 
             const toggleCustomInput = (selectEl, containerEl, inputEl) => {
@@ -1349,40 +1564,308 @@
             };
 
             const validateForm = () => {
-                addBtn.disabled = !allInputs.every(input => !input.required || (input.value?.trim() !== ''));
+                // Validar que todos los campos requeridos estén llenos
+                let isValid = true;
+
+                // Validar perspectiva
+                if (!perspectiveSelect.value) isValid = false;
+
+                // Validar objetivo
+                if (objectiveSelect.value === 'other') {
+                    if (!customObjectiveInput.value.trim()) isValid = false;
+                } else if (!objectiveSelect.value) {
+                    isValid = false;
+                }
+
+                // Validar medida
+                if (measureSelect.value === 'other') {
+                    if (!customMeasureInput.value.trim()) isValid = false;
+                } else if (!measureSelect.value) {
+                    isValid = false;
+                }
+
+                // Validar tipo de KPI
+                if (!kpiTypeSelect.value) isValid = false;
+
+                // Validar target y actual
+                const targetValue = document.getElementById('target').value;
+                const actualValue = document.getElementById('actual').value;
+                if (!targetValue || !actualValue) isValid = false;
+
+                // Validar iniciativa
+                const initiativeValue = document.getElementById('initiative').value;
+                if (!initiativeValue.trim()) isValid = false;
+
+                // Habilitar/deshabilitar botón de agregar
+                addBtn.disabled = !isValid;
+
+                return isValid;
+            };
+
+            const calculateAchievement = (target, actual, kpiType) => {
+                target = parseFloat(target);
+                actual = parseFloat(actual);
+
+                if (isNaN(target) || isNaN(actual)) return 0;
+
+                if (kpiType === 'less') {
+                    // Para "menos es mejor", calculamos cuánto mejor es el valor actual
+                    if (target === 0 && actual === 0) return 100;
+                    if (target === 0) return 0;
+                    if (actual === 0) return (target > 0) ? 100 : 0;
+
+                    // Si el valor actual es menor que el target, es mejor
+                    const achievement = (target / actual) * 100;
+                    return Math.min(achievement, 200); // Limitar a 200% como máximo
+                } else {
+                    // Para "más es mejor"
+                    if (target === 0 && actual === 0) return 100;
+                    if (target === 0) return (actual > 0) ? 100 : 0;
+
+                    const achievement = (actual / target) * 100;
+                    return Math.min(achievement, 200); // Limitar a 200% como máximo
+                }
+            };
+
+            const getStatusBadge = (achievement) => {
+                if (achievement >= 100) {
+                    return '<span class="badge badge-good">Good</span>';
+                } else if (achievement >= 80) {
+                    return '<span class="badge badge-average">Average</span>';
+                } else {
+                    return '<span class="badge badge-poor">Poor</span>';
+                }
+            };
+
+            const getKpiTypeBadge = (kpiType, kpiName) => {
+                const isLessBetter = kpiType === 'less' || lessIsBetterKPIs.includes(kpiName);
+                const type = isLessBetter ? 'less' : 'more';
+                const title = isLessBetter ? 'Less is Better' : 'More is Better';
+                return ` <span class="kpi-type-badge ${type}" title="${title}" data-type="${type}">${isLessBetter ? '↓' : '↑'}</span>`;
             };
 
             const addEntryToTable = () => {
                 const perspective = perspectiveSelect.value;
                 const objective = objectiveSelect.value === 'other' ? customObjectiveInput.value.trim() : objectiveSelect.value;
                 const measure = measureSelect.value === 'other' ? customMeasureInput.value.trim() : measureSelect.value;
+                const kpiType = kpiTypeSelect.value;
                 const targetNum = parseFloat(document.getElementById('target').value);
                 const actualNum = parseFloat(document.getElementById('actual').value);
-                const achievement = (targetNum === 0 && actualNum > 0) ? 100 : (targetNum !== 0 ? (actualNum / targetNum) * 100 : 0);
-                let statusClass = 'badge-poor', statusText = 'Poor';
-                if (achievement >= 100) {
-                    statusClass = 'badge-good';
-                    statusText = 'Good';
-                }
-                else if (achievement >= 80) {
-                    statusClass = 'badge-average';
-                    statusText = 'Average';
-                }
+                const initiative = document.getElementById('initiative').value;
+
+                const achievement = calculateAchievement(targetNum, actualNum, kpiType);
+                const statusBadge = getStatusBadge(achievement);
+                const kpiTypeBadge = getKpiTypeBadge(kpiType, measure);
+
                 const tableBody = document.getElementById(`${perspective}TableBody`);
                 const newRow = tableBody.insertRow();
-                newRow.dataset.initiative = document.getElementById('initiative').value;
+                newRow.dataset.kpiType = kpiType;
                 newRow.innerHTML = `
-                    <td>${objective}</td>
-                    <td>${measure}</td>
-                    <td>${targetNum}</td>
-                    <td>${actualNum}</td>
+                    <td class="editable-cell" data-field="objective">${objective}<i class="fas fa-edit cell-edit-icon"></i></td>
+                    <td class="editable-cell" data-field="measure">${measure}${kpiTypeBadge}<i class="fas fa-edit cell-edit-icon"></i></td>
+                    <td class="editable-cell" data-field="target">${targetNum}<i class="fas fa-edit cell-edit-icon"></i></td>
+                    <td class="editable-cell" data-field="actual">${actualNum}<i class="fas fa-edit cell-edit-icon"></i></td>
                     <td data-achievement="${achievement.toFixed(2)}">${achievement.toFixed(0)}%</td>
-                    <td><span class="badge ${statusClass}">${statusText}</span></td>
-                    <td class="actions-col"><button class="btn-delete" title="Delete Metric"><i class="fas fa-trash-alt"></i></button></td>
+                    <td>${statusBadge}</td>
+                    <td class="editable-cell" data-field="initiative">${initiative}<i class="fas fa-edit cell-edit-icon"></i></td>
+                    <td class="actions-col">
+                        <button class="btn-delete" title="Delete Metric"><i class="fas fa-trash-alt"></i></button>
+                    </td>
                 `;
                 updateSummaries();
+                updateMetricsCount();
+                attachCellEditListeners(newRow);
                 showToast('Metric added successfully!', 'success');
             };
+
+            // Función para activar la edición de una celda
+            function activateCellEdit(cell) {
+                if (editingCell) {
+                    cancelCellEdit();
+                }
+
+                editingCell = cell;
+                originalContent = cell.innerHTML;
+                const field = cell.dataset.field;
+                const currentValue = cell.textContent.replace('↓', '').replace('↑', '').trim();
+
+                cell.classList.add('editing');
+
+                switch (field) {
+                    case 'objective':
+                    case 'measure':
+                    case 'initiative':
+                        cell.innerHTML = `<textarea>${currentValue}</textarea>`;
+                        break;
+                    case 'target':
+                    case 'actual':
+                        cell.innerHTML = `<input type="number" step="any" value="${currentValue}">`;
+                        break;
+                }
+
+                // Enfocar el campo de entrada
+                const input = cell.querySelector('input, textarea');
+                if (input) {
+                    input.focus();
+                    input.select();
+
+                    // Guardar al presionar Enter (solo para inputs, no textareas)
+                    if (input.tagName === 'INPUT') {
+                        input.addEventListener('keypress', function (e) {
+                            if (e.key === 'Enter') {
+                                saveCellEdit(cell);
+                            }
+                        });
+                    }
+
+                    // Guardar al perder el foco
+                    input.addEventListener('blur', function () {
+                        setTimeout(() => {
+                            if (editingCell === cell) {
+                                saveCellEdit(cell);
+                            }
+                        }, 100);
+                    });
+                }
+            }
+
+            // Función para guardar la edición de una celda
+            function saveCellEdit(cell) {
+                if (!editingCell || editingCell !== cell) return;
+
+                const field = cell.dataset.field;
+                const input = cell.querySelector('input, textarea');
+                const newValue = input ? input.value.trim() : '';
+
+                if (!newValue && field !== 'initiative') {
+                    cancelCellEdit();
+                    return;
+                }
+
+                const row = cell.parentNode;
+                const perspective = getPerspectiveFromTable(row.closest('tbody').id);
+                let kpiType = row.dataset.kpiType || 'more';
+
+                // Actualizar el contenido de la celda
+                if (field === 'measure') {
+                    // Verificar si el KPI es "menos es mejor"
+                    const isLessBetter = lessIsBetterKPIs.includes(newValue);
+                    if (isLessBetter) {
+                        kpiType = 'less';
+                        row.dataset.kpiType = 'less';
+                    }
+                    const kpiTypeBadge = getKpiTypeBadge(kpiType, newValue);
+                    cell.innerHTML = `${newValue}${kpiTypeBadge}<i class="fas fa-edit cell-edit-icon"></i>`;
+                } else if (field === 'target' || field === 'actual') {
+                    cell.innerHTML = `${newValue}<i class="fas fa-edit cell-edit-icon"></i>`;
+                } else {
+                    cell.innerHTML = `${newValue}<i class="fas fa-edit cell-edit-icon"></i>`;
+                }
+
+                // Recalcular achievement y status
+                const targetCell = row.querySelector('td[data-field="target"]');
+                const actualCell = row.querySelector('td[data-field="actual"]');
+                const targetNum = parseFloat(targetCell.textContent);
+                const actualNum = parseFloat(actualCell.textContent);
+
+                const achievement = calculateAchievement(targetNum, actualNum, kpiType);
+                const statusBadge = getStatusBadge(achievement);
+
+                // Actualizar las celdas de % y status
+                const achievementCell = row.querySelector('td:nth-child(5)');
+                const statusCell = row.querySelector('td:nth-child(6)');
+
+                achievementCell.dataset.achievement = achievement.toFixed(2);
+                achievementCell.textContent = `${achievement.toFixed(0)}%`;
+                statusCell.innerHTML = statusBadge;
+
+                cell.classList.remove('editing');
+                editingCell = null;
+
+                updateSummaries();
+                showToast('Metric updated successfully!', 'success');
+            }
+
+            // Función para cancelar la edición de una celda
+            function cancelCellEdit() {
+                if (editingCell) {
+                    editingCell.innerHTML = originalContent;
+                    editingCell.classList.remove('editing');
+                    editingCell = null;
+                }
+            }
+
+            // Función para adjuntar listeners de edición a las celdas de una fila
+            function attachCellEditListeners(row) {
+                const editableCells = row.querySelectorAll('.editable-cell');
+                editableCells.forEach(cell => {
+                    cell.addEventListener('click', function (e) {
+                        // No activar edición si se hace clic en el badge de tipo KPI
+                        if (e.target.classList.contains('kpi-type-badge')) {
+                            toggleKpiType(row);
+                            return;
+                        }
+
+                        // No activar edición si ya se está editando
+                        if (editingCell) return;
+
+                        activateCellEdit(this);
+                    });
+                });
+
+                // Listener para el badge de tipo KPI
+                const kpiTypeBadge = row.querySelector('.kpi-type-badge');
+                if (kpiTypeBadge) {
+                    kpiTypeBadge.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        toggleKpiType(row);
+                    });
+                }
+            }
+
+            // Función para alternar el tipo de KPI
+            function toggleKpiType(row) {
+                const currentType = row.dataset.kpiType || 'more';
+                const newType = currentType === 'more' ? 'less' : 'more';
+                row.dataset.kpiType = newType;
+
+                // Actualizar el badge visual
+                const kpiTypeBadge = row.querySelector('.kpi-type-badge');
+                if (kpiTypeBadge) {
+                    kpiTypeBadge.className = `kpi-type-badge ${newType}`;
+                    kpiTypeBadge.title = newType === 'less' ? 'Less is Better' : 'More is Better';
+                    kpiTypeBadge.textContent = newType === 'less' ? '↓' : '↑';
+                    kpiTypeBadge.dataset.type = newType;
+                }
+
+                // Recalcular achievement y status
+                const targetCell = row.querySelector('td[data-field="target"]');
+                const actualCell = row.querySelector('td[data-field="actual"]');
+                const targetNum = parseFloat(targetCell.textContent);
+                const actualNum = parseFloat(actualCell.textContent);
+
+                const achievement = calculateAchievement(targetNum, actualNum, newType);
+                const statusBadge = getStatusBadge(achievement);
+
+                // Actualizar las celdas de % y status
+                const achievementCell = row.querySelector('td:nth-child(5)');
+                const statusCell = row.querySelector('td:nth-child(6)');
+
+                achievementCell.dataset.achievement = achievement.toFixed(2);
+                achievementCell.textContent = `${achievement.toFixed(0)}%`;
+                statusCell.innerHTML = statusBadge;
+
+                updateSummaries();
+                showToast(`KPI type changed to "${newType === 'less' ? 'Less is Better' : 'More is Better'}"`, 'info');
+            }
+
+            function getPerspectiveFromTable(tableBodyId) {
+                if (tableBodyId.includes('financial')) return 'financial';
+                if (tableBodyId.includes('customer')) return 'customer';
+                if (tableBodyId.includes('internal')) return 'internal';
+                if (tableBodyId.includes('learning')) return 'learning';
+                return 'financial';
+            }
 
             const updateSummaries = () => {
                 ['financial', 'customer', 'internal', 'learning'].forEach(p => {
@@ -1400,7 +1883,7 @@
                 });
             };
 
-            // Función mejorada y optimizada para cargar un ejemplo completo
+            // Función para cargar ejemplo
             const loadExample = () => {
                 // Primero resetear todo
                 resetAll(true);
@@ -1412,13 +1895,10 @@
                 let delay = 0;
 
                 exampleData.forEach((ex, index) => {
-                    // Usar setTimeout para evitar bloqueo del UI, pero con intervalos más cortos
                     setTimeout(() => {
-                        // Configurar el formulario con cada ejemplo
                         perspectiveSelect.value = ex.perspective;
                         updateObjectiveDropdown();
 
-                        // Pequeña pausa para asegurar que los dropdowns se actualicen
                         setTimeout(() => {
                             objectiveSelect.value = ex.objective;
                             updateMeasureDropdown();
@@ -1428,31 +1908,27 @@
                                 document.getElementById('target').value = ex.target;
                                 document.getElementById('actual').value = ex.actual;
                                 document.getElementById('initiative').value = ex.initiative;
+                                kpiTypeSelect.value = ex.kpiType;
 
-                                // Validar y agregar
-                                validateForm();
-                                if (!addBtn.disabled) {
+                                if (validateForm()) {
                                     addEntryToTable();
                                 }
 
-                                // Resetear el formulario para el siguiente (excepto el último)
                                 if (index < exampleData.length - 1) {
                                     bscForm.reset();
                                     updateObjectiveDropdown();
                                     validateForm();
                                 }
-                            }, 10); // Reducido de 100ms a 10ms
-                        }, 10); // Reducido de 100ms a 10ms
+                            }, 10);
+                        }, 10);
                     }, delay);
 
-                    // Incrementar el delay solo ligeramente para cada ejemplo
-                    delay += 80; // Reducido de 300ms a 80ms
+                    delay += 80;
                 });
 
-                // Mostrar mensaje después de un tiempo razonable
                 setTimeout(() => {
                     showToast('Complete example loaded with metrics across all perspectives!', 'success');
-                }, delay + 100); // Reducido de +500ms a +100ms
+                }, delay + 100);
             };
 
             const resetAll = (silent = false) => {
@@ -1463,6 +1939,9 @@
                 updateObjectiveDropdown();
                 validateForm();
                 updateSummaries();
+                updateMetricsCount();
+                // Cancelar cualquier edición en curso
+                cancelCellEdit();
                 // Ocultar los resultados
                 document.getElementById('resultsDisplayContainer').classList.remove('show');
                 if (!silent) {
@@ -1480,10 +1959,13 @@
 
             const handleActionClick = (event) => {
                 const deleteBtn = event.target.closest('.btn-delete');
+
                 if (deleteBtn) {
                     if (confirm('Are you sure you want to delete this metric?')) {
-                        deleteBtn.closest('tr').remove();
+                        const row = deleteBtn.closest('tr');
+                        row.remove();
                         updateSummaries();
+                        updateMetricsCount();
                         // Ocultar resultados si están mostrándose
                         document.getElementById('resultsDisplayContainer').classList.remove('show');
                         showToast('Metric deleted.', 'info');
@@ -1494,19 +1976,36 @@
             const exportToExcel = () => {
                 const wb = XLSX.utils.book_new();
                 ['financial', 'customer', 'internal', 'learning'].forEach(p => {
-                    const table = document.getElementById(`${p}TableBody`).parentNode;
-                    const perspectiveName = getPerspectiveName(p);
-                    const rows = table.querySelectorAll('tbody tr');
+                    const tableBody = document.getElementById(`${p}TableBody`);
+                    const rows = tableBody.querySelectorAll('tr');
                     if (rows.length === 0) return;
-                    const headers = ['Objective', 'KPI', 'Target', 'Actual', '%', 'Status', 'Initiative'];
-                    const data = Array.from(rows).map(row => {
-                        const rowData = Array.from(row.querySelectorAll('td')).map(td => td.innerText).slice(0, -1);
-                        rowData.push(row.dataset.initiative || '');
-                        return rowData;
+
+                    const perspectiveName = getPerspectiveName(p);
+                    const headers = ['Objective', 'KPI', 'KPI Type', 'Target', 'Actual', 'Achievement %', 'Status', 'Initiative'];
+                    const data = [];
+
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        const kpiType = row.dataset.kpiType === 'less' ? 'Less is Better' : 'More is Better';
+                        const achievement = row.querySelector('td[data-achievement]')?.dataset.achievement || '0';
+                        const status = cells[5].querySelector('.badge')?.textContent || '';
+
+                        data.push([
+                            cells[0].textContent,
+                            cells[1].textContent.replace('↓', '').replace('↑', '').trim(),
+                            kpiType,
+                            cells[2].textContent,
+                            cells[3].textContent,
+                            achievement,
+                            status,
+                            cells[6].textContent
+                        ]);
                     });
+
                     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
                     XLSX.utils.book_append_sheet(wb, ws, perspectiveName.substring(0, 30));
                 });
+
                 if (wb.SheetNames.length > 0) {
                     XLSX.writeFile(wb, `Strategic_Scorecard_${new Date().toISOString().slice(0, 10)}.xlsx`);
                     showToast('Scorecard exported successfully!', 'success');
@@ -1528,7 +2027,16 @@
             allInputs.forEach(input => input.addEventListener('input', validateForm));
             perspectiveSelect.addEventListener('change', updateObjectiveDropdown);
             objectiveSelect.addEventListener('change', updateMeasureDropdown);
-            measureSelect.addEventListener('change', () => toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput));
+            measureSelect.addEventListener('change', () => {
+                toggleCustomInput(measureSelect, customMeasureContainer, customMeasureInput);
+
+                // Auto-seleccionar el tipo de KPI basado en si es "menos es mejor"
+                if (measureSelect.value !== 'other' && lessIsBetterKPIs.includes(measureSelect.value)) {
+                    kpiTypeSelect.value = 'less';
+                } else if (measureSelect.value !== 'other') {
+                    kpiTypeSelect.value = 'more';
+                }
+            });
 
             // Botones globales
             globalLoadExampleBtn.addEventListener('click', loadExample);
@@ -1543,9 +2051,17 @@
             // Manejo de eliminación de métricas
             document.addEventListener('click', handleActionClick);
 
+            // Cancelar edición al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (editingCell && !editingCell.contains(e.target)) {
+                    saveCellEdit(editingCell);
+                }
+            });
+
             // Inicializar
             updateObjectiveDropdown();
             validateForm();
+            updateMetricsCount();
         });
     </script>
 </body>
