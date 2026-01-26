@@ -31,6 +31,10 @@
             --warning-color: #f39c12;
             --performance-color: #2ecc71;
             --danger-color: #c0392b;
+            --special-char-color: #9b59b6;
+            --regulatory-color: #f39c12;
+            --safety-color: #e74c3c;
+            --responsible-color: #1abc9c;
             font-size: 16px;
         }
 
@@ -310,6 +314,22 @@
             background-color: #c0392b;
         }
 
+        .btn-special {
+            background-color: var(--special-char-color);
+        }
+
+        .btn-special:hover {
+            background-color: #8e44ad;
+        }
+
+        .btn-responsible {
+            background-color: var(--responsible-color);
+        }
+
+        .btn-responsible:hover {
+            background-color: #16a085;
+        }
+
         /* ===== Contenedor para la tabla que permite el scroll horizontal en móviles ===== */
         .table-container {
             overflow-x: auto;
@@ -353,7 +373,8 @@
         }
 
         #controlPlanTable textarea,
-        #controlPlanTable select {
+        #controlPlanTable select,
+        #controlPlanTable input {
             width: 100%;
             height: 100%;
             padding: 0.5rem;
@@ -373,10 +394,31 @@
         }
 
         #controlPlanTable textarea:focus,
-        #controlPlanTable select:focus {
+        #controlPlanTable select:focus,
+        #controlPlanTable input:focus {
             outline: none;
             background-color: #fff;
             box-shadow: inset 0 0 0 2px var(--secondary-color);
+        }
+
+        .special-char-cell select.special {
+            font-weight: bold;
+            color: var(--special-char-color);
+        }
+
+        .special-char-cell select.regulatory {
+            font-weight: bold;
+            color: var(--regulatory-color);
+        }
+
+        .special-char-cell select.safety {
+            font-weight: bold;
+            color: var(--safety-color);
+        }
+
+        .responsible-cell textarea {
+            font-style: italic;
+            color: var(--responsible-color);
         }
 
         .button-container {
@@ -399,24 +441,95 @@
             margin-bottom: 5px;
         }
 
-        footer {
-            padding: 2rem 1.25rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
+        /* ===== FORMULARIO DE ENCABEZADO DEL CONTROL PLAN ===== */
+        .control-plan-header {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .disclaimer-note {
-            margin-top: 2rem;
-            padding: 0 1rem;
-            font-size: 0.8rem;
-            color: #777;
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-            line-height: 1.6;
+        .header-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .header-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-item label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .header-item input,
+        .header-item select {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+
+        .header-item input:focus,
+        .header-item select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .plan-type-container {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .plan-type-container label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .plan-type-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .plan-type-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-type-option input {
+            margin: 0;
+        }
+
+        .special-char-info {
+            background-color: #f0e6f5;
+            border-left: 4px solid var(--special-char-color);
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .special-char-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .special-char-info strong {
+            color: var(--special-char-color);
         }
 
         /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
@@ -518,49 +631,6 @@
             max-width: 100%;
         }
 
-        @media (max-width: 768px) {
-            .tab-content-wrapper {
-                padding: 1rem;
-            }
-
-            .tab-btn {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .main-action-buttons {
-                gap: 0.75rem;
-                margin: 1rem auto;
-            }
-
-            .main-action-buttons button {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .tab-content-wrapper {
-                padding: 0.75rem;
-            }
-
-            .tab-btn {
-                padding: 0.6rem 0.3rem;
-                font-size: 0.8rem;
-            }
-
-            .main-action-buttons {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.5rem;
-            }
-
-            .main-action-buttons button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
         /* Estilos para la sección de resultados */
         .results-table-container {
             margin-top: 2rem;
@@ -630,6 +700,89 @@
 
         .btn-next-tab.btn-prev:hover {
             background-color: #7f8c8d;
+        }
+
+        footer {
+            padding: 2rem 1.25rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .disclaimer-note {
+            margin-top: 2rem;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: #777;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .tab-content-wrapper {
+                padding: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .main-action-buttons {
+                gap: 0.75rem;
+                margin: 1rem auto;
+            }
+
+            .main-action-buttons button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .header-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-type-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .plan-type-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-content-wrapper {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+
+            .main-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .main-action-buttons button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .plan-type-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -726,7 +879,8 @@
                             <div class="flow-step"> <i class="fas fa-shield-alt"></i> <strong>3. Control</strong>
                                 <span>How is
                                     it
-                                    being checked?</span> </div>
+                                    being checked?</span>
+                            </div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                             <div class="flow-step"> <i class="fas fa-exclamation-triangle"></i> <strong>4.
                                     Reaction</strong>
@@ -741,6 +895,8 @@
                             <li><strong>Process Name:</strong> The specific manufacturing step being controlled.</li>
                             <li><strong>Characteristic:</strong> The specific product or process feature being measured.
                             </li>
+                            <li><strong>Special Characteristics:</strong> Marked with symbols to indicate
+                                safety, regulatory, or critical-to-function features.</li>
                             <li><strong>Specification / Tolerance:</strong> The target value and acceptable range.</li>
                             <li><strong>Evaluation Technique:</strong> The tool or method used to perform the
                                 measurement.</li>
@@ -749,6 +905,8 @@
                             <li><strong>Reaction Plan:</strong> Predefined actions to take if a characteristic is out of
                                 spec.
                             </li>
+                            <li><strong>Responsible:</strong> Person or department accountable for the control (name and
+                                position).</li>
                         </ul>
                     </div>
 
@@ -756,8 +914,13 @@
                         <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
                         <div class="instructions-box">
                             <ul>
+                                <li>Fill out the Control Plan header information (Plan Type, Part Number, etc.).</li>
                                 <li>Click <strong><i class="fas fa-plus"></i> Add Row</strong> to add a new process
                                     step.</li>
+                                <li>For <strong>Special Characteristics</strong>, select from: Special Characteristic,
+                                    Regulatory, or Safety Characteristic.</li>
+                                <li>In the <strong>Responsible</strong> column, enter the name and position (e.g., "John
+                                    Doe - Quality Engineer").</li>
                                 <li>Click the <strong><i class="fas fa-trash-alt"></i></strong> button on any row to
                                     delete it.
                                 </li>
@@ -782,6 +945,63 @@
             <!-- PESTAÑA 2: CONTROL PLAN TOOL -->
             <div id="tab-tool" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
+                    <!-- ENCABEZADO DEL CONTROL PLAN -->
+                    <div class="content-block control-plan-header">
+                        <h2><i class="fas fa-heading"></i> Control Plan Header</h2>
+
+                        <div class="plan-type-container">
+                            <label>Control Plan Type:</label>
+                            <div class="plan-type-options">
+                                <div class="plan-type-option">
+                                    <input type="radio" id="prototype" name="planType" value="Prototype">
+                                    <label for="prototype">Prototype</label>
+                                </div>
+                                <div class="plan-type-option">
+                                    <input type="radio" id="prelaunch" name="planType" value="Pre-Launch">
+                                    <label for="prelaunch">Pre-Launch</label>
+                                </div>
+                                <div class="plan-type-option">
+                                    <input type="radio" id="production" name="planType" value="Production" checked>
+                                    <label for="production">Production</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="header-grid">
+                            <div class="header-item">
+                                <label for="controlPlanNumber">Control Plan Number</label>
+                                <input type="text" id="controlPlanNumber" placeholder="e.g., CP-0011">
+                            </div>
+                            <div class="header-item">
+                                <label for="partNumber">Part Number / Latest Change Level</label>
+                                <input type="text" id="partNumber" placeholder="e.g., 123456 / 7-24-20">
+                            </div>
+                            <div class="header-item">
+                                <label for="partName">Part Name / Description</label>
+                                <input type="text" id="partName" placeholder="e.g., Headlight lens">
+                            </div>
+                            <div class="header-item">
+                                <label for="supplierPlant">Supplier / Plant</label>
+                                <input type="text" id="supplierPlant" placeholder="e.g., XYZ Manufacturing">
+                            </div>
+                            <div class="header-item">
+                                <label for="supplierCode">Supplier Code</label>
+                                <input type="text" id="supplierCode" placeholder="e.g., SUP-001">
+                            </div>
+                            <div class="header-item">
+                                <label for="coreTeam">Core Team</label>
+                                <input type="text" id="coreTeam" placeholder="e.g., Quality, Engineering, Production">
+                            </div>
+                        </div>
+
+                        <div class="special-char-info">
+                            <p><strong>Special Characteristics Note:</strong> Use the dropdown to select: Special
+                                Characteristic (purple), Regulatory (orange), or Safety Characteristic (red). These
+                                characteristics require special controls and monitoring per IATF 16949 requirements.</p>
+                        </div>
+                    </div>
+
+                    <!-- TABLA PRINCIPAL -->
                     <div class="content-block">
                         <div class="table-container">
                             <table id="controlPlanTable">
@@ -791,6 +1011,8 @@
                                         <th style="min-width: 120px;"><i class="fas fa-robot"></i> Machine / Tool</th>
                                         <th style="min-width: 150px;"><i class="fas fa-ruler-combined"></i>
                                             Characteristic</th>
+                                        <th style="min-width: 130px;"><i class="fas fa-star"></i> Special Characteristic
+                                        </th>
                                         <th style="min-width: 150px;"><i class="fas fa-arrows-alt-h"></i> Spec /
                                             Tolerance</th>
                                         <th style="min-width: 200px;"><i class="fas fa-search"></i> Evaluation Technique
@@ -802,6 +1024,8 @@
                                         <th style="min-width: 200px;"><i class="fas fa-exclamation-triangle"></i>
                                             Reaction Plan
                                         </th>
+                                        <th style="min-width: 180px;"><i class="fas fa-user-check"></i> Responsible
+                                            (Name & Position)</th>
                                         <th style="min-width: 80px;"><i class="fas fa-times-circle"></i> Action</th>
                                     </tr>
                                 </thead>
@@ -895,15 +1119,72 @@
         }
 
         // Constantes y variables globales
-        const evaluationTechniques = ["", "Visual Inspection", "Digital Caliper", "Micrometer", "Go/No-Go Gauge", "CMM", "Profilometer", "Coating Thickness Gauge", "Torque Wrench"];
-        const controlMethods = ["", "SPC Chart (X-bar & R)", "First-off Inspection Report", "100% Inspection", "Operator Checklist", "Attribute Chart (p/np)", "Destructive Testing", "Process Audit"];
-        const reactionPlans = ["", "Stop Process & Quarantine", "Adjust Machine/Tool", "Notify Supervisor", "Sort Suspect Material", "Re-work/Repair Part", "Check Tooling for Wear", "Initiate 8D Report"];
+        const evaluationTechniques = ["", "Visual Inspection", "Digital Caliper", "Micrometer", "Go/No-Go Gauge", "CMM", "Profilometer", "Coating Thickness Gauge", "Torque Wrench", "Spectrometer", "Hardness Tester"];
+        const controlMethods = ["", "SPC Chart (X-bar & R)", "First-off Inspection Report", "100% Inspection", "Operator Checklist", "Attribute Chart (p/np)", "Destructive Testing", "Process Audit", "Automated Vision System", "Gauge R&R"];
+        const reactionPlans = ["", "Stop Process & Quarantine", "Adjust Machine/Tool", "Notify Supervisor", "Sort Suspect Material", "Re-work/Repair Part", "Check Tooling for Wear", "Initiate 8D Report", "Escalate to Quality Manager", "Containment Action"];
+        const specialCharOptions = ["", "Special Characteristic", "Regulatory", "Safety Characteristic"];
+
         const exampleData = [
-            { processName: "10. Stamping", machine: "Press #5", characteristic: "Hole Diameter", spec: "10.00 ± 0.05 mm", evaluation: "Digital Caliper", sample: "5 pcs / hour", controlMethod: "SPC Chart (X-bar & R)", reactionPlan: "Stop Process & Quarantine" },
-            { processName: "20. CNC Machining. This step involves a long description to demonstrate how the text area auto-expands to fit more content.", machine: "Haas VF-2", characteristic: "Surface Finish", spec: "Ra < 1.6 µm", evaluation: "Profilometer", sample: "1 pc / setup", controlMethod: "First-off Inspection Report", reactionPlan: "Adjust Machine/Tool" },
-            { processName: "30. Welding", machine: "Robotic Welder #2", characteristic: "Weld Penetration", spec: "3.0 ± 0.2 mm", evaluation: "Visual Inspection", sample: "1 pc / 4 hrs", controlMethod: "Destructive Testing", reactionPlan: "Notify Supervisor" },
-            { processName: "40. Painting", machine: "Paint Booth", characteristic: "Paint Thickness", spec: "70 ± 10 µm", evaluation: "Coating Thickness Gauge", sample: "3 spots / part", controlMethod: "100% Inspection", reactionPlan: "Sort Suspect Material" },
-            { processName: "50. Assembly", machine: "Line 1", characteristic: "Torque M6 Bolt", spec: "8 ± 1 Nm", evaluation: "Torque Wrench", sample: "100%", controlMethod: "Operator Checklist", reactionPlan: "Re-work/Repair Part" }
+            {
+                processName: "10. Stamping",
+                machine: "Press #5",
+                characteristic: "Hole Diameter",
+                specialChar: "Special Characteristic",
+                spec: "10.00 ± 0.05 mm",
+                evaluation: "Digital Caliper",
+                sample: "5 pcs / hour",
+                controlMethod: "SPC Chart (X-bar & R)",
+                reactionPlan: "Stop Process & Quarantine",
+                responsible: "John Smith - Quality Inspector"
+            },
+            {
+                processName: "20. CNC Machining",
+                machine: "Haas VF-2",
+                characteristic: "Surface Finish",
+                specialChar: "",
+                spec: "Ra < 1.6 µm",
+                evaluation: "Profilometer",
+                sample: "1 pc / setup",
+                controlMethod: "First-off Inspection Report",
+                reactionPlan: "Adjust Machine/Tool",
+                responsible: "Maria Garcia - Process Engineer"
+            },
+            {
+                processName: "30. Welding",
+                machine: "Robotic Welder #2",
+                characteristic: "Weld Penetration",
+                specialChar: "Safety Characteristic",
+                spec: "3.0 ± 0.2 mm",
+                evaluation: "Visual Inspection",
+                sample: "1 pc / 4 hrs",
+                controlMethod: "Destructive Testing",
+                reactionPlan: "Notify Supervisor",
+                responsible: "Robert Chen - Quality Engineer"
+            },
+            {
+                processName: "40. Painting",
+                machine: "Paint Booth",
+                characteristic: "Paint Thickness",
+                specialChar: "Regulatory",
+                spec: "70 ± 10 µm",
+                evaluation: "Coating Thickness Gauge",
+                sample: "3 spots / part",
+                controlMethod: "100% Inspection",
+                reactionPlan: "Sort Suspect Material",
+                responsible: "Lisa Wong - Production Operator"
+            },
+            {
+                processName: "50. Assembly",
+                machine: "Line 1",
+                characteristic: "Torque M6 Bolt",
+                specialChar: "Special Characteristic",
+                spec: "8 ± 1 Nm",
+                evaluation: "Torque Wrench",
+                sample: "100%",
+                controlMethod: "Operator Checklist",
+                reactionPlan: "Re-work/Repair Part",
+                responsible: "David Lee - Production Supervisor"
+            }
         ];
 
         const tableBody = document.querySelector("#controlPlanTable tbody");
@@ -913,8 +1194,11 @@
             element.style.height = (element.scrollHeight) + 'px';
         }
 
-        function createSelect(options, selectedValue = "") {
+        function createSelect(options, selectedValue = "", className = "") {
             const select = document.createElement("select");
+            if (className) {
+                select.className = className;
+            }
             options.forEach(optionText => {
                 const option = document.createElement("option");
                 option.value = optionText;
@@ -922,30 +1206,98 @@
                 if (optionText === selectedValue) option.selected = true;
                 select.appendChild(option);
             });
+
+            // Aplicar clase CSS basada en el valor seleccionado
+            function applyStyle() {
+                if (select.value === "Special Characteristic") {
+                    select.className = "special";
+                } else if (select.value === "Regulatory") {
+                    select.className = "regulatory";
+                } else if (select.value === "Safety Characteristic") {
+                    select.className = "safety";
+                } else {
+                    select.className = "";
+                }
+            }
+
+            // Aplicar estilo inicial
+            applyStyle();
+
+            // Aplicar estilo cuando cambia la selección
+            select.addEventListener('change', applyStyle);
+
             return select;
         }
 
         function createRow(data = {}) {
             const row = document.createElement("tr");
             const createTextarea = (value, placeholder = '...') => `<textarea rows="1" oninput="autoGrow(this)" placeholder="${placeholder}">${value || ''}</textarea>`;
-            row.innerHTML = `<td>${createTextarea(data.processName)}</td><td>${createTextarea(data.machine)}</td><td>${createTextarea(data.characteristic)}</td><td>${createTextarea(data.spec)}</td><td></td><td>${createTextarea(data.sample)}</td><td></td><td></td><td class="action-cell"><button class="btn-danger"><i class="fas fa-trash-alt"></i></button></td>`;
-            row.cells[4].appendChild(createSelect(evaluationTechniques, data.evaluation));
-            row.cells[6].appendChild(createSelect(controlMethods, data.controlMethod));
-            row.cells[7].appendChild(createSelect(reactionPlans, data.reactionPlan));
+            row.innerHTML = `
+                <td>${createTextarea(data.processName)}</td>
+                <td>${createTextarea(data.machine)}</td>
+                <td>${createTextarea(data.characteristic)}</td>
+                <td class="special-char-cell"></td>
+                <td>${createTextarea(data.spec)}</td>
+                <td></td>
+                <td>${createTextarea(data.sample)}</td>
+                <td></td>
+                <td></td>
+                <td class="responsible-cell">${createTextarea(data.responsible, "Name - Position")}</td>
+                <td class="action-cell"><button class="btn-danger"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+
+            // Agregar desplegable para características especiales
+            row.cells[3].appendChild(createSelect(specialCharOptions, data.specialChar));
+
+            // Agregar desplegable para evaluación técnica
+            row.cells[5].appendChild(createSelect(evaluationTechniques, data.evaluation));
+
+            // Agregar desplegable para método de control
+            row.cells[7].appendChild(createSelect(controlMethods, data.controlMethod));
+
+            // Agregar desplegable para plan de reacción
+            row.cells[8].appendChild(createSelect(reactionPlans, data.reactionPlan));
+
+            // Configurar botón de eliminar
             row.querySelector('.btn-danger').addEventListener('click', () => row.remove());
+
+            // Agregar fila a la tabla
             tableBody.appendChild(row);
+
+            // Aplicar autoajuste a textareas
             row.querySelectorAll('textarea').forEach(autoGrow);
         }
 
         function loadExample() {
             resetPlan();
+
+            // Set header values
+            document.getElementById('controlPlanNumber').value = 'CP-0011';
+            document.getElementById('partNumber').value = '123456 / 7-24-20';
+            document.getElementById('partName').value = 'Headlight lens';
+            document.getElementById('supplierPlant').value = 'XYZ Manufacturing';
+            document.getElementById('supplierCode').value = 'SUP-001';
+            document.getElementById('coreTeam').value = 'Quality, Engineering, Production';
+            document.querySelector('input[name="planType"][value="Production"]').checked = true;
+
+            // Load example rows
             exampleData.forEach(rowData => createRow(rowData));
+
             // Cambiar a la pestaña Control Plan Tool después de cargar el ejemplo
             switchWizardTab('tab-tool');
         }
 
         function resetPlan() {
             tableBody.innerHTML = '';
+
+            // Reset header values
+            document.getElementById('controlPlanNumber').value = '';
+            document.getElementById('partNumber').value = '';
+            document.getElementById('partName').value = '';
+            document.getElementById('supplierPlant').value = '';
+            document.getElementById('supplierCode').value = '';
+            document.getElementById('coreTeam').value = '';
+            document.querySelector('input[name="planType"][value="Production"]').checked = true;
         }
 
         function listResults() {
@@ -991,7 +1343,34 @@
                     if (index < headers.length) { // Skip Action column
                         const td = document.createElement('td');
                         const input = cell.querySelector('textarea, select');
-                        td.textContent = input ? input.value : cell.innerText;
+                        let value = input ? input.value : cell.innerText;
+
+                        // Aplicar estilos especiales para características especiales
+                        if (index === 3 && value) { // Columna de características especiales
+                            const span = document.createElement('span');
+                            span.textContent = value;
+                            if (value === "Special Characteristic") {
+                                span.style.color = 'var(--special-char-color)';
+                                span.style.fontWeight = 'bold';
+                            } else if (value === "Regulatory") {
+                                span.style.color = 'var(--regulatory-color)';
+                                span.style.fontWeight = 'bold';
+                            } else if (value === "Safety Characteristic") {
+                                span.style.color = 'var(--safety-color)';
+                                span.style.fontWeight = 'bold';
+                            }
+                            td.appendChild(span);
+                        } else if (index === 9 && value) { // Columna de responsable
+                            const span = document.createElement('span');
+                            span.textContent = value;
+                            span.style.color = 'var(--responsible-color)';
+                            span.style.fontStyle = 'italic';
+                            span.style.fontWeight = '600';
+                            td.appendChild(span);
+                        } else {
+                            td.textContent = value;
+                        }
+
                         dataRow.appendChild(td);
                     }
                 });
@@ -1004,15 +1383,39 @@
         }
 
         function exportToExcel() {
+            // Get header information
+            const planType = document.querySelector('input[name="planType"]:checked')?.value || '';
+            const controlPlanNumber = document.getElementById('controlPlanNumber').value || '';
+            const partNumber = document.getElementById('partNumber').value || '';
+            const partName = document.getElementById('partName').value || '';
+            const supplierPlant = document.getElementById('supplierPlant').value || '';
+            const supplierCode = document.getElementById('supplierCode').value || '';
+            const coreTeam = document.getElementById('coreTeam').value || '';
+            const date = new Date().toLocaleDateString();
+
             const headers = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
             headers.pop(); // Remove Action column
             const numCols = headers.length;
 
             const data = [];
 
-            data.push(["SigmaExacta Control Plan"]);
+            // Add header information
+            data.push(["SIGMA EXACTA - CONTROL PLAN"]);
             data.push(["Generated on: " + new Date().toLocaleString()]);
-            data.push([]); // Blank row for spacing
+            data.push([]); // Blank row
+
+            data.push(["CONTROL PLAN HEADER"]);
+            data.push(["Control Plan Type:", planType]);
+            data.push(["Control Plan Number:", controlPlanNumber]);
+            data.push(["Part Number / Latest Change Level:", partNumber]);
+            data.push(["Part Name / Description:", partName]);
+            data.push(["Supplier / Plant:", supplierPlant]);
+            data.push(["Supplier Code:", supplierCode]);
+            data.push(["Core Team:", coreTeam]);
+            data.push(["Date:", date]);
+            data.push([]); // Blank row
+
+            data.push(["CONTROL PLAN DETAILS"]);
             data.push(headers);
 
             tableBody.querySelectorAll('tr').forEach(row => {
@@ -1029,14 +1432,20 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(data);
 
+            // Apply merges for header sections
             if (!ws['!merges']) ws['!merges'] = [];
             ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
             ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
+            ws['!merges'].push({ s: { r: 3, c: 0 }, e: { r: 3, c: numCols - 1 } });
+            ws['!merges'].push({ s: { r: 12, c: 0 }, e: { r: 12, c: numCols - 1 } });
 
-            ws['!cols'] = headers.map(h => ({ wch: h.length > 20 ? 30 : 20 }));
+            // Set column widths
+            ws['!cols'] = headers.map(h => ({ wch: h.length > 20 ? 25 : 15 }));
+            ws['!cols'][3] = { wch: 18 }; // Special Characteristic column
+            ws['!cols'][9] = { wch: 22 }; // Responsible column
 
             XLSX.utils.book_append_sheet(wb, ws, "Control Plan");
-            XLSX.writeFile(wb, "Control_Plan_Sigma_Exacta.xlsx");
+            XLSX.writeFile(wb, `Control_Plan_${controlPlanNumber || 'Sigma_Exacta'}.xlsx`);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
