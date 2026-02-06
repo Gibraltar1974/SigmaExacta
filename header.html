@@ -1,8 +1,7 @@
 <header role="banner" class="top-bar">
-    <!-- Script de inyección de meta tags PWA (ejecuta inmediatamente) -->
+    <!-- Script de inyección de meta tags PWA -->
     <script>
         (function () {
-            // Solo agregar meta tags si no existen ya
             if (document && !document.querySelector('meta[name="theme-color"]')) {
                 const metaTags = `
                     <meta name="application-name" content="SigmaExacta">
@@ -13,10 +12,11 @@
                     <meta name="apple-mobile-web-app-capable" content="yes">
                     <meta name="apple-mobile-web-app-title" content="SigmaExacta">
                     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-                    <link rel="manifest" href="/manifest.json">
+                    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
                     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
                     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
                     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+                    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5">
                 `;
                 document.head.insertAdjacentHTML('afterbegin', metaTags);
             }
@@ -273,10 +273,9 @@
 
             // ===== PWA FUNCTIONALITY =====
 
-            // Registrar Service Worker con múltiples intentos
+            // Registrar Service Worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
-                    // Intentar diferentes rutas por compatibilidad
                     const swPaths = [
                         '/service-worker.js',
                         'service-worker.js',
@@ -316,8 +315,6 @@
                     // Comenzar con la primera ruta
                     tryRegister(0);
                 });
-            } else {
-                console.log('❌ Este navegador no soporta Service Workers');
             }
 
             // Instalación PWA
@@ -460,7 +457,7 @@
             }
 
             // Verificar recursos PWA
-            console.log('🔍 Verificando recursos PWA...');
+            console.log('🔍 Verificando configuración PWA...');
 
             // Verificar manifest
             fetch('/manifest.json')
@@ -472,6 +469,17 @@
                 .then(manifest => {
                     console.log('   Nombre:', manifest.name || '❌ Falta');
                     console.log('   Iconos:', manifest.icons && manifest.icons.length > 0 ? `✅ ${manifest.icons.length} iconos` : '❌ Falta');
+
+                    // Verificar si los iconos tienen 'purpose: any'
+                    if (manifest.icons) {
+                        manifest.icons.forEach((icon, index) => {
+                            if (icon.purpose && icon.purpose.includes('any')) {
+                                console.log(`   Icono ${index}: ✅ purpose: any presente`);
+                            } else {
+                                console.log(`   Icono ${index}: ⚠️ falta purpose: any`);
+                            }
+                        });
+                    }
                 })
                 .catch(error => console.log('   ❌ Error:', error.message));
 
@@ -491,6 +499,9 @@
                     })
                     .catch(() => console.log('service-worker.js: ❌ No accesible'));
             }
+
+            // Verificar HTTPS (requerido para PWA)
+            console.log('🔐 HTTPS:', window.location.protocol === 'https:' ? '✅' : '❌ (requerido para PWA)');
         });
     </script>
 
