@@ -205,17 +205,33 @@
         </ul>
     </nav>
 
-    <!-- Botón de instalación PWA (estilos inline para no afectar el CSS existente) -->
+    <!-- Botón de instalación PWA -->
     <div id="installPWA"
         style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: #222; color: white; padding: 10px 15px; border-radius: 5px; border: 2px solid #4CAF50; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
         <button id="installButton"
             style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
             <span>📱</span>
-            <span>Install App</span>
+            <span>Install SigmaExacta App</span>
         </button>
     </div>
 
     <script>
+        // ===== INYECTAR META TAGS PWA EN EL HEAD =====
+        (function () {
+            // Solo agregar si no existen ya
+            if (!document.querySelector('meta[name="theme-color"]')) {
+                const metaTags = `
+                    <meta name="theme-color" content="#222222">
+                    <meta name="msapplication-TileColor" content="#222222">
+                    <meta name="mobile-web-app-capable" content="yes">
+                    <link rel="manifest" href="/manifest.json">
+                    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+                    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+                `;
+                document.head.insertAdjacentHTML('afterbegin', metaTags);
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function () {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
@@ -246,14 +262,14 @@
                 });
             }
 
-            // ===== PWA FUNCTIONALITY (agregado al script existente) =====
+            // ===== PWA FUNCTIONALITY =====
 
             // Registrar Service Worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/service-worker.js')
                         .then(registration => {
-                            console.log('Service Worker registrado:', registration.scope);
+                            console.log('✅ Service Worker registrado:', registration.scope);
 
                             // Verificar actualizaciones
                             registration.addEventListener('updatefound', () => {
@@ -261,15 +277,17 @@
                                 newWorker.addEventListener('statechange', () => {
                                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                         // Mostrar notificación de actualización
-                                        if (confirm('New version available! Reload to update?')) {
-                                            window.location.reload();
-                                        }
+                                        setTimeout(() => {
+                                            if (confirm('✨ New version available! Reload to update?')) {
+                                                window.location.reload();
+                                            }
+                                        }, 2000);
                                     }
                                 });
                             });
                         })
                         .catch(error => {
-                            console.log('Error registrando Service Worker:', error);
+                            console.log('❌ Error registrando Service Worker:', error);
                         });
                 });
             }
@@ -281,13 +299,20 @@
                 e.preventDefault();
                 deferredPrompt = e;
 
-                // Mostrar botón después de 5 segundos
+                // Mostrar botón después de 3 segundos
                 setTimeout(() => {
                     const installPWA = document.getElementById('installPWA');
                     if (installPWA && deferredPrompt) {
                         installPWA.style.display = 'block';
+
+                        // Auto-ocultar después de 30 segundos
+                        setTimeout(() => {
+                            if (installPWA && installPWA.style.display === 'block') {
+                                installPWA.style.display = 'none';
+                            }
+                        }, 30000);
                     }
-                }, 5000);
+                }, 3000);
             });
 
             // Manejar clic en botón de instalación
@@ -299,22 +324,32 @@
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
-                    deferredPrompt = null;
 
-                    // Ocultar botón después de instalación
-                    const installPWA = document.getElementById('installPWA');
-                    if (installPWA) {
-                        installPWA.style.display = 'none';
+                    if (outcome === 'accepted') {
+                        // Ocultar botón después de instalación
+                        const installPWA = document.getElementById('installPWA');
+                        if (installPWA) {
+                            installPWA.innerHTML = `
+                                <button style="background: #4CAF50; color: white; padding: 10px 15px; border-radius: 5px; border: none; font-weight: bold;">
+                                    ✅ App Installed! Thank you
+                                </button>
+                            `;
+                            setTimeout(() => {
+                                installPWA.style.display = 'none';
+                            }, 3000);
+                        }
                     }
+
+                    deferredPrompt = null;
                 });
             }
 
             // Detectar si ya está instalada
             window.addEventListener('appinstalled', () => {
-                console.log('SigmaExacta PWA instalada');
+                console.log('🎉 SigmaExacta PWA instalada');
                 deferredPrompt = null;
 
-                // Ocultar botón si está visible
+                // Mostrar feedback visual
                 const installPWA = document.getElementById('installPWA');
                 if (installPWA) {
                     installPWA.style.display = 'none';
@@ -324,11 +359,24 @@
             // Verificar si ya se ejecuta como PWA
             if (window.matchMedia('(display-mode: standalone)').matches ||
                 window.navigator.standalone === true) {
+                console.log('📱 Running as installed PWA');
                 const installPWA = document.getElementById('installPWA');
                 if (installPWA) {
                     installPWA.style.display = 'none';
                 }
             }
+
+            // Detectar conexión offline/online
+            function updateOnlineStatus() {
+                if (!navigator.onLine) {
+                    console.log('📴 You are offline');
+                    // Aquí podrías mostrar un banner si quieres
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus(); // Estado inicial
         });
     </script>
 
