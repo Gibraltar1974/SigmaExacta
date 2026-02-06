@@ -1,4 +1,28 @@
 <header role="banner" class="top-bar">
+    <!-- Script de inyección de meta tags PWA (ejecuta inmediatamente) -->
+    <script>
+        (function () {
+            // Solo agregar meta tags si no existen ya
+            if (document && !document.querySelector('meta[name="theme-color"]')) {
+                const metaTags = `
+                    <meta name="application-name" content="SigmaExacta">
+                    <meta name="description" content="Professional engineering tools for Quality Control and Process Improvement">
+                    <meta name="theme-color" content="#222222">
+                    <meta name="msapplication-TileColor" content="#222222">
+                    <meta name="mobile-web-app-capable" content="yes">
+                    <meta name="apple-mobile-web-app-capable" content="yes">
+                    <meta name="apple-mobile-web-app-title" content="SigmaExacta">
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+                    <link rel="manifest" href="/manifest.json">
+                    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+                    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+                    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+                `;
+                document.head.insertAdjacentHTML('afterbegin', metaTags);
+            }
+        })();
+    </script>
+
     <style>
         /* ===== ESTILOS DE LA BARRA DE NAVEGACIÓN ===== */
         .top-bar {
@@ -207,32 +231,17 @@
 
     <!-- Botón de instalación PWA -->
     <div id="installPWA"
-        style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: #222; color: white; padding: 10px 15px; border-radius: 5px; border: 2px solid #4CAF50; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+        style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: #222; color: white; padding: 12px 20px; border-radius: 8px; border: 2px solid #4CAF50; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-family: Arial, sans-serif;">
         <button id="installButton"
-            style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-            <span>📱</span>
+            style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 0;">
+            <span style="font-size: 18px;">📱</span>
             <span>Install SigmaExacta App</span>
         </button>
     </div>
 
     <script>
-        // ===== INYECTAR META TAGS PWA EN EL HEAD =====
-        (function () {
-            // Solo agregar si no existen ya
-            if (!document.querySelector('meta[name="theme-color"]')) {
-                const metaTags = `
-                    <meta name="theme-color" content="#222222">
-                    <meta name="msapplication-TileColor" content="#222222">
-                    <meta name="mobile-web-app-capable" content="yes">
-                    <link rel="manifest" href="/manifest.json">
-                    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
-                    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
-                `;
-                document.head.insertAdjacentHTML('afterbegin', metaTags);
-            }
-        })();
-
         document.addEventListener('DOMContentLoaded', function () {
+            // ===== NAVEGACIÓN RESPONSIVE =====
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
             const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
@@ -264,55 +273,78 @@
 
             // ===== PWA FUNCTIONALITY =====
 
-            // Registrar Service Worker
+            // Registrar Service Worker con múltiples intentos
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(registration => {
-                            console.log('✅ Service Worker registrado:', registration.scope);
+                window.addEventListener('load', function () {
+                    // Intentar diferentes rutas por compatibilidad
+                    const swPaths = [
+                        '/service-worker.js',
+                        'service-worker.js',
+                        './service-worker.js'
+                    ];
 
-                            // Verificar actualizaciones
-                            registration.addEventListener('updatefound', () => {
-                                const newWorker = registration.installing;
-                                newWorker.addEventListener('statechange', () => {
-                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                        // Mostrar notificación de actualización
-                                        setTimeout(() => {
-                                            if (confirm('✨ New version available! Reload to update?')) {
-                                                window.location.reload();
-                                            }
-                                        }, 2000);
-                                    }
+                    function tryRegister(pathIndex) {
+                        if (pathIndex >= swPaths.length) {
+                            console.log('⚠️ No se pudo registrar Service Worker con ninguna ruta');
+                            return;
+                        }
+
+                        const path = swPaths[pathIndex];
+                        navigator.serviceWorker.register(path)
+                            .then(function (registration) {
+                                console.log('✅ Service Worker registrado:', path);
+                                console.log('Scope:', registration.scope);
+
+                                // Escuchar actualizaciones
+                                registration.addEventListener('updatefound', () => {
+                                    const newWorker = registration.installing;
+                                    newWorker.addEventListener('statechange', () => {
+                                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                            // Nueva versión disponible
+                                            showUpdateNotification();
+                                        }
+                                    });
                                 });
+                            })
+                            .catch(function (error) {
+                                console.log(`❌ Falló ${path}:`, error.message);
+                                // Intentar con la siguiente ruta
+                                tryRegister(pathIndex + 1);
                             });
-                        })
-                        .catch(error => {
-                            console.log('❌ Error registrando Service Worker:', error);
-                        });
+                    }
+
+                    // Comenzar con la primera ruta
+                    tryRegister(0);
                 });
+            } else {
+                console.log('❌ Este navegador no soporta Service Workers');
             }
 
             // Instalación PWA
             let deferredPrompt;
+            let installButtonShown = false;
 
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
 
-                // Mostrar botón después de 3 segundos
-                setTimeout(() => {
-                    const installPWA = document.getElementById('installPWA');
-                    if (installPWA && deferredPrompt) {
-                        installPWA.style.display = 'block';
+                // Mostrar botón después de 3 segundos (solo una vez)
+                if (!installButtonShown) {
+                    setTimeout(() => {
+                        const installPWA = document.getElementById('installPWA');
+                        if (installPWA && deferredPrompt) {
+                            installPWA.style.display = 'block';
+                            installButtonShown = true;
 
-                        // Auto-ocultar después de 30 segundos
-                        setTimeout(() => {
-                            if (installPWA && installPWA.style.display === 'block') {
-                                installPWA.style.display = 'none';
-                            }
-                        }, 30000);
-                    }
-                }, 3000);
+                            // Auto-ocultar después de 30 segundos
+                            setTimeout(() => {
+                                if (installPWA.style.display === 'block') {
+                                    installPWA.style.display = 'none';
+                                }
+                            }, 30000);
+                        }
+                    }, 3000);
+                }
             });
 
             // Manejar clic en botón de instalación
@@ -326,13 +358,14 @@
                     console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
 
                     if (outcome === 'accepted') {
-                        // Ocultar botón después de instalación
+                        // Mostrar mensaje de éxito
                         const installPWA = document.getElementById('installPWA');
                         if (installPWA) {
                             installPWA.innerHTML = `
-                                <button style="background: #4CAF50; color: white; padding: 10px 15px; border-radius: 5px; border: none; font-weight: bold;">
-                                    ✅ App Installed! Thank you
-                                </button>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 18px;">✅</span>
+                                    <span>App Installed! Thank you</span>
+                                </div>
                             `;
                             setTimeout(() => {
                                 installPWA.style.display = 'none';
@@ -349,7 +382,6 @@
                 console.log('🎉 SigmaExacta PWA instalada');
                 deferredPrompt = null;
 
-                // Mostrar feedback visual
                 const installPWA = document.getElementById('installPWA');
                 if (installPWA) {
                     installPWA.style.display = 'none';
@@ -357,26 +389,108 @@
             });
 
             // Verificar si ya se ejecuta como PWA
-            if (window.matchMedia('(display-mode: standalone)').matches ||
-                window.navigator.standalone === true) {
-                console.log('📱 Running as installed PWA');
-                const installPWA = document.getElementById('installPWA');
-                if (installPWA) {
-                    installPWA.style.display = 'none';
+            function checkIfRunningAsPWA() {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+                const isIOSStandalone = window.navigator.standalone === true;
+
+                if (isStandalone || isIOSStandalone) {
+                    console.log('📱 Running as installed PWA');
+                    const installPWA = document.getElementById('installPWA');
+                    if (installPWA) {
+                        installPWA.style.display = 'none';
+                    }
+                    return true;
                 }
+                return false;
             }
 
-            // Detectar conexión offline/online
-            function updateOnlineStatus() {
-                if (!navigator.onLine) {
-                    console.log('📴 You are offline');
-                    // Aquí podrías mostrar un banner si quieres
-                }
+            // Verificar al cargar
+            checkIfRunningAsPWA();
+
+            // También verificar si cambia el modo de visualización
+            window.matchMedia('(display-mode: standalone)').addListener(checkIfRunningAsPWA);
+
+            // Función para mostrar notificación de actualización
+            function showUpdateNotification() {
+                // Crear notificación simple
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #222;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    border: 2px solid #4CAF50;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 10001;
+                    font-family: Arial, sans-serif;
+                    max-width: 300px;
+                `;
+
+                notification.innerHTML = `
+                    <div style="margin-bottom: 10px; font-weight: bold;">✨ New Version Available!</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="updateNow" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                            Update Now
+                        </button>
+                        <button id="updateLater" style="background: transparent; color: #ccc; border: 1px solid #666; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                            Later
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                document.getElementById('updateNow').addEventListener('click', () => {
+                    window.location.reload();
+                });
+
+                document.getElementById('updateLater').addEventListener('click', () => {
+                    notification.style.display = 'none';
+                });
+
+                // Auto-remover después de 30 segundos
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 30000);
             }
 
-            window.addEventListener('online', updateOnlineStatus);
-            window.addEventListener('offline', updateOnlineStatus);
-            updateOnlineStatus(); // Estado inicial
+            // Verificar recursos PWA
+            console.log('🔍 Verificando recursos PWA...');
+
+            // Verificar manifest
+            fetch('/manifest.json')
+                .then(response => {
+                    console.log('manifest.json:', response.status === 200 ? '✅ OK' : `❌ Error ${response.status}`);
+                    if (response.ok) return response.json();
+                    throw new Error('No se pudo cargar manifest');
+                })
+                .then(manifest => {
+                    console.log('   Nombre:', manifest.name || '❌ Falta');
+                    console.log('   Iconos:', manifest.icons && manifest.icons.length > 0 ? `✅ ${manifest.icons.length} iconos` : '❌ Falta');
+                })
+                .catch(error => console.log('   ❌ Error:', error.message));
+
+            // Verificar iconos
+            ['/icons/icon-192x192.png', '/icons/icon-512x512.png'].forEach(iconPath => {
+                const img = new Image();
+                img.onload = () => console.log(`${iconPath}: ✅ OK`);
+                img.onerror = () => console.log(`${iconPath}: ❌ No encontrado`);
+                img.src = iconPath;
+            });
+
+            // Verificar Service Worker
+            if ('serviceWorker' in navigator) {
+                fetch('/service-worker.js')
+                    .then(response => {
+                        console.log('service-worker.js:', response.status === 200 ? '✅ OK' : `❌ Error ${response.status}`);
+                    })
+                    .catch(() => console.log('service-worker.js: ❌ No accesible'));
+            }
         });
     </script>
 

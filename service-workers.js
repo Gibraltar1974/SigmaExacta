@@ -1,9 +1,9 @@
-// Nombre del cache
-const CACHE_NAME = 'sigmaexacta-v1';
+// SigmaExacta Service Worker - Versión mínima
+const CACHE_NAME = 'sigmaexacta-cache-v1';
 
 // Instalar
 self.addEventListener('install', event => {
-  console.log('Service Worker instalado');
+  console.log('Service Worker instalado para sigmaexacta.com');
   self.skipWaiting();
 });
 
@@ -13,8 +13,8 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
-// Interceptar peticiones
+// Fetch - Dejar pasar todo
 self.addEventListener('fetch', event => {
-  // Dejar pasar todas las peticiones (solo registramos)
-  console.log('Fetch interceptado:', event.request.url);
+  // Dejar pasar todas las peticiones sin cachear
+  return;
 });
