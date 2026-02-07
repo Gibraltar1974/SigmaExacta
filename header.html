@@ -1,28 +1,4 @@
 <header role="banner" class="top-bar">
-    <!-- Script de inyección de meta tags PWA -->
-    <script>
-        (function () {
-            if (document && !document.querySelector('meta[name="theme-color"]')) {
-                const metaTags = `
-                    <meta name="application-name" content="SigmaExacta">
-                    <meta name="description" content="Professional engineering tools for Quality Control and Process Improvement">
-                    <meta name="theme-color" content="#222222">
-                    <meta name="msapplication-TileColor" content="#222222">
-                    <meta name="mobile-web-app-capable" content="yes">
-                    <meta name="apple-mobile-web-app-capable" content="yes">
-                    <meta name="apple-mobile-web-app-title" content="SigmaExacta">
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-                    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
-                    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
-                    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
-                    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-                    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5">
-                `;
-                document.head.insertAdjacentHTML('afterbegin', metaTags);
-            }
-        })();
-    </script>
-
     <style>
         /* ===== ESTILOS DE LA BARRA DE NAVEGACIÓN ===== */
         .top-bar {
@@ -277,14 +253,13 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
                     const swPaths = [
-                        '/service-worker.js',
-                        'service-worker.js',
-                        './service-worker.js'
+                        'service-worker.js',  // Ruta relativa
+                        './service-worker.js' // Otra ruta relativa
                     ];
 
                     function tryRegister(pathIndex) {
                         if (pathIndex >= swPaths.length) {
-                            console.log('⚠️ No se pudo registrar Service Worker con ninguna ruta');
+                            console.log('⚠️ No se pudo registrar Service Worker');
                             return;
                         }
 
@@ -458,47 +433,6 @@
 
             // Verificar recursos PWA
             console.log('🔍 Verificando configuración PWA...');
-
-            // Verificar manifest
-            fetch('/manifest.json')
-                .then(response => {
-                    console.log('manifest.json:', response.status === 200 ? '✅ OK' : `❌ Error ${response.status}`);
-                    if (response.ok) return response.json();
-                    throw new Error('No se pudo cargar manifest');
-                })
-                .then(manifest => {
-                    console.log('   Nombre:', manifest.name || '❌ Falta');
-                    console.log('   Iconos:', manifest.icons && manifest.icons.length > 0 ? `✅ ${manifest.icons.length} iconos` : '❌ Falta');
-
-                    // Verificar si los iconos tienen 'purpose: any'
-                    if (manifest.icons) {
-                        manifest.icons.forEach((icon, index) => {
-                            if (icon.purpose && icon.purpose.includes('any')) {
-                                console.log(`   Icono ${index}: ✅ purpose: any presente`);
-                            } else {
-                                console.log(`   Icono ${index}: ⚠️ falta purpose: any`);
-                            }
-                        });
-                    }
-                })
-                .catch(error => console.log('   ❌ Error:', error.message));
-
-            // Verificar iconos
-            ['/icons/icon-192x192.png', '/icons/icon-512x512.png'].forEach(iconPath => {
-                const img = new Image();
-                img.onload = () => console.log(`${iconPath}: ✅ OK`);
-                img.onerror = () => console.log(`${iconPath}: ❌ No encontrado`);
-                img.src = iconPath;
-            });
-
-            // Verificar Service Worker
-            if ('serviceWorker' in navigator) {
-                fetch('/service-worker.js')
-                    .then(response => {
-                        console.log('service-worker.js:', response.status === 200 ? '✅ OK' : `❌ Error ${response.status}`);
-                    })
-                    .catch(() => console.log('service-worker.js: ❌ No accesible'));
-            }
 
             // Verificar HTTPS (requerido para PWA)
             console.log('🔐 HTTPS:', window.location.protocol === 'https:' ? '✅' : '❌ (requerido para PWA)');

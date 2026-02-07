@@ -3,7 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+
+    <!-- Meta tags PWA ESSENCIALES -->
+    <meta name="application-name" content="SigmaExacta">
+    <meta name="theme-color" content="#222222">
+    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SigmaExacta">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Manifest y iconos -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
     <title>SigmaExacta: Open Source Software for Product Development</title>
     <meta name="description"
         content="Open source software for product innovation and development: Design Thinking, TRIZ, QFD, FMEA, VAVE, Taguchi DOE and much more. No signup required, instant online results, export the results.">
@@ -16,7 +32,6 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <!-- Manifest se carga dinámicamente desde header.html -->
 
     <!-- Meta verificaciones -->
     <meta name="google-site-verification" content="kpErc9V2mD091WMpVIGIqFGVlbnrFnerd5X28Y6kX_w" />
@@ -108,6 +123,42 @@
 </head>
 
 <body>
+    <!-- Script para cargar el header -->
+    <script>
+        // Cargar header.html dinámicamente
+        fetch('header.html')
+            .then(response => {
+                if (!response.ok) throw new Error('No se pudo cargar el header');
+                return response.text();
+            })
+            .then(html => {
+                // Insertar el header en el contenedor
+                document.getElementById('header-container').innerHTML = html;
+
+                // Ejecutar scripts del header
+                const scripts = document.getElementById('header-container').getElementsByTagName('script');
+                for (let script of scripts) {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.head.appendChild(newScript);
+                }
+            })
+            .catch(error => {
+                console.error('Error cargando el header:', error);
+                // Mostrar navegación básica si falla
+                document.getElementById('header-container').innerHTML = `
+                    <nav style="background:#222;padding:10px;text-align:center;">
+                        <a href="index.html" style="color:white;margin:0 10px;">Home</a>
+                        <a href="about.html" style="color:white;margin:0 10px;">About</a>
+                        <a href="documentation.html" style="color:white;margin:0 10px;">Documentation</a>
+                    </nav>
+                `;
+            });
+    </script>
 
     <div id="header-placeholder"></div>
     <div id="header-container"></div>
@@ -370,50 +421,28 @@
     <!-- Script principal de la página -->
     <script src="script-index.js" defer></script>
 
-    <!-- Eliminé el script duplicado de registro de Service Worker -->
-
-    <!-- Script de verificación PWA corregido -->
+    <!-- Script de verificación PWA simplificado -->
     <script>
-        // Verificación PWA
+        // Verificación básica de PWA
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Verificando configuración PWA...');
+            console.log('SigmaExacta PWA - Verificando configuración...');
+
+            // Verificar HTTPS
+            console.log('🔐 HTTPS:', window.location.protocol === 'https:' ? '✅' : '❌');
+
+            // Verificar manifest
+            if (document.querySelector('link[rel="manifest"]')) {
+                console.log('📄 Manifest: ✅ Encontrado');
+            } else {
+                console.log('📄 Manifest: ❌ No encontrado');
+            }
 
             // Verificar Service Worker
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations()
-                    .then(registrations => {
-                        console.log('Service Workers registrados:', registrations.length);
-                    })
-                    .catch(error => {
-                        console.log('Error al obtener registros de Service Worker:', error);
-                    });
+                console.log('⚙️ Service Worker: ✅ Soportado');
+            } else {
+                console.log('⚙️ Service Worker: ❌ No soportado');
             }
-
-            // Verificar manifest
-            fetch('manifest.json')
-                .then(response => {
-                    console.log('manifest.json:', response.ok ? 'OK' : 'ERROR');
-                    if (response.ok) return response.json();
-                    throw new Error('Manifest no encontrado');
-                })
-                .then(manifest => {
-                    console.log('Manifest cargado correctamente:', manifest.name);
-                })
-                .catch(error => {
-                    console.log('Error al cargar manifest.json:', error.message);
-                });
-
-            // Verificar iconos
-            const icons = ['icons/icon-192x192.png', 'icons/icon-512x512.png'];
-            icons.forEach(icon => {
-                fetch(icon)
-                    .then(response => {
-                        console.log(`${icon}:`, response.ok ? 'OK' : 'ERROR');
-                    })
-                    .catch(error => {
-                        console.log(`${icon}: ERROR (${error.message})`);
-                    });
-            });
         });
     </script>
 </body>
