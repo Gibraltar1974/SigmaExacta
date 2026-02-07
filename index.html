@@ -3,23 +3,7 @@
 
 <head>
 
-    <script>
-        // Inyectar meta tags PWA dinámicamente
-        (function () {
-            if (typeof document !== 'undefined') {
-                const pwaTags = `
-                        <meta name="application-name" content="SigmaExacta">
-                        <meta name="theme-color" content="#222222">
-                        <meta name="msapplication-TileColor" content="#222222">
-                        <meta name="mobile-web-app-capable" content="yes">
-                        <link rel="manifest" href="/manifest.json">
-                        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
-                        <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
-                    `;
-                document.head.insertAdjacentHTML('afterbegin', pwaTags);
-            }
-        })();
-    </script>
+    
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,6 +109,8 @@
         }
     </script>
 </head>
+
+
 
 <body>
 
@@ -390,11 +376,43 @@
     <script src="script-index.js" defer></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js') // Asegúrate de que el nombre coincida
+            navigator.serviceWorker.register('/service-worker.js') 
                 .then(() => console.log("Service Worker registrado correctamente"))
                 .catch(err => console.log("Error al registrar:", err));
         }
     </script>
+    <script>
+        // Verificación PWA
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Verificando configuración PWA...');
+
+            // Verificar Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations()
+                    .then(registrations => {
+                        console.log('Service Workers registrados:', registrations.length);
+                    });
+            }
+
+            // Verificar manifest
+            fetch('manifest.json')
+                .then(response => {
+                    console.log('manifest.json:', response.ok ? 'OK' : 'ERROR');
+                });
+
+            // Verificar iconos
+            const icons = ['icons/icon-192x192.png', 'icons/icon-512x512.png'];
+            icons.forEach(icon => {
+                fetch(icon)
+                    .then(response => {
+                        console.log(`${icon}:`, response.ok ? 'OK' : 'ERROR`);
+                        });
+            });
+        });
+    </script>
+
+
+
 </body>
 
 </html>

@@ -1,71 +1,81 @@
-// SigmaExacta Service Worker - Cache V2
-const CACHE_NAME = 'sigmaexacta-v2';
+// SigmaExacta Service Worker - Cache V3
+const CACHE_NAME = 'sigmaexacta-v3';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './header.html',
-  './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  // Añade aquí tus CSS y JS principales si tienes
-  // './css/style.css', 
-  // './js/app.js' 
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/styles-index.css',
+  '/script-index.js',
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/sigma-exacta-icon.jpg'
 ];
 
-// 1. Instalación: Cachear recursos estáticos críticos
+// Instalación
 self.addEventListener('install', event => {
-  console.log('[Service Worker] Instalando...');
+  console.log('[SW] Instalando Service Worker');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[Service Worker] Cacheando archivos core');
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[SW] Cacheando recursos');
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// 2. Activación: Limpiar cachés antiguas
+// Activación
 self.addEventListener('activate', event => {
-  console.log('[Service Worker] Activando...');
+  console.log('[SW] Activando Service Worker');
   event.waitUntil(
-    caches.keys().then(keyList => {
-      return Promise.all(keyList.map(key => {
-        if (key !== CACHE_NAME) {
-          console.log('[Service Worker] Borrando caché antigua', key);
-          return caches.delete(key);
-        }
-      }));
-    })
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Eliminando caché antigua:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
-  return self.clients.claim();
 });
 
-// 3. Fetch: Estrategia Stale-While-Revalidate
+// Fetch
 self.addEventListener('fetch', event => {
-  // Solo procesar peticiones http/https (ignorar chrome-extension, etc)
+  // Ignorar solicitudes que no son HTTP
   if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      // Estrategia: "Network First" para HTML (para que el contenido se actualice)
-      // "Cache First" para imágenes y estáticos.
-
-      // Aquí usamos una estrategia híbrida simple:
-      const fetchPromise = fetch(event.request).then(networkResponse => {
-        // Si la red responde bien, actualizamos la caché
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+    caches.match(event.request)
+      .then(response => {
+        // Si está en caché, devolverla
+        if (response) {
+          return response;
         }
-        return networkResponse;
-      }).catch(() => {
-        // Si falla la red (offline), no hacemos nada aquí, retornaremos caché abajo
-      });
 
-      // Si tenemos caché, la devolvemos (velocidad), pero fetchPromise actualiza en background
-      return cachedResponse || fetchPromise;
-    })
+        // Si no está en caché, obtener de red
+        return fetch(event.request)
+          .then(response => {
+            // No cacheamos todo, solo respuestas exitosas
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // Clonar la respuesta para cachear
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          })
+          .catch(error => {
+            console.log('[SW] Fetch falló:', error);
+            // Podrías devolver una página de fallback aquí
+          });
+      })
   );
 });
