@@ -131,71 +131,29 @@ self.addEventListener('fetch', event => {
       } catch (error) {
         console.log('[SW] Offline - no se pudo obtener:', event.request.url);
 
-        // Si es una navegación (HTML), mostrar una página simple
+        // Si es una navegación (HTML), redirigir a offline.html
         if (event.request.mode === 'navigate') {
+          // Intentar obtener offline.html de la caché
+          const offlineResponse = await caches.match('/offline.html');
+          if (offlineResponse) {
+            return offlineResponse;
+          }
+
+          // Si no está en caché, crear una respuesta simple
           return new Response(
-            `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>SigmaExacta - Offline</title>
-              <style>
-                body {
-                  font-family: 'Nunito', sans-serif;
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                  min-height: 100vh;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  text-align: center;
-                  padding: 20px;
-                }
-                .container {
-                  max-width: 500px;
-                  background: rgba(255,255,255,0.1);
-                  backdrop-filter: blur(10px);
-                  padding: 40px;
-                  border-radius: 20px;
-                  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                }
-                h1 { font-size: 2.5em; margin-bottom: 20px; }
-                p { font-size: 1.2em; margin-bottom: 30px; opacity: 0.9; }
-                .btn {
-                  display: inline-block;
-                  padding: 12px 30px;
-                  background: white;
-                  color: #764ba2;
-                  text-decoration: none;
-                  border-radius: 50px;
-                  font-weight: bold;
-                  margin: 10px;
-                  transition: transform 0.3s;
-                }
-                .btn:hover {
-                  transform: translateY(-2px);
-                }
-                .icon {
-                  font-size: 60px;
-                  margin-bottom: 20px;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="icon">⚡</div>
-                <h1>Modo Offline</h1>
-                <p>Todas las herramientas de SigmaExacta están disponibles offline. Revisa tu conexión o intenta nuevamente.</p>
-                <a href="/" class="btn">Ir al Inicio</a>
-                <button onclick="window.history.back()" class="btn">Volver Atrás</button>
-              </div>
-            </body>
-            </html>
-            `,
+            `<html>
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Offline - SigmaExacta</title>
+              </head>
+              <body>
+                <p>You're offline. <a href="/offline.html">Go to offline page</a></p>
+              </body>
+            </html>`,
             {
-              headers: { 'Content-Type': 'text/html; charset=utf-8' }
+              headers: { 'Content-Type': 'text/html; charset=utf-8' },
+              status: 302
             }
           );
         }
