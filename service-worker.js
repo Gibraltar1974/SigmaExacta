@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN CORREGIDA
-const CACHE_NAME = 'sigmaexacta-completo-v3';
+// SigmaExacta Service Worker - VERSIÓN ACTUALIZADA
+const CACHE_NAME = 'sigmaexacta-completo-v4'; // CAMBIAR VERSIÓN
 
 // TODAS las páginas con las rutas EXACTAS que aparecen en index.html
 const ESSENTIAL_URLS = [
@@ -12,26 +12,26 @@ const ESSENTIAL_URLS = [
   '/documentation.html',
 
   // Herramientas - ¡RUTAS CORRECTAS!
-  '/cpk_calculator.html',     // OK
-  '/control-plan.html',       // OK
-  '/weibull.html',            // OK
-  '/pdca.html',               // OK
-  '/stack_up_analysis.html',  // OK
-  '/taguchi_doe.html',        // ❌ CORREGIDO: era taguchi-doe.html
-  '/fmea.html',               // OK
-  '/qfd.html',                // OK
-  '/pugh.html',               // OK
-  '/vave.html',               // OK
-  '/design_thinking.html',    // OK
-  '/kano.html',               // OK
-  '/8d.html',                 // OK
-  '/ishikawa.html',           // OK
-  '/triz.html',               // OK
-  '/eisenhower.html',         // OK
-  '/apqp-ppap.html',          // OK
-  '/balancedcard.html',       // ❌ CORREGIDO: era balancedcards.html
-  '/swot.html',               // OK
-  '/efqm.html',               // OK
+  '/cpk_calculator.html',
+  '/control-plan.html',
+  '/weibull.html',
+  '/pdca.html',
+  '/stack_up_analysis.html',
+  '/taguchi_doe.html',
+  '/fmea.html',
+  '/qfd.html',
+  '/pugh.html',
+  '/vave.html',
+  '/design_thinking.html',
+  '/kano.html',
+  '/8d.html',
+  '/ishikawa.html',
+  '/triz.html',
+  '/eisenhower.html',
+  '/apqp-ppap.html',
+  '/balancedcard.html',
+  '/swot.html',
+  '/efqm.html',
 
   // Estilos
   '/styles.css',
@@ -76,7 +76,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activación: Limpiar viejas cachés
+// Activación: Limpiar viejas cachés y actualizar offline.html
 self.addEventListener('activate', event => {
   console.log('[SW] Activado - limpiando cachés antiguas');
   event.waitUntil(
@@ -89,6 +89,21 @@ self.addEventListener('activate', event => {
           }
         })
       );
+    }).then(() => {
+      // Actualizar offline.html específicamente
+      return caches.open(CACHE_NAME).then(cache => {
+        return fetch('/offline.html?update=' + Date.now())
+          .then(response => {
+            if (response.ok) {
+              return cache.put('/offline.html', response).then(() => {
+                console.log('[SW] offline.html actualizado en caché');
+              });
+            }
+          })
+          .catch(error => {
+            console.warn('[SW] No se pudo actualizar offline.html:', error);
+          });
+      });
     }).then(() => {
       console.log('[SW] Tomando control de todos los clients');
       return self.clients.claim();
@@ -105,6 +120,32 @@ self.addEventListener('fetch', event => {
   if (event.request.url.includes('googletagmanager') ||
     event.request.url.includes('google-analytics') ||
     event.request.url.includes('clarity.ms')) {
+    return;
+  }
+
+  // Para offline.html, priorizar red para mantener actualizado
+  if (event.request.url.includes('/offline.html')) {
+    event.respondWith(
+      (async () => {
+        try {
+          // Intentar red primero
+          const networkResponse = await fetch(event.request);
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        } catch (error) {
+          // Si falla la red, usar caché
+          const cachedResponse = await caches.match('/offline.html');
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Fallback por si acaso
+          return new Response('<h1>SigmaExacta Offline</h1><p>Herramientas disponibles offline</p>', {
+            headers: { 'Content-Type': 'text/html' }
+          });
+        }
+      })()
+    );
     return;
   }
 
@@ -131,30 +172,17 @@ self.addEventListener('fetch', event => {
       } catch (error) {
         console.log('[SW] Offline - no se pudo obtener:', event.request.url);
 
-        // Si es una navegación (HTML), redirigir a offline.html
+        // Si es una navegación (HTML), mostrar offline.html
         if (event.request.mode === 'navigate') {
-          // Intentar obtener offline.html de la caché
           const offlineResponse = await caches.match('/offline.html');
           if (offlineResponse) {
             return offlineResponse;
           }
 
-          // Si no está en caché, crear una respuesta simple
+          // Fallback simple
           return new Response(
-            `<html>
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Offline - SigmaExacta</title>
-              </head>
-              <body>
-                <p>You're offline. <a href="/offline.html">Go to offline page</a></p>
-              </body>
-            </html>`,
-            {
-              headers: { 'Content-Type': 'text/html; charset=utf-8' },
-              status: 302
-            }
+            '<html><body><h1>Offline</h1><p>SigmaExacta tools are available offline.</p></body></html>',
+            { headers: { 'Content-Type': 'text/html' } }
           );
         }
 
@@ -184,7 +212,7 @@ self.addEventListener('message', event => {
   // Forzar recache de un recurso
   if (event.data && event.data.type === 'CACHE_URL' && event.data.url) {
     caches.open(CACHE_NAME).then(cache => {
-      fetch(event.data.url).then(response => {
+      fetch(event.data.url + '?update=' + Date.now()).then(response => {
         if (response.ok) cache.put(event.data.url, response);
       });
     });
