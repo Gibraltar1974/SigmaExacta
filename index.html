@@ -123,9 +123,9 @@
 </head>
 
 <body>
-    <!-- Script para cargar el header -->
+    <!-- Script para cargar el header - VERSIÓN SIMPLIFICADA -->
     <script>
-        // Cargar header.html dinámicamente
+        // Cargar header.html dinámicamente - VERSIÓN SIMPLIFICADA
         fetch('header.html')
             .then(response => {
                 if (!response.ok) throw new Error('No se pudo cargar el header');
@@ -135,16 +135,36 @@
                 // Insertar el header en el contenedor
                 document.getElementById('header-container').innerHTML = html;
 
-                // Ejecutar scripts del header
+                // Solo ejecutar scripts JavaScript, no JSON-LD
                 const scripts = document.getElementById('header-container').getElementsByTagName('script');
-                for (let script of scripts) {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
+                const scriptsArray = Array.from(scripts);
+
+                for (let script of scriptsArray) {
+                    // Solo procesar scripts que sean JavaScript (no JSON-LD)
+                    const scriptType = script.getAttribute('type');
+                    if (!scriptType || scriptType === 'text/javascript') {
+                        const newScript = document.createElement('script');
+
+                        // Copiar atributos
+                        if (script.src) {
+                            newScript.src = script.src;
+                        }
+
+                        // Copiar contenido si no es src
+                        if (!script.src && script.textContent) {
+                            newScript.textContent = script.textContent;
+                        }
+
+                        // Copiar otros atributos
+                        for (let attr of script.attributes) {
+                            if (attr.name !== 'src' && attr.name !== 'textContent') {
+                                newScript.setAttribute(attr.name, attr.value);
+                            }
+                        }
+
+                        document.head.appendChild(newScript);
                     }
-                    document.head.appendChild(newScript);
+                    // Los scripts JSON-LD ya están en el DOM, no necesitan ejecutarse
                 }
             })
             .catch(error => {
@@ -163,6 +183,7 @@
     <div id="header-placeholder"></div>
     <div id="header-container"></div>
 
+    <!-- Resto del contenido permanece igual -->
     <noscript>
         <nav>
             <a href="/">Home</a> |

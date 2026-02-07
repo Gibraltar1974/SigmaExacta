@@ -252,43 +252,23 @@
             // Registrar Service Worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function () {
-                    const swPaths = [
-                        'service-worker.js',  // Ruta relativa
-                        './service-worker.js' // Otra ruta relativa
-                    ];
+                    navigator.serviceWorker.register('service-worker.js')
+                        .then(function (registration) {
+                            console.log('✅ Service Worker registrado');
 
-                    function tryRegister(pathIndex) {
-                        if (pathIndex >= swPaths.length) {
-                            console.log('⚠️ No se pudo registrar Service Worker');
-                            return;
-                        }
-
-                        const path = swPaths[pathIndex];
-                        navigator.serviceWorker.register(path)
-                            .then(function (registration) {
-                                console.log('✅ Service Worker registrado:', path);
-                                console.log('Scope:', registration.scope);
-
-                                // Escuchar actualizaciones
-                                registration.addEventListener('updatefound', () => {
-                                    const newWorker = registration.installing;
-                                    newWorker.addEventListener('statechange', () => {
-                                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                            // Nueva versión disponible
-                                            showUpdateNotification();
-                                        }
-                                    });
+                            // Escuchar actualizaciones
+                            registration.addEventListener('updatefound', () => {
+                                const newWorker = registration.installing;
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        showUpdateNotification();
+                                    }
                                 });
-                            })
-                            .catch(function (error) {
-                                console.log(`❌ Falló ${path}:`, error.message);
-                                // Intentar con la siguiente ruta
-                                tryRegister(pathIndex + 1);
                             });
-                    }
-
-                    // Comenzar con la primera ruta
-                    tryRegister(0);
+                        })
+                        .catch(function (error) {
+                            console.log('❌ Error registrando Service Worker:', error.message);
+                        });
                 });
             }
 
@@ -430,39 +410,6 @@
                     }
                 }, 30000);
             }
-
-            // Verificar recursos PWA
-            console.log('🔍 Verificando configuración PWA...');
-
-            // Verificar HTTPS (requerido para PWA)
-            console.log('🔐 HTTPS:', window.location.protocol === 'https:' ? '✅' : '❌ (requerido para PWA)');
         });
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "SigmaExacta",
-      "url": "https://sigmaexacta.com",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "Professional online engineering tools for Quality Control, Six Sigma, and Process Improvement. Includes Cpk Calculator, FMEA, DOE, and Control Plans.",
-      "featureList": "Cpk Calculator, Weibull Analysis, Control Plan Creator, FMEA, Taguchi DOE, Tolerance Stack-up, QFD",
-      "softwareHelp": {
-        "@type": "CreativeWork",
-        "url": "https://sigmaexacta.com/documentation.html"
-      },
-      "author": {
-        "@type": "Organization",
-        "name": "SigmaExacta",
-        "url": "https://sigmaexacta.com"
-      }
-    }
     </script>
 </header>
