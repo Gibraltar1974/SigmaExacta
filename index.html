@@ -15,10 +15,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <!-- Manifest y iconos -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
     <title>SigmaExacta: Open Source Software for Product Development</title>
     <meta name="description"
@@ -123,67 +123,216 @@
 </head>
 
 <body>
-    <!-- Script para cargar el header - VERSIÓN SIMPLIFICADA -->
-    <script>
-        // Cargar header.html dinámicamente - VERSIÓN SIMPLIFICADA
-        fetch('header.html')
-            .then(response => {
-                if (!response.ok) throw new Error('No se pudo cargar el header');
-                return response.text();
-            })
-            .then(html => {
-                // Insertar el header en el contenedor
-                document.getElementById('header-container').innerHTML = html;
+    <!-- Header inline para evitar problemas de carga -->
+    <header role="banner" class="top-bar">
+        <style>
+            .top-bar {
+                position: sticky;
+                top: 0;
+                z-index: 1001;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #222;
+            }
 
-                // Solo ejecutar scripts JavaScript, no JSON-LD
-                const scripts = document.getElementById('header-container').getElementsByTagName('script');
-                const scriptsArray = Array.from(scripts);
+            .logo-text,
+            .navigation .nav-link,
+            .nav-toggle {
+                color: #fff;
+            }
 
-                for (let script of scriptsArray) {
-                    // Solo procesar scripts que sean JavaScript (no JSON-LD)
-                    const scriptType = script.getAttribute('type');
-                    if (!scriptType || scriptType === 'text/javascript') {
-                        const newScript = document.createElement('script');
+            .nav-toggle {
+                display: none;
+                font-size: 1.5rem;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
 
-                        // Copiar atributos
-                        if (script.src) {
-                            newScript.src = script.src;
-                        }
+            .navigation .nav-menu {
+                display: flex;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                align-items: center;
+            }
 
-                        // Copiar contenido si no es src
-                        if (!script.src && script.textContent) {
-                            newScript.textContent = script.textContent;
-                        }
+            .navigation .nav-link {
+                padding: 10px 15px;
+                text-decoration: none;
+                font-weight: 600;
+                display: block;
+            }
 
-                        // Copiar otros atributos
-                        for (let attr of script.attributes) {
-                            if (attr.name !== 'src' && attr.name !== 'textContent') {
-                                newScript.setAttribute(attr.name, attr.value);
-                            }
-                        }
+            .navigation .nav-link i {
+                margin-left: 5px;
+                transition: transform 0.3s ease;
+            }
 
-                        document.head.appendChild(newScript);
-                    }
-                    // Los scripts JSON-LD ya están en el DOM, no necesitan ejecutarse
+            .nav-item-dropdown {
+                position: relative;
+            }
+
+            .dropdown-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: #fff;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+                border-radius: 5px;
+                z-index: 1000;
+                min-width: 600px;
+                padding: 20px;
+            }
+
+            .dropdown-menu a,
+            .dropdown-menu h4 {
+                color: #333;
+            }
+
+            .dropdown-link:hover {
+                background-color: #f1f1f1;
+            }
+
+            .dropdown-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 20px;
+            }
+
+            .nav-item-dropdown:hover>.dropdown-menu {
+                display: block;
+            }
+
+            @media (max-width: 992px) {
+                .nav-toggle {
+                    display: block;
                 }
-            })
-            .catch(error => {
-                console.error('Error cargando el header:', error);
-                // Mostrar navegación básica si falla
-                document.getElementById('header-container').innerHTML = `
-                    <nav style="background:#222;padding:10px;text-align:center;">
-                        <a href="index.html" style="color:white;margin:0 10px;">Home</a>
-                        <a href="about.html" style="color:white;margin:0 10px;">About</a>
-                        <a href="documentation.html" style="color:white;margin:0 10px;">Documentation</a>
-                    </nav>
-                `;
-            });
-    </script>
 
-    <div id="header-placeholder"></div>
-    <div id="header-container"></div>
+                .navigation .nav-menu {
+                    display: none;
+                    flex-direction: column;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    width: 100%;
+                    background-color: #fff;
+                    border-top: 1px solid #eee;
+                }
 
-    <!-- Resto del contenido permanece igual -->
+                .navigation .nav-menu .nav-link {
+                    color: #333;
+                }
+
+                .navigation .nav-menu.show-menu {
+                    display: flex;
+                }
+
+                .navigation .nav-item {
+                    width: 100%;
+                    text-align: left;
+                }
+
+                .nav-item-dropdown>.nav-link {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .dropdown-menu {
+                    display: none;
+                    position: static;
+                    width: 100%;
+                    box-shadow: none;
+                    border-top: 1px solid #f0f0f0;
+                    padding: 10px 0 10px 30px;
+                    min-width: unset;
+                    background-color: #f9f9f9;
+                }
+
+                .dropdown-menu.show-submenu {
+                    display: block;
+                }
+
+                .nav-item-dropdown:hover>.dropdown-menu {
+                    display: none;
+                }
+
+                .nav-item-dropdown.active:hover>.dropdown-menu {
+                    display: block;
+                }
+
+                .nav-item-dropdown.active>.nav-link i {
+                    transform: rotate(180deg);
+                }
+            }
+        </style>
+
+        <a href="/" class="logo-container-link">
+            <div class="logo-container">
+                <img src="sigma-exacta-icon.jpg" alt="SigmaExacta Logo" class="main-logo">
+                <span class="logo-text">SigmaExacta</span>
+            </div>
+        </a>
+
+        <nav class="navigation">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item nav-item-dropdown" id="tools-dropdown-container">
+                    <a href="#" class="nav-link" id="tools-dropdown-toggle">Tools <i
+                            class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu" id="tools-dropdown-menu">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Process & Quality</h4>
+                                <a href="cpk_calculator.html" class="dropdown-link">Cpk Calculator</a>
+                                <a href="control-plan.html" class="dropdown-link">Control Plan Creator</a>
+                                <a href="weibull.html" class="dropdown-link">Weibull Analysis</a>
+                                <a href="pdca.html" class="dropdown-link">PDCA Cycle</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Design & Innovation</h4>
+                                <a href="stack_up_analysis.html" class="dropdown-link">Tolerance Stack-up</a>
+                                <a href="taguchi_doe.html" class="dropdown-link">Robust Design (DOE)</a>
+                                <a href="fmea.html" class="dropdown-link">FMEA</a>
+                                <a href="qfd.html" class="dropdown-link">QFD (House of Quality)</a>
+                                <a href="pugh.html" class="dropdown-link">Pugh Matrix</a>
+                                <a href="vave.html" class="dropdown-link">VAVE Analysis</a>
+                                <a href="design_thinking.html" class="dropdown-link">Design Thinking</a>
+                                <a href="kano.html" class="dropdown-link">Kano Model</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Problem Solving</h4>
+                                <a href="8d.html" class="dropdown-link">8D Report</a>
+                                <a href="ishikawa.html" class="dropdown-link">Ishikawa Diagram</a>
+                                <a href="triz.html" class="dropdown-link">TRIZ</a>
+                                <a href="eisenhower.html" class="dropdown-link">Eisenhower Matrix</a>
+                            </div>
+                            <div class="dropdown-column">
+                                <h4 class="dropdown-category">Strategy & Management</h4>
+                                <a href="apqp-ppap.html" class="dropdown-link">APQP & PPAP Planner</a>
+                                <a href="balancedcard.html" class="dropdown-link">Strategic Scorecard</a>
+                                <a href="swot.html" class="dropdown-link">SWOT Analysis</a>
+                                <a href="efqm.html" class="dropdown-link">Maturity Assessment</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="validation.html" class="nav-link">Validation</a></li>
+                <li class="nav-item"><a href="documentation.html" class="nav-link">Documentation</a></li>
+                <li class="nav-item"><a href="mailto:contact@sigmaexacta.com" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Resto del contenido -->
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -313,18 +462,14 @@
                 </a>
             </div>
         </div>
-
     </main>
 
     <footer role="contentinfo">
         <!-- Bloque con logos a los lados y texto en el centro -->
         <div class="footer-legal-block">
-            <!-- Logo Open Innovation Network a la izquierda -->
             <div class="footer-logo">
                 <img src="OIN_member_horizontal.jpg" alt="Open Invention Network Community Member">
             </div>
-
-            <!-- Bloque de texto en el centro -->
             <div class="footer-text-content">
                 <p style="margin: 5px 0; font-size: 0.9rem; color: #aaa;">
                     Copyright (C) 2025 Javier Casal Gómez.
@@ -355,14 +500,11 @@
                 </p>
                 <p style="font-size:0.9em; color:#666;">Open Source Project</p>
             </div>
-
-            <!-- Logo AGPLv3 a la derecha -->
             <div class="footer-logo">
                 <img src="256px-AGPLv3_Logo.svg.png" alt="AGPLv3 License" class="agpl-logo">
             </div>
         </div>
 
-        <!-- Sección nueva con enlaces a todas las páginas -->
         <div class="footer-pages-links">
             <div class="footer-links-grid">
                 <div class="footer-links-column">
@@ -442,28 +584,123 @@
     <!-- Script principal de la página -->
     <script src="script-index.js" defer></script>
 
-    <!-- Script de verificación PWA simplificado -->
+    <!-- Script simplificado para PWA y navegación -->
     <script>
-        // Verificación básica de PWA
+        // Navegación responsive
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('SigmaExacta PWA - Verificando configuración...');
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-            // Verificar HTTPS
-            console.log('🔐 HTTPS:', window.location.protocol === 'https:' ? '✅' : '❌');
-
-            // Verificar manifest
-            if (document.querySelector('link[rel="manifest"]')) {
-                console.log('📄 Manifest: ✅ Encontrado');
-            } else {
-                console.log('📄 Manifest: ❌ No encontrado');
+            // Toggle menu móvil
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                    const icon = navToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                });
             }
 
-            // Verificar Service Worker
+            // Dropdown en móvil
+            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
+                toolsDropdownToggle.addEventListener('click', (event) => {
+                    if (window.innerWidth <= 992) {
+                        event.preventDefault();
+                        toolsDropdownMenu.classList.toggle('show-submenu');
+                        toolsDropdownContainer.classList.toggle('active');
+                    }
+                });
+            }
+
+            // Cerrar menús al hacer clic fuera
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth <= 992 && navMenu && navMenu.classList.contains('show-menu')) {
+                    if (!event.target.closest('.navigation')) {
+                        navMenu.classList.remove('show-menu');
+                        if (navToggle) {
+                            const icon = navToggle.querySelector('i');
+                            icon.classList.add('fa-bars');
+                            icon.classList.remove('fa-times');
+                        }
+                    }
+                }
+            });
+
+            // Registrar Service Worker
             if ('serviceWorker' in navigator) {
-                console.log('⚙️ Service Worker: ✅ Soportado');
-            } else {
-                console.log('⚙️ Service Worker: ❌ No soportado');
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registrado correctamente'))
+                    .catch(err => console.log('Error al registrar Service Worker:', err));
             }
+
+            // Instalación PWA
+            let deferredPrompt;
+            const installButton = document.createElement('button');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+
+                // Mostrar botón después de 5 segundos
+                setTimeout(() => {
+                    if (deferredPrompt) {
+                        showInstallButton();
+                    }
+                }, 5000);
+            });
+
+            function showInstallButton() {
+                installButton.innerHTML = '📱 Install SigmaExacta App';
+                installButton.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: #222;
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    border: 2px solid #4CAF50;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    font-family: Arial, sans-serif;
+                    cursor: pointer;
+                    z-index: 10000;
+                `;
+
+                document.body.appendChild(installButton);
+
+                installButton.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+
+                    if (outcome === 'accepted') {
+                        console.log('Usuario aceptó la instalación');
+                        installButton.style.display = 'none';
+                    }
+
+                    deferredPrompt = null;
+                });
+
+                // Auto-ocultar después de 30 segundos
+                setTimeout(() => {
+                    if (installButton.parentNode) {
+                        installButton.remove();
+                    }
+                }, 30000);
+            }
+
+            // Ocultar botón si ya está instalado
+            window.addEventListener('appinstalled', () => {
+                console.log('SigmaExacta PWA instalada');
+                if (installButton.parentNode) {
+                    installButton.remove();
+                }
+                deferredPrompt = null;
+            });
         });
     </script>
 </body>
