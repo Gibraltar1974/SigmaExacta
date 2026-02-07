@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SigmaExacta - Modo Offline</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .offline-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-icon {
+            font-size: 64px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .offline-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .offline-tools {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .offline-tools h3 {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        .offline-tools ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .offline-tools li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .offline-actions {
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1 class="offline-title">Estás trabajando en modo offline</h1>
+        <p>Todas las herramientas principales están disponibles sin conexión a internet.</p>
+
+        <div class="offline-tools">
+            <h3>Herramientas disponibles offline:</h3>
+            <ul>
+                <li>📊 Cpk Calculator</li>
+                <li>📋 Control Plan Creator</li>
+                <li>📈 Weibull Analysis</li>
+                <li>🔄 PDCA Cycle</li>
+                <li>📏 Tolerance Stack-up</li>
+                <li>🔬 Robust Design (DOE)</li>
+                <li>⚠️ FMEA</li>
+                <li>🏠 QFD (House of Quality)</li>
+                <li>🤔 Pugh Matrix</li>
+                <li>⚙️ VAVE Analysis</li>
+                <li>💡 Design Thinking</li>
+                <li>❤️ Kano Model</li>
+                <li>📝 8D Report</li>
+                <li>🐟 Ishikawa Diagram</li>
+                <li>🧠 TRIZ</li>
+                <li>⭐ Eisenhower Matrix</li>
+                <li>📑 APQP & PPAP</li>
+                <li>⚖️ Strategic Scorecard</li>
+                <li>🧩 SWOT Analysis</li>
+                <li>🏆 Maturity Assessment</li>
+            </ul>
+        </div>
+
+        <p><strong>Consejo:</strong> Los datos que ingreses se guardarán localmente y se sincronizarán cuando recuperes
+            la conexión.</p>
+
+        <div class="offline-actions">
+            <a href="/" class="btn">Ir al inicio</a>
+            <button onclick="location.reload()" class="btn">Reintentar conexión</button>
+        </div>
+    </div>
+
+    <script>
+        // Verificar conexión periódicamente
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.href = '/';
+            }
+        }, 5000);
+
+        // Mostrar notificación cuando vuelva la conexión
+        window.addEventListener('online', () => {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #2ecc71;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <strong>✅ Conexión restaurada</strong>
+                <p>Sincronizando datos...</p>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        });
+
+        // Agregar estilos de animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
