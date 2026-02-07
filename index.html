@@ -2,9 +2,6 @@
 <html lang="en">
 
 <head>
-
-    
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SigmaExacta: Open Source Software for Product Development</title>
@@ -19,7 +16,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Manifest se carga dinámicamente desde header.html -->
 
     <!-- Meta verificaciones -->
     <meta name="google-site-verification" content="kpErc9V2mD091WMpVIGIqFGVlbnrFnerd5X28Y6kX_w" />
@@ -109,8 +106,6 @@
         }
     </script>
 </head>
-
-
 
 <body>
 
@@ -374,13 +369,10 @@
 
     <!-- Script principal de la página -->
     <script src="script-index.js" defer></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js') 
-                .then(() => console.log("Service Worker registrado correctamente"))
-                .catch(err => console.log("Error al registrar:", err));
-        }
-    </script>
+
+    <!-- Eliminé el script duplicado de registro de Service Worker -->
+
+    <!-- Script de verificación PWA corregido -->
     <script>
         // Verificación PWA
         document.addEventListener('DOMContentLoaded', function () {
@@ -391,6 +383,9 @@
                 navigator.serviceWorker.getRegistrations()
                     .then(registrations => {
                         console.log('Service Workers registrados:', registrations.length);
+                    })
+                    .catch(error => {
+                        console.log('Error al obtener registros de Service Worker:', error);
                     });
             }
 
@@ -398,6 +393,14 @@
             fetch('manifest.json')
                 .then(response => {
                     console.log('manifest.json:', response.ok ? 'OK' : 'ERROR');
+                    if (response.ok) return response.json();
+                    throw new Error('Manifest no encontrado');
+                })
+                .then(manifest => {
+                    console.log('Manifest cargado correctamente:', manifest.name);
+                })
+                .catch(error => {
+                    console.log('Error al cargar manifest.json:', error.message);
                 });
 
             // Verificar iconos
@@ -405,14 +408,14 @@
             icons.forEach(icon => {
                 fetch(icon)
                     .then(response => {
-                        console.log(`${icon}:`, response.ok ? 'OK' : 'ERROR`);
-                        });
+                        console.log(`${icon}:`, response.ok ? 'OK' : 'ERROR');
+                    })
+                    .catch(error => {
+                        console.log(`${icon}: ERROR (${error.message})`);
+                    });
             });
         });
     </script>
-
-
-
 </body>
 
 </html>
