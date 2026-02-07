@@ -123,9 +123,10 @@
 </head>
 
 <body>
-    <!-- Header inline para evitar problemas de carga -->
+    <!-- Header inline - NO MÁS CARGA DINÁMICA -->
     <header role="banner" class="top-bar">
         <style>
+            /* ===== ESTILOS DE LA BARRA DE NAVEGACIÓN ===== */
             .top-bar {
                 position: sticky;
                 top: 0;
@@ -332,7 +333,10 @@
         </nav>
     </header>
 
-    <!-- Resto del contenido -->
+    <!-- NO MÁS CONTENEDORES PARA HEADER DINÁMICO -->
+    <!-- Eliminado: <div id="header-placeholder"></div> -->
+    <!-- Eliminado: <div id="header-container"></div> -->
+
     <noscript>
         <nav>
             <a href="/">Home</a> |
@@ -462,14 +466,18 @@
                 </a>
             </div>
         </div>
+
     </main>
 
     <footer role="contentinfo">
         <!-- Bloque con logos a los lados y texto en el centro -->
         <div class="footer-legal-block">
+            <!-- Logo Open Innovation Network a la izquierda -->
             <div class="footer-logo">
                 <img src="OIN_member_horizontal.jpg" alt="Open Invention Network Community Member">
             </div>
+
+            <!-- Bloque de texto en el centro -->
             <div class="footer-text-content">
                 <p style="margin: 5px 0; font-size: 0.9rem; color: #aaa;">
                     Copyright (C) 2025 Javier Casal Gómez.
@@ -500,11 +508,14 @@
                 </p>
                 <p style="font-size:0.9em; color:#666;">Open Source Project</p>
             </div>
+
+            <!-- Logo AGPLv3 a la derecha -->
             <div class="footer-logo">
                 <img src="256px-AGPLv3_Logo.svg.png" alt="AGPLv3 License" class="agpl-logo">
             </div>
         </div>
 
+        <!-- Sección nueva con enlaces a todas las páginas -->
         <div class="footer-pages-links">
             <div class="footer-links-grid">
                 <div class="footer-links-column">
@@ -581,13 +592,12 @@
         kofiwidget2.draw();
     </script>
 
-    <!-- Script principal de la página -->
-    <script src="script-index.js" defer></script>
-
-    <!-- Script simplificado para PWA y navegación -->
+    <!-- Scripts simplificados -->
     <script>
         // Navegación responsive
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('SigmaExacta - Inicializando...');
+
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
             const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
@@ -632,27 +642,38 @@
             // Registrar Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js')
-                    .then(() => console.log('Service Worker registrado correctamente'))
-                    .catch(err => console.log('Error al registrar Service Worker:', err));
+                    .then(() => console.log('✅ Service Worker registrado correctamente'))
+                    .catch(err => console.log('❌ Error al registrar Service Worker:', err));
             }
 
-            // Instalación PWA
-            let deferredPrompt;
-            const installButton = document.createElement('button');
+            // Instalación PWA - VERSIÓN CORREGIDA
+            let deferredPrompt = null;
+            let installButton = null;
 
             window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('📱 beforeinstallprompt event fired');
+
+                // Previene que el mini-infobar aparezca en Chrome
                 e.preventDefault();
+
+                // Guarda el evento para usarlo más tarde
                 deferredPrompt = e;
 
-                // Mostrar botón después de 5 segundos
+                // Mostrar botón después de 3 segundos
                 setTimeout(() => {
-                    if (deferredPrompt) {
+                    if (deferredPrompt && !installButton) {
                         showInstallButton();
                     }
-                }, 5000);
+                }, 3000);
             });
 
             function showInstallButton() {
+                // Si ya hay un botón, no crear otro
+                if (installButton || !deferredPrompt) return;
+
+                console.log('🔄 Mostrando botón de instalación');
+
+                installButton = document.createElement('button');
                 installButton.innerHTML = '📱 Install SigmaExacta App';
                 installButton.style.cssText = `
                     position: fixed;
@@ -667,40 +688,88 @@
                     font-family: Arial, sans-serif;
                     cursor: pointer;
                     z-index: 10000;
+                    font-size: 14px;
+                    transition: all 0.3s ease;
                 `;
+
+                // Efecto hover
+                installButton.addEventListener('mouseenter', () => {
+                    installButton.style.transform = 'scale(1.05)';
+                    installButton.style.boxShadow = '0 6px 16px rgba(0,0,0,0.4)';
+                });
+
+                installButton.addEventListener('mouseleave', () => {
+                    installButton.style.transform = 'scale(1)';
+                    installButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                });
 
                 document.body.appendChild(installButton);
 
                 installButton.addEventListener('click', async () => {
                     if (!deferredPrompt) return;
 
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('🔄 Mostrando prompt de instalación');
 
-                    if (outcome === 'accepted') {
-                        console.log('Usuario aceptó la instalación');
-                        installButton.style.display = 'none';
+                    try {
+                        // Muestra el prompt de instalación
+                        deferredPrompt.prompt();
+
+                        // Espera a que el usuario responda
+                        const { outcome } = await deferredPrompt.userChoice;
+
+                        console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
+
+                        // El prompt ya no se puede usar
+                        deferredPrompt = null;
+
+                        // Ocultar el botón
+                        if (installButton && installButton.parentNode) {
+                            installButton.remove();
+                            installButton = null;
+                        }
+
+                    } catch (error) {
+                        console.error('Error al mostrar prompt:', error);
                     }
-
-                    deferredPrompt = null;
                 });
 
                 // Auto-ocultar después de 30 segundos
                 setTimeout(() => {
-                    if (installButton.parentNode) {
+                    if (installButton && installButton.parentNode) {
                         installButton.remove();
+                        installButton = null;
+                        console.log('⏰ Botón auto-ocultado después de 30 segundos');
                     }
                 }, 30000);
             }
 
-            // Ocultar botón si ya está instalado
-            window.addEventListener('appinstalled', () => {
-                console.log('SigmaExacta PWA instalada');
-                if (installButton.parentNode) {
-                    installButton.remove();
-                }
+            // Detectar si ya está instalada
+            window.addEventListener('appinstalled', (evt) => {
+                console.log('🎉 SigmaExacta PWA instalada');
                 deferredPrompt = null;
+
+                if (installButton && installButton.parentNode) {
+                    installButton.remove();
+                    installButton = null;
+                }
             });
+
+            // Verificar si ya se ejecuta como PWA instalada
+            function checkIfPWAInstalled() {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+                const isIOSStandalone = window.navigator.standalone === true;
+
+                if (isStandalone || isIOSStandalone) {
+                    console.log('📱 Running as installed PWA');
+                    return true;
+                }
+                return false;
+            }
+
+            // Verificar al cargar
+            if (checkIfPWAInstalled()) {
+                console.log('✅ Ya está instalada como PWA');
+            }
         });
     </script>
 </body>
