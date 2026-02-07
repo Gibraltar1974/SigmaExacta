@@ -14,13 +14,29 @@ const ESSENTIAL_URLS = [
   '/favicon.ico',             // Favicon
   '/sigma-exacta-icon.jpg',   // Logo principal
 
-  // Las 6 herramientas más importantes 
-  '/cpk_calculator.html',     // Ejemplo: Cpk Calculator
-  '/fmea.html',               // Ejemplo: FMEA
-  '/taguchi-DOE.html',        // Ejemplo: Taguchi DOE
-  '/stack_up_analysis.html',  // Ejemplo: Stack-Up-Analysis 
-  '/weibull.html',            // Ejemplo: Weibull
-  '/triz.html'                // Ejemplo: TRIZ
+  // Las herramientas más importantes 
+  '/cpk_calculator.html',     //  Cpk Calculator
+  '/fmea.html',               //  FMEA
+  '/taguchi-doe.html',        // Taguchi DOE
+  '/stack_up_analysis.html',  // Stack-Up-Analysis 
+  '/weibull.html',            //  Weibull
+  '/triz.html',               // TRIZ
+  '/control-plan.html',       // Control Plan
+  '/pdca.html',               //PDCA
+  '/qfd.html',                //QFD
+  '/pugh.html',               //Pugh
+  '/vave.html',                //Vave
+  '/design_thinking.html',     //Design Thinking
+  '/kano.html',                //kano    
+  '/8d.html',                   //8d
+  '/ishikawa.html',             // ishikawa
+  '/triz.html',                 //triz
+  '/eisenhower.html',           //eisenhower
+  '/apqp-ppap.html',            //apqp-ppap
+  '/balancedcards.html',        //balancedcards
+  '/swot.html',                 //swot
+  '/efqm.html'                  //efqm
+
 ];
 
 // Instalación: Cachear solo lo esencial
