@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN ACTUALIZADA
-const CACHE_NAME = 'sigmaexacta-completo-v4'; // CAMBIAR VERSIÓN
+const CACHE_NAME = 'sigmaexacta-completo-v5'; // CAMBIAR VERSIÓN
 
 // TODAS las páginas con las rutas EXACTAS que aparecen en index.html
 const ESSENTIAL_URLS = [
@@ -10,6 +10,8 @@ const ESSENTIAL_URLS = [
   '/about.html',
   '/validation.html',
   '/documentation.html',
+  '/dexie.min.js',
+  '/db-sigma.js',
 
   // Herramientas - ¡RUTAS CORRECTAS!
   '/cpk_calculator.html',
