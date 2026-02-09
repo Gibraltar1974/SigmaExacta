@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN CORREGIDA V6
-const CACHE_NAME = 'sigmaexacta-completo-v6';
+const CACHE_NAME = 'sigmaexacta-completo-v7';
 
 const ESSENTIAL_URLS = [
   '/',
