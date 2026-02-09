@@ -1,7 +1,6 @@
-// SigmaExacta Service Worker - VERSIÓN 12
-const CACHE_NAME = 'sigma-exacta-v12';
+// SigmaExacta Service Worker - VERSIÓN 13
+const CACHE_NAME = 'sigma-exacta-v13';
 
-// Lista de archivos con extensiones REALES (.html)
 const ESSENTIAL_URLS = [
   '/',
   '/index.html',
@@ -12,9 +11,8 @@ const ESSENTIAL_URLS = [
   '/db-sigma.js',
   '/manifest.json',
   '/cpk_calculator.html',
-  '/fmea.html',
   '/stack_up_analysis.html',
-  '/apqp-ppap.html',
+  '/fmea.html',
   '/8d.html',
   '/ishikawa.html',
   '/control-plan.html',
@@ -27,29 +25,32 @@ const ESSENTIAL_URLS = [
   '/kano.html',
   '/triz.html',
   '/eisenhower.html',
+  '/apqp-ppap.html',
   '/balancedcard.html',
   '/swot.html',
   '/efqm.html'
 ];
 
-// 1. INSTALACIÓN: Cacheo uno a uno para evitar bloqueos
+// 1. INSTALACIÓN: Forzamos la descarga real (no permitimos archivos de tamaño 0)
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v12] Iniciando instalación...');
+      console.log('🚀 [SW v13] Re-descargando herramientas...');
       for (const url of ESSENTIAL_URLS) {
         try {
-          await cache.add(url);
-          console.log(`✅ Guardado: ${url}`);
+          const response = await fetch(url, { cache: 'reload' }); // Forzar descarga fresca del servidor
+          if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+          await cache.put(url, response);
+          console.log(`✅ Descargado y Guardado: ${url}`);
         } catch (err) {
-          console.warn(`⚠️ No se pudo guardar: ${url}. Revisa si el nombre es correcto.`);
+          console.error(`❌ Fallo crítico al descargar ${url}:`, err);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN: Borrado total de versiones viejas
+// 2. ACTIVACIÓN
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -58,44 +59,42 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH: El motor que resuelve el problema de "This site can't be reached"
+// 3. FETCH: El cerebro de la v13
 self.addEventListener('fetch', event => {
-  // Ignorar peticiones que no sean nuestras
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const url = new URL(event.request.url);
+    let path = url.pathname;
 
     try {
-      // A. ¿Está el archivo exacto?
-      const exactMatch = await cache.match(event.request);
-      if (exactMatch) return exactMatch;
+      // 1. ¿Es la raíz?
+      if (path === '/' || path === '') path = '/index.html';
 
-      // B. ¿Es una navegación sin extensión? (Ej: /stack_up_analysis)
-      // Buscamos automáticamente la versión .html en la caché
-      if (event.request.mode === 'navigate' || !url.pathname.includes('.')) {
-        const cleanPath = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
-        const htmlMatch = await cache.match(cleanPath + '.html');
-        if (htmlMatch) return htmlMatch;
+      // 2. Intentar coincidencia exacta tal cual viene en la URL
+      let response = await cache.match(event.request);
+
+      // 3. Si no hay coincidencia exacta y no tiene extensión, probar con .html
+      if (!response && !path.includes('.')) {
+        const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+        response = await cache.match(cleanPath + '.html');
       }
 
-      // C. Si no está en caché, intentamos internet
+      // 4. Si lo encontramos en caché, lo devolvemos
+      if (response) return response;
+
+      // 5. Si no está en caché, intentar red
       return await fetch(event.request);
 
     } catch (error) {
-      // D. FALLBACK: Si no hay internet y falla todo lo anterior
-      if (event.request.mode === 'navigate') {
+      // Si todo falla (offline) y es una página (.html o navegación)
+      if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
         const offlinePage = await cache.match('/offline.html');
         if (offlinePage) return offlinePage;
       }
 
-      // Respuesta vacía controlada para que Chrome no se bloquee
-      return new Response('Offline: Recurso no disponible', {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: new Headers({ 'Content-Type': 'text/plain' })
-      });
+      return new Response('Error de conexión offline.', { status: 503, headers: { 'Content-Type': 'text/plain' } });
     }
   })());
 });
