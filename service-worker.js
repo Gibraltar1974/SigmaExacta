@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN 13
-const CACHE_NAME = 'sigma-exacta-v13';
+// SigmaExacta Service Worker - VERSIÓN 14
+const CACHE_NAME = 'sigma-exacta-v14';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -31,19 +31,31 @@ const ESSENTIAL_URLS = [
   '/efqm.html'
 ];
 
-// 1. INSTALACIÓN: Forzamos la descarga real (no permitimos archivos de tamaño 0)
+// 1. INSTALACIÓN con limpieza de redirecciones
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v13] Re-descargando herramientas...');
+      console.log('🚀 [SW v14] Instalando con bypass de redirección...');
       for (const url of ESSENTIAL_URLS) {
         try {
-          const response = await fetch(url, { cache: 'reload' }); // Forzar descarga fresca del servidor
-          if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-          await cache.put(url, response);
-          console.log(`✅ Descargado y Guardado: ${url}`);
+          const response = await fetch(url, { redirect: 'follow' });
+          if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+          // CRÍTICO: Si la respuesta es redireccionada, creamos una nueva copia "limpia"
+          // Esto elimina el error "redirected response was used"
+          if (response.redirected) {
+            const cleanResponse = new Response(response.body, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers
+            });
+            await cache.put(url, cleanResponse);
+          } else {
+            await cache.put(url, response);
+          }
+          console.log(`✅ Cacheado: ${url}`);
         } catch (err) {
-          console.error(`❌ Fallo crítico al descargar ${url}:`, err);
+          console.error(`❌ Error en ${url}:`, err);
         }
       }
     }).then(() => self.skipWaiting())
@@ -59,42 +71,37 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH: El cerebro de la v13
+// 3. FETCH
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const url = new URL(event.request.url);
-    let path = url.pathname;
+    const path = url.pathname;
 
     try {
-      // 1. ¿Es la raíz?
-      if (path === '/' || path === '') path = '/index.html';
-
-      // 2. Intentar coincidencia exacta tal cual viene en la URL
+      // 1. Intentar coincidencia exacta
       let response = await cache.match(event.request);
 
-      // 3. Si no hay coincidencia exacta y no tiene extensión, probar con .html
+      // 2. Mapeo inteligente para rutas sin extensión
       if (!response && !path.includes('.')) {
         const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
-        response = await cache.match(cleanPath + '.html');
+        const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
+        response = await cache.match(target);
       }
 
-      // 4. Si lo encontramos en caché, lo devolvemos
       if (response) return response;
 
-      // 5. Si no está en caché, intentar red
+      // 3. Si no hay en caché, ir a red
       return await fetch(event.request);
 
     } catch (error) {
-      // Si todo falla (offline) y es una página (.html o navegación)
-      if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
+      if (event.request.mode === 'navigate') {
         const offlinePage = await cache.match('/offline.html');
         if (offlinePage) return offlinePage;
       }
-
-      return new Response('Error de conexión offline.', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+      return new Response('Offline', { status: 503 });
     }
   })());
 });
