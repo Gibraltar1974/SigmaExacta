@@ -1,6 +1,7 @@
-// SigmaExacta Service Worker - VERSIÓN 10 (Corrección de Extensiones)
-const CACHE_NAME = 'sigma-exacta-v10';
+// SigmaExacta Service Worker - VERSIÓN 11
+const CACHE_NAME = 'sigma-exacta-v11';
 
+// Lista de archivos con la extensión REAL que tienen en tu servidor (.html)
 const ESSENTIAL_URLS = [
   '/',
   '/index.html',
@@ -10,62 +11,90 @@ const ESSENTIAL_URLS = [
   '/dexie.min.js',
   '/db-sigma.js',
   '/manifest.json',
-  // Asegúrate de que todas las herramientas tengan el .html aquí:
   '/cpk_calculator.html',
   '/fmea.html',
   '/stack_up_analysis.html',
   '/apqp-ppap.html',
   '/8d.html',
-  '/ishikawa.html'
+  '/ishikawa.html',
+  '/control-plan.html',
+  '/weibull.html',
+  '/pdca.html',
+  '/qfd.html',
+  '/pugh.html',
+  '/vave.html',
+  '/design_thinking.html',
+  '/kano.html',
+  '/triz.html',
+  '/eisenhower.html',
+  '/balancedcard.html',
+  '/swot.html',
+  '/efqm.html'
 ];
 
-// 1. Instalación
+// 1. INSTALACIÓN: Cacheo individual para que si uno falla, los demás sigan
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('✅ [SW] Guardando archivos en caché v10');
-      return cache.addAll(ESSENTIAL_URLS);
-    })
+    caches.open(CACHE_NAME).then(async (cache) => {
+      console.log('📦 [SW] Instalando v11...');
+      for (const url of ESSENTIAL_URLS) {
+        try {
+          await cache.add(url);
+          console.log(`✅ Cacheado: ${url}`);
+        } catch (err) {
+          console.warn(`⚠️ No se pudo guardar: ${url}. Verifica si existe en el servidor.`);
+        }
+      }
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// 2. Activación (Limpieza)
+// 2. ACTIVACIÓN: Limpieza de versiones antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
       keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    ))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// 3. LA CLAVE: El manejador de peticiones inteligente
+// 3. FETCH: El motor que resuelve el problema de las extensiones
 self.addEventListener('fetch', event => {
+  // Solo procesar peticiones GET de nuestra web
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
-  const url = new URL(event.request.url);
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const url = new URL(event.request.url);
 
-  event.respondWith(
-    caches.match(event.request).then(async (response) => {
-      // Si el archivo está en la caché exactamente (ej: styles.css), se entrega
-      if (response) return response;
+    try {
+      // A. Intento 1: Buscar coincidencia exacta (ej: styles.css)
+      const exactMatch = await cache.match(event.request);
+      if (exactMatch) return exactMatch;
 
-      // TRUCO PRO: Si pides "/fmea" y no está, intentamos buscar "/fmea.html" internamente
+      // B. Intento 2: Mapeo de extensión (.html fantasma)
+      // Si pides /fmea y no está, buscamos /fmea.html en la caché
       if (event.request.mode === 'navigate' || !url.pathname.includes('.')) {
         const path = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
-        const fallbackResponse = await caches.match(path + '.html');
-
-        if (fallbackResponse) return fallbackResponse;
+        const htmlMatch = await cache.match(path + '.html');
+        if (htmlMatch) return htmlMatch;
       }
 
-      // Si no está en caché de ninguna forma, intentamos internet
-      return fetch(event.request).catch(() => {
-        // Si falla internet y es una página, mostramos el offline.html
-        if (event.request.mode === 'navigate') {
-          return caches.match('/offline.html');
-        }
+      // C. Intento 3: Intentar Internet
+      return await fetch(event.request);
+
+    } catch (error) {
+      // D. Fallback: Si no hay red y es una página, mostrar offline.html
+      if (event.request.mode === 'navigate') {
+        const offlinePage = await cache.match('/offline.html');
+        if (offlinePage) return offlinePage;
+      }
+
+      // Respuesta de seguridad final para evitar el error ERR_FAILED
+      return new Response('Offline: Recurso no disponible', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain' }
       });
-    })
-  );
+    }
+  })());
 });
