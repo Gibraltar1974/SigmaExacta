@@ -1,9 +1,7 @@
-// SigmaExacta Service Worker - VERSIÓN ACTUALIZADA
-const CACHE_NAME = 'sigmaexacta-completo-v5'; // CAMBIAR VERSIÓN
+// SigmaExacta Service Worker - VERSIÓN CORREGIDA V6
+const CACHE_NAME = 'sigmaexacta-completo-v6';
 
-// TODAS las páginas con las rutas EXACTAS que aparecen en index.html
 const ESSENTIAL_URLS = [
-  // Páginas principales - RUTAS EXACTAS
   '/',
   '/index.html',
   '/offline.html',
@@ -13,7 +11,7 @@ const ESSENTIAL_URLS = [
   '/dexie.min.js',
   '/db-sigma.js',
 
-  // Herramientas - ¡RUTAS CORRECTAS!
+  // Herramientas con su extensión real
   '/cpk_calculator.html',
   '/control-plan.html',
   '/weibull.html',
@@ -35,188 +33,73 @@ const ESSENTIAL_URLS = [
   '/swot.html',
   '/efqm.html',
 
-  // Estilos
+  // Estilos y recursos
   '/styles.css',
   '/styles-index.css',
-
-  // Recursos estáticos
   '/manifest.json',
   '/favicon.ico',
   '/sigma-exacta-icon.jpg',
-
-  // Iconos
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-
-  // Logos
   '/OIN_member_horizontal.jpg',
   '/256px-AGPLv3_Logo.svg.png'
 ];
 
-// Instalación: Cachear TODO con las rutas correctas
+// Instalación
 self.addEventListener('install', event => {
-  console.log('[SW] Instalando con todas las rutas corregidas...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Cacheando', ESSENTIAL_URLS.length, 'recursos');
-
-        // Intentar cachear todo, pero no fallar si alguna falla
-        const cachePromises = ESSENTIAL_URLS.map(url => {
-          return cache.add(url).catch(error => {
-            console.warn('[SW] No se pudo cachear:', url, error);
-            return Promise.resolve(); // Continuar con los demás
-          });
-        });
-
-        return Promise.all(cachePromises);
-      })
-      .then(() => {
-        console.log('[SW] Instalación completada');
-        return self.skipWaiting();
-      })
-  );
-});
-
-// Activación: Limpiar viejas cachés y actualizar offline.html
-self.addEventListener('activate', event => {
-  console.log('[SW] Activado - limpiando cachés antiguas');
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.open(CACHE_NAME).then(cache => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Borrando caché antigua:', cacheName);
-            return caches.delete(cacheName);
-          }
+        ESSENTIAL_URLS.map(url => {
+          return cache.add(url).catch(err => console.warn(`Error cacheando ${url}:`, err));
         })
       );
-    }).then(() => {
-      // Actualizar offline.html específicamente
-      return caches.open(CACHE_NAME).then(cache => {
-        return fetch('/offline.html?update=' + Date.now())
-          .then(response => {
-            if (response.ok) {
-              return cache.put('/offline.html', response).then(() => {
-                console.log('[SW] offline.html actualizado en caché');
-              });
-            }
-          })
-          .catch(error => {
-            console.warn('[SW] No se pudo actualizar offline.html:', error);
-          });
-      });
-    }).then(() => {
-      console.log('[SW] Tomando control de todos los clients');
-      return self.clients.claim();
-    })
+    }).then(() => self.skipWaiting())
   );
 });
 
-// Fetch: Estrategia SIMPLE y efectiva
+// Activación
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      })
+    )).then(() => self.clients.claim())
+  );
+});
+
+// Fetch - Estrategia: Cache First, Network Fallback
 self.addEventListener('fetch', event => {
-  // Solo manejar HTTP/HTTPS
   if (!event.request.url.startsWith('http')) return;
 
-  // Ignorar analytics y tracking
-  if (event.request.url.includes('googletagmanager') ||
-    event.request.url.includes('google-analytics') ||
-    event.request.url.includes('clarity.ms')) {
-    return;
-  }
-
-  // Para offline.html, priorizar red para mantener actualizado
-  if (event.request.url.includes('/offline.html')) {
-    event.respondWith(
-      (async () => {
-        try {
-          // Intentar red primero
-          const networkResponse = await fetch(event.request);
-          const cache = await caches.open(CACHE_NAME);
-          await cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        } catch (error) {
-          // Si falla la red, usar caché
-          const cachedResponse = await caches.match('/offline.html');
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          // Fallback por si acaso
-          return new Response('<h1>SigmaExacta Offline</h1><p>Herramientas disponibles offline</p>', {
-            headers: { 'Content-Type': 'text/html' }
-          });
-        }
-      })()
-    );
+  // Ignorar rastreadores externos para que no ensucien la consola
+  if (event.request.url.includes('google-analytics') || event.request.url.includes('clarity.ms')) {
     return;
   }
 
   event.respondWith(
-    (async () => {
-      try {
-        // 1. Intentar cache
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) return cachedResponse;
+
+      return fetch(event.request).then(networkResponse => {
+        // Solo cacheamos respuestas válidas de nuestro propio dominio
+        if (networkResponse.ok && event.request.url.includes(location.hostname)) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
         }
-
-        // 2. Si no está en cache, ir a la red
-        const networkResponse = await fetch(event.request);
-
-        // 3. Si la respuesta es exitosa, cachearla
-        if (networkResponse.ok && event.request.method === 'GET') {
-          const cache = await caches.open(CACHE_NAME);
-          cache.put(event.request, networkResponse.clone());
-        }
-
         return networkResponse;
-
-      } catch (error) {
-        console.log('[SW] Offline - no se pudo obtener:', event.request.url);
-
-        // Si es una navegación (HTML), mostrar offline.html
+      }).catch(() => {
+        // SI ESTÁ OFFLINE
         if (event.request.mode === 'navigate') {
-          const offlineResponse = await caches.match('/offline.html');
-          if (offlineResponse) {
-            return offlineResponse;
-          }
-
-          // Fallback simple
-          return new Response(
-            '<html><body><h1>Offline</h1><p>SigmaExacta tools are available offline.</p></body></html>',
-            { headers: { 'Content-Type': 'text/html' } }
-          );
+          return caches.match('/offline.html');
         }
 
-        // Para otros recursos, devolver un fallback genérico
-        if (event.request.url.match(/\.css$/i)) {
-          return new Response('/* Estilos offline */', {
-            headers: { 'Content-Type': 'text/css' }
-          });
+        // Si es una fuente de Google o FontAwesome y falla, devolvemos respuesta vacía
+        if (event.request.url.includes('fonts.googleapis') || event.request.url.includes('cdnjs')) {
+          return new Response('', { status: 200 });
         }
-
-        // Devolver error genérico
-        return new Response('Recurso no disponible offline', {
-          status: 503,
-          statusText: 'Service Unavailable'
-        });
-      }
-    })()
-  );
-});
-
-// Manejar mensajes
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-
-  // Forzar recache de un recurso
-  if (event.data && event.data.type === 'CACHE_URL' && event.data.url) {
-    caches.open(CACHE_NAME).then(cache => {
-      fetch(event.data.url + '?update=' + Date.now()).then(response => {
-        if (response.ok) cache.put(event.data.url, response);
       });
-    });
-  }
+    })
+  );
 });
