@@ -1,103 +1,68 @@
-// SigmaExacta Service Worker - VERSIÓN CORREGIDA V6
-const CACHE_NAME = 'sigmaexacta-completo-v7';
+// SigmaExacta SW - v9 (Optimizado para navegación sin extensión)
+const CACHE_NAME = 'sigma-exacta-v9';
 
-const ESSENTIAL_URLS = [
+const ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/about.html',
-  '/validation.html',
-  '/documentation.html',
-  '/dexie.min.js',
-  '/db-sigma.js',
-
-  // Herramientas con su extensión real
-  '/cpk_calculator.html',
-  '/control-plan.html',
-  '/weibull.html',
-  '/pdca.html',
-  '/stack_up_analysis.html',
-  '/taguchi_doe.html',
-  '/fmea.html',
-  '/qfd.html',
-  '/pugh.html',
-  '/vave.html',
-  '/design_thinking.html',
-  '/kano.html',
-  '/8d.html',
-  '/ishikawa.html',
-  '/triz.html',
-  '/eisenhower.html',
-  '/apqp-ppap.html',
-  '/balancedcard.html',
-  '/swot.html',
-  '/efqm.html',
-
-  // Estilos y recursos
   '/styles.css',
   '/styles-index.css',
-  '/manifest.json',
-  '/favicon.ico',
-  '/sigma-exacta-icon.jpg',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/OIN_member_horizontal.jpg',
-  '/256px-AGPLv3_Logo.svg.png'
+  '/dexie.min.js',
+  '/db-sigma.js',
+  '/cpk_calculator.html',
+  '/fmea.html',
+  '/stack_up_analysis.html',
+  '/apqp-ppap.html',
+  '/manifest.json'
 ];
 
-// Instalación
+// Instalación: Guardamos todo
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return Promise.all(
-        ESSENTIAL_URLS.map(url => {
-          return cache.add(url).catch(err => console.warn(`Error cacheando ${url}:`, err));
-        })
-      );
-    }).then(() => self.skipWaiting())
+      console.log('✅ [SW] Guardando archivos en la mochila');
+      return cache.addAll(ASSETS);
+    })
   );
+  self.skipWaiting();
 });
 
-// Activación
+// Activación: Limpiamos basura
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      })
-    )).then(() => self.clients.claim())
+      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+    ))
   );
+  self.clients.claim();
 });
 
-// Fetch - Estrategia: Cache First, Network Fallback
+// FETCH: La lógica inteligente
 self.addEventListener('fetch', event => {
-  if (!event.request.url.startsWith('http')) return;
+  if (event.request.method !== 'GET') return;
 
-  // Ignorar rastreadores externos para que no ensucien la consola
-  if (event.request.url.includes('google-analytics') || event.request.url.includes('clarity.ms')) {
-    return;
-  }
+  const url = new URL(event.request.url);
 
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) return cachedResponse;
+    caches.match(event.request).then(response => {
+      // 1. Si el archivo está exacto en caché (ej: styles.css), se entrega
+      if (response) return response;
 
-      return fetch(event.request).then(networkResponse => {
-        // Solo cacheamos respuestas válidas de nuestro propio dominio
-        if (networkResponse.ok && event.request.url.includes(location.hostname)) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => {
-        // SI ESTÁ OFFLINE
+      // 2. Si pides "/fmea", intentamos buscar "/fmea.html" en caché
+      if (!url.pathname.endsWith('.html') && url.origin === self.location.origin) {
+        const fallbackUrl = url.pathname + '.html';
+        return caches.match(fallbackUrl).then(htmlRes => {
+          if (htmlRes) return htmlRes;
+          // Si no está en caché, intentamos red
+          return fetch(event.request).catch(() => caches.match('/offline.html'));
+        });
+      }
+
+      // 3. Intento normal por red
+      return fetch(event.request).catch(() => {
+        // Si falla la red y es una página (navigate), mostramos offline.html
         if (event.request.mode === 'navigate') {
           return caches.match('/offline.html');
-        }
-
-        // Si es una fuente de Google o FontAwesome y falla, devolvemos respuesta vacía
-        if (event.request.url.includes('fonts.googleapis') || event.request.url.includes('cdnjs')) {
-          return new Response('', { status: 200 });
         }
       });
     })
