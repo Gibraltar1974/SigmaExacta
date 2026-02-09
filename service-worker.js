@@ -1,7 +1,7 @@
-// SigmaExacta Service Worker - VERSIÓN 11
-const CACHE_NAME = 'sigma-exacta-v11';
+// SigmaExacta Service Worker - VERSIÓN 12
+const CACHE_NAME = 'sigma-exacta-v12';
 
-// Lista de archivos con la extensión REAL que tienen en tu servidor (.html)
+// Lista de archivos con extensiones REALES (.html)
 const ESSENTIAL_URLS = [
   '/',
   '/index.html',
@@ -32,24 +32,24 @@ const ESSENTIAL_URLS = [
   '/efqm.html'
 ];
 
-// 1. INSTALACIÓN: Cacheo individual para que si uno falla, los demás sigan
+// 1. INSTALACIÓN: Cacheo uno a uno para evitar bloqueos
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('📦 [SW] Instalando v11...');
+      console.log('🚀 [SW v12] Iniciando instalación...');
       for (const url of ESSENTIAL_URLS) {
         try {
           await cache.add(url);
-          console.log(`✅ Cacheado: ${url}`);
+          console.log(`✅ Guardado: ${url}`);
         } catch (err) {
-          console.warn(`⚠️ No se pudo guardar: ${url}. Verifica si existe en el servidor.`);
+          console.warn(`⚠️ No se pudo guardar: ${url}. Revisa si el nombre es correcto.`);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN: Limpieza de versiones antiguas
+// 2. ACTIVACIÓN: Borrado total de versiones viejas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -58,9 +58,9 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH: El motor que resuelve el problema de las extensiones
+// 3. FETCH: El motor que resuelve el problema de "This site can't be reached"
 self.addEventListener('fetch', event => {
-  // Solo procesar peticiones GET de nuestra web
+  // Ignorar peticiones que no sean nuestras
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith((async () => {
@@ -68,32 +68,33 @@ self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
 
     try {
-      // A. Intento 1: Buscar coincidencia exacta (ej: styles.css)
+      // A. ¿Está el archivo exacto?
       const exactMatch = await cache.match(event.request);
       if (exactMatch) return exactMatch;
 
-      // B. Intento 2: Mapeo de extensión (.html fantasma)
-      // Si pides /fmea y no está, buscamos /fmea.html en la caché
+      // B. ¿Es una navegación sin extensión? (Ej: /stack_up_analysis)
+      // Buscamos automáticamente la versión .html en la caché
       if (event.request.mode === 'navigate' || !url.pathname.includes('.')) {
-        const path = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
-        const htmlMatch = await cache.match(path + '.html');
+        const cleanPath = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
+        const htmlMatch = await cache.match(cleanPath + '.html');
         if (htmlMatch) return htmlMatch;
       }
 
-      // C. Intento 3: Intentar Internet
+      // C. Si no está en caché, intentamos internet
       return await fetch(event.request);
 
     } catch (error) {
-      // D. Fallback: Si no hay red y es una página, mostrar offline.html
+      // D. FALLBACK: Si no hay internet y falla todo lo anterior
       if (event.request.mode === 'navigate') {
         const offlinePage = await cache.match('/offline.html');
         if (offlinePage) return offlinePage;
       }
 
-      // Respuesta de seguridad final para evitar el error ERR_FAILED
+      // Respuesta vacía controlada para que Chrome no se bloquee
       return new Response('Offline: Recurso no disponible', {
         status: 503,
-        headers: { 'Content-Type': 'text/plain' }
+        statusText: 'Service Unavailable',
+        headers: new Headers({ 'Content-Type': 'text/plain' })
       });
     }
   })());
