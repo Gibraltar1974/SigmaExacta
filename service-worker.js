@@ -1,7 +1,7 @@
-// SigmaExacta SW - v9 (Optimizado para navegación sin extensión)
-const CACHE_NAME = 'sigma-exacta-v9';
+// SigmaExacta Service Worker - VERSIÓN 10 (Corrección de Extensiones)
+const CACHE_NAME = 'sigma-exacta-v10';
 
-const ASSETS = [
+const ESSENTIAL_URLS = [
   '/',
   '/index.html',
   '/offline.html',
@@ -9,25 +9,28 @@ const ASSETS = [
   '/styles-index.css',
   '/dexie.min.js',
   '/db-sigma.js',
+  '/manifest.json',
+  // Asegúrate de que todas las herramientas tengan el .html aquí:
   '/cpk_calculator.html',
   '/fmea.html',
   '/stack_up_analysis.html',
   '/apqp-ppap.html',
-  '/manifest.json'
+  '/8d.html',
+  '/ishikawa.html'
 ];
 
-// Instalación: Guardamos todo
+// 1. Instalación
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('✅ [SW] Guardando archivos en la mochila');
-      return cache.addAll(ASSETS);
+      console.log('✅ [SW] Guardando archivos en caché v10');
+      return cache.addAll(ESSENTIAL_URLS);
     })
   );
   self.skipWaiting();
 });
 
-// Activación: Limpiamos basura
+// 2. Activación (Limpieza)
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -37,30 +40,28 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// FETCH: La lógica inteligente
+// 3. LA CLAVE: El manejador de peticiones inteligente
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   const url = new URL(event.request.url);
 
   event.respondWith(
-    caches.match(event.request).then(response => {
-      // 1. Si el archivo está exacto en caché (ej: styles.css), se entrega
+    caches.match(event.request).then(async (response) => {
+      // Si el archivo está en la caché exactamente (ej: styles.css), se entrega
       if (response) return response;
 
-      // 2. Si pides "/fmea", intentamos buscar "/fmea.html" en caché
-      if (!url.pathname.endsWith('.html') && url.origin === self.location.origin) {
-        const fallbackUrl = url.pathname + '.html';
-        return caches.match(fallbackUrl).then(htmlRes => {
-          if (htmlRes) return htmlRes;
-          // Si no está en caché, intentamos red
-          return fetch(event.request).catch(() => caches.match('/offline.html'));
-        });
+      // TRUCO PRO: Si pides "/fmea" y no está, intentamos buscar "/fmea.html" internamente
+      if (event.request.mode === 'navigate' || !url.pathname.includes('.')) {
+        const path = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
+        const fallbackResponse = await caches.match(path + '.html');
+
+        if (fallbackResponse) return fallbackResponse;
       }
 
-      // 3. Intento normal por red
+      // Si no está en caché de ninguna forma, intentamos internet
       return fetch(event.request).catch(() => {
-        // Si falla la red y es una página (navigate), mostramos offline.html
+        // Si falla internet y es una página, mostramos el offline.html
         if (event.request.mode === 'navigate') {
           return caches.match('/offline.html');
         }
