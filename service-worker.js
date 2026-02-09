@@ -1,10 +1,14 @@
 // SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v14';
+const CACHE_NAME = 'sigma-exacta-v15';
 
 const ESSENTIAL_URLS = [
   '/',
   '/index.html',
   '/offline.html',
+  '/about.html',
+  'documentation.html',
+  'validation.html',
+  'header.html',
   '/styles.css',
   '/styles-index.css',
   '/dexie.min.js',
