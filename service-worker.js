@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v18';
+const CACHE_NAME = 'sigma-exacta-v19';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -15,7 +15,7 @@ const ESSENTIAL_URLS = [
   '/taguchi_doe.html',
   '/cpk_calculator.js',
   '/cpk_calculator.html',
-  '/stack_up_analysis.js'
+  '/stack_up_analysis.js',
   '/stack_up_analysis.html',
   '/weibull.html',
   '/fmea.html',
