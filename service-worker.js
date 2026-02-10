@@ -1,38 +1,39 @@
 // SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v15';
+const CACHE_NAME = 'sigma-exacta-v16';
 
 const ESSENTIAL_URLS = [
   '/',
-  '/index.html',
-  '/offline.html',
-  '/about.html',
-  'documentation.html',
-  'validation.html',
-  'header.html',
-  '/styles.css',
-  '/styles-index.css',
   '/dexie.min.js',
   '/db-sigma.js',
   '/manifest.json',
+  '/styles.css',
+  '/styles-index.css',
+  'header.html',
+  '/index.html',
+  '/offline.html',
+  '/taguchi_doe.html',
   '/cpk_calculator.html',
   '/stack_up_analysis.html',
+  '/weibull.html',
   '/fmea.html',
   '/8d.html',
+  '/apqp-ppap.html',
   '/ishikawa.html',
   '/control-plan.html',
-  '/weibull.html',
-  '/pdca.html',
   '/qfd.html',
   '/pugh.html',
   '/vave.html',
-  '/design_thinking.html',
   '/kano.html',
   '/triz.html',
   '/eisenhower.html',
-  '/apqp-ppap.html',
   '/balancedcard.html',
+  '/design_thinking.html',
   '/swot.html',
-  '/efqm.html'
+  '/efqm.html',
+  '/pdca.html', 
+  '/about.html',
+  'documentation.html',
+  'validation.html'
 ];
 
 // 1. INSTALACIÓN con limpieza de redirecciones
