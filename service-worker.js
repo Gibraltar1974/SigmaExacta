@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN 26
-const CACHE_NAME = 'sigma-exacta-v25';
+const CACHE_NAME = 'sigma-exacta-v26';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -50,42 +50,28 @@ const ESSENTIAL_URLS = [
   '/validation.html'
 ];
 
-// 1. INSTALACIÓN CON VERIFICACIÓN ANTICORRUPCIÓN
+// 1. INSTALACIÓN
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v26] FORZANDO LIMPIEZA DE LIBRERÍAS...');
-
+      console.log('🚀 [SW v25] Instalando y verificando archivos...');
       for (const url of ESSENTIAL_URLS) {
         try {
-          // 'cache: reload' ignora la caché del navegador y pide una copia nueva al servidor
-          const response = await fetch(url, { cache: 'reload', redirect: 'follow' });
-
-          if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
-          // VALIDACIÓN ESPECIAL: Si es un archivo .js, verificamos su contenido real
-          if (url.endsWith('.js')) {
-            const blob = await response.clone().blob();
-            const text = await blob.text();
-
-            // Si el texto empieza con "<", es un HTML de error disfrazado de JS
-            if (text.trim().startsWith('<')) {
-              console.error(`❌ El archivo ${url} está corrupto (es HTML). No se cacheará.`);
-              continue;
-            }
-          }
+          // Usamos 'reload' para obligar a traer una copia fresca del servidor
+          const response = await fetch(url, { cache: 'reload' });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
           await cache.put(url, response);
-          console.log(`✅ Verificado y Cacheado: ${url}`);
+          console.log(`✅ Cacheado: ${url}`);
         } catch (err) {
-          console.error(`❌ Error en ${url}:`, err.message);
+          console.error(`❌ Error en ${url}:`, err);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN - Limpieza de cachés antiguas
+// 2. ACTIVACIÓN - Limpia versiones viejas para liberar espacio
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -94,8 +80,9 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH - Estrategia: Cache First (prioriza la versión limpia verificada)
+// 3. FETCH (ESTRATEGIA PARA OFFLINE)
 self.addEventListener('fetch', event => {
+  // Solo procesar peticiones GET a nuestro propio dominio
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith((async () => {
@@ -104,24 +91,26 @@ self.addEventListener('fetch', event => {
     const path = url.pathname;
 
     try {
-      // Intentar servir desde la caché verificada
+      // Intentar primero obtener del caché (Rápido y Offline)
       let response = await cache.match(event.request);
 
-      // Manejo de rutas amigables (.html)
+      // Si no hay respuesta exacta, probar con el mapeo de .html (rutas limpias)
       if (!response && !path.includes('.')) {
         const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
         const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
         response = await cache.match(target);
       }
 
-      // Si no está en caché, ir a la red
+      // Si lo encontramos en caché, lo devolvemos; si no, intentamos red
       return response || await fetch(event.request);
 
     } catch (error) {
+      // Si falla la red (OFFLINE) y es una navegación de página, mostrar offline.html
       if (event.request.mode === 'navigate') {
-        return await cache.match('/offline.html');
+        const offlinePage = await cache.match('/offline.html');
+        return offlinePage || new Response('Estás offline.', { status: 503 });
       }
-      return new Response('Offline', { status: 503 });
+      return new Response('Recurso no disponible offline', { status: 503 });
     }
   })());
 });
