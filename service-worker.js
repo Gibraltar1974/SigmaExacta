@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v22';
+// SigmaExacta Service Worker - VERSIÓN 23
+const CACHE_NAME = 'sigma-exacta-v23';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -12,11 +12,10 @@ const ESSENTIAL_URLS = [
   '/github.svg',
   '/SigmaExacta.svg',
   '/oin_member_horizontal.jpg',
-  '/256px-agplv3_logo.svg',
   '/header.html',
   '/index.html',
   '/offline.html',
-  '/tagucho_calculator.js',
+  '/taguchi_calculator.js', // CORREGIDO: de 'tagucho' a 'taguchi'
   '/taguchi_doe.html',
   '/cpk_calculator.js',
   '/cpk_calculator.html',
@@ -36,7 +35,6 @@ const ESSENTIAL_URLS = [
   '/trizconstants.js',
   '/trizcontradiction.js',
   '/trizcontradiction2003.js',
-  '/76principles.triz',
   '/physicalcontradictionprinciples1993.js',
   '/sufield-diagrams.js',
   '/ldst.js',
@@ -46,24 +44,28 @@ const ESSENTIAL_URLS = [
   '/design_thinking.html',
   '/swot.html',
   '/efqm.html',
-  '/pdca.html', 
+  '/pdca.html',
   '/about.html',
   '/documentation.html',
   '/validation.html'
+  // He quitado los 2 archivos que daban 404 (logo agpl y 76principles) para limpiar el log
 ];
 
-// 1. INSTALACIÓN con limpieza de redirecciones
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v14] Instalando con bypass de redirección...');
+      console.log('🚀 [SW v23] Instalando y verificando integridad...');
       for (const url of ESSENTIAL_URLS) {
         try {
-          const response = await fetch(url, { redirect: 'follow' });
-          if (!response.ok) throw new Error(`Status: ${response.status}`);
+          const response = await fetch(url, { redirect: 'follow', cache: 'reload' });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-          // CRÍTICO: Si la respuesta es redireccionada, creamos una nueva copia "limpia"
-          // Esto elimina el error "redirected response was used"
+          // PROTECCIÓN: Si el archivo es .js pero el contenido es HTML, hay un error de redirección
+          const contentType = response.headers.get('content-type');
+          if (url.endsWith('.js') && contentType && contentType.includes('text/html')) {
+            throw new Error(`Integridad fallida: ${url} devolvió HTML en vez de JS`);
+          }
+
           if (response.redirected) {
             const cleanResponse = new Response(response.body, {
               status: response.status,
@@ -76,14 +78,14 @@ self.addEventListener('install', event => {
           }
           console.log(`✅ Cacheado: ${url}`);
         } catch (err) {
-          console.error(`❌ Error en ${url}:`, err);
+          console.error(`❌ Error Crítico en ${url}:`, err.message);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN
+// 2. ACTIVACIÓN (Igual que antes)
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -92,7 +94,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH
+// 3. FETCH (Igual que antes)
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
@@ -102,26 +104,15 @@ self.addEventListener('fetch', event => {
     const path = url.pathname;
 
     try {
-      // 1. Intentar coincidencia exacta
       let response = await cache.match(event.request);
-
-      // 2. Mapeo inteligente para rutas sin extensión
       if (!response && !path.includes('.')) {
         const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
         const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
         response = await cache.match(target);
       }
-
-      if (response) return response;
-
-      // 3. Si no hay en caché, ir a red
-      return await fetch(event.request);
-
+      return response || await fetch(event.request);
     } catch (error) {
-      if (event.request.mode === 'navigate') {
-        const offlinePage = await cache.match('/offline.html');
-        if (offlinePage) return offlinePage;
-      }
+      if (event.request.mode === 'navigate') return await cache.match('/offline.html');
       return new Response('Offline', { status: 503 });
     }
   })());
