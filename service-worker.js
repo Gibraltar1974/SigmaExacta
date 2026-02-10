@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN 25
-const CACHE_NAME = 'sigma-exacta-v24';
+// SigmaExacta Service Worker - VERSIÓN 26
+const CACHE_NAME = 'sigma-exacta-v25';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -50,44 +50,42 @@ const ESSENTIAL_URLS = [
   '/validation.html'
 ];
 
-// 1. INSTALACIÓN - Aquí forzamos la limpieza
+// 1. INSTALACIÓN CON VERIFICACIÓN ANTICORRUPCIÓN
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v25] Reparando integridad de librerías...');
+      console.log('🚀 [SW v26] FORZANDO LIMPIEZA DE LIBRERÍAS...');
+
       for (const url of ESSENTIAL_URLS) {
         try {
-          // 'cache: reload' obliga al navegador a saltarse su caché local y pedir el archivo al servidor
+          // 'cache: reload' ignora la caché del navegador y pide una copia nueva al servidor
           const response = await fetch(url, { cache: 'reload', redirect: 'follow' });
 
-          if (!response.ok) throw new Error(`Status: ${response.status}`);
+          if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
-          // Verificación de seguridad para JS
-          const contentType = response.headers.get('content-type');
-          if (url.endsWith('.js') && contentType && contentType.includes('text/html')) {
-            throw new Error(`El servidor devolvió HTML en lugar de JS para ${url}`);
+          // VALIDACIÓN ESPECIAL: Si es un archivo .js, verificamos su contenido real
+          if (url.endsWith('.js')) {
+            const blob = await response.clone().blob();
+            const text = await blob.text();
+
+            // Si el texto empieza con "<", es un HTML de error disfrazado de JS
+            if (text.trim().startsWith('<')) {
+              console.error(`❌ El archivo ${url} está corrupto (es HTML). No se cacheará.`);
+              continue;
+            }
           }
 
-          if (response.redirected) {
-            const cleanResponse = new Response(response.body, {
-              status: response.status,
-              statusText: response.statusText,
-              headers: response.headers
-            });
-            await cache.put(url, cleanResponse);
-          } else {
-            await cache.put(url, response);
-          }
-          console.log(`✅ Cacheado correctamente: ${url}`);
+          await cache.put(url, response);
+          console.log(`✅ Verificado y Cacheado: ${url}`);
         } catch (err) {
-          console.error(`❌ Error crítico en ${url}:`, err.message);
+          console.error(`❌ Error en ${url}:`, err.message);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN - Borra cualquier rastro de la v23/v24
+// 2. ACTIVACIÓN - Limpieza de cachés antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -96,7 +94,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH - Intercepta las peticiones y da la versión buena de la caché
+// 3. FETCH - Estrategia: Cache First (prioriza la versión limpia verificada)
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
@@ -106,22 +104,22 @@ self.addEventListener('fetch', event => {
     const path = url.pathname;
 
     try {
-      // Intentamos dar el archivo de nuestra caché (que ya hemos verificado que es JS real)
+      // Intentar servir desde la caché verificada
       let response = await cache.match(event.request);
 
-      // Soporte para rutas limpias (.html)
+      // Manejo de rutas amigables (.html)
       if (!response && !path.includes('.')) {
         const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
         const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
         response = await cache.match(target);
       }
 
+      // Si no está en caché, ir a la red
       return response || await fetch(event.request);
 
     } catch (error) {
       if (event.request.mode === 'navigate') {
-        const offlinePage = await cache.match('/offline.html');
-        return offlinePage || new Response('Offline', { status: 503 });
+        return await cache.match('/offline.html');
       }
       return new Response('Offline', { status: 503 });
     }
