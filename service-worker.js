@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v16';
+const CACHE_NAME = 'sigma-exacta-v17';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -8,7 +8,7 @@ const ESSENTIAL_URLS = [
   '/manifest.json',
   '/styles.css',
   '/styles-index.css',
-  'header.html',
+  '/header.html',
   '/index.html',
   '/offline.html',
   '/taguchi_doe.html',
@@ -32,8 +32,8 @@ const ESSENTIAL_URLS = [
   '/efqm.html',
   '/pdca.html', 
   '/about.html',
-  'documentation.html',
-  'validation.html'
+  '/documentation.html',
+  '/validation.html'
 ];
 
 // 1. INSTALACIÓN con limpieza de redirecciones
