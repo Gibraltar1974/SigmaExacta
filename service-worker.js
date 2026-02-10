@@ -1,5 +1,5 @@
 // SigmaExacta Service Worker - VERSIÓN 14
-const CACHE_NAME = 'sigma-exacta-v21';
+const CACHE_NAME = 'sigma-exacta-v22';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -9,6 +9,8 @@ const ESSENTIAL_URLS = [
   '/styles.css',
   '/styles-index.css',
   '/sigma-exacta-icon.jpg',
+  '/github.svg',
+  '/SigmaExacta.svg',
   '/oin_member_horizontal.jpg',
   '/256px-agplv3_logo.svg',
   '/header.html',
