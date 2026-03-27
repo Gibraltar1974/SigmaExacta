@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN 26
-const CACHE_NAME = 'sigma-exacta-v26';
+// SigmaExacta Service Worker - VERSIÓN 25
+const CACHE_NAME = 'sigma-exacta-v24';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -50,28 +50,44 @@ const ESSENTIAL_URLS = [
   '/validation.html'
 ];
 
-// 1. INSTALACIÓN
+// 1. INSTALACIÓN - Aquí forzamos la limpieza
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v25] Instalando y verificando archivos...');
+      console.log('🚀 [SW v25] Reparando integridad de librerías...');
       for (const url of ESSENTIAL_URLS) {
         try {
-          // Usamos 'reload' para obligar a traer una copia fresca del servidor
-          const response = await fetch(url, { cache: 'reload' });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          // 'cache: reload' obliga al navegador a saltarse su caché local y pedir el archivo al servidor
+          const response = await fetch(url, { cache: 'reload', redirect: 'follow' });
 
-          await cache.put(url, response);
-          console.log(`✅ Cacheado: ${url}`);
+          if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+          // Verificación de seguridad para JS
+          const contentType = response.headers.get('content-type');
+          if (url.endsWith('.js') && contentType && contentType.includes('text/html')) {
+            throw new Error(`El servidor devolvió HTML en lugar de JS para ${url}`);
+          }
+
+          if (response.redirected) {
+            const cleanResponse = new Response(response.body, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers
+            });
+            await cache.put(url, cleanResponse);
+          } else {
+            await cache.put(url, response);
+          }
+          console.log(`✅ Cacheado correctamente: ${url}`);
         } catch (err) {
-          console.error(`❌ Error en ${url}:`, err);
+          console.error(`❌ Error crítico en ${url}:`, err.message);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. ACTIVACIÓN - Limpia versiones viejas para liberar espacio
+// 2. ACTIVACIÓN - Borra cualquier rastro de la v23/v24
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -80,9 +96,8 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH (ESTRATEGIA PARA OFFLINE)
+// 3. FETCH - Intercepta las peticiones y da la versión buena de la caché
 self.addEventListener('fetch', event => {
-  // Solo procesar peticiones GET a nuestro propio dominio
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith((async () => {
@@ -91,26 +106,24 @@ self.addEventListener('fetch', event => {
     const path = url.pathname;
 
     try {
-      // Intentar primero obtener del caché (Rápido y Offline)
+      // Intentamos dar el archivo de nuestra caché (que ya hemos verificado que es JS real)
       let response = await cache.match(event.request);
 
-      // Si no hay respuesta exacta, probar con el mapeo de .html (rutas limpias)
+      // Soporte para rutas limpias (.html)
       if (!response && !path.includes('.')) {
         const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
         const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
         response = await cache.match(target);
       }
 
-      // Si lo encontramos en caché, lo devolvemos; si no, intentamos red
       return response || await fetch(event.request);
 
     } catch (error) {
-      // Si falla la red (OFFLINE) y es una navegación de página, mostrar offline.html
       if (event.request.mode === 'navigate') {
         const offlinePage = await cache.match('/offline.html');
-        return offlinePage || new Response('Estás offline.', { status: 503 });
+        return offlinePage || new Response('Offline', { status: 503 });
       }
-      return new Response('Recurso no disponible offline', { status: 503 });
+      return new Response('Offline', { status: 503 });
     }
   })());
 });
