@@ -1,5 +1,5 @@
-// SigmaExacta Service Worker - VERSIÓN 25
-const CACHE_NAME = 'sigma-exacta-v24';
+// SigmaExacta Service Worker - VERSIÓN 26
+const CACHE_NAME = 'sigma-exacta-v26';
 
 const ESSENTIAL_URLS = [
   '/',
@@ -50,11 +50,11 @@ const ESSENTIAL_URLS = [
   '/validation.html'
 ];
 
-// 1. INSTALACIÓN - Aquí forzamos la limpieza
+// 1. INSTALACIÓN - Aquí forzamos la limpieza y carga inicial
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('🚀 [SW v25] Reparando integridad de librerías...');
+      console.log('🚀 [SW v26] Reparando integridad de librerías...');
       for (const url of ESSENTIAL_URLS) {
         try {
           // 'cache: reload' obliga al navegador a saltarse su caché local y pedir el archivo al servidor
@@ -87,7 +87,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// 2. ACTIVACIÓN - Borra cualquier rastro de la v23/v24
+// 2. ACTIVACIÓN - Borra cualquier rastro de versiones anteriores
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -96,34 +96,54 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. FETCH - Intercepta las peticiones y da la versión buena de la caché
+// 3. FETCH - Estrategia Híbrida: Network First (HTML) + Stale-While-Revalidate (Assets)
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) return;
 
+  const url = new URL(event.request.url);
+  const path = url.pathname;
+  // Detectamos si es una petición de navegación (HTML o rutas limpias sin extensión)
+  const isNavigation = event.request.mode === 'navigate' || !path.includes('.');
+
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
-    const url = new URL(event.request.url);
-    const path = url.pathname;
 
-    try {
-      // Intentamos dar el archivo de nuestra caché (que ya hemos verificado que es JS real)
-      let response = await cache.match(event.request);
-
-      // Soporte para rutas limpias (.html)
-      if (!response && !path.includes('.')) {
-        const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
-        const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
-        response = await cache.match(target);
+    if (isNavigation) {
+      // --- ESTRATEGIA 1: NETWORK FIRST (Para HTML) ---
+      // Siempre intenta buscar el HTML más reciente del servidor primero.
+      try {
+        const networkResponse = await fetch(event.request);
+        if (networkResponse.ok) {
+          await cache.put(event.request, networkResponse.clone()); // Actualizamos la caché
+        }
+        return networkResponse;
+      } catch (error) {
+        // Si falla la red (offline), tiramos de la caché con tu lógica de rutas limpias
+        let response = await cache.match(event.request);
+        if (!response) {
+          const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+          const target = cleanPath === '' ? '/index.html' : cleanPath + '.html';
+          response = await cache.match(target);
+        }
+        return response || await cache.match('/offline.html') || new Response('Offline', { status: 503 });
       }
+    } else {
+      // --- ESTRATEGIA 2: STALE-WHILE-REVALIDATE (Para JS, CSS, Imágenes) ---
+      // Devuelve la caché al instante, pero descarga la nueva versión por detrás.
+      const cachedResponse = await cache.match(event.request);
 
-      return response || await fetch(event.request);
+      const networkPromise = fetch(event.request).then(async (networkResponse) => {
+        if (networkResponse.ok) {
+          // Actualizamos la caché de fondo con el archivo nuevo para la próxima vez
+          await cache.put(event.request, networkResponse.clone());
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Si no hay red mientras bajamos los assets de fondo, no pasa nada, ya dimos la caché
+      });
 
-    } catch (error) {
-      if (event.request.mode === 'navigate') {
-        const offlinePage = await cache.match('/offline.html');
-        return offlinePage || new Response('Offline', { status: 503 });
-      }
-      return new Response('Offline', { status: 503 });
+      // Si tenemos caché la devolvemos ya, si no, esperamos a que termine la descarga de red
+      return cachedResponse || await networkPromise;
     }
   })());
 });
