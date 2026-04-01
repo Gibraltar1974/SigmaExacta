@@ -419,10 +419,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Calcular intervalos de confianza MEJORADOS
         const confidenceLevel = 0.95;
         const cpCI = calculateCpConfidenceIntervalChiSquare(cp, n, confidenceLevel);
-        const cpkCI = calculateCpkConfidenceIntervalImproved(cpk, n, confidenceLevel);
+        // USAR LA VERSIÓN ESTÁNDAR (sin factor de estrechamiento)
+        const cpkCI = calculateCpkConfidenceIntervalStandard(cpk, n, confidenceLevel);
         const cpmCI = calculateCpmConfidenceInterval(cpm, n, confidenceLevel);
         const ppCI = calculateCpConfidenceIntervalChiSquare(pp, n, confidenceLevel);
-        const ppkCI = calculateCpkConfidenceIntervalImproved(ppk, n, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceIntervalStandard(ppk, n, confidenceLevel);
 
         return {
             mean: mean,
@@ -533,12 +534,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // Para Cp within: usar distribución chi-cuadrado
         const cpCI = calculateCpConfidenceIntervalChiSquare(cpWithin, totalN, confidenceLevel);
 
-        // Para Cpk within: usar fórmula mejorada
-        const cpkCI = calculateCpkConfidenceIntervalImproved(cpkWithin, totalN, confidenceLevel);
+        // Para Cpk within: usar fórmula estándar (sin factor)
+        const cpkCI = calculateCpkConfidenceIntervalStandard(cpkWithin, totalN, confidenceLevel);
 
         // Para Pp/Ppk
         const ppCI = calculateCpConfidenceIntervalChiSquare(pp, totalN, confidenceLevel);
-        const ppkCI = calculateCpkConfidenceIntervalImproved(ppk, totalN, confidenceLevel);
+        const ppkCI = calculateCpkConfidenceIntervalStandard(ppk, totalN, confidenceLevel);
 
         return {
             mean: mean,
@@ -586,24 +587,17 @@ document.addEventListener('DOMContentLoaded', function () {
         return { lower: lower, upper: upper };
     }
 
-    function calculateCpkConfidenceIntervalImproved(cpk, n, confidenceLevel) {
+    // NUEVA FUNCIÓN: Intervalo de confianza estándar para Cpk (fórmula de Bissell sin factor de ajuste)
+    function calculateCpkConfidenceIntervalStandard(cpk, n, confidenceLevel) {
         if (n <= 1 || !isFinite(cpk)) {
             return { lower: NaN, upper: NaN };
         }
-
         const alpha = 1 - confidenceLevel;
         const z = Math.abs(normalQuantile(1 - alpha / 2));
-
-        // Fórmula mejorada para Cpk (Bissell, 1990)
-        const variance = (1 / (9 * n)) + (Math.pow(cpk, 2) / (2 * (n - 1)));
-
-        // Ajuste para evitar intervalos demasiado amplios
-        const se = Math.sqrt(variance);
-        const margin = z * se * Math.min(1, 1 / Math.sqrt(cpk + 1));
-
+        const se = Math.sqrt(1 / (9 * n) + Math.pow(cpk, 2) / (2 * (n - 1)));
         return {
-            lower: Math.max(0, cpk - margin),
-            upper: cpk + margin
+            lower: Math.max(0, cpk - z * se),
+            upper: cpk + z * se
         };
     }
 
@@ -623,20 +617,8 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    function calculateCpkConfidenceInterval(cpk, n, confidenceLevel) {
-        if (n <= 1 || !isFinite(cpk)) {
-            return { lower: NaN, upper: NaN };
-        }
-
-        const alpha = 1 - confidenceLevel;
-        const z = Math.abs(normalQuantile(1 - alpha / 2));
-        const se = Math.sqrt(1 / (9 * n) + Math.pow(cpk, 2) / (2 * (n - 1)));
-
-        return {
-            lower: Math.max(0, cpk - z * se),
-            upper: cpk + z * se
-        };
-    }
+    // NOTA: La función calculateCpkConfidenceInterval (original) se mantiene pero no se usa.
+    // Se ha sustituido por calculateCpkConfidenceIntervalStandard.
 
     function calculateCpmConfidenceInterval(cpm, n, confidenceLevel) {
         if (n <= 1 || !isFinite(cpm) || cpm === 0) {
@@ -716,12 +698,16 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('overall_total').textContent = stats.totalPoints || overallData.length;
         document.getElementById('overall_mean').textContent = isFinite(stats.mean) ? stats.mean.toFixed(4) : 'N/A';
 
-        // Solo mostrar valores Process Performance (Total - Long Term) - MODIFICADO
+        // Solo mostrar valores Process Performance (Total - Long Term)
         document.getElementById('overall_dev').textContent = isFinite(stats.sigmaTotal) ? stats.sigmaTotal.toFixed(4) : 'N/A';
         document.getElementById('overall_pp').textContent = isFinite(stats.pp) ? stats.pp.toFixed(4) : 'N/A';
         document.getElementById('overall_pp_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppCI)}`;
         document.getElementById('overall_ppk').textContent = isFinite(stats.ppk) ? stats.ppk.toFixed(4) : 'N/A';
         document.getElementById('overall_ppk_ci').textContent = `95% CI: ${formatConfidenceInterval(stats.ppkCI)}`;
+
+        // NUEVO: Mostrar sigma within y método
+        document.getElementById('overall_sigma_within').textContent = isFinite(stats.sigmaWithin) ? stats.sigmaWithin.toFixed(4) : 'N/A';
+        document.getElementById('overall_sigma_method').textContent = stats.sigmaMethod || 'Automatic Selection';
 
         // Mostrar defectos usando long-term
         document.getElementById('overall_failures').textContent = stats.failures_ppm_lt.toFixed(2);
@@ -1495,6 +1481,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ["Ppk", overallStats.ppk.toFixed(4)],
             ["Ppk 95% CI Lower", formatConfidenceInterval(overallStats.ppkCI).split('[')[1]?.split(',')[0] || 'N/A'],
             ["Ppk 95% CI Upper", formatConfidenceInterval(overallStats.ppkCI).split(',')[1]?.split(']')[0] || 'N/A'],
+            [],
+            ["Short-Term Variation"],
+            ["σ within (short-term)", overallStats.sigmaWithin.toFixed(4)],
+            ["Method used", overallStats.sigmaMethod],
+            [],
             ["Expected Failures (ppm)", overallStats.failures_ppm_lt.toFixed(2)],
             ["Defective Parts", overallStats.defective_percentage_lt.toFixed(4)],
             [],
@@ -1932,4 +1923,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
-        
