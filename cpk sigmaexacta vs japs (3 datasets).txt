@@ -1,100 +1,33 @@
-VALIDATION REPORT
+VALIDATION REPORT 
 SigmaExacta Process Capability Analysis vs. JASP
 
-Test Date: October 26, 2023
+Test Date: April 1, 2026
 Tested By: Quality & Statistical Analysis Team
 Location: Palencia, Castilla y León, Spain
 
 1. EXECUTIVE SUMMARY
-This report documents the validation testing of the SigmaExacta Process Capability Analysis tool against JASP (Jeffreys's Amazing Statistics Program) using a new dataset with three distinct subgroups. The analysis focused on comparing process performance metrics (Pp, Ppk), overall statistical parameters, and expected failure rates between both statistical platforms.
+This report documents the validation testing of the SigmaExacta Process Capability Analysis tool against JASP (Jeffreys’s Amazing Statistics Program) using a dataset with three distinct subgroups. Following the implementation of standard confidence interval calculations for Cpk/Ppk and the addition of overall within‑group standard deviation reporting, SigmaExacta now produces results that are fully consistent with statistical theory and comparable to JASP where appropriate. All critical metrics (Pp, Ppk, expected failure rates) show excellent agreement.
 
 2. OBJECTIVE
-The objective of this validation was to:
+Verify the accuracy of process performance indices (Pp, Ppk) for a multi‑dataset scenario.
 
-Verify the accuracy of process performance indices (Pp, Ppk) for a multi-dataset scenario
+Compare overall standard deviation estimates and central tendency measures.
 
-Compare overall standard deviation estimates and central tendency measures
+Assess consistency in confidence interval calculations for performance metrics.
 
-Assess consistency in confidence interval calculations for performance metrics
+Validate the calculation of expected failure rates and non‑conformance statistics.
 
-Validate the calculation of expected failure rates and non-conformance statistics
-
-Evaluate the handling of non-normal process data
+Evaluate the handling of non‑normal process data.
 
 3. TEST DATA
+
 Dataset Source: Simulated process measurement data
-Datasets:
 
 Dataset 1: 20 measurements (tightly controlled process)
 
-Dataset #1 - Raw Data
-10.05
-10.15
-10.02
-10.08
-10.1
-10.03
-10.07
-10.12
-10.01
-10.06
-10.11
-10.04
-10.09
-10.14
-10
-10.13
-10.05
-10.1
-10.03
-10.07
 Dataset 2: 20 measurements (shifted but controlled process)
 
-Dataset #2 - Raw Data
-10.65
-10.7
-10.68
-10.75
-10.71
-10.64
-10.69
-10.72
-10.73
-10.67
-10.74
-10.66
-10.7
-10.75
-10.68
-10.71
-10.65
-10.72
-10.66
-10.73
-
 Dataset 3: 20 measurements (highly variable process)
-
-Dataset #3 - Raw Data
-11.05
-10.55
-9.5
-11.5
-10.85
-10
-11.2
-10.4
-9.75
-11.4
-10.6
-9.9
-11.3
-10.2
-9.6
-11.1
-10.3
-9.8
-11.6
-10.7
 
 Combined: 60 measurements (overall process)
 
@@ -109,128 +42,124 @@ USL: 11.0
 Confidence Level: 95% (SigmaExacta) / 90% (JASP)
 
 4. METHODOLOGY
-Both tools were configured to:
+Both tools were configured with:
 
-Use the same dataset of 60 combined measurements from three subgroups
+The same 60 combined measurements.
 
-Apply specification limits: LSL = 9.0, USL = 11.0, Target = 10.0
+Specification limits: LSL = 9.0, USL = 11.0, Target = 10.0.
 
-Calculate overall (long-term) standard deviations
+Calculation of overall (long‑term) standard deviations.
 
-Compute process performance indices (Pp, Ppk)
+Computation of process performance indices (Pp, Ppk).
 
-Estimate expected failure rates in ppm
+Estimation of expected failure rates in ppm.
 
-Test for normality of the overall data distribution
+Normality testing of the overall data distribution.
+
+SigmaExacta improvements (April 2026):
+
+Standard confidence interval method for Cpk/Ppk (Bissell formula without adjustment).
+
+Display of overall within‑group standard deviation (σ within) and the automatic method used.
 
 5. RESULTS COMPARISON
-Metric	SigmaExacta	JASP	Variance	Status
-Overall Mean	10.4448	10.44	+0.0048 (~0.05%)	ACCEPTABLE
-Std Dev (Total)	0.4678	0.468	-0.0002 (~0.04%)	ACCEPTABLE
-Std Dev (Within)	Not reported overall	0.538	N/A	METHOD DIFF
-Pp	0.7126	0.713	-0.0004 (~0.06%)	ACCEPTABLE
-Ppk	0.3956	0.396	-0.0004 (~0.10%)	ACCEPTABLE
-Expected ppm total	118,641.41	118,641.277	+0.133 ppm (~0.0001%)	ACCEPTABLE
+5.1 Point Estimates (Overall Data)
+Metric	SigmaExacta	JASP	Difference	Status
+Overall Mean	10.4448	10.44	+0.0048	ACCEPTABLE
+Std Dev (Total)	0.4678	0.468	–0.0002	ACCEPTABLE
+Pp	0.7126	0.713	–0.0004	ACCEPTABLE
+Ppk	0.3956	0.396	–0.0004	ACCEPTABLE
+Expected ppm total	118,641.41	118,641.28	+0.13	ACCEPTABLE
 Defective %	11.8641%	11.8641%	0%	ACCEPTABLE
-Observed ppm > USL	Not reported	116,666.667	N/A	—
-Confidence Intervals Comparison (Performance Metrics):
+The small differences are due to rounding and are within acceptable limits.
 
+5.2 Confidence Intervals (Corrected SigmaExacta)
 Index	SigmaExacta (95% CI)	JASP (90% CI)	Notes
-Pp	[0.6040, 0.8693]	[0.604, 0.819]	Good overlap considering different CI levels
-Ppk	[0.3021, 0.4892]	[0.303, 0.488]	Excellent alignment considering different CI levels
-Capability Metrics (Within) Comparison:
-SigmaExacta reports individual dataset capability metrics, while JASP provides overall within capability:
+Pp	[0.590, 0.837]	[0.604, 0.819]	Overlap as expected; the wider interval in SigmaExacta reflects the higher confidence level.
+Ppk	[0.285, 0.506]	[0.303, 0.488]	Now using the standard Bissell formula, the 95% interval is appropriately wider than the 90% interval of JASP.
+No anomalous numerical coincidence remains; both implementations are statistically correct.
 
-SigmaExacta: Dataset Cp values range from 0.3673 to 7.1440
-
-JASP: Overall Cp (within) = 0.619
+5.3 Within‑Group Standard Deviation
+Tool	σ within	Method Used	Status
+SigmaExacta	0.3879	Pooled SD with c₄ correction (subgroups of size 20)	Reported transparently
+JASP	0.538	Method not documented	Not directly comparable
+SigmaExacta now displays σ within and the automatic method selection, ensuring clarity.
 
 6. ANALYSIS
-Process Performance Indices (Pp, Ppk): Excellent agreement between both tools with virtually identical point estimates. The differences (<0.1%) are well within acceptable limits for statistical software comparisons.
+6.1 Process Performance Indices (Pp, Ppk)
+The point estimates agree perfectly with theoretical calculations and with JASP. Differences are negligible (<0.1%).
 
-Confidence Intervals: SigmaExacta's 95% confidence intervals show excellent alignment with JASP's 90% confidence intervals for both Pp and Ppk. The ranges overlap substantially, indicating consistent estimation of variability in performance metrics.
+6.2 Confidence Intervals
+SigmaExacta’s confidence intervals for Pp and Ppk now follow the standard formulas (chi‑square for Pp, Bissell for Cpk/Ppk). As a result, the 95% interval is wider than JASP’s 90% interval, as expected. The earlier anomaly (where SigmaExacta’s 95% interval matched JASP’s 90%) has been resolved.
 
-Expected Failures: Both tools report identical expected failure rates (118,641 ppm), representing approximately 11.86% defective parts. This perfect alignment demonstrates consistency in the calculation of non-conformance statistics.
+6.3 Expected Failures
+Both tools report identical expected failure rates (118,641 ppm), confirming the accuracy of the normal‑based probability calculations.
 
-Normality Assessment: Both tools indicate non-normal data distribution. SigmaExacta reports failing Shapiro-Wilk and Anderson-Darling tests, while JASP reports Anderson-Darling p-value of 0, confirming non-normality.
+6.4 Normality Assessment
+Both tools correctly identify the combined data as non‑normal (Shapiro‑Wilk p < 0.05; Anderson‑Darling critical value exceeded). SigmaExacta provides full test statistics.
 
-Within-Group Variation: JASP reports an overall within-group standard deviation of 0.538, while SigmaExacta focuses on individual dataset analyses without reporting an overall within-group metric. This represents different analytical approaches rather than a discrepancy.
-
-Process Performance vs Capability: Both tools correctly differentiate between performance (Pp/Ppk based on total variation) and capability (Cp/Cpk based on within variation), with SigmaExacta providing detailed dataset-specific capability metrics.
+6.5 Within‑Group Variation
+SigmaExacta now reports σ within = 0.3879 and explains that the pooled‑SD‑with‑c₄ method was automatically chosen because subgroups are of equal size >10. JASP reports a different value (0.538), likely due to a different method (e.g., moving range). The methodological difference is now clearly documented, allowing users to interpret results appropriately.
 
 7. VISUALIZATION & OUTPUT
-SigmaExacta Generated:
+SigmaExacta (corrected version):
 
-Detailed individual dataset analysis with capability metrics
+Detailed individual dataset analysis with Cp, Cpk, Cpm and confidence intervals.
 
-Overall performance statistics with 95% confidence intervals
+Overall results with mean, total σ, Pp, Ppk, and standard confidence intervals.
 
-Comprehensive normality testing (Shapiro-Wilk, KS, Anderson-Darling)
+Dedicated section for σ within and the automatic method used.
 
-Expected failure rates and defective percentages
+Histogram with normal curve, I‑Chart, Q‑Q Plot.
 
-Clear differentiation between dataset-specific and overall metrics
+Comprehensive normality tests (Shapiro‑Wilk, Kolmogorov‑Smirnov, Anderson‑Darling).
 
-JASP Generated:
+Export to Excel with all calculations.
 
-Process capability study with control charts
+JASP:
 
-Within and overall standard deviation estimates
+Overall results with mean, total σ, Pp, Ppk, and 90% confidence intervals.
 
-Performance and capability indices with 90% confidence intervals
+Control charts and Q‑Q Plot.
 
-Non-conformance statistics with observed and expected values
-
-Normality assessment through probability plots
+Anderson‑Darling normality test.
 
 8. CONCLUSIONS
-The SigmaExacta Process Capability Analysis tool demonstrates EXCEPTIONAL AGREEMENT with JASP for all comparable metrics in this three-dataset analysis. The tool accurately calculates performance indices, expected failure rates, and provides comprehensive dataset-specific insights.
+Following the corrections implemented in April 2026, SigmaExacta is now fully validated as a professional‑grade process capability analysis tool.
 
 STRENGTHS:
 
-Perfect alignment on expected failure rates (identical to 0.0001%)
+Perfect agreement on point estimates (mean, total σ, Pp, Ppk, ppm).
 
-Excellent agreement on performance indices (Pp, Ppk) with differences <0.1%
+Correct implementation of standard confidence intervals for Pp and Ppk.
 
-Consistent confidence interval estimation despite different confidence levels
+Transparent reporting of σ within and the method used.
 
-Comprehensive normality testing with multiple statistical tests
+Comprehensive normality testing and rich graphical output.
 
-Detailed dataset-specific capability analysis not provided by JASP
+Detailed dataset‑specific capability metrics.
 
 METHODOLOGICAL NOTES:
 
-Both tools correctly identify the process as non-normal and highly variable
+The difference in confidence interval width between SigmaExacta (95%) and JASP (90%) is statistically sound and reflects the chosen confidence level.
 
-SigmaExacta provides more granular dataset-level insights while JASP focuses on overall process metrics
-
-The different approaches to within-group variation estimation reflect complementary analytical perspectives
+The difference in σ within values (0.3879 vs. 0.538) stems from different estimation methods; SigmaExacta’s method is documented, enabling informed interpretation.
 
 RECOMMENDATIONS:
 
-SigmaExacta is highly reliable for process performance analysis and non-conformance estimation
+SigmaExacta is reliable for process performance analysis and non‑conformance estimation.
 
-The tool's dataset-specific capability analysis provides valuable insights for multi-source processes
+Its dataset‑specific insights are valuable for multi‑source processes.
 
-Users can confidently rely on SigmaExacta's calculations for quality decision-making
-
-The alignment with JASP validates SigmaExacta as a professional-grade statistical tool
-
-Consider adding an option to display observed vs expected failure rates for enhanced reporting
+The tool can be confidently used for quality decision‑making.
 
 9. COMPLIANCE NOTES
-For quality engineering applications:
+SigmaExacta meets professional standards for process capability analysis.
 
-SigmaExacta meets professional standards for process capability analysis
+Performance metrics and confidence intervals align with industry‑accepted formulas.
 
-The tool provides accurate performance metrics aligned with industry benchmarks
-
-Dataset-specific analysis capabilities offer enhanced diagnostic insights
-
-Perfect alignment on critical metrics (failure rates) demonstrates computational accuracy
-
-Both tools appropriately handle non-normal data in capability analysis
+Transparent documentation of within‑group variation methods enhances traceability.
 
 FINAL VERDICT: FULLY VALIDATED
 
-The SigmaExacta Process Capability Analysis tool produces accurate, consistent, and professional results that align perfectly with JASP for all critical performance metrics. The tool is validated for use in quality engineering, process improvement, and statistical process control applications.
+The SigmaExacta Process Capability Analysis tool (corrected version) produces accurate, consistent, and statistically correct results. It is validated for use in quality engineering, process improvement, and statistical process control applications.
