@@ -1,161 +1,148 @@
-VALIDATION REPORT
-SigmaExacta Taguchi DOE Calculator & Analyzer
-Test Date: January 9, 2026
-Location: Vigo, Galicia, Spain
-Conducted By: Quality Engineering Team
+Here is the **corrected validation report in English**, with today's date (April 2, 2026). The error in section 4.3 (using 16.93 as the overall mean) has been fixed, and the manual calculation now matches SigmaExacta’s output of 19.633.
 
-1. EXECUTIVE SUMMARY
+---
+
+## VALIDATION REPORT (CORRECTED)  
+**SigmaExacta Taguchi DOE Calculator & Analyzer**  
+Test Date: April 2, 2026  
+Location: Vigo, Galicia, Spain  
+Conducted By: Quality Engineering Team  
+
+---
+
+### 1. EXECUTIVE SUMMARY
+
 This report documents the validation testing of the SigmaExacta Taguchi DOE tool using a standard academic dataset (L9 Orthogonal Array) to verify the accuracy of Signal‑to‑Noise (S/N) ratio calculations, Analysis of Variance (ANOVA), and optimal result predictions.
+
 The tool was compared against the chemical engineering case study “Adhesion Strength Optimization,” referenced in standard academic literature (LibreTexts Engineering / York University).
 
-Verdict: The tool demonstrated 100% accuracy in identifying critical factors and showed less than 0.01% deviation in arithmetic calculations compared to the theoretical reference.
+**Verdict:** The tool demonstrated 100% accuracy in identifying critical factors and showed less than 0.01% deviation in arithmetic calculations compared to the theoretical reference.
 
-2. OBJECTIVE
+---
+
+### 2. OBJECTIVE
+
 The objective of this validation was to:
 
-Verify correct generation of the L9 orthogonal array (4 factors, 3 levels).
+- Verify correct generation of the L9 orthogonal array (4 factors, 3 levels).
+- Validate the accuracy of main‑effects mean calculations.
+- Confirm the logic of “Larger is Better” S/N ratio selection.
+- Evaluate the handling of saturated designs in the ANOVA table (where error degrees of freedom equal 0).
+- Validate the prediction equation for the optimal result.
 
-Validate the accuracy of main‑effects mean calculations.
+---
 
-Confirm the logic of “Larger is Better” S/N ratio selection.
+### 3. TEST DATA
 
-Evaluate the handling of saturated designs in the ANOVA table (where error degrees of freedom equal 0).
+**Reference Source:** LibreTexts Engineering – Design of Experiments via Taguchi Methods  
 
-Validate the prediction equation for the optimal result.
+**Experiment Configuration:**
 
-3. TEST DATA
-Reference Source: LibreTexts Engineering – Design of Experiments via Taguchi Methods
-Experiment Configuration:
+- Design: L9 (9 runs)
+- S/N Objective: Larger is Better (maximize adhesion)
+- Factors: 4 (Temperature, Pressure, Time, Voltage)
 
-Design: L9 (9 runs)
+**Input Values (Corrected):**
 
-S/N Objective: Larger is Better (maximize adhesion)
+| Run | Temperature (A) | Pressure (B) | Time (C) | Voltage (D) | Response (Output) |
+|-----|----------------|--------------|----------|-------------|---------------------|
+| 1   | 150            | 10           | 5        | 1           | 15.0                |
+| 2   | 150            | 20           | 10       | 2           | 17.2                |
+| 3   | 150            | 30           | 15       | 3           | 16.5                |
+| 4   | 200            | 10           | 10       | 3           | 14.8                |
+| 5   | 200            | 20           | 15       | 1           | 15.5                |
+| 6   | 200            | 30           | 5        | 2           | 18.1                |
+| 7   | 250            | 10           | 15       | 2           | 16.2                |
+| 8   | 250            | 20           | 5        | 3           | 19.0                |
+| 9   | 250            | 30           | 10       | 1           | 17.8                |
 
-Factors: 4 (Temperature, Pressure, Time, Voltage)
+---
 
-Input Values (Corrected):
-The following values were entered into the SigmaExacta tool:
+### 4. VALIDATION RESULTS
 
-Run	Temperature (A)	Pressure (B)	Time (C)	Voltage (D)	Response (Output)
-1	150	10	5	1	15.0
-2	150	20	10	2	17.2
-3	150	30	15	3	16.5
-4	200	10	10	3	14.8
-5	200	20	15	1	15.5
-6	200	30	5	2	18.1
-7	250	10	15	2	16.2
-8	250	20	5	3	19.0
-9	250	30	10	1	17.8
-4. VALIDATION RESULTS
 The results calculated by SigmaExacta were compared with expected values derived from manual calculations and the reference source.
 
-4.1 Main Effects Analysis (Means)
+#### 4.1 Main Effects Analysis (Means)
+
 The tool’s ability to average responses per level was verified.
 
-Critical Factor (Pressure):
+**Critical Factor: Pressure**
 
-Level 1 (SigmaExacta): 15.333
+- Level 1 (SigmaExacta): 15.333  
+- Level 1 (Theoretical): 15.33  
+- Level 3 (SigmaExacta): 17.467 (correctly identified as optimal)  
+- Level 3 (Theoretical): 17.47  
+- Deviation: < 0.01% (attributable to display rounding)
 
-Level 1 (Theoretical): 15.33
+**Critical Factor: Temperature**
 
-Level 3 (SigmaExacta): 17.467 (correctly identified as optimal)
+- Level 1 (SigmaExacta): 16.233  
+- Level 1 (Theoretical): 16.23  
+- Deviation: 0.00% – EXACT
 
-Level 3 (Theoretical): 17.47
+#### 4.2 Analysis of Variance (ANOVA)
 
-Deviation: < 0.01% (attributable to display rounding)
-
-Critical Factor (Temperature):
-
-Level 1 (SigmaExacta): 16.233
-
-Level 1 (Theoretical): 16.23
-
-Deviation: 0.00% – EXACT
-
-4.2 Analysis of Variance (ANOVA)
 The test presented a specific challenge: a saturated design where error degrees of freedom (DF) are zero (DF_total = 8, DF_factors = 8).
 
-Tool Behavior: Correctly reported Error DF = 0 and SS Error = 0.000.
+- **Tool Behavior:** Correctly reported Error DF = 0 and SS Error = 0.000.
+- **Exception Handling:** The tool displayed the warning *“ANOVA could not be fully calculated… (Saturated)”*, avoiding erroneous calculation of infinite F‑values.
+- **Sum of Squares (SS) – Pressure:**  
+  Calculated: 8.216  
+  Expected: ≈8.21  
+  Status: VALIDATED
 
-Exception Handling: The tool displayed the warning “ANOVA could not be fully calculated… (Saturated),” avoiding erroneous calculation of infinite F‑values.
+#### 4.3 Prediction and Optimal Levels
 
-Sum of Squares (SS) – Pressure:
+**Optimal Configuration Detected:**
 
-Calculated: 8.216
+- Temperature: 250 (Level 3)
+- Pressure: 30 (Level 3)
+- Time: 5 (Level 1)
+- Voltage: 2 (Level 2)
 
-Expected: ≈8.21
+**Match with Reference:** 100% (Identical Match)
 
-Status: VALIDATED
+**Predicted Value:**
 
-4.3 Prediction and Optimal Levels
-Optimal Configuration Detected:
+- SigmaExacta: **19.633**
+- Corrected Manual Calculation:
 
-Temperature: 250 (Level 3)
+\[
+\begin{aligned}
+\text{Overall Mean} &= \frac{15.0+17.2+16.5+14.8+15.5+18.1+16.2+19.0+17.8}{9} = \frac{150.1}{9} = 16.678 \\[4pt]
+\text{Prediction} &= 16.678 \;+\; (17.667 - 16.678) \;+\; (17.467 - 16.678) \;+\; (17.367 - 16.678) \;+\; (17.167 - 16.678) \\
+&= 16.678 + 0.989 + 0.789 + 0.689 + 0.489 = 19.634 \approx 19.63
+\end{aligned}
+\]
 
-Pressure: 30 (Level 3)
+**Validation:** The predicted value (19.63) correctly exceeds the maximum observed value (19.0), consistent with Taguchi theory.
 
-Time: 5 (Level 1)
+> **Correction note:** In the original version of this report, 16.93 was mistakenly used as the overall mean. The correct value is 16.678, and the resulting prediction is 19.63, which exactly matches SigmaExacta’s output (19.633 after internal rounding).
 
-Voltage: 2 (Level 2)
+---
 
-Match with Reference: 100% (Identical Match)
+### 5. VISUALIZATION & OUTPUT
 
-Predicted Value:
-
-SigmaExacta: 19.633
-
-Manual Calculation:
-
-16.93
- (Mean)
-+
-(
-17.66
-−
-16.93
-)
-+
-(
-17.47
-−
-16.93
-)
-+
-(
-17.37
-−
-16.93
-)
-+
-(
-17.17
-−
-16.93
-)
-≈
-19.63
-16.93 (Mean)+(17.66−16.93)+(17.47−16.93)+(17.37−16.93)+(17.17−16.93)≈19.63
-Validation: The predicted value correctly exceeds the maximum observed value (19.0), consistent with Taguchi theory.
-
-5. VISUALIZATION & OUTPUT
 The tool successfully generated:
 
-Pareto Chart: Correctly ranked Pressure as the most influential factor (Range 2.133), followed by Temperature.
+- **Pareto Chart:** Correctly ranked Pressure as the most influential factor (Range 2.133), followed by Temperature.
+- **Main Effects Plots:** The visualized slopes correspond exactly to the calculated numerical deltas.
 
-Main Effects Plots: The visualized slopes correspond exactly to the calculated numerical deltas.
+---
 
-6. CONCLUSIONS
-The SigmaExacta Taguchi DOE tool has been tested and validated as OPERATIONAL and ACCURATE.
+### 6. CONCLUSIONS
 
-Strengths Identified:
+The SigmaExacta Taguchi DOE tool has been tested and validated as **OPERATIONAL and ACCURATE**.
 
-Mathematical Precision: Means and SS calculations match academic references.
+**Strengths Identified:**
 
-Robustness: Correct handling of statistical exceptions (saturated ANOVA).
+- **Mathematical Precision:** Means and SS calculations match academic references.
+- **Robustness:** Correct handling of statistical exceptions (saturated ANOVA).
+- **Sensitivity:** Ability to adjust optimal recommendations based on minor input data changes (verified during data‑correction phase).
 
-Sensitivity: Ability to adjust optimal recommendations based on minor input data changes (verified during data‑correction phase).
-
-Usage Recommendation:
+**Usage Recommendation:**  
 The tool is suitable for quality engineering analysis, robust design of experiments, and industrial process optimization.
 
-Validation Status: APPROVED
+**Validation Status:** APPROVED
+
+---
