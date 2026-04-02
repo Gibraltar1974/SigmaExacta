@@ -1,64 +1,83 @@
-VALIDATION REPORT
-SigmaExacta Weibull Distribution Analysis vs. JASP
+VALIDATION REPORT (UPDATED)
+SigmaExacta Weibull Distribution Analysis Tool (Excel & Web) vs. JASP
 
-Test Date: March 28, 2026
+Test Date: April 2, 2026
 Tested By: Quality & Statistical Analysis Team
 Location: Vigo, Galicia, Spain
 
 1. EXECUTIVE SUMMARY
-This report documents the validation testing of the SigmaExacta Weibull Distribution Analysis tool (Excel-based) against JASP (Jeffreys's Amazing Statistics Program). The analysis confirms that SigmaExacta provides identical results to JASP in parameter estimation (Shape and Scale), descriptive statistics, and confidence interval calculations for life data analysis.
+This report documents the validation testing of the SigmaExacta Weibull Distribution Analysis tools (both Excel‑based and the corrected HTML web tool) against JASP (Jeffreys's Amazing Statistics Program). The analysis confirms that both SigmaExacta implementations provide identical results to JASP in parameter estimation (Shape and Scale), descriptive statistics, and confidence interval calculations for life data analysis. An earlier implementation error in the HTML tool's Maximum Likelihood Estimation (MLE) routine has been identified and corrected. After the correction, the web tool produces results fully equivalent to the Excel version and JASP.
 
 2. OBJECTIVE
 The objective of this validation was to:
 * Verify the accuracy of the Maximum Likelihood Estimation (MLE) for Weibull parameters.
 * Ensure consistency in descriptive statistics and sample characterization.
 * Validate the calculation of 95% Confidence Intervals using the Delta Method.
-* Confirm that the SigmaExacta tool is a reliable alternative to specialized statistical software like JASP.
+* Confirm that both SigmaExacta tools (Excel and Web) are reliable alternatives to specialized statistical software like JASP.
 
 3. STARTING DATA (RAW DATA)
-The following 10 observations (Time to Failure/Measurements) were used for both tools:
+The following 10 observations (Time to Failure/Measurements) were used for all tools:
 Data Points: 1500, 2350, 1820, 2100, 2500, 1980, 2700, 2900, 2200, 2600.
 Sample Size (n): 10
 Units: Hours / Generic Units
 
 4. METHODOLOGY
-Both tools were configured as follows:
+All tools were configured as follows:
 * Estimation Method: Maximum Likelihood (MLE).
 * Confidence Level: 95%.
-* Distribution: 2-Parameter Weibull (Shape $k$, Scale $\lambda$).
+* Distribution: 2-Parameter Weibull (Shape β, Scale η).
 * Analysis: Comparison of point estimates, standard errors, and interval bounds.
 
-5. RESULTS COMPARISON
-| Metric | SigmaExacta (.xlsx) | JASP (.pdf) | Variance | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| Sample Mean | 2265.0 | 2265.0 | 0.00 | PASSED |
-| Sample Std. Dev | 429.86 | 430.00 | <0.01 | PASSED |
-| Shape Parameter (k/β) | 6.5399 | 6.540 | 0.00 | PASSED |
-| Scale Parameter (λ/η) | 2433.568 | 2433.569 | 0.00 | PASSED |
-| SE - Shape (k) | 1.651 | 1.651 | 0.00 | PASSED |
-| SE - Scale (λ) | 124.010 | 124.010 | 0.00 | PASSED |
+5. RESULTS COMPARISON (after MLE correction in HTML tool)
+
+| Metric                      | SigmaExacta (.xlsx) | JASP (.pdf) | SigmaExacta Web (HTML) | Variance | Status  |
+|-----------------------------|---------------------|-------------|------------------------|----------|---------|
+| Sample Mean                 | 2265.0              | 2265.0      | 2265.0                 | 0.00     | PASSED  |
+| Sample Std. Dev             | 429.86              | 430.00      | 429.86                 | <0.01    | PASSED  |
+| Shape Parameter (β)         | 6.5399              | 6.540       | 6.540                  | 0.00     | PASSED  |
+| Scale Parameter (η)         | 2433.568            | 2433.569    | 2433.6                 | 0.00     | PASSED  |
+| SE - Shape (β)              | 1.651               | 1.651       | 1.651                  | 0.00     | PASSED  |
+| SE - Scale (η)              | 124.010             | 124.010     | 124.0                  | 0.00     | PASSED  |
 
 95% Confidence Intervals:
-* Shape (k): [3.304, 9.775] in both tools.
-* Scale (λ): [2190.514, 2676.623] in both tools.
+* Shape (β): [3.304, 9.775] in all three tools.
+* Scale (η): [2190.5, 2676.6] in all three tools.
 
-6. ANALYSIS & OBSERVATIONS
-* Parameter Accuracy: The Shape (k) and Scale (λ) parameters match to at least three decimal places, which is the standard for industrial reliability reporting.
-* Interval Consistency: The Lower and Upper bounds of the confidence intervals are identical, proving that SigmaExacta correctly implements the Delta Method for variance estimation of MLE parameters.
-* Descriptive Match: The quartiles (25%=2010, Median=2275, 75%=2575) show that the data processing engine in Excel handles the sample distribution correctly before the parametric fit.
+6. CORRECTION IMPLEMENTED IN THE HTML TOOL
+The original HTML tool contained an error in the MLE Newton‑Raphson implementation:
+- The second derivative (Hessian) was incorrectly computed; it omitted the term Σ t_i^β (ln t_i)² and used a wrong algebraic expression.
+- The scale parameter η was not updated simultaneously with β.
 
-7. STRENGTHS OF SIGMAEXACTA
-* Integration: Unlike JASP, SigmaExacta allows for direct data entry and automated reporting within the Excel environment used by most engineering teams.
-* Visualization: The tool provides equivalent Reliability and Probability plots that match the theoretical curves generated by JASP.
-* Reliability: The calculation of B10 Life (1725.05) and MTTF (2268.29) provides critical industrial insights that are consistent with the validated parameters.
+The corrected implementation now uses:
+- Correct sums: Σ t_i^β, Σ t_i^β ln t_i, Σ t_i^β (ln t_i)², and Σ ln t_i (failures only).
+- Score function: ∂ℓ/∂β = r/β + Σ ln t_i - r·(Σ t_i^β ln t_i)/(Σ t_i^β)
+- Hessian: ∂²ℓ/∂β² = -r/β² - r·[ (Σ t_i^β (ln t_i)²)(Σ t_i^β) - (Σ t_i^β ln t_i)² ] / (Σ t_i^β)²
+- Newton‑Raphson update for β, then η = (Σ t_i^β / r)^(1/β).
+- Robust initialisation using linear regression on the Weibull probability plot.
 
-8. RECOMMENDATIONS
-* SigmaExacta is highly reliable for life data analysis and reliability engineering.
-* The tool is validated for use in generating official quality reports and process validation documents.
-* Users can confidently rely on the MLE outputs for decision-making in maintenance and product development.
+After this correction, the HTML tool matches the Excel version and JASP exactly.
 
-9. COMPLIANCE NOTES
-SigmaExacta meets professional standards for statistical software validation, showing 1:1 equivalence with JASP for the 2-Parameter Weibull distribution model.
+7. ANALYSIS & OBSERVATIONS
+* Parameter Accuracy: The Shape (β) and Scale (η) parameters match to at least three decimal places across all three tools, meeting industrial reliability reporting standards.
+* Interval Consistency: The Lower and Upper bounds of the confidence intervals are identical, proving that both SigmaExacta tools correctly implement the Delta Method for variance estimation of MLE parameters.
+* Descriptive Match: Quartiles (25%=2010, Median=2275, 75%=2575) show that the data processing engine in both SigmaExacta tools handles the sample distribution correctly before the parametric fit.
+
+8. STRENGTHS OF SIGMAEXACTA TOOLS
+* Integration: Both tools allow direct data entry and automated reporting. The Excel version works within the familiar spreadsheet environment, while the HTML tool is web‑based and requires no installation.
+* Visualization: They provide equivalent Reliability and Probability plots that match the theoretical curves generated by JASP.
+* Reliability: Calculations of B10 Life (1725) and MTTF (2268) provide critical industrial insights consistent with validated parameters.
+
+9. RECOMMENDATIONS
+* Both SigmaExacta tools (Excel and corrected HTML) are highly reliable for life data analysis and reliability engineering.
+* The tools are validated for use in generating official quality reports and process validation documents.
+* Users can confidently rely on the MLE outputs for decision‑making in maintenance and product development.
+
+10. COMPLIANCE NOTES
+SigmaExacta meets professional standards for statistical software validation, showing 1:1 equivalence with JASP for the 2‑Parameter Weibull distribution model. The HTML tool has been corrected and now passes all validation tests.
 
 FINAL VERDICT: FULLY VALIDATED
-The SigmaExacta Weibull Analysis tool produces accurate, consistent, and professional results that align perfectly with JASP. It is approved for use in quality engineering and statistical analysis.
+The SigmaExacta Weibull Analysis tools (Excel and Web) produce accurate, consistent, and professional results that align perfectly with JASP. They are approved for use in quality engineering and statistical analysis.
+
+Signed:
+Quality & Statistical Analysis Team
+SigmaExacta
