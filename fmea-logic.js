@@ -39,7 +39,8 @@ function initComponents() {
   document.getElementById('fitViewBtn').addEventListener('click', () => { if (network) network.fit({ animation: true }); });
   document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
   document.getElementById('globalResetBtn').addEventListener('click', resetAll);
-  document.getElementById('refreshHeatmapBtn').addEventListener('click', () => refreshHeatmap());
+  // El botón refreshHeatmapBtn ya no es necesario, pero lo dejamos por compatibilidad
+  document.getElementById('refreshHeatmapBtn')?.addEventListener('click', () => refreshHeatmap());
 
   updateAll();
 }
@@ -79,7 +80,7 @@ function loadExample() {
 
   updateAll();
   setTimeout(() => {
-    switchTab('tab-structure');
+    switchTab('tab-planning'); // Cambiado de 'tab-structure' a 'tab-planning'
     document.querySelector('.tabs-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 }
@@ -246,7 +247,15 @@ function updateNetworkVisualization() {
   const lineTopY = internal_y_start - (INTERNAL_Y_SPACING / 2);
   const lineBottomY = internal_y_start + internalZoneHeight + (INTERNAL_Y_SPACING / 2);
   network.on('afterDrawing', function (ctx) { ctx.save(); ctx.strokeStyle = '#95a5a6'; ctx.lineWidth = 2; ctx.setLineDash([5, 10]); ctx.beginPath(); ctx.moveTo(-10000, lineTopY); ctx.lineTo(10000, lineTopY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-10000, lineBottomY); ctx.lineTo(10000, lineBottomY); ctx.stroke(); ctx.restore(); });
-  network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+  // Centrar la vista y eliminar scroll lateral
+  setTimeout(() => {
+    if (network) {
+      network.fit({ animation: true });
+      // Forzar que el contenedor no tenga scroll horizontal
+      const canvasContainer = document.querySelector('#networkCanvas');
+      if (canvasContainer) canvasContainer.scrollLeft = 0;
+    }
+  }, 100);
   let legendHtml = '<div><strong>Function Legend:</strong></div>';
   if (functions.length > 0) functions.forEach(func => { const color = getFunctionColor(func.id); legendHtml += `<div><span style="background-color: ${color};"></span>${func.label}: ${func.name}</div>`; });
   else legendHtml += '<div>No functions defined.</div>';
@@ -379,9 +388,15 @@ function generateFMEA() {
       const ap2Cell = row.querySelector('.ap2-cell');
       ap2Cell.textContent = ap2;
       ap2Cell.className = `ap2-cell ${getAPClass(ap2)}`;
+
+      // Actualizar heatmap automáticamente cuando cambien S u O
+      refreshHeatmap();
     };
     row.querySelectorAll('.severity-select, .occurrence-select, .detection-select, .severity2-select, .occurrence2-select, .detection2-select').forEach(sel => sel.addEventListener('change', updateRPN));
-    row.querySelector('.delete-failure-mode').addEventListener('click', () => row.remove());
+    row.querySelector('.delete-failure-mode').addEventListener('click', () => {
+      row.remove();
+      refreshHeatmap();
+    });
     fmeaTableBody.appendChild(row);
     updateRPN();
     return row;
@@ -397,7 +412,11 @@ function generateFMEA() {
     const addRowBtn = document.createElement('button');
     addRowBtn.className = 'add-failure-mode';
     addRowBtn.innerHTML = `<i class="fas fa-plus"></i> Add Failure Mode for ${func.label}`;
-    addRowBtn.addEventListener('click', () => { const newRow = addRow(func, null); fmeaTableBody.insertBefore(newRow, addRowBtnRow); });
+    addRowBtn.addEventListener('click', () => {
+      const newRow = addRow(func, null);
+      fmeaTableBody.insertBefore(newRow, addRowBtnRow);
+      refreshHeatmap();
+    });
     addRowBtnCell.appendChild(addRowBtn);
   });
 
@@ -415,7 +434,7 @@ function generateFMEA() {
   fmeaResultsContainer.appendChild(analysisInstance);
   fmeaResultsContainer.style.display = 'block';
   setTimeout(() => analysisInstance.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  refreshHeatmap();
+  refreshHeatmap(); // Actualización inicial del heatmap
 }
 
 function exportTableToExcel(tableElement, fileName) {
@@ -488,6 +507,15 @@ function refreshHeatmap() {
   const maxCount = Math.max(...heatmapData.flat(), 1);
   const container = document.getElementById('heatmapContainer');
 
+  // Función para obtener color verde -> amarillo -> rojo según el porcentaje del máximo
+  function getColorForCount(count, max) {
+    if (count === 0) return '#eeeeee';
+    const ratio = count / max;
+    if (ratio < 0.33) return '#2ecc71';     // Verde
+    if (ratio < 0.66) return '#f1c40f';     // Amarillo
+    return '#e74c3c';                       // Rojo
+  }
+
   container.innerHTML = `
     <div class="heatmap-container">
       <div class="heatmap-title-x">Occurrence</div>
@@ -503,8 +531,7 @@ function refreshHeatmap() {
                 <div class="grid-y-label">${severityValue}</div>
                 ${Array.from({ length: 10 }, (_, j) => {
       const count = heatmapData[severityValue - 1][j];
-      const intensity = count / maxCount;
-      const color = count === 0 ? '#eeeeee' : `rgba(220, 20, 60, ${0.2 + intensity * 0.5})`;
+      const color = getColorForCount(count, maxCount);
       return `<div class="heatmap-cell" style="background-color: ${color};" title="S:${severityValue}, O:${j + 1} → ${count} failure(s)">${count > 0 ? count : ''}</div>`;
     }).join('')}
               `;
@@ -514,8 +541,8 @@ function refreshHeatmap() {
       </div>
     </div>
     <div class="heatmap-legend">
-      <span>⬤ More failures → darker red</span><br>
-      <small>Each cell shows number of failure modes for that (Severity, Occurrence) pair.</small>
+      <span>⬤ Green: low (≤33%) &nbsp; ⬤ Yellow: mean (34-66%) &nbsp; ⬤ Red: high (>66%)</span><br>
+      <small>Each cell shows the number of default modes for that pair (Severity, Occurrence).</small>
     </div>
   `;
 
