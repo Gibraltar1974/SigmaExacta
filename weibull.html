@@ -1538,7 +1538,7 @@
       })
       .catch(error => console.error('Error loading header:', error));
 
-    // --- CÓDIGO CORREGIDO DEL PRIMER ARCHIVO ADJUNTO ---
+    // --- CÓDIGO CORREGIDO: MLE CORRECTO ---
     let weibullChart, pdfChart, cdfChart, hazardChart, reliabilityChart;
     let lastResult = null;
     let aggregatedResultsData = [];
@@ -1630,111 +1630,95 @@
       };
     }
 
-    // MLE - Maximum Likelihood Estimation
-    function calculateWeibullMLE(points, failureTimes, suspensionTimes) {
-      const regression = performLinearRegression(points);
-      let beta = regression.slope;
-      let eta = Math.exp(-regression.intercept / beta);
-
+    // MLE - Maximum Likelihood Estimation (CORREGIDO)
+    function calculateWeibullMLE(failureTimes, suspensionTimes) {
+      // Combinar todos los tiempos (fallas + censura) y ordenar
       const allTimes = [...failureTimes, ...suspensionTimes].sort((a, b) => a - b);
       const n = allTimes.length;
       const r = failureTimes.length;
+      if (r === 0) return null; // Sin fallas
 
-      const maxIterations = 50;
-      const tolerance = 1e-8;
+      // Inicializar beta y eta usando regresión lineal sobre los puntos de la gráfica de Weibull
+      // (esto proporciona una buena semilla)
+      const points = calculateMedianRanks(failureTimes, suspensionTimes, 'medianRank');
+      const reg = performLinearRegression(points);
+      let beta = Math.max(0.5, reg.slope); // Evitar beta demasiado pequeño
+      let eta = Math.exp(-reg.intercept / beta);
 
-      for (let iter = 0; iter < maxIterations; iter++) {
-        let sum1 = 0, sum2 = 0, sum3 = 0;
-        let sumLogT = 0;
+      // Ajustar eta para que sea positivo
+      eta = Math.max(1, eta);
+
+      const maxIter = 100;
+      const tol = 1e-8;
+
+      for (let iter = 0; iter < maxIter; iter++) {
+        // Calcular sumas necesarias para la log-verosimilitud y sus derivadas
+        let sum_t_beta = 0;
+        let sum_t_beta_log = 0;
+        let sum_t_beta_log2 = 0;
+        let sum_log_t = 0;
 
         for (let i = 0; i < n; i++) {
           const t = allTimes[i];
-          const isFailure = i < r;
-          const tBeta = Math.pow(t, beta);
-          const logT = Math.log(t);
+          const log_t = Math.log(t);
+          const t_beta = Math.pow(t, beta);
+          const t_beta_log = t_beta * log_t;
+          const t_beta_log2 = t_beta * log_t * log_t;
 
-          if (isFailure) {
-            sum1 += tBeta * logT;
-            sum2 += tBeta;
-            sum3 += logT;
-            sumLogT += logT;
-          } else {
-            sum2 += tBeta;
+          if (i < r) { // falla
+            sum_log_t += log_t;
           }
+          sum_t_beta += t_beta;
+          sum_t_beta_log += t_beta_log;
+          sum_t_beta_log2 += t_beta_log2;
         }
 
-        const g = beta => {
-          let sum1 = 0, sum2 = 0, sum3 = 0;
-          for (let i = 0; i < n; i++) {
-            const t = allTimes[i];
-            const isFailure = i < r;
-            const tBeta = Math.pow(t, beta);
-            const logT = Math.log(t);
+        // Función de score (primera derivada respecto a beta)
+        const score_beta = r / beta + sum_log_t - (r * sum_t_beta_log) / sum_t_beta;
 
-            if (isFailure) {
-              sum1 += tBeta * logT;
-              sum2 += tBeta;
-              sum3 += logT;
-            } else {
-              sum2 += tBeta;
-            }
-          }
-          return (r / beta) + sum3 - (r * sum1) / sum2;
-        };
+        // Segunda derivada (Hessiana) respecto a beta
+        const hessian_beta = -r / (beta * beta) - r * (sum_t_beta_log2 * sum_t_beta - sum_t_beta_log * sum_t_beta_log) / (sum_t_beta * sum_t_beta);
 
-        const gPrime = beta => {
-          let sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0;
-          for (let i = 0; i < n; i++) {
-            const t = allTimes[i];
-            const isFailure = i < r;
-            const tBeta = Math.pow(t, beta);
-            const logT = Math.log(t);
-            const logTSquared = logT * logT;
+        // Actualización de beta con Newton-Raphson
+        let beta_new = beta - score_beta / hessian_beta;
 
-            if (isFailure) {
-              sum1 += tBeta * logTSquared;
-              sum2 += tBeta * logT;
-              sum3 += tBeta;
-              sum4 += logTSquared;
-            } else {
-              sum3 += tBeta;
-              sum2 += tBeta * logT;
-            }
-          }
-          return (-r / (beta * beta)) - (r * (sum1 * sum3 - sum2 * sum2)) / (sum3 * sum3);
-        };
+        // Restringir beta a un rango razonable
+        beta_new = Math.max(0.1, Math.min(50, beta_new));
 
-        const gValue = g(beta);
-        const gPrimeValue = gPrime(beta);
+        // Actualizar eta usando la estimación de máxima verosimilitud condicionada a beta
+        const eta_new = Math.pow(sum_t_beta / r, 1 / beta_new);
 
-        if (Math.abs(gPrimeValue) < 1e-10) break;
-
-        const betaNew = beta - gValue / gPrimeValue;
-
-        if (Math.abs(betaNew - beta) < tolerance) {
-          beta = betaNew;
+        // Comprobar convergencia
+        if (Math.abs(beta_new - beta) < tol && Math.abs(eta_new - eta) / eta < tol) {
+          beta = beta_new;
+          eta = eta_new;
           break;
         }
 
-        beta = Math.max(0.1, Math.min(50, betaNew));
-
-        let sumTBeta = 0;
-        for (let i = 0; i < n; i++) {
-          sumTBeta += Math.pow(allTimes[i], beta);
-        }
-        eta = Math.pow(sumTBeta / r, 1 / beta);
+        beta = beta_new;
+        eta = eta_new;
       }
+
+      // Calcular R² a partir de la regresión lineal de los puntos transformados con los parámetros MLE
+      // (para consistencia con la interfaz)
+      const pointsMLE = calculateMedianRanks(failureTimes, suspensionTimes, 'medianRank');
+      const x = pointsMLE.map(p => Math.log(p.time));
+      const y = pointsMLE.map(p => Math.log(Math.log(1 / (1 - p.rank))));
+      const yPred = x.map(xi => beta * (xi - Math.log(eta)));
+      const ssRes = y.reduce((sum, yi, i) => sum + (yi - yPred[i]) ** 2, 0);
+      const ssTot = y.reduce((sum, yi) => sum + (yi - y.reduce((a, b) => a + b, 0) / y.length) ** 2, 0);
+      const rSquared = 1 - ssRes / ssTot;
 
       return {
         beta: beta,
         eta: eta,
-        rSquared: regression.rSquared,
+        rSquared: rSquared,
         method: 'Maximum Likelihood (MLE)',
         converged: true
       };
     }
 
-    // Linear Regression Approximation (antes JASP Approximation)
+    // Linear Regression Approximation (clásico)
     function calculateWeibullLinearRegression(points, failureTimes) {
       const regression = performLinearRegression(points);
 
@@ -1745,7 +1729,7 @@
       const sorted = [...failureTimes].sort((a, b) => a - b);
 
       const mean = sorted.reduce((a, b) => a + b, 0) / n;
-      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1); // CORRECCIÓN: varianza muestral
+      const variance = sorted.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (n - 1); // varianza muestral
 
       if (n <= 5) {
         beta *= 1.08;
@@ -1771,7 +1755,7 @@
       const method = document.getElementById('calculationMethod')?.value || 'accurate';
 
       if (method === 'accurate') {
-        return calculateWeibullMLE(points, failureTimes, suspensionTimes);
+        return calculateWeibullMLE(failureTimes, suspensionTimes);
       } else {
         return calculateWeibullLinearRegression(points, failureTimes);
       }
@@ -2582,9 +2566,13 @@
         const stats = calculateDescriptiveStatistics(failureTimes);
         displayDescriptiveStatistics(stats);
 
-        // Calculate ranks and regression
+        // Calculate ranks and regression (necesario para ambos métodos)
         const points = calculateMedianRanks(failureTimes, suspensionTimes, method);
         const weibullParams = calculateWeibullParameters(points, failureTimes, suspensionTimes);
+        if (!weibullParams) {
+          alert("Error in MLE calculation. Try using Linear Regression.");
+          return;
+        }
 
         // Calculate parameters
         const beta = weibullParams.beta;
@@ -2662,8 +2650,12 @@
 
         // Plot charts
         setTimeout(() => {
-          const regression = performLinearRegression(points);
-          plotWeibullChart(points, regression.slope, regression.intercept);
+          // Para la gráfica de Weibull, usamos los puntos y la regresión lineal de los parámetros MLE
+          const xPoints = points.map(p => Math.log(p.time));
+          const yPred = xPoints.map(xi => beta * (xi - Math.log(eta)));
+          const intercept = beta * (-Math.log(eta));
+          const slope = beta;
+          plotWeibullChart(points, slope, intercept);
 
           if (!pdfChart || !cdfChart || !hazardChart || !reliabilityChart) {
             initializeDistributionCharts();
@@ -2673,7 +2665,7 @@
           const maxTimeForChart = Math.max(
             eta * 4,  // 4 veces eta para capturar mejor la cola
             stats.max * 2, // Doble del máximo observado
-            percentiles.b99 * 1.5, // Percentil 99 extendido
+            percentiles.b90 * 1.5, // Percentil 90 extendido
             1500  // Mínimo razonable
           );
 
@@ -2995,7 +2987,7 @@
 
   <script src="dexie.min.js"></script>
   <script src="db-sigma.js"></script>
-  
+
 </body>
 
 </html>
