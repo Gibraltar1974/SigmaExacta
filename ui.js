@@ -17,30 +17,30 @@ function initNavigation() {
   const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
   const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-  if(navToggle && navMenu) {
-      navToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('show-menu');
-        const icon = navToggle.querySelector('i');
-        if(icon) {
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-        }
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('show-menu');
+      const icon = navToggle.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+      }
 
-        if (!navMenu.classList.contains('show-menu')) {
-          if(toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
-          if(toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
-        }
-      });
+      if (!navMenu.classList.contains('show-menu')) {
+        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+      }
+    });
   }
 
-  if(toolsDropdownToggle) {
-      toolsDropdownToggle.addEventListener('click', (event) => {
-        if (window.innerWidth <= 992) {
-          event.preventDefault();
-          if(toolsDropdownMenu) toolsDropdownMenu.classList.toggle('show-submenu');
-          if(toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
-        }
-      });
+  if (toolsDropdownToggle) {
+    toolsDropdownToggle.addEventListener('click', (event) => {
+      if (window.innerWidth <= 992) {
+        event.preventDefault();
+        if (toolsDropdownMenu) toolsDropdownMenu.classList.toggle('show-submenu');
+        if (toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
+      }
+    });
   }
 }
 
@@ -52,7 +52,7 @@ function switchTab(tabId) {
 
   // Activar el contenido seleccionado
   const targetTab = document.getElementById(tabId);
-  if(targetTab) targetTab.classList.add('active');
+  if (targetTab) targetTab.classList.add('active');
 
   // Activar botón correspondiente
   const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
@@ -62,7 +62,7 @@ function switchTab(tabId) {
   // Nota: validamos que la variable global 'network' exista (definida en fmea-logic.js)
   if (tabId === 'tab-visualize' && typeof network !== 'undefined' && network) {
     setTimeout(() => {
-      network.fit({ animation: true });
+      network.fit({ animation: false });
     }, 100);
   }
 }

@@ -250,7 +250,7 @@ function updateNetworkVisualization() {
   // Centrar la vista y eliminar scroll lateral
   setTimeout(() => {
     if (network) {
-      network.fit({ animation: true });
+      network.fit({ animation: false });
       // Forzar que el contenedor no tenga scroll horizontal
       const canvasContainer = document.querySelector('#networkCanvas');
       if (canvasContainer) canvasContainer.scrollLeft = 0;
