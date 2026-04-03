@@ -41,6 +41,8 @@ function initComponents() {
   document.getElementById('globalResetBtn').addEventListener('click', resetAll);
   // El botón refreshHeatmapBtn ya no es necesario, pero lo dejamos por compatibilidad
   document.getElementById('refreshHeatmapBtn')?.addEventListener('click', () => refreshHeatmap());
+  document.getElementById('exportHeatmapExcelBtn')?.addEventListener('click', exportHeatmapToExcel);
+  document.getElementById('exportHeatmapImageBtn')?.addEventListener('click', exportHeatmapToImage);
 
   updateAll();
 }
@@ -553,4 +555,157 @@ function refreshHeatmap() {
     grid.style.gap = '2px';
     grid.style.alignItems = 'stretch';
   }
+}
+
+// ─── Helpers compartidos para los exports del heatmap ────────────────────────
+
+function getHeatmapData() {
+  const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
+  if (!lastAnalysis) return null;
+  const data = Array(10).fill(null).map(() => Array(10).fill(0));
+  lastAnalysis.querySelectorAll('.fmea-table tbody tr.fmea-data-row').forEach(row => {
+    const sSelect = row.querySelector('.severity-select');
+    const oSelect = row.querySelector('.occurrence-select');
+    if (sSelect && oSelect) {
+      const s = parseInt(sSelect.value);
+      const o = parseInt(oSelect.value);
+      if (!isNaN(s) && !isNaN(o) && s >= 1 && s <= 10 && o >= 1 && o <= 10) {
+        data[s - 1][o - 1]++;
+      }
+    }
+  });
+  return data;
+}
+
+function heatmapCellColor(count, max) {
+  if (count === 0) return '#eeeeee';
+  const ratio = count / max;
+  if (ratio < 0.33) return '#2ecc71';
+  if (ratio < 0.66) return '#f1c40f';
+  return '#e74c3c';
+}
+
+// ─── Export heatmap → Excel ───────────────────────────────────────────────────
+
+function exportHeatmapToExcel() {
+  const data = getHeatmapData();
+  if (!data) { alert('No FMEA data available. Generate an analysis first.'); return; }
+
+  // Cabecera: S\O  1 2 3 … 10
+  const header = ['S \\ O', ...Array.from({ length: 10 }, (_, i) => i + 1)];
+  const sheetRows = [header];
+
+  // Filas de severidad de 10 a 1
+  for (let i = 9; i >= 0; i--) {
+    sheetRows.push([i + 1, ...data[i]]);
+  }
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(sheetRows);
+  ws['!cols'] = [{ wch: 10 }, ...Array(10).fill({ wch: 8 })];
+  XLSX.utils.book_append_sheet(wb, ws, 'Risk Heatmap');
+  XLSX.writeFile(wb, 'FMEA_Risk_Heatmap_Sigma_Exacta.xlsx');
+}
+
+// ─── Export heatmap → JPEG ───────────────────────────────────────────────────
+
+function exportHeatmapToImage() {
+  const data = getHeatmapData();
+  if (!data) { alert('No FMEA data available. Generate an analysis first.'); return; }
+
+  const maxCount = Math.max(...data.flat(), 1);
+
+  // Dimensiones del canvas
+  const cellSize = 52;
+  const labelSize = 36;
+  const yTitleW = 28;
+  const padH = 24;
+  const titleH = 36;
+  const legendH = 48;
+  const cols = 10, rows = 10;
+
+  const W = yTitleW + labelSize + cols * cellSize + padH;
+  const H = titleH + labelSize + rows * cellSize + padH + legendH;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Fondo blanco
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Título X: Occurrence
+  ctx.fillStyle = '#2c3e50';
+  ctx.font = 'bold 15px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Occurrence', W / 2, 22);
+
+  // Título Y: Severity (vertical)
+  ctx.save();
+  ctx.translate(14, H / 2 - legendH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Severity', 0, 0);
+  ctx.restore();
+
+  const originX = yTitleW + labelSize;  // inicio de la cuadrícula
+  const originY = titleH + labelSize;
+
+  // Etiquetas X (1–10)
+  ctx.font = 'bold 11px Arial, sans-serif';
+  ctx.fillStyle = '#2c3e50';
+  ctx.textAlign = 'center';
+  for (let j = 0; j < 10; j++) {
+    ctx.fillText(j + 1, originX + j * cellSize + cellSize / 2, originY - 8);
+  }
+
+  // Etiquetas Y (10–1)
+  ctx.textAlign = 'right';
+  for (let i = 0; i < 10; i++) {
+    const sev = 10 - i;
+    ctx.fillText(sev, originX - 6, originY + i * cellSize + cellSize / 2 + 4);
+  }
+
+  // Celdas
+  for (let i = 0; i < 10; i++) {
+    const sev = 10 - i;
+    for (let j = 0; j < 10; j++) {
+      const count = data[sev - 1][j];
+      ctx.fillStyle = heatmapCellColor(count, maxCount);
+      ctx.fillRect(originX + j * cellSize, originY + i * cellSize, cellSize - 2, cellSize - 2);
+      if (count > 0) {
+        ctx.fillStyle = '#333333';
+        ctx.font = 'bold 13px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(count, originX + j * cellSize + cellSize / 2 - 1, originY + i * cellSize + cellSize / 2 + 5);
+      }
+    }
+  }
+
+  // Leyenda
+  const legendY = originY + rows * cellSize + 14;
+  const legendItems = [
+    { color: '#2ecc71', label: 'Low (≤33%)' },
+    { color: '#f1c40f', label: 'Medium (34–66%)' },
+    { color: '#e74c3c', label: 'High (>66%)' }
+  ];
+  let lx = yTitleW + labelSize;
+  ctx.font = '12px Arial, sans-serif';
+  legendItems.forEach(item => {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(lx, legendY, 14, 14);
+    ctx.fillStyle = '#555555';
+    ctx.textAlign = 'left';
+    ctx.fillText(item.label, lx + 18, legendY + 11);
+    lx += 140;
+  });
+
+  // Descarga
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
+  link.download = 'FMEA_Risk_Heatmap_Sigma_Exacta.jpg';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
