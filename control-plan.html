@@ -726,7 +726,8 @@
                                     Characteristic</strong> <span>What is measured?</span></div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                             <div class="flow-step"> <i class="fas fa-shield-alt"></i> <strong>3. Control</strong>
-                                <span>How is it checked?</span></div>
+                                <span>How is it checked?</span>
+                            </div>
                             <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                             <div class="flow-step"> <i class="fas fa-tools"></i> <strong>4. Reaction</strong> <span>What
                                     happens if it's wrong?</span></div>
@@ -1188,11 +1189,60 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // ========== CARGA DEL HEADER (FALTANTE) ==========
+            fetch('header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar header.html');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+
+                    // Inicializar el menú responsive (similar a la versión anterior)
+                    const navToggle = document.getElementById('nav-toggle');
+                    const navMenu = document.getElementById('nav-menu');
+                    const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
+                    const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
+                    const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+
+                    if (navToggle) {
+                        navToggle.addEventListener('click', () => {
+                            navMenu.classList.toggle('show-menu');
+                            const icon = navToggle.querySelector('i');
+                            icon.classList.toggle('fa-bars');
+                            icon.classList.toggle('fa-times');
+                            if (!navMenu.classList.contains('show-menu')) {
+                                if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
+                                if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
+                            }
+                        });
+                    }
+
+                    if (toolsDropdownToggle) {
+                        toolsDropdownToggle.addEventListener('click', (event) => {
+                            if (window.innerWidth <= 992) {
+                                event.preventDefault();
+                                if (toolsDropdownMenu) toolsDropdownMenu.classList.toggle('show-submenu');
+                                if (toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar el header:', error);
+                    document.getElementById('header-placeholder').innerHTML = '<p style="color:red; text-align:center;">Error loading header. Please ensure header.html exists.</p>';
+                });
+
+            // Configurar botones principales
             document.getElementById("addRowBtn").addEventListener("click", () => createRow());
             document.getElementById("globalLoadExampleBtn").addEventListener("click", loadExample);
             document.getElementById("globalResetBtn").addEventListener("click", resetPlan);
             document.getElementById("exportBtn").addEventListener("click", exportToExcel);
             document.getElementById("listResultsBtn").addEventListener("click", listResults);
+
+            // Crear primera fila por defecto
             createRow();
         });
     </script>
