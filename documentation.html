@@ -854,14 +854,19 @@
             <section id="fmea-tool" class="doc-section" aria-labelledby="fmea-heading">
                 <h2 id="fmea-heading">FMEA: Failure Mode & Effects Analysis</h2>
                 <h3>Purpose of the Tool</h3>
-                <p>Use this advanced FMEA tool to proactively identify and mitigate risks in a product design (DFMEA) or
-                    manufacturing process (PFMEA). The primary goals are to:</p>
+                <p>Use this advanced FMEA tool to proactively identify and mitigate risks in a product design (DFMEA)
+                    or manufacturing process (PFMEA). Built to comply with the joint <strong>AIAG-VDA FMEA
+                        standard</strong>, the primary goals are to:</p>
                 <ul>
                     <li>Systematically identify how a product or process could fail to meet its intended function.</li>
-                    <li>Understand the consequences (effects) of those failures.</li>
-                    <li>Pinpoint the root causes of the failures.</li>
-                    <li>Prioritize risks using the Risk Priority Number (RPN) to focus resources effectively.</li>
-                    <li>Track actions taken to reduce risk, creating a living document for continuous improvement.</li>
+                    <li>Understand the consequences (effects) of those failures on the customer and system.</li>
+                    <li>Pinpoint the root causes of each failure mode.</li>
+                    <li>Prioritize risks using both the <strong>Risk Priority Number (RPN)</strong> and the
+                        AIAG-VDA <strong>Action Priority (AP)</strong> metric (High / Medium / Low).</li>
+                    <li>Assign responsibility and due dates for corrective actions and re-evaluate risk after
+                        implementation.</li>
+                    <li>Visualize the system structure as an interactive network diagram and analyze the risk
+                        distribution through a <strong>Severity × Occurrence Heatmap</strong>.</li>
                 </ul>
                 <h4>Origin and Background</h4>
                 <p>The FMEA methodology was forged in high-stakes environments, originating with the U.S. military
@@ -870,46 +875,91 @@
                     In the 1970s, facing costly recalls, <strong>Ford Motor Company</strong> championed FMEA for
                     automotive applications, leading to the creation of Design and Process FMEAs. The method's power
                     lies in its structured team approach: identify failure modes, effects, and causes, then rank each on
-                    a 1-10 scale for <strong>Severity (S)</strong>, <strong>Occurrence (O)</strong>, and
-                    <strong>Detection (D)</strong>. The product of these, the <strong>Risk Priority Number
-                        (RPN)</strong>, helps prioritize actions. The <strong>AIAG</strong> later standardized the
-                    process, making it a global requirement for automotive suppliers.
+                    a 1–10 scale for <strong>Severity (S)</strong>, <strong>Occurrence (O)</strong>, and
+                    <strong>Detection (D)</strong>. The product of these is the <strong>Risk Priority Number
+                        (RPN)</strong>. More recently, the joint <strong>AIAG-VDA FMEA Handbook (2019)</strong>
+                    introduced the <strong>Action Priority (AP)</strong> metric as a complement to the RPN, providing a
+                    more nuanced prioritization that accounts for specific high-severity scenarios. This tool implements
+                    both approaches.
                 </p>
-                <h3>How to Use the FMEA Tool</h3>
-                <p>This tool uses a modern, system-based approach, guiding you through a structured analysis that links
-                    functions to failures.</p>
+                <h3>Tool Structure: Six-Tab Workflow</h3>
+                <p>The tool is organized into six tabs that guide you from theory through to risk visualization. Use the
+                    global <strong>Load Example</strong> button at any time to populate all tabs with a pre-built
+                    Electric Vehicle Powertrain analysis.</p>
                 <ol>
                     <li>
-                        <h4>Step 1: Define Components, Contacts, and Functions</h4>
-                        <p>First, break down your system. Use the tabs to define the <strong>Components</strong> (the
-                            parts), the <strong>Contacts</strong> (how they interact), and the
-                            <strong>Functions</strong> (what they are supposed to do). Linking functions to components
-                            and contacts creates a clear structural foundation.
+                        <h4>Tab 1 – Theory &amp; Background</h4>
+                        <p>A built-in reference guide covering the FMEA methodology, the AIAG-VDA rating tables for
+                            Severity, Occurrence, and Detection, and the Action Priority (AP) decision logic. This is a
+                            read-only reference tab and does not require any input.</p>
+                    </li>
+                    <li>
+                        <h4>Tab 2 – Planning (Project Header)</h4>
+                        <p>Fill in the administrative information that will be stamped on each generated analysis
+                            report: <strong>Project / System Name</strong>, <strong>FMEA Type</strong> (DFMEA or
+                            PFMEA), <strong>Date</strong>, <strong>Customer</strong>, and
+                            <strong>Team Members</strong>.
                         </p>
                     </li>
                     <li>
-                        <h4>Step 2: Perform Failure Analysis</h4>
-                        <p>In the "Failure Analysis" tab, for each function, identify potential <strong>Failure
-                                Modes</strong> (how it can fail), <strong>Effects</strong> (the consequences), and
-                            <strong>Causes</strong> (the root reasons). This forms the core "failure chain."
+                        <h4>Tab 3 – Structure (System Decomposition)</h4>
+                        <p>Build the system model in three ordered steps. First, add <strong>Components</strong>
+                            (physical or logical system elements), checking the <em>External</em> flag for boundary
+                            elements like a power supply or customer. Next, define directional <strong>Contacts</strong>
+                            between components (labelled c1, c2 …) to represent interfaces or energy flows. Finally,
+                            assign <strong>Functions</strong> to groups of contacts, classifying each as
+                            <strong>Primary</strong> (fp1, fp2 …) or <strong>Secondary</strong> (fs1, fs2 …). This
+                            three-layer model becomes the foundation for both the network diagram and the FMEA table.
                         </p>
                     </li>
                     <li>
-                        <h4>Step 3: Assign Risk Ratings</h4>
-                        <p>For each failure chain, assign numerical ratings from 1 (low) to 10 (high) for:
-                            <strong>Severity</strong> (how bad is the effect?), <strong>Occurrence</strong> (how likely
-                            is the cause?), and <strong>Detection</strong> (how likely are you to detect the
-                            cause/failure before it reaches the customer?).
+                        <h4>Tab 4 – Visualize (Interactive Network Diagram)</h4>
+                        <p>Displays an interactive graph of the system structure. Internal components appear as filled
+                            blue boxes and external components as light grey boxes, separated by dashed boundary lines.
+                            Each function is rendered as a distinct colored, labeled arrow over its contacts, and a
+                            color-coded legend maps every function label to its name. Nodes can be dragged to
+                            rearrange the layout; use <strong>Fit View</strong> to re-center the diagram or
+                            <strong>Export Chart</strong> to download it as a JPEG image.
                         </p>
                     </li>
                     <li>
-                        <h4>Step 4: Prioritize and Mitigate Risk</h4>
-                        <p>The tool automatically calculates the <strong>RPN (S × O × D)</strong>. Sort by RPN to
-                            identify the highest risks. For these items, define "Recommended Actions," assign
-                            responsibility, and set due dates. After actions are completed, re-evaluate S, O, and D to
-                            confirm risk has been reduced.</p>
+                        <h4>Tab 5 – FMEA Results</h4>
+                        <p>Click <strong>Generate FMEA Analysis</strong> to create a full AIAG-VDA compliant FMEA
+                            table. Each function gets one pre-populated row; additional failure mode rows can be added
+                            at any time. Each row contains:</p>
+                        <ul>
+                            <li><strong>Failure Mode, Effects, Causes, Current Controls:</strong> Free-text fields for
+                                the failure chain details.</li>
+                            <li><strong>S / O / D ratings:</strong> Dropdowns with descriptive AIAG-VDA labels.
+                                The <strong>RPN (S × O × D)</strong> and <strong>Action Priority (AP)</strong>
+                                are recalculated automatically on every change and color-coded red / orange / green.
+                                AP = <strong>H</strong> (High) when, for example, S ≥ 9 &amp; O ≥ 5 or RPN ≥ 150;
+                                AP = <strong>M</strong> (Medium) when S ≥ 7 &amp; O ≥ 5 or RPN ≥ 80; otherwise
+                                AP = <strong>L</strong> (Low).</li>
+                            <li><strong>Recommended Actions:</strong> Add one or more actions per row, each with a
+                                description, an <em>Owner / Responsible</em> field, and a <em>Due Date</em> picker.
+                            </li>
+                            <li><strong>Revised Risk (S2 / O2 / D2 / RPN2 / AP2):</strong> After actions are
+                                implemented, update the post-action ratings here to confirm the achieved risk
+                                reduction.</li>
+                        </ul>
+                        <p>Multiple analyses can be generated in one session (each timestamped and independently
+                            exportable to <strong>Excel</strong>).</p>
+                    </li>
+                    <li>
+                        <h4>Tab 6 – Risk Heatmap</h4>
+                        <p>Displays a <strong>10 × 10 Severity vs. Occurrence matrix</strong> automatically populated
+                            from the latest analysis. Each cell shows the count of failure modes at that S/O
+                            combination, colored green → yellow → red relative to the highest count. The heatmap
+                            updates in real time when ratings change. Export it as an <strong>Excel file</strong> or
+                            a <strong>JPEG image</strong> using the dedicated buttons.</p>
                     </li>
                 </ol>
+                <div class="note">
+                    <strong>Tip:</strong> Click <strong>Load Example</strong> at the top of the page to instantly
+                    populate the tool with a complete Electric Vehicle Powertrain FMEA (8 components, 8 contacts,
+                    4 functions) so you can explore all features before entering your own data.
+                </div>
                 <a href="fmea.html" class="btn" aria-label="Open FMEA Tool"><i class="fas fa-project-diagram"
                         aria-hidden="true"></i> Open Advanced FMEA</a>
                 <p style="text-align: right; margin-top: 20px;"><a href="#toc"
@@ -1307,114 +1357,146 @@
                 <h2 id="triz-heading">TRIZ Inventive Problem Solving</h2>
                 <h3>Purpose of the Tool</h3>
                 <p>TRIZ (Theory of Inventive Problem Solving) is a systematic, data-driven methodology for innovation
-                    that helps solve complex technical problems by identifying and resolving contradictions. Its purpose is to:</p>
+                    that helps solve complex technical problems by identifying and resolving contradictions. Its purpose
+                    is to:</p>
                 <ul>
                     <li>Move beyond psychological brainstorming to a logical, data-driven method for invention.</li>
-                    <li>Systematically resolve both <strong>technical contradictions</strong> (improving one feature worsens
+                    <li>Systematically resolve both <strong>technical contradictions</strong> (improving one feature
+                        worsens
                         another) and <strong>physical contradictions</strong> (one feature needs opposite properties).
                     </li>
-                    <li>Apply the <strong>Laws of Development of Technical Systems (LDST)</strong> to identify strategic direction.
+                    <li>Apply the <strong>Laws of Development of Technical Systems (LDST)</strong> to identify strategic
+                        direction.
                     </li>
-                    <li>Use <strong>9 Windows analysis</strong> to explore system evolution across time and hierarchy levels.</li>
+                    <li>Use <strong>9 Windows analysis</strong> to explore system evolution across time and hierarchy
+                        levels.</li>
                     <li>Apply <strong>Function Analysis</strong> to map component interactions and identify improvement
                         opportunities.</li>
-                    <li>Use <strong>Su-Field analysis</strong> to model system interactions and apply the <strong>76 Standard
+                    <li>Use <strong>Su-Field analysis</strong> to model system interactions and apply the <strong>76
+                            Standard
                             Solutions</strong>.</li>
-                    <li>Provide a toolkit of universal inventive principles derived from patterns in millions of patents.</li>
+                    <li>Provide a toolkit of universal inventive principles derived from patterns in millions of
+                        patents.</li>
                     <li>Accelerate breakthrough innovation by providing a clear, structured path to solutions.</li>
                 </ul>
                 <h4>Origin and Background</h4>
                 <p>TRIZ was developed by <strong>Genrich Altshuller</strong> beginning in 1946 while working as a patent
-                    examiner in the Soviet Navy. After analyzing thousands of patents across diverse technical fields, he discovered
-                    that inventive problems, regardless of their specific domain, were solved using a surprisingly small set of
+                    examiner in the Soviet Navy. After analyzing thousands of patents across diverse technical fields,
+                    he discovered
+                    that inventive problems, regardless of their specific domain, were solved using a surprisingly small
+                    set of
                     universal
                     principles and patterns.</p>
                 <p>Altshuller's revolutionary insight was that <strong>innovation follows predictable patterns</strong>
-                    rather than being random acts of genius. His team systematically analyzed over 200,000 patents to codify these
-                    patterns into the foundational TRIZ tools. The methodology was further developed by contributors including
-                    <strong>Boris Zlotin, Alla Zusman, Vladimir Petrov, Victor Fey, Eugene Rivin, Simon Litvin, Valeri Souchkov,
-                        and Michael Orloff</strong>, who expanded applications to include LDST analysis, physical contradiction
+                    rather than being random acts of genius. His team systematically analyzed over 200,000 patents to
+                    codify these
+                    patterns into the foundational TRIZ tools. The methodology was further developed by contributors
+                    including
+                    <strong>Boris Zlotin, Alla Zusman, Vladimir Petrov, Victor Fey, Eugene Rivin, Simon Litvin, Valeri
+                        Souchkov,
+                        and Michael Orloff</strong>, who expanded applications to include LDST analysis, physical
+                    contradiction
                     resolution methods, and modern Su-Field modeling techniques.
                 </p>
                 <p>Companies like <strong>Samsung, LG, Intel, Boeing, and General Electric</strong> utilize TRIZ to
                     accelerate their R&D processes and drive systematic innovation.</p>
-            
+
                 <h3>How to Use This Tool</h3>
-                <p>The TRIZ tool provides a comprehensive, step-by-step approach to inventive problem solving. Follow these steps:
+                <p>The TRIZ tool provides a comprehensive, step-by-step approach to inventive problem solving. Follow
+                    these steps:
                 </p>
                 <ol>
                     <li>
                         <h4>Load Example</h4>
-                        <p>Click "Load Example" above to populate all tools with sample data and see how the system works.</p>
+                        <p>Click "Load Example" above to populate all tools with sample data and see how the system
+                            works.</p>
                     </li>
                     <li>
                         <h4>Go to TRIZ Tools</h4>
-                        <p>Navigate to the "TRIZ Tools" tab to access all problem-solving tools in the integrated workspace.</p>
+                        <p>Navigate to the "TRIZ Tools" tab to access all problem-solving tools in the integrated
+                            workspace.</p>
                     </li>
                     <li>
                         <h4>Step 1 - Define Problem</h4>
-                        <p>Describe the system, its primary useful function, and main drawback in simple, clear terms. This
+                        <p>Describe the system, its primary useful function, and main drawback in simple, clear terms.
+                            This
                             establishes the foundation for your analysis.</p>
                     </li>
                     <li>
                         <h4>Step 2 - LDST Analysis</h4>
-                        <p>Select a fundamental law of technical system development from the dropdown menu to get strategic guidance
+                        <p>Select a fundamental law of technical system development from the dropdown menu to get
+                            strategic guidance
                             about your product's evolutionary direction.</p>
                     </li>
                     <li>
                         <h4>Step 3 - Formulate Ideal Final Result (IFR)</h4>
-                        <p>Define the ideal solution where the system performs its function without the drawback, costs, or harmful
+                        <p>Define the ideal solution where the system performs its function without the drawback, costs,
+                            or harmful
                             effects. This helps break psychological inertia.</p>
                     </li>
                     <li>
                         <h4>Step 4 - 9 Windows Analysis</h4>
-                        <p>Analyze the system across three time dimensions (past, present, future) and three system levels
+                        <p>Analyze the system across three time dimensions (past, present, future) and three system
+                            levels
                             (sub-system, system, super-system) to identify innovation opportunities.</p>
                     </li>
                     <li>
                         <h4>Step 5 - Function Analysis</h4>
-                        <p>Map all interactions between system components to identify problematic functions (harmful, insufficient,
+                        <p>Map all interactions between system components to identify problematic functions (harmful,
+                            insufficient,
                             excessive) and improvement opportunities.</p>
                     </li>
                     <li>
                         <h4>Step 6 - Technical Contradiction</h4>
-                        <p>Identify when improving one feature makes another worse. Use the interactive contradiction matrix
-                            (available in both Classic 39-parameter and updated 2003 48-parameter versions) to find relevant
+                        <p>Identify when improving one feature makes another worse. Use the interactive contradiction
+                            matrix
+                            (available in both Classic 39-parameter and updated 2003 48-parameter versions) to find
+                            relevant
                             inventive principles.</p>
                     </li>
                     <li>
                         <h4>Step 7 - Physical Contradiction</h4>
-                        <p>Identify when one feature needs opposite properties. Use separation principles (in space, time,
+                        <p>Identify when one feature needs opposite properties. Use separation principles (in space,
+                            time,
                             condition, or scale) to resolve these fundamental contradictions.</p>
                     </li>
                     <li>
                         <h4>Step 8 - Su-Field Analysis</h4>
-                        <p>Model the problem as interactions between substances (S1, S2) and fields (F). Identify the problem type
-                            (insufficient, harmful, difficult, missing, excessive, or inefficient) and get specific standard
+                        <p>Model the problem as interactions between substances (S1, S2) and fields (F). Identify the
+                            problem type
+                            (insufficient, harmful, difficult, missing, excessive, or inefficient) and get specific
+                            standard
                             solutions from the 76 Standard Solutions framework.</p>
                     </li>
                     <li>
                         <h4>Generate Solutions</h4>
-                        <p>Click "Solve Problem & Generate Report" on the final tab to receive inventive principles tailored to your
+                        <p>Click "Solve Problem & Generate Report" on the final tab to receive inventive principles
+                            tailored to your
                             contradictions, along with strategic recommendations.</p>
                     </li>
                     <li>
                         <h4>Export</h4>
-                        <p>Once the report is generated, you can export it to Excel for your records and further analysis. The
+                        <p>Once the report is generated, you can export it to Excel for your records and further
+                            analysis. The
                             export includes all analysis steps, results, and recommendations.</p>
                     </li>
                 </ol>
-            
+
                 <div class="note">
-                    <strong>Advanced Features:</strong> The tool includes interactive matrices for both contradictions and standard
+                    <strong>Advanced Features:</strong> The tool includes interactive matrices for both contradictions
+                    and standard
                     solutions, visual Su-Field diagrams with problem-type indicators, LDST trend analysis with strategic
-                    guidance, 9 Windows framework for system evolution analysis, comprehensive function modeling, and multiple
+                    guidance, 9 Windows framework for system evolution analysis, comprehensive function modeling, and
+                    multiple
                     contradiction resolution strategies.
                 </div>
-                <a href="triz.html" class="btn" aria-label="Open TRIZ Tool"><i class="fas fa-lightbulb" aria-hidden="true"></i> Open
+                <a href="triz.html" class="btn" aria-label="Open TRIZ Tool"><i class="fas fa-lightbulb"
+                        aria-hidden="true"></i> Open
                     TRIZ Tool</a>
-                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas"
-                        style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc"
+                        aria-label="Volver al Índice de Herramientas"
+                        style="font-size: 1.8rem; color: var(--secondary-color);"><i
+                            class="fas fa-arrow-circle-up"></i></a></p>
             </section>
 
             <section id="eisenhower-matrix" class="doc-section" aria-labelledby="eisenhower-heading">
@@ -1701,7 +1783,7 @@
             <div class="footer-logo">
                 <img src="OIN_member_horizontal.jpg" alt="Open Invention Network Community Member">
             </div>
-    
+
             <!-- Bloque de texto en el centro -->
             <div class="footer-text-content">
                 <p style="margin: 5px 0; font-size: 0.9rem; color: #aaa;">
@@ -1733,13 +1815,13 @@
                 </p>
                 <p style="font-size:0.9em; color:#666;">Open Source Project</p>
             </div>
-    
+
             <!-- Logo AGPLv3 a la derecha -->
             <div class="footer-logo">
                 <img src="256px-AGPLv3_Logo.svg.png" alt="AGPLv3 License" class="agpl-logo">
             </div>
         </div>
-    
+
         <!-- Sección nueva con enlaces a todas las páginas -->
         <div class="footer-pages-links">
             <div class="footer-links-grid">
@@ -1783,7 +1865,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="social-links">
             <a href="https://www.linkedin.com/in/sigma-exacta-78683b36b/" target="_blank" rel="noopener noreferrer"
                 title="LinkedIn" aria-label="LinkedIn Profile"><i class="fab fa-linkedin"></i></a>
@@ -1797,7 +1879,7 @@
                     width="24" height="24" style="vertical-align: middle; filter: invert(1);">
             </a>
         </div>
-    
+
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The tools and information provided on SigmaExacta are for informational and
                 educational purposes only. Some tools are based on established methodologies (e.g., Balanced Scorecard,
