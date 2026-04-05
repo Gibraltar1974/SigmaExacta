@@ -5,11 +5,11 @@
     <link rel="canonical" href="https://sigmaexacta.com/apqp-ppap" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Online Dynamic APQP/PPAP Planning Tool | Sigma Exacta</title>
+    <title>Free Online Dynamic APQP/PPAP Planning Tool | Sigma Exacta (AIAG Compliant)</title>
     <meta name="description"
-        content="Free dynamic APQP and PPAP planner to manage new product development projects. Track phases, tasks, and PPAP elements, generate Gantt charts, and export reports. Ideal for quality engineers and project managers.">
+        content="Free dynamic APQP and PPAP planner to manage new product development projects. Track phases, tasks, and PPAP elements, generate Gantt charts, and export reports. Now fully AIAG compliant (PSW, MSA, Ppk, Control Plans, Mgmt Reviews). Ideal for quality engineers and project managers.">
     <meta name="keywords"
-        content="Open source, Free software, APQP, PPAP, AIAG, Automotive Industry Action Group, Quality Planning, Product Launch, Gantt Chart, Project Management, Quality Engineering, Project Planning, Milestones, SigmaExacta">
+        content="Open source, Free software, APQP, PPAP, AIAG, Automotive Industry Action Group, Quality Planning, Product Launch, Gantt Chart, Project Management, Quality Engineering, Project Planning, Milestones, SigmaExacta, IATF 16949, PSW, Control Plan, MSA, Cpk">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
-        /* ESTILOS EXISTENTES (conservados) */
+        /* ESTILOS EXISTENTES (conservados íntegramente) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -515,7 +515,7 @@
             opacity: 1;
         }
 
-        /* ===== NUEVOS ESTILOS PARA TABS ===== */
+        /* ===== ESTILOS PARA TABS (conservados) ===== */
         .tabs-container {
             background: #fff;
             border: 1px solid #e1e5e9;
@@ -703,6 +703,41 @@
             background-color: #e67e22;
         }
 
+        /* Estilos para los nuevos elementos de cumplimiento AIAG */
+        .compliance-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        .msa-warning {
+            color: #e67e22;
+        }
+
+        .msa-pass {
+            color: #27ae60;
+        }
+
+        .msa-fail {
+            color: #e74c3c;
+        }
+
+        .capability-pass {
+            background-color: #e8f8f5;
+        }
+
+        .capability-marginal {
+            background-color: #fff3cd;
+        }
+
+        .capability-fail {
+            background-color: #f8d7da;
+        }
+
         @media (max-width: 768px) {
             .tab-content-wrapper {
                 padding: 1rem;
@@ -770,7 +805,7 @@
     <main class="main-content-wrapper">
         <header class="header">
             <div class="tool-logo" data-color='17'><i class="fas fa-file-invoice"></i></div>
-            <h1>Free Online Dynamic APQP/PPAP Planning Tool</h1>
+            <h1>Free Online Dynamic APQP/PPAP Planning Tool <span class="compliance-badge">AIAG Compliant</span></h1>
             <p class="subtitle">An interactive tool to manage product launch projects according to industry standards.
             </p>
         </header>
@@ -778,6 +813,8 @@
         <div class="button-group">
             <button id="load-example-btn" class="button success"><i class="fas fa-lightbulb"></i> Load Example</button>
             <button id="reset-btn" class="button warning"><i class="fas fa-undo"></i> Reset</button>
+            <button id="verify-compliance-btn" class="button primary"><i class="fas fa-check-double"></i> Verify AIAG
+                Compliance</button>
         </div>
 
         <div class="tabs-container">
@@ -878,6 +915,10 @@
                             <button class="subtab-btn" onclick="switchSubTab('subtab-phase4')">Phase 4</button>
                             <button class="subtab-btn" onclick="switchSubTab('subtab-phase5')">Phase 5</button>
                             <button class="subtab-btn" onclick="switchSubTab('subtab-ppap')">PPAP Checklist</button>
+                            <!-- Nuevos subtabs para cumplimiento AIAG -->
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-controlplans')">Control
+                                Plans</button>
+                            <button class="subtab-btn" onclick="switchSubTab('subtab-mgreviews')">Mgmt Reviews</button>
                         </nav>
 
                         <div id="subtab-project-config" class="subtab-content active">
@@ -886,6 +927,7 @@
 
                         <div id="subtab-phase1" class="subtab-content">
                             <div id="apqp-phase-1"></div>
+                            <div id="feasibility-commitment-section" class="section"></div>
                         </div>
 
                         <div id="subtab-phase2" class="subtab-content">
@@ -902,10 +944,20 @@
 
                         <div id="subtab-phase5" class="subtab-content">
                             <div id="apqp-phase-5"></div>
+                            <div id="lessons-learned-section" class="section"></div>
                         </div>
 
                         <div id="subtab-ppap" class="subtab-content">
                             <div id="ppap-checklist"></div>
+                            <div id="psw-section" class="section"></div>
+                        </div>
+
+                        <div id="subtab-controlplans" class="subtab-content">
+                            <div id="control-plans-container"></div>
+                        </div>
+
+                        <div id="subtab-mgreviews" class="subtab-content">
+                            <div id="management-reviews-container"></div>
                         </div>
                     </div>
                 </div>
@@ -1022,38 +1074,24 @@
 
         // --- FUNCIONES PARA TABS ---
         function switchMainTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el contenido seleccionado
             document.getElementById(tabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchMainTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function switchSubTab(subTabId) {
-            // Quitar clase active de todos los botones y contenidos de subtabs
             document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.subtab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el contenido seleccionado
             document.getElementById(subTabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
             window.scrollTo({ top: document.querySelector('.subtabs-container').offsetTop, behavior: 'smooth' });
         }
 
-        // --- SCRIPT de la herramienta APQP/PPAP (Lógica principal modificada para tabs) ---
+        // --- SCRIPT de la herramienta APQP/PPAP (Lógica principal modificada para tabs y añadidos AIAG) ---
         let state = {};
         const getInitialState = () => ({
             projectInfo: {
@@ -1062,6 +1100,7 @@
                 customer: '',
                 lead: '',
                 team: [],
+                ppapSubmissionLevel: '3'   // nuevo: nivel de envío PPAP (1-5)
             },
             apqpPhases: [
                 {
@@ -1124,10 +1163,68 @@
                 name,
                 responsible: '',
                 status: 'pending',
-                notes: ''
-            }))
+                notes: '',
+                // Nuevos campos para MSA y capacidad
+                msaGrr: null,
+                ppk: null,
+                cpk: null,
+                lsl: null,
+                usl: null
+            })),
+            // PSW formal
+            psw: {
+                approved: false,
+                approvalDate: '',
+                customerApprover: '',
+                supplierSignature: '',
+                reason: 'Initial'
+            },
+            // Team Feasibility Commitment
+            feasibilityCommitment: {
+                approved: false,
+                date: '',
+                signer: '',
+                comments: ''
+            },
+            // Management Reviews por fase
+            managementReviews: {
+                1: { approved: false, date: '', approver: '' },
+                2: { approved: false, date: '', approver: '' },
+                3: { approved: false, date: '', approver: '' },
+                4: { approved: false, date: '', approver: '' },
+                5: { approved: false, date: '', approver: '' }
+            },
+            // Lecciones aprendidas
+            lessonsLearned: {
+                text: '',
+                improvements: ''
+            },
+            // Control Plans: tres tipos
+            controlPlans: {
+                prototype: { rows: [] },
+                prelaunch: { rows: [] },
+                production: { rows: [] }
+            }
         });
 
+        // Funciones auxiliares de validación de secuencia AIAG
+        function isSequenceValid() {
+            let dfmea = state.ppapElements.find(e => e.name === "Design FMEA (DFMEA)");
+            let pfmea = state.ppapElements.find(e => e.name === "Process FMEA (PFMEA)");
+            let cp = state.ppapElements.find(e => e.name === "Control Plan");
+            let flow = state.ppapElements.find(e => e.name === "Process Flow Diagram");
+            if (pfmea && pfmea.status === 'completed' && dfmea && dfmea.status !== 'completed') return false;
+            if (cp && cp.status === 'completed' && pfmea && pfmea.status !== 'completed') return false;
+            if (pfmea && pfmea.status === 'completed' && flow && flow.status !== 'completed') return false;
+            return true;
+        }
+
+        function canCompletePSW() {
+            let others = state.ppapElements.filter(e => e.name !== "Part Submission Warrant (PSW)");
+            return others.every(e => e.status === 'completed' || e.status === 'na');
+        }
+
+        // Funciones de renderizado (conservando la original y añadiendo nuevas secciones)
         function renderResponsibleDropdown(selectedValue = '') {
             const options = state.projectInfo.team.map(member =>
                 `<option value="${member}" ${member === selectedValue ? 'selected' : ''}>${member}</option>`
@@ -1149,7 +1246,7 @@
         }
 
         function renderProjectSetup() {
-            const { name, partNumber, customer, lead, team } = state.projectInfo;
+            const { name, partNumber, customer, lead, team, ppapSubmissionLevel } = state.projectInfo;
             const container = document.getElementById('project-setup-section');
             container.innerHTML = `
                 <h2 class="section-title"><i class="fas fa-info-circle"></i> Project Setup</h2>
@@ -1158,6 +1255,7 @@
                     <div class="form-group"><label for="part-number">Part Number</label><input type="text" id="part-number" value="${partNumber}"></div>
                     <div class="form-group"><label for="customer">Customer</label><input type="text" id="customer" value="${customer}"></div>
                     <div class="form-group"><label for="project-lead">Project Lead</label><input type="text" id="project-lead" value="${lead}"></div>
+                    <div class="form-group"><label for="ppap-level">PPAP Submission Level (1-5)</label><select id="ppap-level">${[1, 2, 3, 4, 5].map(l => `<option value="${l}" ${ppapSubmissionLevel == l ? 'selected' : ''}>Level ${l}</option>`).join('')}</select></div>
                 </div>
                 <div class="form-group" style="margin-top: 20px;">
                     <label for="team-members">Team Members (one name per line)</label>
@@ -1207,61 +1305,267 @@
         function renderPpapChecklist() {
             const container = document.getElementById('ppap-checklist');
             if (!container) return;
+            let html = `<table id="ppap-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>PPAP Element</th>
+                        <th style="width: 15%;">Responsible</th>
+                        <th style="width: 12%;">Status</th>
+                        <th style="width: 20%;">Notes</th>
+                        <th style="width: 30%;">Quantitative Data (AIAG)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            state.ppapElements.forEach((elem, index) => {
+                let extraHtml = '';
+                if (elem.name === "Measurement System Analysis (MSA)") {
+                    extraHtml = `<div><input type="number" step="0.1" class="msa-grr" value="${elem.msaGrr !== null ? elem.msaGrr : ''}" placeholder="%GR&R" style="width:80px;"> <span class="msa-status"></span></div>`;
+                } else if (elem.name === "Initial Process Studies") {
+                    extraHtml = `<div><input type="number" step="0.01" class="ppk" value="${elem.ppk !== null ? elem.ppk : ''}" placeholder="Ppk" style="width:70px;"> 
+                                <input type="number" step="0.01" class="cpk" value="${elem.cpk !== null ? elem.cpk : ''}" placeholder="Cpk" style="width:70px;">
+                                <input type="number" step="any" class="lsl" value="${elem.lsl !== null ? elem.lsl : ''}" placeholder="LSL" style="width:70px;">
+                                <input type="number" step="any" class="usl" value="${elem.usl !== null ? elem.usl : ''}" placeholder="USL" style="width:70px;"></div>`;
+                }
+                html += `<tr class="task-row status-${elem.status}" data-task-id="${elem.id}">
+                    <td>${index + 1}</td>
+                    <td><input type="text" placeholder="PPAP element" value="${elem.name}"></td>
+                    <td>${renderResponsibleDropdown(elem.responsible)}</td>
+                    <td>${renderStatusDropdown(elem.status)}</td>
+                    <td><input type="text" value="${elem.notes}"></td>
+                    <td>${extraHtml}</td>
+                    <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            });
+            html += `</tbody></table><div class="table-actions"><button class="button secondary add-ppap-btn"><i class="fas fa-plus"></i> Add Element</button></div>`;
+            container.innerHTML = html;
+            // eventos para MSA y capacidad
+            document.querySelectorAll('.msa-grr').forEach(inp => inp.addEventListener('change', function (e) {
+                let row = this.closest('tr');
+                let id = Number(row.dataset.taskId);
+                let elem = state.ppapElements.find(e => e.id === id);
+                elem.msaGrr = parseFloat(this.value);
+                let statusSpan = row.querySelector('.msa-status');
+                if (elem.msaGrr <= 10) statusSpan.innerHTML = '✅ Acceptable';
+                else if (elem.msaGrr < 30) statusSpan.innerHTML = '⚠️ Marginal';
+                else statusSpan.innerHTML = '❌ Unacceptable';
+            }));
+            document.querySelectorAll('.ppk, .cpk, .lsl, .usl').forEach(inp => inp.addEventListener('change', function () {
+                let row = this.closest('tr');
+                let id = Number(row.dataset.taskId);
+                let elem = state.ppapElements.find(e => e.id === id);
+                elem.ppk = parseFloat(row.querySelector('.ppk')?.value);
+                elem.cpk = parseFloat(row.querySelector('.cpk')?.value);
+                elem.lsl = parseFloat(row.querySelector('.lsl')?.value);
+                elem.usl = parseFloat(row.querySelector('.usl')?.value);
+                // cambio de estilo según Ppk
+                if (elem.ppk !== null && !isNaN(elem.ppk)) {
+                    if (elem.ppk >= 1.67) row.style.backgroundColor = '#e8f8f5';
+                    else if (elem.ppk >= 1.33) row.style.backgroundColor = '#fff3cd';
+                    else row.style.backgroundColor = '#f8d7da';
+                }
+            }));
+        }
+
+        function renderPSW() {
+            let container = document.getElementById('psw-section');
+            if (!container) return;
+            let pswElem = state.ppapElements.find(e => e.name === "Part Submission Warrant (PSW)");
+            let pswCompleted = pswElem && pswElem.status === 'completed';
+            let disabled = !canCompletePSW() ? 'disabled' : '';
             container.innerHTML = `
-                <table id="ppap-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>PPAP Element</th>
-                            <th style="width: 20%;">Responsible</th>
-                            <th style="width: 15%;">Status</th>
-                            <th style="width: 25%;">Notes</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${state.ppapElements.map((elem, index) => `
-                            <tr class="task-row status-${elem.status}" data-task-id="${elem.id}">
-                                <td>${index + 1}</td>
-                                <td><input type="text" placeholder="New PPAP element..." value="${elem.name}"></td>
-                                <td>${renderResponsibleDropdown(elem.responsible)}</td>
-                                <td>${renderStatusDropdown(elem.status)}</td>
-                                <td><input type="text" value="${elem.notes}"></td>
-                                <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <div class="table-actions">
-                    <button class="button secondary add-ppap-btn"><i class="fas fa-plus"></i> Add Element</button>
-                </div>`;
+                <h3>Part Submission Warrant (PSW) - Level ${state.projectInfo.ppapSubmissionLevel}</h3>
+                <div class="grid-form">
+                    <div class="form-group"><label>Supplier Signature</label><input id="psw-signature" value="${state.psw.supplierSignature}"></div>
+                    <div class="form-group"><label>Reason for Submission</label><select id="psw-reason"><option ${state.psw.reason === 'Initial' ? 'selected' : ''}>Initial</option><option ${state.psw.reason === 'Engineering Change' ? 'selected' : ''}>Engineering Change</option><option ${state.psw.reason === 'Tooling Transfer' ? 'selected' : ''}>Tooling Transfer</option></select></div>
+                    <div class="form-group"><label>Customer Approval</label><input type="checkbox" id="psw-approved" ${state.psw.approved ? 'checked' : ''} ${disabled}></div>
+                    <div class="form-group"><label>Approver Name</label><input id="psw-approver" value="${state.psw.customerApprover}" ${disabled ? 'disabled' : ''}></div>
+                    <div class="form-group"><label>Approval Date</label><input type="date" id="psw-date" value="${state.psw.approvalDate}" ${disabled ? 'disabled' : ''}></div>
+                </div>
+                <button class="button success" id="save-psw">Save PSW & Update Status</button>
+            `;
+            document.getElementById('save-psw')?.addEventListener('click', () => {
+                state.psw.supplierSignature = document.getElementById('psw-signature').value;
+                state.psw.reason = document.getElementById('psw-reason').value;
+                state.psw.approved = document.getElementById('psw-approved').checked;
+                state.psw.customerApprover = document.getElementById('psw-approver').value;
+                state.psw.approvalDate = document.getElementById('psw-date').value;
+                if (state.psw.approved && canCompletePSW()) {
+                    let psw = state.ppapElements.find(e => e.name === "Part Submission Warrant (PSW)");
+                    if (psw && psw.status !== 'completed') {
+                        psw.status = 'completed';
+                        renderPpapChecklist();
+                    }
+                    alert("PSW approved and marked as Completed.");
+                } else if (state.psw.approved && !canCompletePSW()) {
+                    alert("Cannot approve PSW because other PPAP elements are not Completed or N/A.");
+                    document.getElementById('psw-approved').checked = false;
+                    state.psw.approved = false;
+                } else {
+                    alert("PSW data saved (not yet approved).");
+                }
+            });
         }
 
-        function renderAll() {
-            renderProjectSetup();
-            renderApqpPhases();
-            renderPpapChecklist();
+        function renderFeasibilityCommitment() {
+            let container = document.getElementById('feasibility-commitment-section');
+            if (!container) return;
+            container.innerHTML = `
+                <h3>Team Feasibility Commitment (AIAG Phase 1)</h3>
+                <div class="grid-form">
+                    <div class="form-group"><label>Approved</label><input type="checkbox" id="feas-approved" ${state.feasibilityCommitment.approved ? 'checked' : ''}></div>
+                    <div class="form-group"><label>Date</label><input type="date" id="feas-date" value="${state.feasibilityCommitment.date || ''}"></div>
+                    <div class="form-group"><label>Signer (Name/Title)</label><input type="text" id="feas-signer" value="${state.feasibilityCommitment.signer || ''}"></div>
+                    <div class="form-group"><label>Comments</label><textarea id="feas-comments">${state.feasibilityCommitment.comments || ''}</textarea></div>
+                </div>
+                <button class="button primary" id="save-feas">Save Commitment</button>
+            `;
+            document.getElementById('save-feas')?.addEventListener('click', () => {
+                state.feasibilityCommitment.approved = document.getElementById('feas-approved').checked;
+                state.feasibilityCommitment.date = document.getElementById('feas-date').value;
+                state.feasibilityCommitment.signer = document.getElementById('feas-signer').value;
+                state.feasibilityCommitment.comments = document.getElementById('feas-comments').value;
+                alert("Feasibility commitment saved.");
+            });
         }
 
+        function renderManagementReviews() {
+            let container = document.getElementById('management-reviews-container');
+            if (!container) return;
+            let html = `<h3>Management Reviews per Phase (AIAG)</h3><table><thead><tr><th>Phase</th><th>Approved</th><th>Date</th><th>Approver Name</th></tr></thead><tbody>`;
+            for (let i = 1; i <= 5; i++) {
+                let rev = state.managementReviews[i];
+                html += `<tr>
+                    <td>Phase ${i}</td>
+                    <td><input type="checkbox" class="mr-approved" data-phase="${i}" ${rev.approved ? 'checked' : ''}></td>
+                    <td><input type="date" class="mr-date" data-phase="${i}" value="${rev.date || ''}"></td>
+                    <td><input type="text" class="mr-approver" data-phase="${i}" value="${rev.approver || ''}"></td>
+                </tr>`;
+            }
+            html += `</tbody></table><button class="button primary" id="save-mgreviews">Save Reviews</button>`;
+            container.innerHTML = html;
+            document.getElementById('save-mgreviews')?.addEventListener('click', () => {
+                for (let i = 1; i <= 5; i++) {
+                    state.managementReviews[i].approved = document.querySelector(`.mr-approved[data-phase="${i}"]`).checked;
+                    state.managementReviews[i].date = document.querySelector(`.mr-date[data-phase="${i}"]`).value;
+                    state.managementReviews[i].approver = document.querySelector(`.mr-approver[data-phase="${i}"]`).value;
+                }
+                alert("Management reviews saved.");
+            });
+        }
+
+        function renderControlPlans() {
+            let container = document.getElementById('control-plans-container');
+            if (!container) return;
+            let types = ['prototype', 'prelaunch', 'production'];
+            let typeNames = { prototype: 'Prototype Control Plan', prelaunch: 'Pre-Launch Control Plan', production: 'Production Control Plan' };
+            let html = `<h3>Control Plans (AIAG compliant)</h3><div class="subtabs-nav" id="cp-nav">`;
+            types.forEach(t => html += `<button class="cp-tab-btn" data-type="${t}">${typeNames[t]}</button>`);
+            html += `</div>`;
+            types.forEach(t => {
+                let rows = state.controlPlans[t].rows;
+                html += `<div id="cp-${t}" class="cp-content" style="display:none">`;
+                html += `<table class="control-plan-table"><thead><tr><th>Operation #</th><th>Process Description</th><th>Characteristic</th><th>Specification</th><th>Method</th><th>Frequency</th><th>Reaction Plan</th><th></th></tr></thead><tbody>`;
+                rows.forEach((row, idx) => {
+                    html += `<tr data-cp-type="${t}" data-idx="${idx}">
+                        <td><input class="cp-op" value="${row.op || ''}"></td>
+                        <td><input class="cp-desc" value="${row.desc || ''}"></td>
+                        <td><input class="cp-char" value="${row.char || ''}"></td>
+                        <td><input class="cp-spec" value="${row.spec || ''}"></td>
+                        <td><input class="cp-method" value="${row.method || ''}"></td>
+                        <td><input class="cp-freq" value="${row.freq || ''}"></td>
+                        <td><input class="cp-react" value="${row.react || ''}"></td>
+                        <td><button class="button danger remove-cp-row">X</button></td>
+                    </tr>`;
+                });
+                html += `</tbody></table><button class="button secondary add-cp-row" data-type="${t}">Add Row</button></div>`;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            // Mostrar primera pestaña
+            document.querySelector('.cp-tab-btn')?.click();
+            document.querySelectorAll('.cp-tab-btn').forEach(btn => btn.addEventListener('click', function () {
+                let type = this.dataset.type;
+                document.querySelectorAll('.cp-content').forEach(div => div.style.display = 'none');
+                document.getElementById(`cp-${type}`).style.display = 'block';
+            }));
+            document.querySelectorAll('.add-cp-row').forEach(btn => btn.addEventListener('click', function () {
+                let type = this.dataset.type;
+                state.controlPlans[type].rows.push({ op: '', desc: '', char: '', spec: '', method: '', freq: '', react: '' });
+                renderControlPlans();
+            }));
+            document.querySelectorAll('.remove-cp-row').forEach(btn => btn.addEventListener('click', function () {
+                let row = this.closest('tr');
+                let type = row.dataset.cpType;
+                let idx = parseInt(row.dataset.idx);
+                state.controlPlans[type].rows.splice(idx, 1);
+                renderControlPlans();
+            }));
+            // Guardado automático al modificar
+            document.querySelectorAll('.cp-op, .cp-desc, .cp-char, .cp-spec, .cp-method, .cp-freq, .cp-react').forEach(inp => inp.addEventListener('change', function () {
+                let row = this.closest('tr');
+                let type = row.dataset.cpType;
+                let idx = parseInt(row.dataset.idx);
+                let cpRow = state.controlPlans[type].rows[idx];
+                cpRow.op = row.querySelector('.cp-op').value;
+                cpRow.desc = row.querySelector('.cp-desc').value;
+                cpRow.char = row.querySelector('.cp-char').value;
+                cpRow.spec = row.querySelector('.cp-spec').value;
+                cpRow.method = row.querySelector('.cp-method').value;
+                cpRow.freq = row.querySelector('.cp-freq').value;
+                cpRow.react = row.querySelector('.cp-react').value;
+            }));
+        }
+
+        function renderLessonsLearned() {
+            let container = document.getElementById('lessons-learned-section');
+            if (!container) return;
+            container.innerHTML = `
+                <h3>Lessons Learned & Continuous Improvement (Phase 5)</h3>
+                <div class="form-group"><label>Lessons Learned</label><textarea id="lessons-text" rows="3">${state.lessonsLearned.text || ''}</textarea></div>
+                <div class="form-group"><label>Improvements Implemented</label><textarea id="improvements-text" rows="3">${state.lessonsLearned.improvements || ''}</textarea></div>
+                <button class="button primary" id="save-lessons">Save</button>
+            `;
+            document.getElementById('save-lessons')?.addEventListener('click', () => {
+                state.lessonsLearned.text = document.getElementById('lessons-text').value;
+                state.lessonsLearned.improvements = document.getElementById('improvements-text').value;
+                alert("Lessons learned saved.");
+            });
+        }
+
+        function verifyAIAGCompliance() {
+            let issues = [];
+            if (!isSequenceValid()) issues.push("❌ Sequence violation: DFMEA → PFMEA → Control Plan and Process Flow before PFMEA.");
+            let pswElem = state.ppapElements.find(e => e.name === "Part Submission Warrant (PSW)");
+            if (pswElem && pswElem.status === 'completed' && !canCompletePSW()) issues.push("❌ PSW completed but other PPAP elements not all Completed/NA.");
+            let msaelem = state.ppapElements.find(e => e.name === "Measurement System Analysis (MSA)");
+            if (msaelem && msaelem.status === 'completed' && msaelem.msaGrr !== null && msaelem.msaGrr > 30) issues.push("⚠️ MSA completed but %GR&R >30% (unacceptable).");
+            let capElem = state.ppapElements.find(e => e.name === "Initial Process Studies");
+            if (capElem && capElem.status === 'completed' && capElem.ppk !== null && capElem.ppk < 1.67) issues.push("⚠️ Initial Process Studies completed but Ppk < 1.67.");
+            let allMgmt = Object.values(state.managementReviews).every(r => r.approved === true);
+            if (!allMgmt) issues.push("❌ Not all phases have management review approval.");
+            if (!state.feasibilityCommitment.approved) issues.push("❌ Team Feasibility Commitment not signed.");
+            if (state.controlPlans.production.rows.length === 0) issues.push("⚠️ Production Control Plan is empty.");
+            if (issues.length === 0) alert("✅ Full AIAG compliance! All mandatory elements satisfied.");
+            else alert("Compliance issues:\n" + issues.join("\n"));
+        }
+
+        // Funciones de eventos (se mantienen igual que el original, añadiendo los nuevos)
         function setupEventListeners() {
-            // Usar delegación de eventos en el documento para manejar elementos dinámicos
             document.addEventListener('change', e => {
                 const target = e.target;
                 const taskRow = target.closest('tr[data-task-id]');
                 if (!taskRow) return;
-
                 const taskId = Number(taskRow.dataset.taskId);
                 const phaseIndex = taskRow.dataset.phaseIndex;
                 let element;
-
                 if (phaseIndex !== undefined) {
                     element = state.apqpPhases[phaseIndex].tasks.find(t => t.id === taskId);
                 } else {
                     element = state.ppapElements.find(el => el.id === taskId);
                 }
-
                 if (!element) return;
-
                 if (target.matches('input[type="text"]')) {
                     const prop = taskRow.cells[taskRow.cells.length === 7 ? 0 : 1].contains(target) ? 'name' : 'notes';
                     element[prop] = target.value;
@@ -1271,7 +1575,39 @@
                 } else if (target.matches('.responsible-selector')) {
                     element.responsible = target.value;
                 } else if (target.matches('.status-selector')) {
-                    element.status = target.value;
+                    let newStatus = target.value;
+                    // Validaciones de secuencia
+                    if (element.name === "Design FMEA (DFMEA)" && newStatus === 'completed') {
+                        let pfmea = state.ppapElements.find(e => e.name === "Process FMEA (PFMEA)");
+                        if (pfmea && pfmea.status === 'completed') {
+                            alert("Cannot complete DFMEA after PFMEA is completed. Reverse order required.");
+                            target.value = element.status;
+                            return;
+                        }
+                    }
+                    if (element.name === "Process FMEA (PFMEA)" && newStatus === 'completed') {
+                        let dfmea = state.ppapElements.find(e => e.name === "Design FMEA (DFMEA)");
+                        let flow = state.ppapElements.find(e => e.name === "Process Flow Diagram");
+                        if (dfmea && dfmea.status !== 'completed') {
+                            alert("DFMEA must be completed before PFMEA.");
+                            target.value = element.status;
+                            return;
+                        }
+                        if (flow && flow.status !== 'completed') {
+                            alert("Process Flow Diagram must be completed before PFMEA.");
+                            target.value = element.status;
+                            return;
+                        }
+                    }
+                    if (element.name === "Control Plan" && newStatus === 'completed') {
+                        let pfmea = state.ppapElements.find(e => e.name === "Process FMEA (PFMEA)");
+                        if (pfmea && pfmea.status !== 'completed') {
+                            alert("PFMEA must be completed before Control Plan.");
+                            target.value = element.status;
+                            return;
+                        }
+                    }
+                    element.status = newStatus;
                     taskRow.className = `task-row status-${element.status}`;
                 }
             });
@@ -1282,13 +1618,10 @@
                 if (target.id === 'part-number') state.projectInfo.partNumber = target.value;
                 if (target.id === 'customer') state.projectInfo.customer = target.value;
                 if (target.id === 'project-lead') state.projectInfo.lead = target.value;
+                if (target.id === 'ppap-level') state.projectInfo.ppapSubmissionLevel = target.value;
                 if (target.id === 'team-members') {
                     state.projectInfo.team = target.value.split('\n').filter(Boolean);
-                }
-            });
-
-            document.addEventListener('focusout', e => {
-                if (e.target.id === 'team-members') {
+                    // re-renderizar para actualizar dropdowns
                     renderAll();
                 }
             });
@@ -1296,7 +1629,6 @@
             document.addEventListener('click', e => {
                 const target = e.target.closest('button');
                 if (!target) return;
-
                 if (target.classList.contains('add-task-btn')) {
                     const phaseIndex = target.dataset.phaseIndex;
                     state.apqpPhases[phaseIndex].tasks.push({
@@ -1310,23 +1642,21 @@
                     });
                     renderApqpPhases();
                 }
-
                 if (target.classList.contains('add-ppap-btn')) {
                     state.ppapElements.push({
                         id: Date.now(),
                         name: '',
                         responsible: '',
                         status: 'pending',
-                        notes: ''
+                        notes: '',
+                        msaGrr: null, ppk: null, cpk: null, lsl: null, usl: null
                     });
                     renderPpapChecklist();
                 }
-
                 if (target.classList.contains('remove-task-btn')) {
                     const taskRow = target.closest('tr[data-task-id]');
                     const taskId = Number(taskRow.dataset.taskId);
                     const phaseIndex = taskRow.dataset.phaseIndex;
-
                     if (phaseIndex !== undefined) {
                         state.apqpPhases[phaseIndex].tasks = state.apqpPhases[phaseIndex].tasks.filter(t => t.id !== taskId);
                         renderApqpPhases();
@@ -1339,6 +1669,7 @@
 
             document.getElementById('load-example-btn').addEventListener('click', loadExample);
             document.getElementById('reset-btn').addEventListener('click', resetForm);
+            document.getElementById('verify-compliance-btn').addEventListener('click', verifyAIAGCompliance);
         }
 
         function init() {
@@ -1358,63 +1689,61 @@
                 partNumber: 'HL-2025-A1',
                 customer: 'Aura Motors',
                 lead: 'Sarah Miller',
-                team: ['Sarah Miller', 'David Chen', 'Emily Rodriguez', 'Michael Johnson']
+                team: ['Sarah Miller', 'David Chen', 'Emily Rodriguez', 'Michael Johnson'],
+                ppapSubmissionLevel: '3'
             };
-
             exampleState.apqpPhases[0].tasks = [
                 { id: Date.now() + 1, name: 'Customer Requirements (SOR) Review', responsible: 'Sarah Miller', start: d(0), end: d(7), status: 'completed', notes: 'SOR v2.1 analyzed.' },
                 { id: Date.now() + 2, name: 'Preliminary Feasibility Study', responsible: 'David Chen', start: d(5), end: d(15), status: 'completed', notes: 'Feasible with tooling investment.' },
                 { id: Date.now() + 3, name: 'Define Quality & Reliability Goals', responsible: 'Emily Rodriguez', start: d(10), end: d(20), status: 'progress', notes: 'Targeting >50k hours lifespan.' }
             ];
-
             exampleState.apqpPhases[1].tasks = [
                 { id: Date.now() + 4, name: 'DFMEA', responsible: 'David Chen', start: d(21), end: d(40), status: 'progress', notes: 'High RPNs on heat dissipation.' },
                 { id: Date.now() + 5, name: 'Prototype Build A', responsible: 'Michael Johnson', start: d(41), end: d(55), status: 'pending', notes: '' },
                 { id: Date.now() + 6, name: 'Design Verification Plan & Report (DVP&R)', responsible: 'Emily Rodriguez', start: d(45), end: d(70), status: 'pending', notes: 'Vibration and thermal tests planned.' }
             ];
-
             exampleState.apqpPhases[2].tasks = [
                 { id: Date.now() + 7, name: 'Process Flow Diagram', responsible: 'Michael Johnson', start: d(60), end: d(70), status: 'completed', notes: 'Final version approved.' },
                 { id: Date.now() + 8, name: 'PFMEA', responsible: 'Michael Johnson', start: d(71), end: d(90), status: 'progress', notes: '' },
                 { id: Date.now() + 9, name: 'Control Plan (Pre-launch)', responsible: 'Emily Rodriguez', start: d(85), end: d(95), status: 'pending', notes: '' }
             ];
-
             exampleState.apqpPhases[3].tasks = [
                 { id: Date.now() + 10, name: 'Significant Production Run', responsible: 'Michael Johnson', start: d(100), end: d(105), status: 'pending', notes: '300 pieces planned.' },
                 { id: Date.now() + 11, name: 'Capability Studies (Pp/Ppk)', responsible: 'Emily Rodriguez', start: d(106), end: d(115), status: 'pending', notes: '' },
                 { id: Date.now() + 12, name: 'Part Submission Warrant (PSW)', responsible: 'Sarah Miller', start: d(120), end: d(125), status: 'pending', notes: '' }
             ];
-
-            exampleState.ppapElements[0].status = 'completed';
-            exampleState.ppapElements[0].responsible = 'David Chen';
-            exampleState.ppapElements[3].status = 'progress';
-            exampleState.ppapElements[3].responsible = 'David Chen';
-            exampleState.ppapElements[4].status = 'completed';
-            exampleState.ppapElements[4].responsible = 'Michael Johnson';
-            exampleState.ppapElements[5].status = 'progress';
-            exampleState.ppapElements[5].responsible = 'Michael Johnson';
-            exampleState.ppapElements[6].status = 'pending';
-            exampleState.ppapElements[6].responsible = 'Emily Rodriguez';
-            exampleState.ppapElements[12].status = 'na';
-
+            exampleState.ppapElements.forEach(elem => {
+                if (elem.name === "Design FMEA (DFMEA)") { elem.status = 'progress'; elem.responsible = 'David Chen'; }
+                if (elem.name === "Process Flow Diagram") { elem.status = 'completed'; elem.responsible = 'Michael Johnson'; }
+                if (elem.name === "Process FMEA (PFMEA)") { elem.status = 'progress'; elem.responsible = 'Michael Johnson'; }
+                if (elem.name === "Control Plan") { elem.status = 'pending'; elem.responsible = 'Emily Rodriguez'; }
+                if (elem.name === "Measurement System Analysis (MSA)") { elem.status = 'pending'; elem.msaGrr = 12.5; }
+                if (elem.name === "Initial Process Studies") { elem.status = 'pending'; elem.ppk = 1.45; }
+            });
+            exampleState.feasibilityCommitment = { approved: true, date: d(-5), signer: 'Sarah Miller', comments: 'Feasible' };
+            exampleState.managementReviews = {
+                1: { approved: true, date: d(-2), approver: 'John Director' },
+                2: { approved: false, date: '', approver: '' },
+                3: { approved: false, date: '', approver: '' },
+                4: { approved: false, date: '', approver: '' },
+                5: { approved: false, date: '', approver: '' }
+            };
+            exampleState.controlPlans.production.rows = [
+                { op: '10', desc: 'Molding', char: 'Length', spec: '100±0.5mm', method: 'CMM', freq: '1/100', react: 'Adjust mold' }
+            ];
             state = exampleState;
             renderAll();
-
-            // --- CAMBIO SOLICITADO: Cambiar Tab y Scroll ---
             switchMainTab('tab-project-setup');
             switchSubTab('subtab-project-config');
-
             const target = document.querySelector('.tabs-container');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function resetForm() {
             if (confirm("Are you sure you want to reset all project data?")) init();
         }
 
-        // ===== FUNCIONES GANTT =====
+        // ===== FUNCIONES GANTT (originales, sin modificar) =====
         function generateGantt() {
             const container = document.getElementById('gantt-chart-container');
             const tasks = [];
@@ -1430,17 +1759,14 @@
                     }
                 });
             });
-
             if (tasks.length === 0) {
                 container.innerHTML = 'No tasks with names and valid start/end dates found in APQP phases.';
                 return;
             }
-
             tasks.sort((a, b) => a.start - b.start);
             const minDate = tasks[0].start;
             const maxDate = new Date(Math.max(...tasks.map(t => t.end)));
             const totalDurationDays = Math.max(1, (maxDate - minDate) / (1000 * 60 * 60 * 24));
-
             container.innerHTML = `
             <div class="gantt-inner-container">
                 <div class="gantt-header">
@@ -1448,20 +1774,15 @@
                     <div class="gantt-header-timeline"></div>
                 </div>
                 <div class="gantt-body"></div>
-            </div>
-        `;
-
+            </div>`;
             const ganttHeaderTimeline = container.querySelector('.gantt-header-timeline');
             const ganttBody = container.querySelector('.gantt-body');
-
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             let currentDate = new Date(minDate);
             currentDate.setDate(1);
-
             while (currentDate <= maxDate) {
                 const monthOffsetDays = (currentDate - minDate) / (1000 * 60 * 60 * 24);
                 const leftPercent = (monthOffsetDays / totalDurationDays) * 100;
-
                 if (leftPercent >= 0 && leftPercent < 100) {
                     const marker = document.createElement('div');
                     marker.className = 'gantt-month-marker';
@@ -1471,13 +1792,11 @@
                 }
                 currentDate.setMonth(currentDate.getMonth() + 1);
             }
-
             tasks.forEach(task => {
                 const startOffsetDays = (task.start - minDate) / (1000 * 60 * 60 * 24);
                 const durationDays = Math.max(1, (task.end - task.start) / (1000 * 60 * 60 * 24));
                 const leftPercent = (startOffsetDays / totalDurationDays) * 100;
                 const widthPercent = (durationDays / totalDurationDays) * 100;
-
                 const rowEl = document.createElement('div');
                 rowEl.className = 'gantt-row';
                 rowEl.innerHTML = `
@@ -1489,11 +1808,8 @@
             });
         }
 
-        // ===== FUNCIONES DE EXPORTACIÓN =====
         function exportGanttToExcel() {
             const wb = XLSX.utils.book_new();
-
-            // Hoja 1: Project Setup
             const { name, partNumber, customer, lead, team } = state.projectInfo;
             const project_info = [
                 ["APQP/PPAP Project - Gantt Chart Export"],
@@ -1509,8 +1825,6 @@
                 ...team.map(m => [m])
             ];
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info");
-
-            // Hoja 2: Gantt Data
             const gantt_data = [["Phase", "Task", "Start Date", "End Date", "Duration (days)", "Status"]];
             state.apqpPhases.forEach(phase => {
                 phase.tasks.forEach(task => {
@@ -1523,8 +1837,6 @@
                 });
             });
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(gantt_data), "Gantt Data");
-
-            // Hoja 3: Summary
             const summary_data = [
                 ["APQP/PPAP GANTT CHART SUMMARY"],
                 ["Generated on: " + new Date().toLocaleString()],
@@ -1536,25 +1848,20 @@
                 [],
                 ["PHASE BREAKDOWN"]
             ];
-
             state.apqpPhases.forEach((phase, index) => {
                 summary_data.push([`Phase ${index + 1}`, phase.tasks.length]);
             });
-
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary_data), "Summary");
-
             const projectName = state.projectInfo.name || "APQP_Gantt_Chart";
             XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}_Gantt.xlsx`);
         }
 
         function exportGanttToImage() {
             const container = document.getElementById('gantt-chart-container');
-
             if (container.innerHTML.includes('Enter task dates')) {
                 alert("Please generate the Gantt chart first by clicking 'Generate Gantt'.");
                 return;
             }
-
             html2canvas(container, {
                 scale: 2,
                 backgroundColor: "#ffffff",
@@ -1567,13 +1874,34 @@
             });
         }
 
+        function generateActionItems() {
+            const actionTbody = document.querySelector('#action-items-table tbody');
+            actionTbody.innerHTML = '';
+            let hasActions = false;
+            state.apqpPhases.forEach(phase => {
+                phase.tasks.forEach(task => {
+                    if ((task.status === 'pending' || task.status === 'progress') && task.name) {
+                        const newRow = actionTbody.insertRow();
+                        newRow.innerHTML = `<td>${task.name}</td><td>${task.responsible || 'Unassigned'}</td><td>${task.end || 'N/A'}</td><td>${phase.title}</td>`;
+                        hasActions = true;
+                    }
+                });
+            });
+            state.ppapElements.forEach(elem => {
+                if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) {
+                    const newRow = actionTbody.insertRow();
+                    newRow.innerHTML = `<td>${elem.name}</td><td>${elem.responsible || 'Unassigned'}</td><td>N/A</td><td>PPAP Checklist</td>`;
+                    hasActions = true;
+                }
+            });
+            if (!hasActions) {
+                actionTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--success-color);">No pending or in-progress actions found. Great job!</td></tr>';
+            }
+        }
+
         function exportActionPlanToExcel() {
-            // Primero generamos el action plan si no está generado
             generateActionItems();
-
             const wb = XLSX.utils.book_new();
-
-            // Hoja 1: Project Setup
             const { name, partNumber, customer, lead, team } = state.projectInfo;
             const project_info = [
                 ["APQP/PPAP Project - Action Plan Export"],
@@ -1592,15 +1920,10 @@
                 ["Total Pending/In-Progress Items", document.querySelectorAll('#action-items-table tbody tr').length - 1]
             ];
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(project_info), "Project Info");
-
-            // Hoja 2: Action Plan
             const actionTable = document.getElementById("action-items-table");
             XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(actionTable), "Action Plan");
-
-            // Hoja 3: APQP Tasks
             const apqp_data = [["Phase", "Task", "Responsible", "Start Date", "End Date", "Status", "Priority"]];
             let priorityCounter = 1;
-
             state.apqpPhases.forEach(phase => {
                 phase.tasks.forEach(task => {
                     if ((task.status === 'pending' || task.status === 'progress') && task.name) {
@@ -1611,11 +1934,8 @@
                 });
             });
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(apqp_data), "APQP Tasks");
-
-            // Hoja 4: PPAP Tasks
             const ppap_data = [["PPAP Element", "Responsible", "Status", "Priority"]];
             priorityCounter = 1;
-
             state.ppapElements.forEach(elem => {
                 if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) {
                     const priority = `PPAP-${String(priorityCounter).padStart(3, '0')}`;
@@ -1624,50 +1944,30 @@
                 }
             });
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ppap_data), "PPAP Tasks");
-
             const projectName = state.projectInfo.name || "APQP_Action_Plan";
             XLSX.writeFile(wb, `${projectName.replace(/[\s/]/g, "_")}_Action_Plan.xlsx`);
         }
 
-        function generateActionItems() {
-            const actionTbody = document.querySelector('#action-items-table tbody');
-            actionTbody.innerHTML = '';
-            let hasActions = false;
-
-            state.apqpPhases.forEach(phase => {
-                phase.tasks.forEach(task => {
-                    if ((task.status === 'pending' || task.status === 'progress') && task.name) {
-                        const newRow = actionTbody.insertRow();
-                        newRow.innerHTML = `<td>${task.name}</td><td>${task.responsible || 'Unassigned'}</td><td>${task.end || 'N/A'}</td><td>${phase.title}</td>`;
-                        hasActions = true;
-                    }
-                });
-            });
-
-            state.ppapElements.forEach(elem => {
-                if ((elem.status === 'pending' || elem.status === 'progress') && elem.name) {
-                    const newRow = actionTbody.insertRow();
-                    newRow.innerHTML = `<td>${elem.name}</td><td>${elem.responsible || 'Unassigned'}</td><td>N/A</td><td>PPAP Checklist</td>`;
-                    hasActions = true;
-                }
-            });
-
-            if (!hasActions) {
-                actionTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--success-color);">No pending or in-progress actions found. Great job!</td></tr>';
-            }
+        function renderAll() {
+            renderProjectSetup();
+            renderApqpPhases();
+            renderPpapChecklist();
+            renderPSW();
+            renderFeasibilityCommitment();
+            renderManagementReviews();
+            renderControlPlans();
+            renderLessonsLearned();
         }
 
         // Inicializar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
-            // Cargar el header primero
             loadHeader();
-            // Luego inicializar la aplicación APQP/PPAP
             init();
         });
     </script>
 
     <script src="dexie.min.js"></script>
-    <script src="db-sigma.js"></script>  
+    <script src="db-sigma.js"></script>
 
 </body>
 
