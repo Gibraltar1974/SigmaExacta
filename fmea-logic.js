@@ -265,10 +265,56 @@ function updateNetworkVisualization() {
 }
 
 // Cálculo de Action Priority según AIAG-VDA (High/Medium/Low)
+/**
+ * Prioridad de Acción (AP) - AIAG-VDA 2019 / Estándar de Oro.
+ * Corregido: Incluye los "alivios" de prioridad para Detección = 1.
+ */
 function getActionPriority(s, o, d) {
-  const rpn = s * o * d;
-  if ((s >= 9 && o >= 5) || (s >= 8 && o >= 7) || rpn >= 150) return 'H';
-  if ((s >= 7 && o >= 5) || (s >= 5 && o >= 7) || rpn >= 80) return 'M';
+  // 1. Validación de integridad (No negociable)
+  if (s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10) {
+    throw new Error("Valores S, O, D fuera de rango (1-10)");
+  }
+
+  // 2. Regla base
+  if (s === 1 || o === 1) return 'L';
+
+  // 3. Matriz de Decisión corregida
+
+  // --- SEVERIDAD MUY ALTA (9-10) ---
+  if (s >= 9) {
+    if (o >= 8) return 'H';
+    if (o >= 6) return (d === 1) ? 'M' : 'H'; // <-- O=6-7, D=1 es M
+    if (o >= 4) return (d === 1) ? 'M' : 'H'; // <-- O=4-5, D=1 es M
+    if (o >= 2) {
+      if (d >= 7) return 'H';
+      if (d >= 5) return 'M';
+      return 'L';
+    }
+  }
+
+  // --- SEVERIDAD ALTA (7-8) ---
+  if (s >= 7) {
+    if (o >= 8) return (d === 1) ? 'M' : 'H'; // <-- O=8-10, D=1 es M
+    if (o >= 6) return (d === 1) ? 'M' : 'H'; // <-- O=6-7, D=1 es M
+    if (o >= 4) return (d >= 7) ? 'H' : 'M';
+    if (o >= 2) return (d >= 5) ? 'M' : 'L';
+  }
+
+  // --- SEVERIDAD MEDIA (4-6) ---
+  if (s >= 4) {
+    if (o >= 8) return (d >= 5) ? 'H' : 'M';
+    if (o >= 6) return (d >= 7) ? 'H' : 'M';
+    if (o >= 4) return (d >= 5) ? 'M' : 'L';
+    if (o >= 2) return (d >= 7) ? 'M' : 'L';
+  }
+
+  // --- SEVERIDAD BAJA (2-3) ---
+  if (s >= 2) {
+    if (o >= 8) return (d >= 5) ? 'M' : 'L';
+    if (o >= 6) return (d >= 7) ? 'M' : 'L';
+    return 'L'; // O=2-5
+  }
+
   return 'L';
 }
 
