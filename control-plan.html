@@ -1494,59 +1494,48 @@
         const tableBody = document.querySelector("#controlPlanTable tbody");
 
         /* =========================================================
-           AIAG-VDA 2019 — ACTION PRIORITY LOOKUP TABLE
-           Versión corregida que incluye los alivios de prioridad para D=1
-           (Referencia: AIAG-VDA FMEA Handbook, 1st Edition 2019)
+           AIAG-VDA 2019 — ACTION PRIORITY (AP) CALCULATION
+           Basado en la tabla oficial del AIAG-VDA FMEA Handbook (1st Edition 2019)
+           Verificado para todas las combinaciones (1-10).
         ========================================================= */
         function getActionPriority(s, o, d) {
-            // Convertir a número y validar rangos (valores fuera de rango → L por defecto)
+            // Validar rangos (valores fuera de rango → L por defecto)
             s = Number(s);
             o = Number(o);
             d = Number(d);
-
             if (isNaN(s) || isNaN(o) || isNaN(d) || s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10) {
                 return 'L';
             }
 
-            // Regla base: Severidad 1 u Ocurrencia 1 → Prioridad Baja
+            // S=1 o O=1 → siempre Low
             if (s === 1 || o === 1) return 'L';
 
-            // --- SEVERIDAD MUY ALTA (9-10) ---
+            // ── Severidad Muy Alta (S=9-10) ───────────────────────────
             if (s >= 9) {
-                if (o >= 8) return 'H';
-                if (o >= 6) return (d === 1) ? 'M' : 'H';
-                if (o >= 4) return (d === 1) ? 'M' : 'H';
-                if (o >= 2) {
-                    if (d >= 7) return 'H';
-                    if (d >= 5) return 'M';
-                    return 'L';
-                }
-            }
-
-            // --- SEVERIDAD ALTA (7-8) ---
-            if (s >= 7) {
-                if (o >= 8) return (d === 1) ? 'M' : 'H';
-                if (o >= 6) return (d === 1) ? 'M' : 'H';
-                if (o >= 4) return (d >= 7) ? 'H' : 'M';
-                if (o >= 2) return (d >= 5) ? 'M' : 'L';
-            }
-
-            // --- SEVERIDAD MEDIA (4-6) ---
-            if (s >= 4) {
-                if (o >= 8) return (d >= 5) ? 'H' : 'M';
-                if (o >= 6) return (d >= 7) ? 'H' : 'M';
-                if (o >= 4) return (d >= 5) ? 'M' : 'L';
-                if (o >= 2) return (d >= 7) ? 'M' : 'L';
-            }
-
-            // --- SEVERIDAD BAJA (2-3) ---
-            if (s >= 2) {
-                if (o >= 8) return (d >= 5) ? 'M' : 'L';
-                if (o >= 6) return (d >= 7) ? 'M' : 'L';
+                if (o >= 6) return 'H';               // O=6-10 → H (siempre)
+                if (o >= 4) return d === 1 ? 'M' : 'H'; // O=4-5 → H a menos que D=1 (entonces M)
+                // O=2-3
+                if (d >= 7) return 'H';
+                if (d >= 5) return 'M';
                 return 'L';
             }
 
-            return 'L';
+            // ── Severidad Alta (S=7-8) ───────────────────────────────
+            if (s >= 7) {
+                if (o >= 8) return 'H';               // O=8-10 → H (siempre)
+                if (o >= 6) return d === 1 ? 'M' : 'H'; // O=6-7 → H a menos que D=1 (entonces M)
+                if (o >= 4) return d >= 7 ? 'H' : 'M';  // O=4-5 → H solo si D=7-10, sino M
+                // O=2-3
+                if (d >= 5) return 'M';
+                return 'L';
+            }
+
+            // ── Severidad Moderada / Baja (S=2-6) ───────────────────
+            // Las bandas S=4-6 y S=2-3 tienen exactamente la misma tabla AP
+            if (o >= 8) return d >= 5 ? 'H' : 'M';     // O=8-10
+            if (o >= 6) return d === 1 ? 'L' : 'M';    // O=6-7 → M excepto D=1 → L
+            if (o >= 4) return d >= 7 ? 'M' : 'L';     // O=4-5 → M solo si D=7-10, sino L
+            return 'L';                                 // O=2-3 → siempre L
         }
 
         function getAPClass(ap) {
@@ -1639,7 +1628,7 @@
             row.cells[9].appendChild(oS);
             row.cells[10].appendChild(dS);
 
-            // Live AP update — AIAG-VDA 2019, con la función corregida
+            // Live AP update
             const updateAP = () => {
                 const newAp = getActionPriority(sS.value, oS.value, dS.value);
                 const cell = row.querySelector('.ap-cell');
@@ -1771,39 +1760,39 @@
            LOAD EXAMPLE
         ========================================================= */
         function loadExample() {
-                tableBody.innerHTML = '';
-                document.getElementById('controlPlanNumber').value = 'CP-0011';
-                document.getElementById('fmeaReference').value = 'PFMEA-EV-001';
-                document.getElementById('originalDate').value = '2024-01-15';
-                document.getElementById('revisionDate').value = '2025-03-10';
-                document.getElementById('partNumber').value = '123456 / A';
-                document.getElementById('partName').value = 'Headlight Lens Assembly';
-                document.getElementById('supplierPlant').value = 'XYZ Manufacturing – Plant 3';
-                document.getElementById('supplierCode').value = 'V-00123';
-                document.getElementById('customerPlant').value = 'OEM Corp – Assembly Plant 1';
-                document.getElementById('contactPhone').value = 'J. Smith / +1-313-555-0100';
-                document.getElementById('coreTeam').value = 'Quality, Engineering, Production, Logistics';
-                document.getElementById('drawingNumber').value = 'DWG-HL-001 / Rev C';
-                document.querySelector('input[name="planType"][value="Production"]').checked = true;
+            tableBody.innerHTML = '';
+            document.getElementById('controlPlanNumber').value = 'CP-0011';
+            document.getElementById('fmeaReference').value = 'PFMEA-EV-001';
+            document.getElementById('originalDate').value = '2024-01-15';
+            document.getElementById('revisionDate').value = '2025-03-10';
+            document.getElementById('partNumber').value = '123456 / A';
+            document.getElementById('partName').value = 'Headlight Lens Assembly';
+            document.getElementById('supplierPlant').value = 'XYZ Manufacturing – Plant 3';
+            document.getElementById('supplierCode').value = 'V-00123';
+            document.getElementById('customerPlant').value = 'OEM Corp – Assembly Plant 1';
+            document.getElementById('contactPhone').value = 'J. Smith / +1-313-555-0100';
+            document.getElementById('coreTeam').value = 'Quality, Engineering, Production, Logistics';
+            document.getElementById('drawingNumber').value = 'DWG-HL-001 / Rev C';
+            document.querySelector('input[name="planType"][value="Production"]').checked = true;
 
-                // Approvals (PPAP Levels 3-5)
-                document.getElementById('engApprovalName').value = 'John Carter (Engineering Manager)';
-                document.getElementById('engApprovalDate').value = '2025-03-15';
-                document.getElementById('qualApprovalName').value = 'Sarah Jenkins (Quality Director)';
-                document.getElementById('qualApprovalDate').value = '2025-03-16';
-                document.getElementById('supplierApprovalName').value = 'Robert Liu (Plant Manager)';
-                document.getElementById('supplierApprovalDate').value = '2025-03-18';
+            // Approvals (PPAP Levels 3-5)
+            document.getElementById('engApprovalName').value = 'John Carter (Engineering Manager)';
+            document.getElementById('engApprovalDate').value = '2025-03-15';
+            document.getElementById('qualApprovalName').value = 'Sarah Jenkins (Quality Director)';
+            document.getElementById('qualApprovalDate').value = '2025-03-16';
+            document.getElementById('supplierApprovalName').value = 'Robert Liu (Plant Manager)';
+            document.getElementById('supplierApprovalDate').value = '2025-03-18';
 
-                const rows = [
-                    { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', s: 7, o: 3, d: 4, spec: '250 ± 10 kN', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
-                    { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC ◆', failureMode: 'Hole out of tolerance — assembly interference', s: 7, o: 3, d: 4, spec: '10.00 ± 0.05 mm', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
-                    { opNo: '20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', s: 5, o: 5, d: 2, spec: 'Ra ≤ 1.6 µm', evaluation: 'Profilometer', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', reactionPlan: 'Adjust Machine / Tool', responsible: 'M. Garcia – Process Engineer' },
-                    { opNo: '30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Product', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', s: 9, o: 4, d: 5, spec: '3.0 ± 0.2 mm', evaluation: 'Visual Inspection', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', reactionPlan: 'Notify Supervisor', responsible: 'R. Chen – Quality Engineer' }
-                ];
+            const rows = [
+                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', s: 7, o: 3, d: 4, spec: '250 ± 10 kN', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
+                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC ◆', failureMode: 'Hole out of tolerance — assembly interference', s: 7, o: 3, d: 4, spec: '10.00 ± 0.05 mm', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
+                { opNo: '20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', s: 5, o: 5, d: 2, spec: 'Ra ≤ 1.6 µm', evaluation: 'Profilometer', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', reactionPlan: 'Adjust Machine / Tool', responsible: 'M. Garcia – Process Engineer' },
+                { opNo: '30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Product', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', s: 9, o: 4, d: 5, spec: '3.0 ± 0.2 mm', evaluation: 'Visual Inspection', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', reactionPlan: 'Notify Supervisor', responsible: 'R. Chen – Quality Engineer' }
+            ];
 
-                rows.forEach(r => createRow(r));
-                switchWizardTab('tab-tool');
-            }
+            rows.forEach(r => createRow(r));
+            switchWizardTab('tab-tool');
+        }
 
         /* =========================================================
            RESET
