@@ -1847,68 +1847,88 @@
             container.appendChild(tbl);
         }
 
-        /* =========================================================
-           EXPORT TO EXCEL — validates required fields first
+    /* =========================================================
+            EXPORT TO EXCEL — Validates required fields & hides FMEA cols
         ========================================================= */
         function exportToExcel() {
-            const missing = validateHeader();
-            if (missing.length > 0) {
-                document.getElementById('missingFieldsList').innerHTML = missing.map(m => `<li>${m}</li>`).join('');
-                document.getElementById('validationModal').classList.add('open');
-                return;
-            }
+                const missing = validateHeader();
+                if (missing.length > 0) {
+                    document.getElementById('missingFieldsList').innerHTML = missing.map(m => `<li>${m}</li>`).join('');
+                    document.getElementById('validationModal').classList.add('open');
+                    return;
+                }
 
-            const planType = document.querySelector('input[name="planType"]:checked')?.value || '';
-            const headers = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
-            headers.pop();
-            const numCols = headers.length;
-            const data = [];
+                const planType = document.querySelector('input[name="planType"]:checked')?.value || '';
 
-            data.push(['SIGMA EXACTA \u2014 CONTROL PLAN (AIAG-VDA 2019)']);
-            data.push(['Generated on: ' + new Date().toLocaleString()]);
-            data.push([]);
+                // 1. Obtener todos los encabezados de la tabla web
+                const allHeaders = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
 
-            data.push(['CONTROL PLAN HEADER']);
-            data.push(['Control Plan Type:', planType]);
-            data.push(['Control Plan Number:', document.getElementById('controlPlanNumber').value]);
-            data.push(['FMEA Reference Number:', document.getElementById('fmeaReference').value]);
-            data.push(['Original Date:', document.getElementById('originalDate').value]);
-            data.push(['Revision Date:', document.getElementById('revisionDate').value]);
-            data.push(['Part Number / Change Level:', document.getElementById('partNumber').value]);
-            data.push(['Part Name / Description:', document.getElementById('partName').value]);
-            data.push(['Supplier / Plant:', document.getElementById('supplierPlant').value]);
-            data.push(['Supplier Code:', document.getElementById('supplierCode').value]);
-            data.push(['Customer Name / Plant:', document.getElementById('customerPlant').value]);
-            data.push(['Contact / Phone:', document.getElementById('contactPhone').value]);
-            data.push(['Core Team:', document.getElementById('coreTeam').value]);
-            data.push(['Drawing Number / Level:', document.getElementById('drawingNumber').value]);
-            data.push([]);
+                // 2. Definir los índices a excluir: 
+                // 7: Failure Mode, 8: S, 9: O, 10: D, 11: AP, y el último (Botón de basura)
+                const excludeIndices = [7, 8, 9, 10, 11, allHeaders.length - 1];
 
-            data.push(['APPROVALS']);
-            data.push(['Engineering Approval (Customer):', document.getElementById('engApprovalName').value, 'Date:', document.getElementById('engApprovalDate').value]);
-            data.push(['Quality Approval (Customer):', document.getElementById('qualApprovalName').value, 'Date:', document.getElementById('qualApprovalDate').value]);
-            data.push(['Supplier / Plant Approval:', document.getElementById('supplierApprovalName').value, 'Date:', document.getElementById('supplierApprovalDate').value]);
-            data.push([]);
+                // 3. Filtrar los encabezados para el Excel
+                const headers = allHeaders.filter((_, index) => !excludeIndices.includes(index));
+                const numCols = headers.length;
 
-            data.push(headers);
-            tableBody.querySelectorAll('tr').forEach(row => {
-                const rowData = [];
-                row.querySelectorAll('td').forEach((cell, i) => {
-                    if (i >= numCols) return;
-                    const inp = cell.querySelector('textarea, select');
-                    rowData.push(inp ? inp.value : cell.innerText.trim());
+                const data = [];
+
+                // Título actualizado según normativa vigente
+                data.push(['SIGMA EXACTA \u2014 AIAG CONTROL PLAN REFERENCE MANUAL (1st Edition)']);
+                data.push(['Generated on: ' + new Date().toLocaleString()]);
+                data.push([]);
+
+                data.push(['CONTROL PLAN HEADER']);
+                data.push(['Control Plan Type:', planType]);
+                data.push(['Control Plan Number:', document.getElementById('controlPlanNumber').value]);
+                data.push(['FMEA Reference Number:', document.getElementById('fmeaReference').value]);
+                data.push(['Original Date:', document.getElementById('originalDate').value]);
+                data.push(['Revision Date:', document.getElementById('revisionDate').value]);
+                data.push(['Part Number / Change Level:', document.getElementById('partNumber').value]);
+                data.push(['Part Name / Description:', document.getElementById('partName').value]);
+                data.push(['Supplier / Plant:', document.getElementById('supplierPlant').value]);
+                data.push(['Supplier Code:', document.getElementById('supplierCode').value]);
+                data.push(['Customer Name / Plant:', document.getElementById('customerPlant').value]);
+                data.push(['Contact / Phone:', document.getElementById('contactPhone').value]);
+                data.push(['Core Team:', document.getElementById('coreTeam').value]);
+                data.push(['Drawing Number / Level:', document.getElementById('drawingNumber').value]);
+                data.push([]);
+
+                data.push(['APPROVALS']);
+                data.push(['Engineering Approval (Customer):', document.getElementById('engApprovalName').value, 'Date:', document.getElementById('engApprovalDate').value]);
+                data.push(['Quality Approval (Customer):', document.getElementById('qualApprovalName').value, 'Date:', document.getElementById('qualApprovalDate').value]);
+                data.push(['Supplier / Plant Approval:', document.getElementById('supplierApprovalName').value, 'Date:', document.getElementById('supplierApprovalDate').value]);
+                data.push([]);
+
+                data.push(headers);
+
+                // 4. Extraer las filas filtrando las columnas excluidas
+                tableBody.querySelectorAll('tr').forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach((cell, index) => {
+                        // Solo agregamos la información si la columna no está en la lista de exclusión
+                        if (!excludeIndices.includes(index)) {
+                            const inp = cell.querySelector('textarea, select');
+                            rowData.push(inp ? inp.value : cell.innerText.trim());
+                        }
+                    });
+                    data.push(rowData);
                 });
-                data.push(rowData);
-            });
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            if (!ws['!merges']) ws['!merges'] = [];
-            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
-            ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
-            ws['!cols'] = headers.map(() => ({ wch: 18 }));
-            XLSX.utils.book_append_sheet(wb, ws, 'Control Plan');
-            XLSX.writeFile(wb, `ControlPlan_${document.getElementById('controlPlanNumber').value || 'Export'}.xlsx`);
+                // 5. Generar el Excel
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+
+                // Ajustar las celdas combinadas del título principal para que coincidan con las nuevas columnas
+                if (!ws['!merges']) ws['!merges'] = [];
+                ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
+                ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
+
+                // Ancho de columnas
+                ws['!cols'] = headers.map(() => ({ wch: 18 }));
+
+                XLSX.utils.book_append_sheet(wb, ws, 'Control Plan');
+                XLSX.writeFile(wb, `ControlPlan_${document.getElementById('controlPlanNumber').value || 'Export'}.xlsx`);
         }
 
         /* =========================================================
