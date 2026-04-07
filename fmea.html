@@ -403,7 +403,6 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       padding: 1rem;
       overflow: hidden;
-      /* Elimina scroll lateral */
     }
 
     #networkChart {
@@ -411,7 +410,6 @@
       height: 600px;
       position: relative;
       overflow: hidden;
-      /* Evita scroll lateral */
     }
 
     #networkCanvas {
@@ -506,7 +504,7 @@
     .fmea-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1600px;
+      min-width: 2200px;
       background: white;
     }
 
@@ -548,14 +546,6 @@
       background-color: var(--primary-color);
       color: white;
       font-weight: 600;
-    }
-
-    .rpn-cell.severity-high {
-      background-color: #ffdddd;
-    }
-
-    .rpn-cell.severity-medium {
-      background-color: #fff3cd;
     }
 
     .ap-high {
@@ -747,6 +737,61 @@
       color: #555;
     }
 
+    /* Modal para criterios S/O/D */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 8px;
+      max-height: 80%;
+      overflow-y: auto;
+    }
+
+    .modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    .modal-content th,
+    .modal-content td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .modal-content th {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .close-modal {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-modal:hover {
+      color: black;
+    }
+
     @media (max-width: 768px) {
 
       .heatmap-title-x,
@@ -814,6 +859,19 @@
     .planning-group>div {
       flex: 1;
       min-width: 200px;
+    }
+
+    .ap-filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .ap-filter-bar button {
+      margin: 0;
+      padding: 5px 12px;
     }
   </style>
 </head>
@@ -1003,6 +1061,34 @@
                 </select>
               </div>
             </div>
+            <div class="planning-group">
+              <div>
+                <label><i class="fas fa-hashtag"></i> Document Number</label>
+                <input type="text" id="fmeaDocNumber" placeholder="e.g., FMEA-2025-001">
+              </div>
+              <div>
+                <label><i class="fas fa-code-branch"></i> Revision</label>
+                <input type="text" id="fmeaRevision" placeholder="Rev. A">
+              </div>
+              <div>
+                <label><i class="fas fa-user-check"></i> Engineering Responsible</label>
+                <input type="text" id="fmeaEngResponsible" placeholder="Name, title">
+              </div>
+              <div>
+                <label><i class="fas fa-building"></i> Plant / Location</label>
+                <input type="text" id="fmeaPlant" placeholder="Plant name, site">
+              </div>
+            </div>
+            <div class="planning-group">
+              <div>
+                <label><i class="fas fa-chalkboard-user"></i> Scope & Assumptions (5T)</label>
+                <textarea id="fmeaScope" rows="2" placeholder="Intent, Timing, Tasks, Tools, Assumptions..."></textarea>
+              </div>
+              <div>
+                <label><i class="fas fa-history"></i> Previous FMEA Reference</label>
+                <input type="text" id="fmeaPreviousRef" placeholder="Document ID of similar FMEA">
+              </div>
+            </div>
             <div>
               <label><i class="fas fa-car"></i> Customer / System</label>
               <input type="text" id="fmeaCustomer" placeholder="e.g., Automotive OEM">
@@ -1016,10 +1102,20 @@
         <div class="tab-content-wrapper">
           <div class="panels-container">
             <div id="componentsPanel" class="calculation-block">
-              <div class="calculation-title">Components</div>
+              <div class="calculation-title">Components (3-Level Hierarchy)</div>
               <div class="form-group">
                 <label for="componentName"><i class="fas fa-cube"></i> Component Name:</label>
                 <input type="text" id="componentName" placeholder="Enter component name">
+                <label for="componentLevel">Level:</label>
+                <select id="componentLevel">
+                  <option value="system">System</option>
+                  <option value="subsystem">Subsystem</option>
+                  <option value="component">Component (Focus Element)</option>
+                </select>
+                <label for="componentParent">Parent (if Subsystem/Component):</label>
+                <select id="componentParent">
+                  <option value="">None (Top level)</option>
+                </select>
                 <label>
                   <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;"> External
                   Component
@@ -1041,6 +1137,14 @@
                 <select id="contactTo" disabled>
                   <option value="">Select component</option>
                 </select>
+                <label for="contactType">Interaction Type:</label>
+                <select id="contactType">
+                  <option value="Signal">Signal</option>
+                  <option value="Force">Force</option>
+                  <option value="Energy">Energy</option>
+                  <option value="Material">Material</option>
+                  <option value="Information">Information</option>
+                </select>
                 <button id="addContactBtn" disabled><i class="fas fa-plus"></i> Add Contact</button>
                 <button id="clearContactsBtn" disabled><i class="fas fa-trash"></i> Clear All</button>
               </div>
@@ -1052,6 +1156,12 @@
               <div class="form-group">
                 <label for="functionName"><i class="fas fa-bolt"></i> Function Name:</label>
                 <input type="text" id="functionName" placeholder="Enter function name">
+                <label for="functionRequirement">Requirement (metric/spec):</label>
+                <input type="text" id="functionRequirement" placeholder="e.g., Transmit ≥5 kW at 95% efficiency">
+                <label>
+                  <input type="checkbox" id="functionUnwanted" style="width: auto; margin-right: 5px;"> Unwanted
+                  Function (harmful behavior)
+                </label>
                 <label for="functionType">Function Type:</label>
                 <select id="functionType">
                   <option value="primary">Primary</option>
@@ -1090,6 +1200,8 @@
         <div class="tab-content-wrapper">
           <div class="generate-fmea-btn-container">
             <button id="generateFMEABtn"><i class="fas fa-file-alt"></i> Generate FMEA Analysis (Step 4-7)</button>
+            <button id="showCriteriaBtn" style="background-color:#6c5ce7;"><i class="fas fa-table-list"></i> 📊 Show
+              S/O/D Criteria</button>
           </div>
           <div id="fmeaResultsContainer" class="calculation-block">
             <div class="calculation-title">FMEA Results (AIAG-VDA Compliant)</div>
@@ -1102,15 +1214,10 @@
         <div class="tab-content-wrapper">
           <div class="calculation-block">
             <div class="calculation-title">Risk Heatmap (Severity vs Occurrence)</div>
-            <p>Interactive heatmap based on the last FMEA analysis. Each cell represents a combination of Severity (S)
-              and Occurrence (O). Color intensity indicates the number of failure modes in that cell (red more
-              failures). Click on any cell to see the exact count. Use this heatmap to identify high‑risk zones
-              (top‑right
-              area: high Severity and high Occurrence) where preventive actions are most needed.</p>
+            <p>Absolute heatmap based on the last FMEA analysis. Each cell shows the number of failure modes for that
+              (S,O) pair. Color intensity: <span style="background:#f1c40f;">1-2</span> <span
+                style="background:#e67e22;">3-5</span> <span style="background:#e74c3c;">>5</span></p>
             <div id="heatmapContainer" class="risk-heatmap"></div>
-            <!-- El botón ya no es necesario, pero se mantiene por si acaso -->
-            <button id="refreshHeatmapBtn" class="btn-example" style="display: none;"><i class="fas fa-sync-alt"></i>
-              Refresh Heatmap</button>
             <div class="heatmap-export-buttons">
               <button id="exportHeatmapExcelBtn" class="export-fmea-btn"><i class="fas fa-file-excel"></i> Export
                 Heatmap to Excel</button>
@@ -1122,6 +1229,178 @@
       </div>
     </div>
   </main>
+
+  <!-- Modal para criterios S/O/D -->
+  <div id="criteriaModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>AIAG-VDA Severity (S) Criteria</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rating</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10</td>
+            <td>Hazardous without warning</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Hazardous with warning</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Very High (system inoperable)</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>High (system operable but degraded)</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Moderate (partial loss of function)</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Low (some customer annoyance)</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Very Low (minor defect noticed)</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Minor (slight nuisance)</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Very Minor (barely noticeable)</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>None (no effect)</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>AIAG-VDA Occurrence (O) Criteria</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rating</th>
+            <th>Description</th>
+            <th>Probability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10</td>
+            <td>Inevitable</td>
+            <td>≥1 in 2</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Extremely High</td>
+            <td>1 in 3</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Very High</td>
+            <td>1 in 8</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>High</td>
+            <td>1 in 20</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Moderately High</td>
+            <td>1 in 80</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Moderate</td>
+            <td>1 in 400</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Low</td>
+            <td>1 in 2000</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Very Low</td>
+            <td>1 in 15000</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Remote</td>
+            <td>1 in 150k</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Extremely Unlikely</td>
+            <td>
+              <1 in 1M</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>AIAG-VDA Detection (D) Criteria</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rating</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10</td>
+            <td>No chance of detection</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Very remote chance</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Remote chance</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Very low chance</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Low chance</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Moderate chance</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Moderately high chance</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>High chance</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Very high chance</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Certain detection</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <footer>
     <div class="disclaimer-note">
