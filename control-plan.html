@@ -506,7 +506,23 @@
         }
 
         #controlPlanTable .th-fmea {
-            background-color: #34495e;
+            background-color: #4a6172;
+            font-style: italic;
+            font-size: 0.82em;
+        }
+
+        #controlPlanTable .th-ep {
+            background-color: #1a6b3c !important;
+        }
+
+        td.fmea-ref-cell {
+            background: #f4f6f8 !important;
+        }
+
+        td.fmea-ref-cell textarea {
+            color: #546e7a;
+            font-style: italic;
+            background: transparent;
         }
 
         #controlPlanTable tr:nth-child(even) {
@@ -1099,13 +1115,22 @@
                                     management.</p>
                             </div>
                             <div class="timeline-item">
-                                <div class="timeline-year">2019 — AIAG-VDA FMEA Handbook (1st Edition) — Current
-                                    Standard</div>
+                                <div class="timeline-year">2019 — AIAG-VDA FMEA Handbook (1st Edition)</div>
                                 <p class="timeline-text">AIAG and VDA jointly publish a harmonised FMEA methodology.
                                     Landmark change: the <strong>Risk Priority Number (RPN) is eliminated</strong> and
                                     replaced by the <strong>Action Priority (AP)</strong> system — a structured S/O/D
                                     lookup table that ensures high-severity failures always receive appropriate
                                     attention. This tool implements the official AIAG-VDA 2019 AP logic.</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2024 — AIAG Control Plan Reference Manual (4th Edition) —
+                                    Current Standard</div>
+                                <p class="timeline-text">AIAG publishes the 4th and most recent edition of the Control
+                                    Plan Reference Manual. Key additions include mandatory <strong>Error Proofing /
+                                        Poka-yoke</strong> column, alignment with IATF 16949:2016 §8.5.1.1 traceability
+                                    requirements, and updated guidance on special characteristics and Work Instruction
+                                    references. All PPAP submissions from 2024 onwards should reference this edition.
+                                </p>
                             </div>
                         </div>
 
@@ -1199,12 +1224,19 @@
                         </div>
 
                         <div class="aiag-note" style="margin-top:1.2rem;">
-                            <strong>Special Characteristics:</strong> Use standard classification symbols —
-                            <strong>SC ◆</strong> for Special Characteristics, <strong>CC △</strong> for Critical
-                            Characteristics, <strong>YS</strong> for Safety / Government Regulatory,
-                            <strong>YC</strong> for Government Regulatory / Compliance, and <strong>★</strong> for Key
-                            Product Characteristics. Always confirm the exact symbols required by your customer, as
-                            each OEM may define slight variations.
+                            <strong>Special Characteristics — OEM-specific symbols:</strong> Different OEMs use
+                            different symbol systems. Confirm the exact classification system required by your customer
+                            before finalising the Control Plan.
+                            <ul style="margin:.4rem 0 0 1rem;line-height:1.8;">
+                                <li><strong>AIAG generic:</strong> SC ◆ (Special Characteristic), CC △ (Critical
+                                    Characteristic)</li>
+                                <li><strong>Ford:</strong> ★ Key Product Characteristic (KPC), KCC Key Control
+                                    Characteristic</li>
+                                <li><strong>Stellantis / Chrysler:</strong> YS (Safety / Gov. Regulatory), YC
+                                    (Regulatory / Compliance)</li>
+                                <li><strong>GM:</strong> HI (High Impact), S/R (Safety / Regulatory)</li>
+                            </ul>
+                            Using an incorrect OEM's symbols in a PPAP submission is a common cause of rejection.
                         </div>
                     </div>
 
@@ -1258,6 +1290,12 @@
                                 <label for="controlPlanNumber">Control Plan Number <span
                                         class="required-mark">*</span></label>
                                 <input type="text" id="controlPlanNumber" placeholder="e.g., CP-0011">
+                            </div>
+                            <div class="header-item">
+                                <label for="modelYear">Model Year(s) / Program(s) <i class="fas fa-info-circle"
+                                        style="color:var(--secondary-color)"
+                                        title="Required by AIAG CP §2.1 — identifies the vehicle program(s) this plan applies to"></i></label>
+                                <input type="text" id="modelYear" placeholder="e.g., 2025 MY / EV-Platform-3">
                             </div>
                             <div class="header-item">
                                 <label for="fmeaReference">FMEA Reference Number <i class="fas fa-link"
@@ -1377,21 +1415,26 @@
                                         <th style="min-width:140px;"><i class="fas fa-ruler-combined"></i>
                                             Characteristic</th>
                                         <th style="min-width:145px;"><i class="fas fa-star"></i> Special Char.</th>
-                                        <th style="min-width:160px;" class="th-fmea"><i
-                                                class="fas fa-exclamation-circle"></i> Failure Mode</th>
-                                        <th style="min-width:48px;" class="th-fmea">S</th>
-                                        <th style="min-width:48px;" class="th-fmea">O</th>
-                                        <th style="min-width:48px;" class="th-fmea">D</th>
-                                        <th style="min-width:60px;" class="th-fmea">AP</th>
+                                        <th style="min-width:160px;" class="th-fmea"
+                                            title="Read-only — sourced from PFMEA. Not a CP column: shown for traceability only.">
+                                            <i class="fas fa-link"></i> FMEA Ref — Failure Mode <span
+                                                style="font-size:9px;opacity:.75;">(read-only)</span></th>
+                                        <th style="min-width:58px;" class="th-fmea"
+                                            title="Action Priority from PFMEA — read-only">FMEA AP <span
+                                                style="font-size:9px;opacity:.75;">(ref)</span></th>
                                         <th style="min-width:130px;"><i class="fas fa-arrows-alt-h"></i> Spec / Tol.
                                         </th>
-                                        <th style="min-width:150px;"><i class="fas fa-search"></i> Eval. Technique
-                                        </th>
+                                        <th style="min-width:150px;"><i class="fas fa-search"></i> Eval. Technique</th>
                                         <th style="min-width:90px;"><i class="fas fa-box"></i> Sample Size</th>
                                         <th style="min-width:110px;"><i class="fas fa-clock"></i> Sample Freq.</th>
                                         <th style="min-width:160px;"><i class="fas fa-shield-alt"></i> Control Method
                                         </th>
+                                        <th style="min-width:160px;" class="th-ep"
+                                            title="AIAG CP 4th Ed. — mandatory column"><i class="fas fa-lock"></i> Error
+                                            Proofing / Poka-yoke</th>
                                         <th style="min-width:160px;"><i class="fas fa-tools"></i> Reaction Plan</th>
+                                        <th style="min-width:130px;" title="Work Instruction or SOP reference number"><i
+                                                class="fas fa-file-alt"></i> Work Instruction Ref.</th>
                                         <th style="min-width:150px;"><i class="fas fa-user-check"></i> Responsible</th>
                                         <th style="min-width:48px;"></th>
                                     </tr>
@@ -1452,14 +1495,25 @@
             "", "Visual Inspection", "Digital Caliper", "Micrometer", "Go/No-Go Gauge",
             "Height Gauge", "Pin Gauge", "CMM (Coordinate Measuring Machine)", "Profilometer",
             "Coating Thickness Gauge", "Torque Wrench / Torque Meter", "Spectrometer",
-            "Hardness Tester", "Optical Comparator", "Automated Vision System", "Gauge R&R Study"
+            "Hardness Tester", "Optical Comparator", "Automated Vision System",
+            "Gauge R&R Study (MSA)", "Attribute Agreement Analysis"
+        ];
+
+        const errorProofingOptions = [
+            "", "None / N/A",
+            "Mechanical stop / limit switch", "Sensor (proximity / optical / force)",
+            "Vision system (automated)", "Go/No-Go fixture", "Mistake-proofing jig",
+            "Interlock — process cannot proceed if out of range",
+            "Colour / shape coding", "Counter / cycle monitor",
+            "Weight / torque verification system", "Barcode / RFID scan-before-proceed",
+            "Template / locating pin", "Electrical continuity test fixture"
         ];
 
         const controlMethods = [
             "", "SPC Chart (X-bar & R)", "SPC Chart (I-MR)", "First-off Inspection Report",
             "100% Inspection", "Operator Checklist", "Attribute Chart (p/np)", "Destructive Testing",
-            "Process Audit", "Automated Vision System", "MSA / Measurement System Analysis",
-            "Pre-control Chart", "Setup Approval Sheet", "Gauge R&R Study"
+            "Process Audit", "Automated Vision System", "Pre-control Chart", "Setup Approval Sheet",
+            "Error Proofing Device (Poka-yoke)", "Mistake-proofing Fixture"
         ];
 
         const reactionPlans = [
@@ -1471,11 +1525,18 @@
 
         const specialCharOptions = [
             { value: "", label: "— None —", cls: "" },
-            { value: "SC \u25C6", label: "SC \u25C6 \u2014 Special Characteristic", cls: "sc" },
-            { value: "CC \u25B3", label: "CC \u25B3 \u2014 Critical Characteristic", cls: "cc" },
-            { value: "YS", label: "YS \u2014 Safety (Government Regulatory)", cls: "ys" },
-            { value: "YC", label: "YC \u2014 Government Regulatory / Compliance", cls: "yc" },
-            { value: "\u2605", label: "\u2605 \u2014 Key Product Characteristic", cls: "kc" }
+            // AIAG generic symbols
+            { value: "SC \u25C6", label: "SC \u25C6 — Special Characteristic (AIAG generic)", cls: "sc" },
+            { value: "CC \u25B3", label: "CC \u25B3 — Critical Characteristic (AIAG generic)", cls: "cc" },
+            // Stellantis / Chrysler
+            { value: "YS", label: "YS — Safety / Gov. Regulatory (Stellantis)", cls: "ys" },
+            { value: "YC", label: "YC — Regulatory / Compliance (Stellantis)", cls: "yc" },
+            // Ford
+            { value: "\u2605", label: "\u2605 — Key Product Characteristic (Ford KPC)", cls: "kc" },
+            { value: "KCC", label: "KCC — Key Control Characteristic (Ford)", cls: "cc" },
+            // GM
+            { value: "HI", label: "HI — High Impact (GM)", cls: "sc" },
+            { value: "S/R", label: "S/R — Safety / Regulatory (GM)", cls: "ys" }
         ];
 
         const charTypeOptions = [
@@ -1490,7 +1551,6 @@
             "1 pc / day", "1 pc / lot", "Setup only (first-off)", "Per batch"
         ];
 
-        const numOptions = Array.from({ length: 10 }, (_, i) => i + 1);
         const tableBody = document.querySelector("#controlPlanTable tbody");
 
         /* =========================================================
@@ -1565,33 +1625,31 @@
             return sel;
         }
 
-        function makeNumericSelect(values, selected) {
-            const sel = document.createElement('select');
-            values.forEach(v => {
-                const o = document.createElement('option');
-                o.value = v; o.textContent = v;
-                if (String(v) === String(selected)) o.selected = true;
-                sel.appendChild(o);
-            });
-            return sel;
-        }
 
         /* =========================================================
            CREATE ROW
-           Columns (0-indexed):
-           0  Op.No   1  Process Name   2  Machine/Device  3  Char.No
-           4  Char.Type  5  Characteristic  6  Special Char
-           7  Failure Mode (FMEA)   8 S   9 O   10 D   11 AP
-           12 Spec/Tol  13 Eval.Technique  14 Sample Size  15 Sample Freq
-           16 Control Method  17 Reaction Plan  18 Responsible  19 Delete
+           Columns (0-indexed) — AIAG CP 4th Edition (2024):
+           0  Op.No       1  Process Name    2  Machine/Device  3  Char.No
+           4  Char.Type   5  Characteristic  6  Special Char.
+           7  [FMEA Ref] Failure Mode (read-only)  8  [FMEA Ref] AP (read-only)
+           9  Spec/Tol   10 Eval.Technique  11 Sample Size  12 Sample Freq
+           13 Control Method  14 Error Proofing (NEW)  15 Reaction Plan
+           16 Work Instruction Ref. (NEW)  17 Responsible  18 Delete
         ========================================================= */
         function createRow(data = {}) {
             const row = document.createElement('tr');
             const ta = (val, ph) =>
                 `<textarea rows="1" oninput="autoGrow(this)" placeholder="${ph || '...'}">${val || ''}</textarea>`;
 
-            const sVal = data.s || 1, oVal = data.o || 1, dVal = data.d || 1;
-            const apVal = getActionPriority(sVal, oVal, dVal);
+            // AP comes from FMEA import or default 'L'
+            const apVal = data.ap || (data.s && data.o && data.d
+                ? getActionPriority(data.s, data.o, data.d)
+                : 'L');
+
+            // Store s/o/d as data attributes for potential re-import use (not shown in UI)
+            row.dataset.s = data.s || 1;
+            row.dataset.o = data.o || 1;
+            row.dataset.d = data.d || 1;
 
             row.innerHTML = `
                 <td>${ta(data.opNo, '10')}</td>
@@ -1601,43 +1659,19 @@
                 <td class="char-type-cell"></td>
                 <td>${ta(data.characteristic)}</td>
                 <td class="special-char-cell"></td>
-                <td style="background:#fcfcfc;">${ta(data.failureMode, 'Failure mode from PFMEA')}</td>
-                <td style="background:#fcfcfc;"></td>
-                <td style="background:#fcfcfc;"></td>
-                <td style="background:#fcfcfc;"></td>
-                <td class="ap-cell ${getAPClass(apVal)}">${apVal}</td>
+                <td class="fmea-ref-cell" title="Read-only — sourced from PFMEA. For traceability only.">${ta(data.failureMode, 'Failure mode from PFMEA…')}</td>
+                <td class="ap-cell fmea-ref-cell ${getAPClass(apVal)}" style="text-align:center;vertical-align:middle;font-weight:600;" title="Action Priority from PFMEA — set during import">${apVal}</td>
                 <td>${ta(data.spec)}</td>
                 <td></td>
                 <td>${ta(data.sampleSize, 'e.g. 5 pcs')}</td>
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
+                <td>${ta(data.wiRef, 'e.g. WI-0042')}</td>
                 <td>${ta(data.responsible, 'Name \u2013 Role')}</td>
                 <td class="action-cell"><button class="btn-danger"><i class="fas fa-trash-alt"></i></button></td>
             `;
-
-            // S / O / D selects
-            const sS = makeNumericSelect(numOptions, sVal);
-            sS.className = 's-select';
-            const oS = makeNumericSelect(numOptions, oVal);
-            oS.className = 'o-select';
-            const dS = makeNumericSelect(numOptions, dVal);
-            dS.className = 'd-select';
-
-            row.cells[8].appendChild(sS);
-            row.cells[9].appendChild(oS);
-            row.cells[10].appendChild(dS);
-
-            // Live AP update
-            const updateAP = () => {
-                const newAp = getActionPriority(sS.value, oS.value, dS.value);
-                const cell = row.querySelector('.ap-cell');
-                cell.textContent = newAp;
-                cell.className = `ap-cell ${getAPClass(newAp)}`;
-            };
-            sS.addEventListener('change', updateAP);
-            oS.addEventListener('change', updateAP);
-            dS.addEventListener('change', updateAP);
 
             // Char Type select (col 4)
             const ctSel = makeSelect(charTypeOptions, data.charType || '', function () {
@@ -1657,17 +1691,20 @@
             scSel.className = scInit ? scInit.cls : '';
             row.cells[6].appendChild(scSel);
 
-            // Eval Technique (col 13)
-            row.cells[13].appendChild(makeSelect(evaluationTechniques, data.evaluation || ''));
+            // Eval Technique (col 10)
+            row.cells[10].appendChild(makeSelect(evaluationTechniques, data.evaluation || ''));
 
-            // Sample Frequency (col 15)
-            row.cells[15].appendChild(makeSelect(sampleFreqOptions, data.sampleFreq || ''));
+            // Sample Frequency (col 12)
+            row.cells[12].appendChild(makeSelect(sampleFreqOptions, data.sampleFreq || ''));
 
-            // Control Method (col 16)
-            row.cells[16].appendChild(makeSelect(controlMethods, data.controlMethod || ''));
+            // Control Method (col 13)
+            row.cells[13].appendChild(makeSelect(controlMethods, data.controlMethod || ''));
 
-            // Reaction Plan (col 17)
-            row.cells[17].appendChild(makeSelect(reactionPlans, data.reactionPlan || ''));
+            // Error Proofing (col 14 — NEW, AIAG CP 4th Ed.)
+            row.cells[14].appendChild(makeSelect(errorProofingOptions, data.errorProofing || ''));
+
+            // Reaction Plan (col 15)
+            row.cells[15].appendChild(makeSelect(reactionPlans, data.reactionPlan || ''));
 
             row.querySelector('.btn-danger').addEventListener('click', () => row.remove());
             tableBody.appendChild(row);
@@ -1729,13 +1766,15 @@
                             const parseSOD = v => v ? parseInt(String(v).split('-')[0]) : 1;
                             const prevCtrl = r['Current Prevention Controls'] || r['Prevention Controls'] || r['Controls'] || '';
                             const detCtrl = r['Current Detection Controls'] || r['Detection Controls'] || '';
+                            const s = parseSOD(r['S'] || r['Severity'] || 1);
+                            const o = parseSOD(r['O'] || r['Occurrence'] || 1);
+                            const d = parseSOD(r['D'] || r['Detection'] || 1);
                             createRow({
                                 processName: r['Function'] || r['Process Step'] || r['Process'] || '',
                                 failureMode: r['Failure Mode'] || '',
                                 characteristic: r['Failure Effect'] || r['Characteristic'] || '',
-                                s: parseSOD(r['S'] || r['Severity'] || 1),
-                                o: parseSOD(r['O'] || r['Occurrence'] || 1),
-                                d: parseSOD(r['D'] || r['Detection'] || 1),
+                                s, o, d,
+                                ap: getActionPriority(s, o, d),
                                 controlMethod: [prevCtrl, detCtrl].filter(Boolean).join(' / ')
                             });
                         });
@@ -1762,6 +1801,7 @@
         function loadExample() {
             tableBody.innerHTML = '';
             document.getElementById('controlPlanNumber').value = 'CP-0011';
+            document.getElementById('modelYear').value = '2025 MY / EV-Platform-3';
             document.getElementById('fmeaReference').value = 'PFMEA-EV-001';
             document.getElementById('originalDate').value = '2024-01-15';
             document.getElementById('revisionDate').value = '2025-03-10';
@@ -1784,10 +1824,10 @@
             document.getElementById('supplierApprovalDate').value = '2025-03-18';
 
             const rows = [
-                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', s: 7, o: 3, d: 4, spec: '250 ± 10 kN', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
-                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC ◆', failureMode: 'Hole out of tolerance — assembly interference', s: 7, o: 3, d: 4, spec: '10.00 ± 0.05 mm', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', reactionPlan: 'Stop Process & Quarantine', responsible: 'J. Smith – Quality Inspector' },
-                { opNo: '20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', s: 5, o: 5, d: 2, spec: 'Ra ≤ 1.6 µm', evaluation: 'Profilometer', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', reactionPlan: 'Adjust Machine / Tool', responsible: 'M. Garcia – Process Engineer' },
-                { opNo: '30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Product', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', s: 9, o: 4, d: 5, spec: '3.0 ± 0.2 mm', evaluation: 'Visual Inspection', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', reactionPlan: 'Notify Supervisor', responsible: 'R. Chen – Quality Engineer' }
+                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', ap: 'M', spec: '250 ± 10 kN', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Sensor (proximity / optical / force)', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-01', responsible: 'J. Smith – Quality Inspector' },
+                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC \u25C6', failureMode: 'Hole out of tolerance — assembly interference', ap: 'M', spec: '10.00 ± 0.05 mm', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Go/No-Go fixture', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-02', responsible: 'J. Smith – Quality Inspector' },
+                { opNo: '20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', ap: 'L', spec: 'Ra \u2264 1.6 \u00b5m', evaluation: 'Profilometer', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', errorProofing: 'None / N/A', reactionPlan: 'Adjust Machine / Tool', wiRef: 'WI-CNC-05', responsible: 'M. Garcia – Process Engineer' },
+                { opNo: '30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Product', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', ap: 'H', spec: '3.0 ± 0.2 mm', evaluation: 'Visual Inspection', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', errorProofing: 'Interlock — process cannot proceed if out of range', reactionPlan: 'Notify Supervisor', wiRef: 'WI-WELD-03', responsible: 'R. Chen – Quality Engineer' }
             ];
 
             rows.forEach(r => createRow(r));
@@ -1799,7 +1839,7 @@
         ========================================================= */
         function resetPlan() {
             tableBody.innerHTML = '';
-            ['controlPlanNumber', 'fmeaReference', 'originalDate', 'revisionDate',
+            ['controlPlanNumber', 'modelYear', 'fmeaReference', 'originalDate', 'revisionDate',
                 'partNumber', 'partName', 'supplierPlant', 'supplierCode', 'customerPlant',
                 'contactPhone', 'coreTeam', 'drawingNumber',
                 'engApprovalName', 'engApprovalDate', 'qualApprovalName', 'qualApprovalDate',
@@ -1823,8 +1863,8 @@
             tbl.className = 'results-table';
             const thead = document.createElement('thead');
             const hRow = document.createElement('tr');
-            const headers = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
-            headers.pop();
+            const headers = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim().replace(/\s*\(read-only\)|\s*\(ref\)/gi, '').trim());
+            headers.pop(); // remove delete col
             headers.forEach(h => { const th = document.createElement('th'); th.textContent = h; hRow.appendChild(th); });
             thead.appendChild(hRow);
             tbl.appendChild(thead);
@@ -1837,7 +1877,7 @@
                     const td = document.createElement('td');
                     const inp = cell.querySelector('textarea, select');
                     const val = inp ? inp.value : cell.innerText.trim();
-                    if (headers[i] === 'AP') { td.className = `ap-cell ${getAPClass(val)}`; td.style.fontWeight = 'bold'; }
+                    if (headers[i] && headers[i].includes('AP')) { td.className = `ap-cell ${getAPClass(val)}`; td.style.fontWeight = 'bold'; }
                     td.textContent = val;
                     dr.appendChild(td);
                 });
@@ -1847,88 +1887,108 @@
             container.appendChild(tbl);
         }
 
-    /* =========================================================
-            EXPORT TO EXCEL — Validates required fields & hides FMEA cols
-        ========================================================= */
+        /* =========================================================
+                EXPORT TO EXCEL — Validates required fields & hides FMEA cols
+            ========================================================= */
         function exportToExcel() {
-                const missing = validateHeader();
-                if (missing.length > 0) {
-                    document.getElementById('missingFieldsList').innerHTML = missing.map(m => `<li>${m}</li>`).join('');
-                    document.getElementById('validationModal').classList.add('open');
-                    return;
+            const missing = validateHeader();
+            if (missing.length > 0) {
+                document.getElementById('missingFieldsList').innerHTML = missing.map(m => `<li>${m}</li>`).join('');
+                document.getElementById('validationModal').classList.add('open');
+                return;
+            }
+
+            const planType = document.querySelector('input[name="planType"]:checked')?.value || '';
+
+            // 1. Obtener todos los encabezados de la tabla web
+            const allHeaders = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim().replace(/\s*\(read-only\)|\s*\(ref\)/gi, '').trim());
+
+            // 2. Excluir solo el botón de borrar (último índice)
+            const excludeIndices = [allHeaders.length - 1];
+
+            // 3. Filtrar los encabezados para el Excel
+            const headers = allHeaders.filter((_, index) => !excludeIndices.includes(index));
+            const numCols = headers.length;
+
+            const data = [];
+
+            // Título con edición normativa vigente
+            data.push(['SIGMA EXACTA \u2014 AIAG Control Plan Reference Manual, 4th Edition (2024)']);
+            data.push(['Generated on: ' + new Date().toLocaleString()]);
+            data.push([]);
+
+            data.push(['CONTROL PLAN HEADER']);
+            data.push(['Control Plan Type:', planType]);
+            data.push(['Control Plan Number:', document.getElementById('controlPlanNumber').value]);
+            data.push(['FMEA Reference Number:', document.getElementById('fmeaReference').value]);
+            data.push(['Model Year(s) / Program(s):', document.getElementById('modelYear').value]);
+            data.push(['Original Date:', document.getElementById('originalDate').value]);
+            data.push(['Revision Date:', document.getElementById('revisionDate').value]);
+            data.push(['Part Number / Change Level:', document.getElementById('partNumber').value]);
+            data.push(['Part Name / Description:', document.getElementById('partName').value]);
+            data.push(['Supplier / Plant:', document.getElementById('supplierPlant').value]);
+            data.push(['Supplier Code:', document.getElementById('supplierCode').value]);
+            data.push(['Customer Name / Plant:', document.getElementById('customerPlant').value]);
+            data.push(['Contact / Phone:', document.getElementById('contactPhone').value]);
+            data.push(['Core Team:', document.getElementById('coreTeam').value]);
+            data.push(['Drawing Number / Level:', document.getElementById('drawingNumber').value]);
+            data.push([]);
+
+            data.push(['APPROVALS']);
+            data.push(['Engineering Approval (Customer):', document.getElementById('engApprovalName').value, 'Date:', document.getElementById('engApprovalDate').value]);
+            data.push(['Quality Approval (Customer):', document.getElementById('qualApprovalName').value, 'Date:', document.getElementById('qualApprovalDate').value]);
+            data.push(['Supplier / Plant Approval:', document.getElementById('supplierApprovalName').value, 'Date:', document.getElementById('supplierApprovalDate').value]);
+            data.push([]);
+
+            // Summary of special characteristics
+            const scRows = [];
+            tableBody.querySelectorAll('tr').forEach(row => {
+                const sc = row.querySelector('.special-char-cell select');
+                if (sc && sc.value) {
+                    const charCell = row.querySelectorAll('td')[5];
+                    const charNoCell = row.querySelectorAll('td')[3];
+                    const opCell = row.querySelectorAll('td')[0];
+                    scRows.push([
+                        opCell?.querySelector('textarea')?.value || '',
+                        charNoCell?.querySelector('textarea')?.value || '',
+                        charCell?.querySelector('textarea')?.value || '',
+                        sc.value
+                    ]);
                 }
-
-                const planType = document.querySelector('input[name="planType"]:checked')?.value || '';
-
-                // 1. Obtener todos los encabezados de la tabla web
-                const allHeaders = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim());
-
-                // 2. Definir los índices a excluir: 
-                // 7: Failure Mode, 8: S, 9: O, 10: D, 11: AP, y el último (Botón de basura)
-                const excludeIndices = [7, 8, 9, 10, 11, allHeaders.length - 1];
-
-                // 3. Filtrar los encabezados para el Excel
-                const headers = allHeaders.filter((_, index) => !excludeIndices.includes(index));
-                const numCols = headers.length;
-
-                const data = [];
-
-                // Título actualizado según normativa vigente
-                data.push(['SIGMA EXACTA \u2014 AIAG CONTROL PLAN REFERENCE MANUAL (1st Edition)']);
-                data.push(['Generated on: ' + new Date().toLocaleString()]);
+            });
+            if (scRows.length > 0) {
+                data.push(['SPECIAL CHARACTERISTICS SUMMARY']);
+                data.push(['Op. No.', 'Char. No.', 'Characteristic', 'Classification']);
+                scRows.forEach(r => data.push(r));
                 data.push([]);
+            }
 
-                data.push(['CONTROL PLAN HEADER']);
-                data.push(['Control Plan Type:', planType]);
-                data.push(['Control Plan Number:', document.getElementById('controlPlanNumber').value]);
-                data.push(['FMEA Reference Number:', document.getElementById('fmeaReference').value]);
-                data.push(['Original Date:', document.getElementById('originalDate').value]);
-                data.push(['Revision Date:', document.getElementById('revisionDate').value]);
-                data.push(['Part Number / Change Level:', document.getElementById('partNumber').value]);
-                data.push(['Part Name / Description:', document.getElementById('partName').value]);
-                data.push(['Supplier / Plant:', document.getElementById('supplierPlant').value]);
-                data.push(['Supplier Code:', document.getElementById('supplierCode').value]);
-                data.push(['Customer Name / Plant:', document.getElementById('customerPlant').value]);
-                data.push(['Contact / Phone:', document.getElementById('contactPhone').value]);
-                data.push(['Core Team:', document.getElementById('coreTeam').value]);
-                data.push(['Drawing Number / Level:', document.getElementById('drawingNumber').value]);
-                data.push([]);
+            data.push(headers);
 
-                data.push(['APPROVALS']);
-                data.push(['Engineering Approval (Customer):', document.getElementById('engApprovalName').value, 'Date:', document.getElementById('engApprovalDate').value]);
-                data.push(['Quality Approval (Customer):', document.getElementById('qualApprovalName').value, 'Date:', document.getElementById('qualApprovalDate').value]);
-                data.push(['Supplier / Plant Approval:', document.getElementById('supplierApprovalName').value, 'Date:', document.getElementById('supplierApprovalDate').value]);
-                data.push([]);
-
-                data.push(headers);
-
-                // 4. Extraer las filas filtrando las columnas excluidas
-                tableBody.querySelectorAll('tr').forEach(row => {
-                    const rowData = [];
-                    row.querySelectorAll('td').forEach((cell, index) => {
-                        // Solo agregamos la información si la columna no está en la lista de exclusión
-                        if (!excludeIndices.includes(index)) {
-                            const inp = cell.querySelector('textarea, select');
-                            rowData.push(inp ? inp.value : cell.innerText.trim());
-                        }
-                    });
-                    data.push(rowData);
+            // 4. Extraer las filas filtrando las columnas excluidas
+            tableBody.querySelectorAll('tr').forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach((cell, index) => {
+                    if (!excludeIndices.includes(index)) {
+                        const inp = cell.querySelector('textarea, select');
+                        rowData.push(inp ? inp.value : cell.innerText.trim());
+                    }
                 });
+                data.push(rowData);
+            });
 
-                // 5. Generar el Excel
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(data);
+            // 5. Generar el Excel
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
 
-                // Ajustar las celdas combinadas del título principal para que coincidan con las nuevas columnas
-                if (!ws['!merges']) ws['!merges'] = [];
-                ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
-                ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
+            if (!ws['!merges']) ws['!merges'] = [];
+            ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } });
+            ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } });
 
-                // Ancho de columnas
-                ws['!cols'] = headers.map(() => ({ wch: 18 }));
+            ws['!cols'] = headers.map(() => ({ wch: 20 }));
 
-                XLSX.utils.book_append_sheet(wb, ws, 'Control Plan');
-                XLSX.writeFile(wb, `ControlPlan_${document.getElementById('controlPlanNumber').value || 'Export'}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, 'Control Plan');
+            XLSX.writeFile(wb, `ControlPlan_${document.getElementById('controlPlanNumber').value || 'Export'}.xlsx`);
         }
 
         /* =========================================================
