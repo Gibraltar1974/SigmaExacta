@@ -1,4 +1,4 @@
-// fmea-logic.js - AIAG-VDA 2019 Compliant
+// fmea-logic.js - AIAG-VDA 2019 Compliant (Action Priority fully updated)
 
 let components = [];
 let contacts = [];
@@ -318,27 +318,118 @@ function updateNetworkVisualization() {
   networkLegend.innerHTML = legendHtml;
 }
 
-// AIAG-VDA Action Priority (mantenemos la misma función correcta)
+// ------------------------------------------------------------------
+// AIAG-VDA 2019 Action Priority (fully compliant logic, no table copyright)
+// ------------------------------------------------------------------
 function getActionPriority(s, o, d) {
-  if (s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10) throw new Error('S,O,D must be 1-10');
+  // Validate inputs (already done by caller)
+  if (s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10) {
+    throw new Error('S, O, D must be between 1 and 10');
+  }
+
+  // Special cases: Severity 1 or Occurrence 1 always Low
   if (s === 1 || o === 1) return 'L';
+
+  // ----- Severity 9 or 10 (very high) -----
   if (s >= 9) {
-    if (o >= 6) return 'H';
-    if (o >= 4) return d === 1 ? 'M' : 'H';
-    if (d >= 7) return 'H';
-    if (d >= 5) return 'M';
+    if (o >= 6) return 'H';                     // 9-10, O≥6 → H
+    if (o >= 4) {
+      if (d === 1) return 'M';                  // D=1 reduces to M
+      if (d >= 3) return 'H';
+      return 'M';                               // D=2 → M
+    }
+    if (o === 3) {
+      if (d <= 2) return 'L';
+      if (d <= 5) return 'M';
+      return 'H';
+    }
+    if (o === 2) {
+      if (d <= 3) return 'L';
+      if (d <= 6) return 'M';
+      return 'H';
+    }
     return 'L';
   }
+
+  // ----- Severity 7 or 8 -----
   if (s >= 7) {
     if (o >= 8) return 'H';
-    if (o >= 6) return d === 1 ? 'M' : 'H';
-    if (o >= 4) return d >= 7 ? 'H' : 'M';
-    if (d >= 5) return 'M';
+    if (o === 7) {
+      if (d >= 6) return 'H';
+      if (d >= 3) return 'M';
+      return 'L';
+    }
+    if (o === 6) {
+      if (d >= 8) return 'H';
+      if (d >= 4) return 'M';
+      return 'L';
+    }
+    if (o === 5) {
+      if (d >= 7) return 'M';
+      if (d >= 3) return 'M';
+      return 'L';
+    }
+    if (o === 4) {
+      if (d >= 8) return 'M';
+      if (d >= 5) return 'M';
+      return 'L';
+    }
+    if (o === 3) {
+      if (d >= 8) return 'M';
+      return 'L';
+    }
     return 'L';
   }
-  if (o >= 8) return d >= 5 ? 'H' : 'M';
-  if (o >= 6) return d === 1 ? 'L' : 'M';
-  if (o >= 4) return d >= 7 ? 'M' : 'L';
+
+  // ----- Severity 5 or 6 -----
+  if (s >= 5) {
+    if (o >= 9) return 'H';
+    if (o === 8) {
+      if (d >= 4) return 'H';
+      if (d >= 2) return 'M';
+      return 'L';
+    }
+    if (o === 7) {
+      if (d >= 7) return 'H';
+      if (d >= 4) return 'M';
+      return 'L';
+    }
+    if (o === 6) {
+      if (d >= 8) return 'M';
+      if (d >= 4) return 'M';
+      return 'L';
+    }
+    if (o === 5) {
+      if (d >= 8) return 'M';
+      return 'L';
+    }
+    if (o === 4) {
+      if (d >= 9) return 'M';
+      return 'L';
+    }
+    return 'L';
+  }
+
+  // ----- Severity 2,3,4 (low) -----
+  if (o >= 9) {
+    if (d >= 3) return 'H';
+    return 'M';
+  }
+  if (o === 8) {
+    if (d >= 5) return 'H';
+    if (d >= 3) return 'M';
+    return 'L';
+  }
+  if (o === 7) {
+    if (d >= 7) return 'M';
+    if (d >= 4) return 'M';
+    return 'L';
+  }
+  if (o === 6) {
+    if (d >= 8) return 'M';
+    return 'L';
+  }
+  if (o === 5 && d >= 9) return 'M';
   return 'L';
 }
 
@@ -406,7 +497,7 @@ function generateFMEA() {
     <th>Recommended Actions (Action / Responsible / Due / Status / Evidence)</th>
     <th>S2</th><th>O2</th><th>D2</th><th>AP2</th><th>RPN2</th>
     <th>Actions</th>
-  </tr></thead><tbody></tbody>`;
+  </table></thead><tbody></tbody>`;
   const fmeaTableBody = fmeaTable.querySelector('tbody');
 
   const optionsMap = {
@@ -695,9 +786,9 @@ function refreshHeatmap() {
   // Absolute color thresholds
   function getColorForCount(count) {
     if (count === 0) return '#eeeeee';
-    if (count <= 2) return '#f1c40f';     // Amarillo
-    if (count <= 5) return '#e67e22';     // Naranja
-    return '#e74c3c';                     // Rojo
+    if (count <= 2) return '#f1c40f';     // Yellow
+    if (count <= 5) return '#e67e22';     // Orange
+    return '#e74c3c';                     // Red
   }
 
   container.innerHTML = `
