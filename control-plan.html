@@ -614,6 +614,16 @@
             color: #1a7a4e;
         }
 
+        .char-type-cell select.safety-type {
+            font-weight: 600;
+            color: #c0392b;
+        }
+
+        .char-type-cell select.regulatory-type {
+            font-weight: 600;
+            color: #d35400;
+        }
+
         .action-cell {
             text-align: center;
             vertical-align: middle;
@@ -898,6 +908,129 @@
             background-color: #2980b9;
         }
 
+        /* =========================================================
+           PRINT LAYOUT (OBS-3) — IATF audit paper output
+        ========================================================= */
+        @media print {
+            body {
+                background: #fff !important;
+                font-size: 10px;
+            }
+
+            .main-header p,
+            .main-action-buttons,
+            .tabs-nav,
+            .tab-btn,
+            .fmea-import-section,
+            .button-container,
+            .tab-nav-buttons,
+            #tab-theory,
+            #tab-results,
+            .action-cell,
+            .th-fmea,
+            td.fmea-ref-cell,
+            .btn-danger,
+            .modal-overlay {
+                display: none !important;
+            }
+
+            .tabs-container {
+                border: none !important;
+            }
+
+            .wizard-tab-content {
+                display: block !important;
+            }
+
+            #tab-tool {
+                display: block !important;
+            }
+
+            .main-header {
+                border-bottom: 2px solid #000;
+                padding: 0.5rem;
+            }
+
+            .main-header h1 {
+                font-size: 14px;
+                justify-content: flex-start;
+            }
+
+            .std-badge {
+                background: #000 !important;
+            }
+
+            .content-block,
+            .control-plan-header {
+                box-shadow: none !important;
+                border: 1px solid #999 !important;
+                page-break-inside: avoid;
+                margin-bottom: 0.5rem;
+            }
+
+            .header-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.4rem;
+            }
+
+            .approval-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.4rem;
+            }
+
+            .table-container {
+                overflow-x: visible !important;
+            }
+
+            #controlPlanTable {
+                font-size: 8px;
+                table-layout: fixed;
+                width: 100%;
+            }
+
+            #controlPlanTable th {
+                font-size: 7.5px;
+                padding: 3px 2px;
+                background: #2c3e50 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            #controlPlanTable td {
+                padding: 2px 3px;
+            }
+
+            #controlPlanTable textarea,
+            #controlPlanTable select {
+                font-size: 8px;
+                border: none !important;
+                background: transparent !important;
+                padding: 0;
+            }
+
+            .ap-high,
+            .ap-medium,
+            .ap-low {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            #revHistoryTable {
+                font-size: 8.5px;
+            }
+
+            #revHistoryTable input {
+                border: none;
+                font-size: 8.5px;
+                width: 100%;
+            }
+
+            @page {
+                size: A3 landscape;
+                margin: 1cm;
+            }
+        }
+
         .btn-next-tab.btn-prev {
             background-color: #95a5a6;
         }
@@ -905,6 +1038,7 @@
         .btn-next-tab.btn-prev:hover {
             background-color: #7f8c8d;
         }
+
 
         /* --- Validation modal --- */
         .modal-overlay {
@@ -994,13 +1128,17 @@
                     <i class="fas fa-tasks"></i>
                 </div>
                 Free Online Control Plan Creator Tool
-                <span class="std-badge">AIAG-VDA 2019</span>
+                <span class="std-badge">AIAG CP 4th Ed. 2024</span>
             </h1>
             <p>Ensuring Quality at Every Step of Your Process — APQP-aligned, PPAP-ready, IATF 16949 compliant</p>
 
             <div class="main-action-buttons">
                 <button id="globalLoadExampleBtn" class="btn-example">
                     <i class="fas fa-play-circle"></i> Load Example
+                </button>
+                <button id="saveDraftBtn" class="btn-success" onclick="saveToStorage()"
+                    style="background-color:#2980b9;">
+                    <i class="fas fa-save"></i> Save Draft
                 </button>
                 <button id="globalResetBtn" class="btn-reset">
                     <i class="fas fa-sync-alt"></i> Reset All
@@ -1262,9 +1400,6 @@
                             <input type="file" id="fmeaExcelInput" accept=".xlsx, .xls" style="display:none;">
                             <button class="btn-success" onclick="document.getElementById('fmeaExcelInput').click()"><i
                                     class="fas fa-upload"></i> Upload FMEA Excel</button>
-                            <button id="loadLastFmeaBtn" class="btn-primary"
-                                title="Attempt to load last FMEA from browser session"><i class="fas fa-sync"></i>
-                                Auto-Sync Session FMEA</button>
                         </div>
                     </div>
 
@@ -1399,6 +1534,33 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="header-section-title" style="margin-top:1.4rem;">
+                            Revision History
+                            <span
+                                style="font-weight:400;font-size:0.8rem;color:#888;text-transform:none;letter-spacing:0;">(IATF
+                                16949 §7.5.3.1 — required for all revisions)</span>
+                        </div>
+                        <div style="overflow-x:auto;margin-bottom:0.5rem;">
+                            <table id="revHistoryTable" style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+                                <thead>
+                                    <tr style="background:var(--primary-color);color:#fff;">
+                                        <th style="padding:0.5rem 0.75rem;text-align:left;min-width:110px;">Rev. Date
+                                        </th>
+                                        <th style="padding:0.5rem 0.75rem;text-align:left;min-width:200px;">Description
+                                            of Change</th>
+                                        <th style="padding:0.5rem 0.75rem;text-align:left;min-width:130px;">Changed By
+                                        </th>
+                                        <th style="padding:0.5rem 0.75rem;text-align:left;min-width:130px;">Approved By
+                                        </th>
+                                        <th style="padding:0.5rem 0.75rem;text-align:center;width:48px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="revHistoryBody"></tbody>
+                            </table>
+                        </div>
+                        <button class="btn-primary" style="font-size:0.85rem;padding:0.4rem 1rem;margin:0 0 0.5rem 0;"
+                            onclick="addRevHistoryRow()"><i class="fas fa-plus"></i> Add Revision</button>
                     </div>
 
                     <!-- TABLE -->
@@ -1408,6 +1570,9 @@
                                 <thead>
                                     <tr>
                                         <th style="min-width:65px;"><i class="fas fa-hashtag"></i> Op. No.</th>
+                                        <th style="min-width:90px;"
+                                            title="Process Flow Diagram step reference — IATF 16949 §8.3.4 traceability">
+                                            <i class="fas fa-sitemap"></i> PFD Ref.</th>
                                         <th style="min-width:140px;"><i class="fas fa-cogs"></i> Process Name</th>
                                         <th style="min-width:120px;"><i class="fas fa-robot"></i> Machine / Device</th>
                                         <th style="min-width:70px;"><i class="fas fa-tag"></i> Char. No.</th>
@@ -1418,13 +1583,20 @@
                                         <th style="min-width:160px;" class="th-fmea"
                                             title="Read-only — sourced from PFMEA. Not a CP column: shown for traceability only.">
                                             <i class="fas fa-link"></i> FMEA Ref — Failure Mode <span
-                                                style="font-size:9px;opacity:.75;">(read-only)</span></th>
+                                                style="font-size:9px;opacity:.75;">(read-only)</span>
+                                        </th>
                                         <th style="min-width:58px;" class="th-fmea"
                                             title="Action Priority from PFMEA — read-only">FMEA AP <span
                                                 style="font-size:9px;opacity:.75;">(ref)</span></th>
                                         <th style="min-width:130px;"><i class="fas fa-arrows-alt-h"></i> Spec / Tol.
                                         </th>
                                         <th style="min-width:150px;"><i class="fas fa-search"></i> Eval. Technique</th>
+                                        <th style="min-width:110px;"
+                                            title="Gage or Fixture identifier number — AIAG CP §3.2 / IATF 16949 §7.1.5">
+                                            <i class="fas fa-ruler"></i> Gage / Fixture No.</th>
+                                        <th style="min-width:100px;"
+                                            title="MSA study number and status — IATF 16949 §7.1.5.1"><i
+                                                class="fas fa-chart-bar"></i> MSA Ref.</th>
                                         <th style="min-width:90px;"><i class="fas fa-box"></i> Sample Size</th>
                                         <th style="min-width:110px;"><i class="fas fa-clock"></i> Sample Freq.</th>
                                         <th style="min-width:160px;"><i class="fas fa-shield-alt"></i> Control Method
@@ -1435,6 +1607,9 @@
                                         <th style="min-width:160px;"><i class="fas fa-tools"></i> Reaction Plan</th>
                                         <th style="min-width:130px;" title="Work Instruction or SOP reference number"><i
                                                 class="fas fa-file-alt"></i> Work Instruction Ref.</th>
+                                        <th style="min-width:130px;"
+                                            title="Where measurement results are recorded — AIAG CP §3.3"><i
+                                                class="fas fa-database"></i> Where Recorded</th>
                                         <th style="min-width:150px;"><i class="fas fa-user-check"></i> Responsible</th>
                                         <th style="min-width:48px;"></th>
                                     </tr>
@@ -1542,7 +1717,9 @@
         const charTypeOptions = [
             { value: "", label: "— Select —", cls: "" },
             { value: "Product", label: "Product Characteristic", cls: "product" },
-            { value: "Process", label: "Process Parameter", cls: "process" }
+            { value: "Process", label: "Process Parameter", cls: "process" },
+            { value: "Safety", label: "Safety Characteristic", cls: "safety-type" },
+            { value: "Regulatory", label: "Regulatory Characteristic", cls: "regulatory-type" }
         ];
 
         const sampleFreqOptions = [
@@ -1629,82 +1806,85 @@
         /* =========================================================
            CREATE ROW
            Columns (0-indexed) — AIAG CP 4th Edition (2024):
-           0  Op.No       1  Process Name    2  Machine/Device  3  Char.No
-           4  Char.Type   5  Characteristic  6  Special Char.
-           7  [FMEA Ref] Failure Mode (read-only)  8  [FMEA Ref] AP (read-only)
-           9  Spec/Tol   10 Eval.Technique  11 Sample Size  12 Sample Freq
-           13 Control Method  14 Error Proofing (NEW)  15 Reaction Plan
-           16 Work Instruction Ref. (NEW)  17 Responsible  18 Delete
+           0  Op.No       1  PFD Ref.        2  Process Name    3  Machine/Device  4  Char.No
+           5  Char.Type   6  Characteristic  7  Special Char.
+           8  [FMEA Ref] Failure Mode (read-only)  9  [FMEA Ref] AP (read-only)
+           10 Spec/Tol   11 Eval.Technique  12 Gage/Fixture No. 13 MSA Ref.
+           14 Sample Size  15 Sample Freq   16 Control Method
+           17 Error Proofing (AIAG CP 4th Ed.)  18 Reaction Plan
+           19 Work Instruction Ref.  20 Where Recorded  21 Responsible  22 Delete
         ========================================================= */
         function createRow(data = {}) {
             const row = document.createElement('tr');
             const ta = (val, ph) =>
                 `<textarea rows="1" oninput="autoGrow(this)" placeholder="${ph || '...'}">${val || ''}</textarea>`;
 
-            // AP comes from FMEA import or default 'L'
             const apVal = data.ap || (data.s && data.o && data.d
                 ? getActionPriority(data.s, data.o, data.d)
                 : 'L');
 
-            // Store s/o/d as data attributes for potential re-import use (not shown in UI)
             row.dataset.s = data.s || 1;
             row.dataset.o = data.o || 1;
             row.dataset.d = data.d || 1;
 
             row.innerHTML = `
                 <td>${ta(data.opNo, '10')}</td>
+                <td>${ta(data.pfdRef, 'e.g. PFD-10')}</td>
                 <td>${ta(data.processName)}</td>
                 <td>${ta(data.machine)}</td>
                 <td>${ta(data.charNo, 'e.g. 1.1')}</td>
                 <td class="char-type-cell"></td>
                 <td>${ta(data.characteristic)}</td>
                 <td class="special-char-cell"></td>
-                <td class="fmea-ref-cell" title="Read-only — sourced from PFMEA. For traceability only.">${ta(data.failureMode, 'Failure mode from PFMEA…')}</td>
-                <td class="ap-cell fmea-ref-cell ${getAPClass(apVal)}" style="text-align:center;vertical-align:middle;font-weight:600;" title="Action Priority from PFMEA — set during import">${apVal}</td>
+                <td class="fmea-ref-cell" title="Read-only — sourced from PFMEA. For traceability only.">${ta(data.failureMode, 'Failure mode from PFMEA\u2026')}</td>
+                <td class="ap-cell fmea-ref-cell ${getAPClass(apVal)}" style="text-align:center;vertical-align:middle;font-weight:600;" title="Action Priority from PFMEA \u2014 set during import">${apVal}</td>
                 <td>${ta(data.spec)}</td>
                 <td></td>
+                <td>${ta(data.gageNo, 'e.g. G-0042')}</td>
+                <td>${ta(data.msaRef, 'e.g. MSA-001 \u2713')}</td>
                 <td>${ta(data.sampleSize, 'e.g. 5 pcs')}</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td>${ta(data.wiRef, 'e.g. WI-0042')}</td>
+                <td>${ta(data.whereRecorded, 'e.g. SPC Form F-12')}</td>
                 <td>${ta(data.responsible, 'Name \u2013 Role')}</td>
                 <td class="action-cell"><button class="btn-danger"><i class="fas fa-trash-alt"></i></button></td>
             `;
 
-            // Char Type select (col 4)
+            // Char Type select (col 5)
             const ctSel = makeSelect(charTypeOptions, data.charType || '', function () {
                 const f = charTypeOptions.find(o => o.value === this.value);
                 this.className = f ? f.cls : '';
             });
             const ctInit = charTypeOptions.find(o => o.value === (data.charType || ''));
             ctSel.className = ctInit ? ctInit.cls : '';
-            row.cells[4].appendChild(ctSel);
+            row.cells[5].appendChild(ctSel);
 
-            // Special Char select (col 6)
+            // Special Char select (col 7)
             const scSel = makeSelect(specialCharOptions, data.specialChar || '', function () {
                 const f = specialCharOptions.find(o => o.value === this.value);
                 this.className = f ? f.cls : '';
             });
             const scInit = specialCharOptions.find(o => o.value === (data.specialChar || ''));
             scSel.className = scInit ? scInit.cls : '';
-            row.cells[6].appendChild(scSel);
+            row.cells[7].appendChild(scSel);
 
-            // Eval Technique (col 10)
-            row.cells[10].appendChild(makeSelect(evaluationTechniques, data.evaluation || ''));
+            // Eval Technique (col 11)
+            row.cells[11].appendChild(makeSelect(evaluationTechniques, data.evaluation || ''));
 
-            // Sample Frequency (col 12)
-            row.cells[12].appendChild(makeSelect(sampleFreqOptions, data.sampleFreq || ''));
+            // Sample Frequency (col 15)
+            row.cells[15].appendChild(makeSelect(sampleFreqOptions, data.sampleFreq || ''));
 
-            // Control Method (col 13)
-            row.cells[13].appendChild(makeSelect(controlMethods, data.controlMethod || ''));
+            // Control Method (col 16)
+            row.cells[16].appendChild(makeSelect(controlMethods, data.controlMethod || ''));
 
-            // Error Proofing (col 14 — NEW, AIAG CP 4th Ed.)
-            row.cells[14].appendChild(makeSelect(errorProofingOptions, data.errorProofing || ''));
+            // Error Proofing (col 17 — AIAG CP 4th Ed.)
+            row.cells[17].appendChild(makeSelect(errorProofingOptions, data.errorProofing || ''));
 
-            // Reaction Plan (col 15)
-            row.cells[15].appendChild(makeSelect(reactionPlans, data.reactionPlan || ''));
+            // Reaction Plan (col 18)
+            row.cells[18].appendChild(makeSelect(reactionPlans, data.reactionPlan || ''));
 
             row.querySelector('.btn-danger').addEventListener('click', () => row.remove());
             tableBody.appendChild(row);
@@ -1712,8 +1892,100 @@
         }
 
         /* =========================================================
-           REQUIRED FIELD VALIDATION (AIAG CP §2.1, IATF 16949 §7.5)
+           REVISION HISTORY ROW
         ========================================================= */
+        function addRevHistoryRow(data = {}) {
+            const tbody = document.getElementById('revHistoryBody');
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #ddd';
+            const cellStyle = 'padding:0.3rem 0.5rem;';
+            const inp = (val, ph, type) => `<input type="${type || 'text'}" value="${val || ''}" placeholder="${ph || ''}" style="width:100%;border:1px solid #ddd;border-radius:4px;padding:0.35rem 0.5rem;font-family:'Nunito',sans-serif;font-size:0.85rem;">`;
+            tr.innerHTML = `
+                <td style="${cellStyle}">${inp(data.date, '', 'date')}</td>
+                <td style="${cellStyle}">${inp(data.desc, 'e.g. Rev A — initial release')}</td>
+                <td style="${cellStyle}">${inp(data.by, 'Name / Dept.')}</td>
+                <td style="${cellStyle}">${inp(data.approved, 'Name / Title')}</td>
+                <td style="text-align:center;padding:0.3rem;"><button class="btn-danger" style="padding:4px 8px;margin:0;" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        /* =========================================================
+           LOCALSTORAGE PERSISTENCE (NC-9)
+        ========================================================= */
+        const LS_KEY = 'sigma_cp_v2';
+
+        function saveToStorage() {
+            try {
+                const headerIds = ['controlPlanNumber', 'modelYear', 'fmeaReference', 'originalDate', 'revisionDate',
+                    'partNumber', 'partName', 'supplierPlant', 'supplierCode', 'customerPlant', 'contactPhone',
+                    'coreTeam', 'drawingNumber', 'engApprovalName', 'engApprovalDate', 'qualApprovalName',
+                    'qualApprovalDate', 'supplierApprovalName', 'supplierApprovalDate'];
+                const header = {};
+                headerIds.forEach(id => { const el = document.getElementById(id); if (el) header[id] = el.value; });
+                header.planType = document.querySelector('input[name="planType"]:checked')?.value || 'Production';
+
+                const revHistory = [];
+                document.querySelectorAll('#revHistoryBody tr').forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 4) revHistory.push({ date: inputs[0].value, desc: inputs[1].value, by: inputs[2].value, approved: inputs[3].value });
+                });
+
+                const rows = [];
+                tableBody.querySelectorAll('tr').forEach(row => {
+                    const getTA = i => row.cells[i]?.querySelector('textarea')?.value || '';
+                    const getSel = i => row.cells[i]?.querySelector('select')?.value || '';
+                    rows.push({
+                        opNo: getTA(0), pfdRef: getTA(1), processName: getTA(2), machine: getTA(3),
+                        charNo: getTA(4), charType: getSel(5), characteristic: getTA(6), specialChar: getSel(7),
+                        failureMode: getTA(8), ap: row.cells[9]?.textContent?.trim() || 'L',
+                        spec: getTA(10), evaluation: getSel(11), gageNo: getTA(12), msaRef: getTA(13),
+                        sampleSize: getTA(14), sampleFreq: getSel(15), controlMethod: getSel(16),
+                        errorProofing: getSel(17), reactionPlan: getSel(18), wiRef: getTA(19),
+                        whereRecorded: getTA(20), responsible: getTA(21),
+                        s: row.dataset.s, o: row.dataset.o, d: row.dataset.d
+                    });
+                });
+
+                localStorage.setItem(LS_KEY, JSON.stringify({ header, revHistory, rows, savedAt: new Date().toISOString() }));
+            } catch (e) { console.warn('Save failed:', e); }
+        }
+
+        function loadFromStorage() {
+            try {
+                const raw = localStorage.getItem(LS_KEY);
+                if (!raw) return false;
+                const state = JSON.parse(raw);
+
+                if (state.header) {
+                    Object.keys(state.header).forEach(id => {
+                        if (id === 'planType') {
+                            const r = document.querySelector(`input[name="planType"][value="${state.header[id]}"]`);
+                            if (r) r.checked = true;
+                        } else {
+                            const el = document.getElementById(id);
+                            if (el) el.value = state.header[id];
+                        }
+                    });
+                }
+                if (state.revHistory && Array.isArray(state.revHistory)) {
+                    state.revHistory.forEach(r => addRevHistoryRow(r));
+                }
+                if (state.rows && Array.isArray(state.rows)) {
+                    tableBody.innerHTML = '';
+                    state.rows.forEach(r => createRow(r));
+                }
+                return true;
+            } catch (e) { console.warn('Load failed:', e); return false; }
+        }
+
+        function clearStorage() {
+            if (confirm('Clear saved draft from browser storage?')) {
+                localStorage.removeItem(LS_KEY);
+            }
+        }
+
+
         const requiredFields = [
             { id: 'controlPlanNumber', label: 'Control Plan Number' },
             { id: 'originalDate', label: 'Original Date' },
@@ -1723,7 +1995,10 @@
             { id: 'supplierPlant', label: 'Supplier / Plant' },
             { id: 'supplierCode', label: 'Supplier Code' },
             { id: 'customerPlant', label: 'Customer Name / Plant' },
-            { id: 'coreTeam', label: 'Core Team' }
+            { id: 'coreTeam', label: 'Core Team' },
+            { id: 'engApprovalName', label: 'Engineering Approval — Name (PPAP §4.11)' },
+            { id: 'qualApprovalName', label: 'Quality Approval — Name (PPAP §4.11)' },
+            { id: 'supplierApprovalName', label: 'Supplier/Plant Approval — Name (PPAP §4.11)' }
         ];
 
         function validateHeader() {
@@ -1791,9 +2066,6 @@
             e.target.value = '';
         });
 
-        document.getElementById('loadLastFmeaBtn').addEventListener('click', () => {
-            alert('This feature connects to active IndexedDB FMEA sessions (if db-sigma.js is enabled). To import now, export your FMEA to Excel and use the "Upload FMEA Excel" button.');
-        });
 
         /* =========================================================
            LOAD EXAMPLE
@@ -1824,13 +2096,19 @@
             document.getElementById('supplierApprovalDate').value = '2025-03-18';
 
             const rows = [
-                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', ap: 'M', spec: '250 ± 10 kN', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Sensor (proximity / optical / force)', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-01', responsible: 'J. Smith – Quality Inspector' },
-                { opNo: '10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC \u25C6', failureMode: 'Hole out of tolerance — assembly interference', ap: 'M', spec: '10.00 ± 0.05 mm', evaluation: 'Digital Caliper', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Go/No-Go fixture', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-02', responsible: 'J. Smith – Quality Inspector' },
-                { opNo: '20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', ap: 'L', spec: 'Ra \u2264 1.6 \u00b5m', evaluation: 'Profilometer', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', errorProofing: 'None / N/A', reactionPlan: 'Adjust Machine / Tool', wiRef: 'WI-CNC-05', responsible: 'M. Garcia – Process Engineer' },
-                { opNo: '30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Product', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', ap: 'H', spec: '3.0 ± 0.2 mm', evaluation: 'Visual Inspection', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', errorProofing: 'Interlock — process cannot proceed if out of range', reactionPlan: 'Notify Supervisor', wiRef: 'WI-WELD-03', responsible: 'R. Chen – Quality Engineer' }
+                { opNo: '10', pfdRef: 'PFD-10', processName: 'Stamping', machine: 'Press #5', charNo: '1.1', charType: 'Process', characteristic: 'Stamping Force', specialChar: '', failureMode: 'Insufficient stamping force — incomplete form', ap: 'M', spec: '250 \u00b1 10 kN', evaluation: 'Digital Caliper', gageNo: 'G-0101', msaRef: 'MSA-001 \u2713', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Sensor (proximity / optical / force)', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-01', whereRecorded: 'SPC Form F-01', responsible: 'J. Smith \u2013 Quality Inspector' },
+                { opNo: '10', pfdRef: 'PFD-10', processName: 'Stamping', machine: 'Press #5', charNo: '1.2', charType: 'Product', characteristic: 'Hole Diameter', specialChar: 'SC \u25C6', failureMode: 'Hole out of tolerance — assembly interference', ap: 'M', spec: '10.00 \u00b1 0.05 mm', evaluation: 'Digital Caliper', gageNo: 'G-0102', msaRef: 'MSA-002 \u2713', sampleSize: '5 pcs', sampleFreq: '1 pc / hour', controlMethod: 'SPC Chart (X-bar & R)', errorProofing: 'Go/No-Go fixture', reactionPlan: 'Stop Process & Quarantine', wiRef: 'WI-STAMP-02', whereRecorded: 'SPC Form F-01', responsible: 'J. Smith \u2013 Quality Inspector' },
+                { opNo: '20', pfdRef: 'PFD-20', processName: 'CNC Machining', machine: 'Haas VF-2', charNo: '2.1', charType: 'Product', characteristic: 'Surface Finish', specialChar: '', failureMode: 'Rough surface — Ra exceeds limit', ap: 'L', spec: 'Ra \u2264 1.6 \u00b5m', evaluation: 'Profilometer', gageNo: 'G-0201', msaRef: 'MSA-003 \u2713', sampleSize: '1 pc', sampleFreq: 'Setup only (first-off)', controlMethod: 'First-off Inspection Report', errorProofing: 'None / N/A', reactionPlan: 'Adjust Machine / Tool', wiRef: 'WI-CNC-05', whereRecorded: 'First-off Report F-20', responsible: 'M. Garcia \u2013 Process Engineer' },
+                { opNo: '30', pfdRef: 'PFD-30', processName: 'Robotic Welding', machine: 'Robotic Welder #2', charNo: '3.1', charType: 'Safety', characteristic: 'Weld Penetration', specialChar: 'YS', failureMode: 'Incomplete weld penetration — structural failure risk', ap: 'H', spec: '3.0 \u00b1 0.2 mm', evaluation: 'Visual Inspection', gageNo: 'G-0301', msaRef: 'MSA-004 Pending', sampleSize: '1 pc', sampleFreq: '1 pc / 4 hrs', controlMethod: 'Destructive Testing', errorProofing: 'Interlock — process cannot proceed if out of range', reactionPlan: 'Notify Supervisor', wiRef: 'WI-WELD-03', whereRecorded: 'Weld Log WL-30', responsible: 'R. Chen \u2013 Quality Engineer' }
             ];
 
             rows.forEach(r => createRow(r));
+
+            // Revision history sample entries
+            document.getElementById('revHistoryBody').innerHTML = '';
+            addRevHistoryRow({ date: '2024-01-15', desc: 'Initial release — Prototype CP', by: 'J. Smith', approved: 'R. Chen' });
+            addRevHistoryRow({ date: '2025-03-10', desc: 'Rev A — Updated weld penetration spec per ECN-042', by: 'M. Garcia', approved: 'Sarah Jenkins' });
+
             switchWizardTab('tab-tool');
         }
 
@@ -1850,6 +2128,8 @@
                 if (w) w.classList.remove('required-missing');
             });
             document.querySelector('input[name="planType"][value="Production"]').checked = true;
+            document.getElementById('revHistoryBody').innerHTML = '';
+            localStorage.removeItem(LS_KEY);
             createRow();
         }
 
@@ -1903,8 +2183,9 @@
             // 1. Obtener todos los encabezados de la tabla web
             const allHeaders = Array.from(document.querySelectorAll('#controlPlanTable th')).map(th => th.innerText.trim().replace(/\s*\(read-only\)|\s*\(ref\)/gi, '').trim());
 
-            // 2. Excluir solo el botón de borrar (último índice)
-            const excludeIndices = [allHeaders.length - 1];
+            // 2. Excluir el botón de borrar (último índice) y la columna FMEA AP (ref interna)
+            // Col 8 = FMEA Failure Mode (ref), Col 9 = FMEA AP (ref), last = delete button
+            const excludeIndices = [8, 9, allHeaders.length - 1];
 
             // 3. Filtrar los encabezados para el Excel
             const headers = allHeaders.filter((_, index) => !excludeIndices.includes(index));
@@ -1913,7 +2194,7 @@
             const data = [];
 
             // Título con edición normativa vigente
-            data.push(['SIGMA EXACTA \u2014 AIAG Control Plan Reference Manual, 4th Edition (2024)']);
+            data.push(['SIGMA EXACTA \u2014 AIAG Control Plan Reference Manual, 4th Edition (2024) | IATF 16949:2016 Compliant']);
             data.push(['Generated on: ' + new Date().toLocaleString()]);
             data.push([]);
 
@@ -1934,6 +2215,26 @@
             data.push(['Drawing Number / Level:', document.getElementById('drawingNumber').value]);
             data.push([]);
 
+            // Revision History
+            const revRows = [];
+            document.querySelectorAll('#revHistoryBody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 4) {
+                    revRows.push([
+                        cells[0].querySelector('input')?.value || '',
+                        cells[1].querySelector('input')?.value || '',
+                        cells[2].querySelector('input')?.value || '',
+                        cells[3].querySelector('input')?.value || ''
+                    ]);
+                }
+            });
+            if (revRows.length > 0) {
+                data.push(['REVISION HISTORY']);
+                data.push(['Rev. Date', 'Description of Change', 'Changed By', 'Approved By']);
+                revRows.forEach(r => data.push(r));
+                data.push([]);
+            }
+
             data.push(['APPROVALS']);
             data.push(['Engineering Approval (Customer):', document.getElementById('engApprovalName').value, 'Date:', document.getElementById('engApprovalDate').value]);
             data.push(['Quality Approval (Customer):', document.getElementById('qualApprovalName').value, 'Date:', document.getElementById('qualApprovalDate').value]);
@@ -1945,8 +2246,8 @@
             tableBody.querySelectorAll('tr').forEach(row => {
                 const sc = row.querySelector('.special-char-cell select');
                 if (sc && sc.value) {
-                    const charCell = row.querySelectorAll('td')[5];
-                    const charNoCell = row.querySelectorAll('td')[3];
+                    const charCell = row.querySelectorAll('td')[6];
+                    const charNoCell = row.querySelectorAll('td')[4];
                     const opCell = row.querySelectorAll('td')[0];
                     scRows.push([
                         opCell?.querySelector('textarea')?.value || '',
@@ -2039,7 +2340,12 @@
             document.getElementById('exportBtn').addEventListener('click', exportToExcel);
             document.getElementById('listResultsBtn').addEventListener('click', listResults);
 
-            createRow();
+            // Load saved draft or start with one empty row
+            const restored = loadFromStorage();
+            if (!restored) createRow();
+
+            // Auto-save every 60 seconds
+            setInterval(saveToStorage, 60000);
         });
     </script>
 </body>
