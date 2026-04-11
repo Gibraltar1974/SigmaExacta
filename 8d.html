@@ -678,6 +678,33 @@
     .btn-prev-sub-tab:hover {
       background-color: #5a6268;
     }
+
+    /* Estilo para matriz ES / NO ES */
+    .matrix-container {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .matrix-col {
+      flex: 1 1 250px;
+    }
+
+    .matrix-col h4 {
+      margin-top: 0;
+      color: var(--primary-color);
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.3rem;
+    }
+
+    .field-note {
+      font-size: 0.8rem;
+      color: #6c757d;
+      margin-top: -0.8rem;
+      margin-bottom: 0.8rem;
+      font-style: italic;
+    }
   </style>
 </head>
 
@@ -794,23 +821,23 @@
             <li><strong>Complete Team Information (D1):</strong> Enter the team leader's name, members, and date to
               document who is in charge of the analysis.</li>
             <li><strong>Describe the Problem (D2):</strong> Be specific about what the problem is, where and when it
-              occurs, and its magnitude. The more information, the better.</li>
+              occurs, and its magnitude. Use the <strong>IS / IS NOT</strong> matrix for precise problem definition.
+            </li>
             <li><strong>Detail Containment Actions (D3):</strong> Document the immediate measures taken to protect the
               customer and isolate the problem while the root cause is being investigated.</li>
             <li><strong>Analyze the Root Cause (D4):</strong> List potential causes and describe how they were verified
-              to
-              confirm the definitive root cause(s).</li>
+              to confirm the definitive root cause(s). Don't forget the <strong>Escape Point</strong> (systemic cause).
+            </li>
             <li><strong>Define Corrective Actions (D5):</strong> Propose solutions that will directly address the root
-              cause.</li>
+              cause and document the selection rationale.</li>
             <li><strong>Verify Effectiveness (D6):</strong> Enter the data and date that demonstrate the corrective
-              actions have solved the problem.</li>
+              actions have solved the problem. Include statistical evidence (CpK, trend charts).</li>
             <li><strong>Establish Preventive Actions (D7):</strong> Define what will be done to prevent this or similar
               problems from recurring in the future.</li>
             <li><strong>Recognize the Team (D8):</strong> Document how the team's effort was recognized and the lessons
               learned to share the knowledge.</li>
             <li><strong>Generate and Export the Report:</strong> Click "Generate Report Summary" to see a summary. You
-              can
-              then print it or export a complete, detailed report to Excel for your documentation.</li>
+              can then print it or export a complete, detailed report to Excel for your documentation.</li>
           </ol>
         </div>
 
@@ -884,6 +911,9 @@
                 <label for="teamLeader"><i class="fas fa-user-tie"></i> Team Leader:</label>
                 <input type="text" id="teamLeader" required />
 
+                <label for="championSponsor"><i class="fas fa-user-shield"></i> Champion / Sponsor:</label>
+                <input type="text" id="championSponsor" required />
+
                 <label for="teamMembers"><i class="fas fa-users"></i> Team Members (comma separated):</label>
                 <input type="text" id="teamMembers" required />
 
@@ -903,22 +933,46 @@
             <div id="sub-tab-d2" class="sub-tab-content">
               <div class="discipline-section">
                 <div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D2: Problem Description</div>
-                <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement:</label>
+
+                <label for="problemStatement"><i class="fas fa-question-circle"></i> Problem Statement (One sentence
+                  summary):</label>
                 <textarea id="problemStatement" required rows="1"></textarea>
 
-                <label for="issueDescription"><i class="fas fa-bullseye"></i> What is the issue?</label>
-                <textarea id="issueDescription" required rows="1"></textarea>
+                <div class="matrix-container">
+                  <div class="matrix-col">
+                    <h4><i class="fas fa-check-circle" style="color:var(--success-color);"></i> IS (What we know)</h4>
+                    <label for="issueDescription">What is the issue?</label>
+                    <textarea id="issueDescription" required rows="1"></textarea>
 
-                <label for="location"><i class="fas fa-map-marker-alt"></i> Where does it occur?</label>
-                <textarea id="location" required rows="1"></textarea>
+                    <label for="location">Where does it occur?</label>
+                    <textarea id="location" required rows="1"></textarea>
 
-                <label for="timing"><i class="fas fa-clock"></i> When was it first noticed?</label>
-                <textarea id="timing" required rows="1"></textarea>
+                    <label for="timing">When was it first noticed?</label>
+                    <textarea id="timing" required rows="1"></textarea>
 
-                <label for="magnitude"><i class="fas fa-ruler-combined"></i> How big is the problem? (Quantity, %
-                  affected,
-                  etc.)</label>
-                <textarea id="magnitude" required rows="1"></textarea>
+                    <label for="magnitude">How big is the problem? (Qty, %)</label>
+                    <textarea id="magnitude" required rows="1"></textarea>
+                  </div>
+                  <div class="matrix-col">
+                    <h4><i class="fas fa-times-circle" style="color:var(--danger-color);"></i> IS NOT (What we exclude)
+                    </h4>
+                    <label for="issueDescriptionNot">What is NOT the issue?</label>
+                    <textarea id="issueDescriptionNot" required rows="1"></textarea>
+
+                    <label for="locationNot">Where does it NOT occur?</label>
+                    <textarea id="locationNot" required rows="1"></textarea>
+
+                    <label for="timingNot">When was it NOT seen?</label>
+                    <textarea id="timingNot" required rows="1"></textarea>
+
+                    <label for="magnitudeNot">Magnitude NOT affected?</label>
+                    <textarea id="magnitudeNot" required rows="1"></textarea>
+                  </div>
+                </div>
+                <div class="field-note">
+                  <i class="fas fa-info-circle"></i> Required per AIAG/VDA: The IS/IS NOT matrix sharpens problem
+                  definition and reduces scope.
+                </div>
               </div>
 
               <div class="sub-tab-nav-buttons">
@@ -935,6 +989,16 @@
                 <div class="discipline-title"><i class="fas fa-shield-alt"></i> D3: Containment Actions</div>
                 <label for="containmentActions"><i class="fas fa-ban"></i> Immediate containment actions:</label>
                 <textarea id="containmentActions" required rows="1"></textarea>
+
+                <!-- NUEVO: Containment Risk Analysis -->
+                <label for="containmentRisk"><i class="fas fa-exclamation-triangle"></i> Containment Risk
+                  Analysis:</label>
+                <textarea id="containmentRisk" required rows="1"
+                  placeholder="Does this action introduce new risks? (e.g., Verified that 100% inspection doesn't bottleneck Line 2. No safety risks added.)"></textarea>
+                <div class="field-note">
+                  <i class="fas fa-shield-alt"></i> CQI-20 Check: Validate that containment doesn't create new failure
+                  modes or capacity issues.
+                </div>
 
                 <label for="containmentDate"><i class="fas fa-calendar-check"></i> Implementation date:</label>
                 <input type="text" id="containmentDate" required />
@@ -959,16 +1023,27 @@
             <div id="sub-tab-d4" class="sub-tab-content">
               <div class="discipline-section">
                 <div class="discipline-title"><i class="fas fa-search"></i> D4: Root Cause Analysis</div>
-                <label for="potentialCauses"><i class="fas fa-project-diagram"></i> Potential causes (use 5 Whys,
-                  Fishbone,
-                  etc.):</label>
-                <textarea id="potentialCauses" required rows="1"></textarea>
+
+                <div class="matrix-container" style="margin-bottom: 1rem;">
+                  <div class="matrix-col">
+                    <label for="occurrence5Whys"><i class="fas fa-cogs"></i> 5 Whys: Occurrence Cause (Why did it
+                      happen?):</label>
+                    <textarea id="occurrence5Whys" required rows="3"
+                      placeholder="1. Why?... 2. Why?... -> Root Cause of Occurrence"></textarea>
+                  </div>
+                  <div class="matrix-col">
+                    <label for="escape5Whys"><i class="fas fa-eye-slash"></i> 5 Whys: Escape Cause (Why didn't we catch
+                      it?):</label>
+                    <textarea id="escape5Whys" required rows="3"
+                      placeholder="1. Why?... 2. Why?... -> Root Cause of Escape / Escape Point"></textarea>
+                  </div>
+                </div>
 
                 <label for="rootCauseVerification"><i class="fas fa-flask"></i> Root cause verification (tests, data
                   analysis):</label>
                 <textarea id="rootCauseVerification" required rows="1"></textarea>
 
-                <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s):</label>
+                <label for="rootCause"><i class="fas fa-check-double"></i> Confirmed root cause(s) Summary:</label>
                 <textarea id="rootCause" required rows="1"></textarea>
               </div>
 
@@ -986,6 +1061,14 @@
                 <div class="discipline-title"><i class="fas fa-wrench"></i> D5: Corrective Actions</div>
                 <label for="correctiveActions"><i class="fas fa-lightbulb"></i> Proposed corrective actions:</label>
                 <textarea id="correctiveActions" required rows="1"></textarea>
+
+                <label for="pcaSelectionRationale"><i class="fas fa-balance-scale"></i> <strong>Selection Rationale /
+                    Risk Analysis</strong> (Why this action? Alternatives considered?):</label>
+                <textarea id="pcaSelectionRationale" required rows="1"
+                  placeholder="e.g., Decision matrix used; Lowest risk of introducing new failure modes; Cost-benefit analysis."></textarea>
+                <div class="field-note">
+                  <i class="fas fa-info-circle"></i> Document how the final PCA was chosen (AIAG requirement).
+                </div>
 
                 <label for="correctiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
                 <input type="text" id="correctiveResponsible" required />
@@ -1009,8 +1092,21 @@
             <div id="sub-tab-d6" class="sub-tab-content">
               <div class="discipline-section">
                 <div class="discipline-title"><i class="fas fa-check-circle"></i> D6: Effectiveness Verification</div>
+
+                <label for="validationWindow"><i class="fas fa-flag-checkered"></i> Validation Window / Success
+                  Criteria:</label>
+                <input type="text" id="validationWindow" required
+                  placeholder="e.g., 3 consecutive shifts with 0 defects, or 10,000 units produced without incident." />
+                <div class="field-note">
+                  <i class="fas fa-info-circle"></i> Define the exact target required to officially close the problem.
+                </div>
+
                 <label for="effectivenessData"><i class="fas fa-chart-line"></i> Data showing effectiveness:</label>
-                <textarea id="effectivenessData" required rows="1"></textarea>
+                <textarea id="effectivenessData" required rows="1"
+                  placeholder="Include statistical evidence: CpK, PPM trend, hypothesis test results."></textarea>
+                <div class="field-note">
+                  <i class="fas fa-chart-bar"></i> AIAG/VDA requires objective statistical evidence, not just opinion.
+                </div>
 
                 <label for="verificationDate"><i class="fas fa-calendar-times"></i> Date verified:</label>
                 <input type="text" id="verificationDate" required />
@@ -1034,6 +1130,29 @@
                 <label for="preventiveActions"><i class="fas fa-shield-virus"></i> Actions to prevent
                   recurrence:</label>
                 <textarea id="preventiveActions" required rows="1"></textarea>
+
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                  <div style="flex: 1;">
+                    <label for="pfmeaUpdated"><i class="fas fa-file-alt"></i> PFMEA Updated?</label>
+                    <select id="pfmeaUpdated" required>
+                      <option value="" disabled selected>Select</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="N.A.">N.A.</option>
+                    </select>
+                  </div>
+                  <div style="flex: 1;">
+                    <label for="controlPlanUpdated"><i class="fas fa-clipboard-check"></i> Control Plan Updated?</label>
+                    <select id="controlPlanUpdated" required>
+                      <option value="" disabled selected>Select</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="N.A.">N.A.</option>
+                    </select>
+                  </div>
+                </div>
+                <label for="docReference"><i class="fas fa-hashtag"></i> Document Reference (optional):</label>
+                <input type="text" id="docReference" placeholder="e.g., PFMEA #12345, CP #67890" />
 
                 <label for="preventiveResponsible"><i class="fas fa-user-tie"></i> Responsible person:</label>
                 <input type="text" id="preventiveResponsible" required />
@@ -1073,8 +1192,6 @@
                 <div></div> <!-- Empty div for spacing -->
               </div>
             </div>
-
-            <!-- ELIMINADO: Botón Generate Report Summary de esta pestaña -->
           </form>
         </div>
 
@@ -1205,25 +1322,29 @@
       const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
       const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
 
-      navToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('show-menu');
-        const icon = navToggle.querySelector('i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
+      if (navToggle) {
+        navToggle.addEventListener('click', () => {
+          navMenu.classList.toggle('show-menu');
+          const icon = navToggle.querySelector('i');
+          icon.classList.toggle('fa-bars');
+          icon.classList.toggle('fa-times');
 
-        if (!navMenu.classList.contains('show-menu')) {
-          toolsDropdownMenu.classList.remove('show-submenu');
-          toolsDropdownContainer.classList.remove('active');
-        }
-      });
+          if (!navMenu.classList.contains('show-menu')) {
+            toolsDropdownMenu.classList.remove('show-submenu');
+            toolsDropdownContainer.classList.remove('active');
+          }
+        });
+      }
 
-      toolsDropdownToggle.addEventListener('click', (event) => {
-        if (window.innerWidth <= 992) {
-          event.preventDefault();
-          toolsDropdownMenu.classList.toggle('show-submenu');
-          toolsDropdownContainer.classList.toggle('active');
-        }
-      });
+      if (toolsDropdownToggle) {
+        toolsDropdownToggle.addEventListener('click', (event) => {
+          if (window.innerWidth <= 992) {
+            event.preventDefault();
+            toolsDropdownMenu.classList.toggle('show-submenu');
+            toolsDropdownContainer.classList.toggle('active');
+          }
+        });
+      }
     }
 
     // === FUNCIONES GLOBALES PARA LOS BOTONES PRINCIPALES ===
@@ -1239,48 +1360,62 @@
 
       // D1: Team Information
       document.getElementById("teamLeader").value = "John Doe";
+      document.getElementById("championSponsor").value = "Dr. Emily Chen (VP Quality)";
       document.getElementById("teamMembers").value = "Jane Smith, Mike Johnson, Sarah Williams, Robert Brown";
       document.getElementById("date").value = today;
 
-      // D2: Problem Description
+      // D2: Problem Description (IS)
       document.getElementById("problemStatement").value = "High defect rate in Model X circuit boards during final testing";
       document.getElementById("issueDescription").value = "Approximately 12% of Model X circuit boards are failing final electrical testing due to short circuits in the power supply section";
       document.getElementById("location").value = "Production Line 3, Final Testing Station";
       document.getElementById("timing").value = `First noticed on ${new Date(new Date().setDate(new Date().getDate() - 20)).toLocaleDateString('en-CA')}, defect rate increased over the past 2 weeks`;
       document.getElementById("magnitude").value = "12% defect rate (120 out of 1000 units), affecting all batches from lot #X2305 onward";
 
+      // D2: IS NOT
+      document.getElementById("issueDescriptionNot").value = "Open circuits, component failures, or visual defects";
+      document.getElementById("locationNot").value = "Production Lines 1, 2, and 4; Pre-testing stations; Incoming inspection";
+      document.getElementById("timingNot").value = "Before lot #X2305 (defect rate was <0.5%); After rework station";
+      document.getElementById("magnitudeNot").value = "Model Y boards (different design); Reworked units after manual solder touch-up";
+
       // D3: Containment Actions
       document.getElementById("containmentActions").value = "1. Quarantine all affected lots (from lot #X2305 to present).\n2. Implement 100% visual and electrical inspection for the power supply section on all new production.\n3. Stop all shipments of Model X until further notice.";
+      document.getElementById("containmentRisk").value = "Verified 100% inspection does not create a bottleneck (capacity increase on Line 3 by 10%). No safety risks introduced. Additional risk: possibility of false rejects; mitigation: secondary verification by QA tech.";
       document.getElementById("containmentDate").value = today;
       document.getElementById("containmentResponsible").value = "Maria Garcia (Quality Manager)";
       document.getElementById("containmentVerification").value = "Daily audit confirmed that 100% of affected lots are quarantined and no affected product has been shipped since the action was implemented.";
 
       // D4: Root Cause Analysis
-      document.getElementById("potentialCauses").value = "1. New solder paste formulation.\n2. Reflow oven temperature profile change.\n3. Component supplier change.\n4. Operator training issue.\n\n5 Whys Analysis:\nWhy? -> Short circuits in power section.\nWhy? -> Solder bridges between pins.\nWhy? -> Excessive solder paste application.\nWhy? -> New stencil with larger apertures was used.\nWhy? -> Engineering change was not properly validated before production use.";
-      document.getElementById("rootCauseVerification").value = "1. Process change logs confirm new stencil was introduced on the date the defects started.\n2. Solder paste volume measurements showed a 15% increase compared to the previous stencil.\n3. X-ray inspection of defective units confirmed solder bridges in 90% of cases, consistent with excess solder.";
-      document.getElementById("rootCause").value = "The primary root cause is the implementation of a new stencil design with larger apertures without proper validation. This led to excessive solder paste deposition, causing solder bridges between component pins in the power supply section during the reflow process.";
+      document.getElementById("occurrence5Whys").value = "1. Why? Short circuits in power section.\n2. Why? Solder bridges between pins.\n3. Why? Excessive solder paste application.\n4. Why? New stencil with larger apertures used.\n5. Why? Engineering change not validated before production.\n-> Root Cause of Occurrence: Unvalidated stencil change.";
+      document.getElementById("escape5Whys").value = "1. Why did defect reach customer? In-line AOI did not detect.\n2. Why? AOI algorithm reset after software update.\n3. Why? No verification step for AOI after update.\n4. Why? Procedure lacks mandatory AOI re-qualification.\n5. Why? No systemic check in change control process.\n-> Root Cause of Escape: Weak change control for inspection equipment.";
+      document.getElementById("rootCauseVerification").value = "Process change logs confirm new stencil introduced on defect start date. Solder paste volume +15%. X-ray confirmed bridges in 90% of defective units. AOI logs show no alarms for the specific pin area.";
+      document.getElementById("rootCause").value = "Occurrence: Unvalidated stencil design. Escape: Inadequate AOI change control.";
 
       // D5: Corrective Actions
-      document.getElementById("correctiveActions").value = "1. Immediately revert to the previous, validated stencil design for all Model X production.\n2. Implement a mandatory, cross-functional Engineering Change Control (ECC) procedure for any process or material change.\n3. Update the process validation protocol to include solder paste volume analysis for any stencil changes.\n4. Retrain all process engineers and technicians on the new ECC procedure.";
+      document.getElementById("correctiveActions").value = "1. Revert to previous validated stencil.\n2. Implement mandatory Engineering Change Control (ECC) procedure.\n3. Update process validation protocol to include solder paste volume analysis.\n4. Retrain engineers on ECC.";
+      document.getElementById("pcaSelectionRationale").value = "Three alternatives evaluated using decision matrix (effectiveness, cost, time, risk). Reverting to previous stencil scored highest due to immediate effectiveness and lowest risk.";
       document.getElementById("correctiveResponsible").value = "David Wilson (Process Engineer)";
       document.getElementById("correctiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 15)).toLocaleDateString('en-CA')}`;
-      document.getElementById("correctiveVerification").value = "1. Monitor final testing defect rate daily for 30 days.\n2. Perform random X-ray sample inspections on 5 units per shift.\n3. Conduct a new Process Capability (Cpk) study on solder paste volume after implementation.";
+      document.getElementById("correctiveVerification").value = "Monitor final test defect rate daily for 30 days. Random X-ray samples (5/shift). New Cpk study on solder paste volume.";
 
       // D6: Effectiveness Verification
-      document.getElementById("effectivenessData").value = "After implementing corrective actions:\n- Defect rate dropped from 12% to 0.5% within 3 days and has remained stable.\n- X-ray inspections show no solder bridges in the last 50 sampled units.\n- Process capability (Cpk) for solder paste volume improved to 1.67, indicating a stable and capable process.";
+      document.getElementById("validationWindow").value = "3 consecutive shifts with 0 defects and a minimum of 5,000 units produced. Cpk > 1.33 for solder paste volume.";
+      document.getElementById("effectivenessData").value = "After implementing corrective actions:\n- Defect rate dropped from 12% to 0.5% within 3 days and has remained stable for 2 weeks.\n- X-ray inspections show no solder bridges in the last 50 sampled units.\n- Process capability (Cpk) for solder paste volume improved to 1.67.";
       document.getElementById("verificationDate").value = `${new Date(new Date().setDate(new Date().getDate() + 20)).toLocaleDateString('en-CA')}`;
       document.getElementById("verifiedBy").value = "Emma Thompson (Quality Director)";
 
       // D7: Preventive Actions
-      document.getElementById("preventiveActions").value = "1. The new Engineering Change Control (ECC) procedure has been rolled out to all production lines, not just Line 3.\n2. Solder paste volume measurement has been added as a standard in-process check for all product families.\n3. The FMEA for the soldering process has been updated to include 'improper stencil validation' as a potential failure mode with a high RPN, triggering mandatory mitigation actions.\n4. Schedule quarterly process audits to ensure compliance with the new ECC procedure.";
+      document.getElementById("preventiveActions").value = "1. ECC procedure rolled out to all production lines.\n2. Solder paste volume added as standard in-process check for all product families.\n3. FMEA updated: 'improper stencil validation' added as failure mode with high RPN.\n4. Quarterly process audits for ECC compliance.";
+      document.getElementById("pfmeaUpdated").value = "Yes";
+      document.getElementById("controlPlanUpdated").value = "Yes";
+      document.getElementById("docReference").value = "PFMEA #SMT-2025-04 / CP #CP-MODELX-08";
       document.getElementById("preventiveResponsible").value = "Carlos Rodriguez (Quality Systems Manager)";
       document.getElementById("preventiveDeadline").value = `${new Date(new Date().setDate(new Date().getDate() + 60)).toLocaleDateString('en-CA')}`;
-      document.getElementById("preventiveVerification").value = "1. Review ECC records monthly to ensure 100% compliance.\n2. Monitor process stability metrics (SPC) for solder paste volume across all lines.\n3. Track defect rates for similar products to ensure the problem does not migrate.";
+      document.getElementById("preventiveVerification").value = "Review ECC records monthly. Monitor SPC for solder paste volume across all lines. Track defect rates for similar products.";
 
       // D8: Congratulate the Team
-      document.getElementById("teamRecognition").value = "The team was publicly recognized in the company-wide monthly meeting for their swift and effective problem-solving. A 'Quality Champion' award was given to the team leader, John Doe.";
-      document.getElementById("lessonsLearned").value = "1. Rigorous validation is non-negotiable for ANY engineering change, regardless of how minor it seems.\n2. Cross-functional review (involving Quality, Production, and Engineering) is essential before implementing any process change.\n3. In-process monitoring systems are key to detecting deviations before they result in a large volume of defective products.";
-      document.getElementById("knowledgeSharing").value = "1. A detailed case study of this 8D was created and added to the company's knowledge base.\n2. The findings were presented to the global engineering team.\n3. The updated FMEA and control plan were shared with other production sites as a best practice.";
+      document.getElementById("teamRecognition").value = "The team was publicly recognized in the company-wide monthly meeting. 'Quality Champion' award given to team leader John Doe.";
+      document.getElementById("lessonsLearned").value = "1. Rigorous validation is mandatory for any engineering change.\n2. Cross-functional review essential before process changes.\n3. In-process monitoring key to detecting deviations early.";
+      document.getElementById("knowledgeSharing").value = "Case study added to knowledge base. Findings presented to global engineering team. Updated FMEA and control plan shared with other sites.";
 
       // Update textarea heights
       const textareas = document.querySelectorAll('textarea');
@@ -1294,7 +1429,7 @@
       switchSubTab('sub-tab-d0');
 
       // Mostrar notificación
-      showNotification("Example data loaded successfully!");
+      showNotification("Example data loaded successfully! AIAG/VDA compliant fields included.");
     }
 
     // Función para resetear herramienta (global)
@@ -1321,7 +1456,7 @@
       }
     }
 
-    // Función para mostrar notificaciones (como en Kano)
+    // Función para mostrar notificaciones
     function showNotification(message) {
       const notification = document.createElement('div');
       notification.style.cssText = `
@@ -1385,11 +1520,9 @@
       const reportSummaryDiv = document.getElementById("reportSummary");
       const printableReportDiv = document.getElementById("printable-report");
 
-      // MODIFICACIÓN: Botones globales ya están conectados arriba (funciones globales)
       document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
       document.getElementById('globalResetBtn').addEventListener('click', resetTool);
 
-      // MODIFICACIÓN: Cuando se genera el reporte, mostrar los resultados en la misma pestaña
       function generateReportSummary() {
         if (!document.getElementById('eightDForm').checkValidity()) {
           document.getElementById('eightDForm').reportValidity();
@@ -1399,13 +1532,15 @@
         const nl2br = (str) => str.replace(/\n/g, '<br>');
         let summaryHTML = `
         <div class="discipline-section"><div class="discipline-title"><i class="fas fa-clipboard-check"></i> D0: Plan and Prepare</div><p><strong>Problem Awareness:</strong> ${nl2br(reportData.d0ProblemAwareness)}</p><p><strong>Urgency Level:</strong> ${reportData.d0Urgency}</p><p><strong>Initial Data:</strong> ${nl2br(reportData.d0InitialData)}</p><p><strong>Objectives:</strong> ${nl2br(reportData.d0Objectives)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-users"></i> D1: Team Information</div><p><strong>Team Leader:</strong> ${reportData.teamLeader}</p><p><strong>Team Members:</strong> ${reportData.teamMembers}</p><p><strong>Date:</strong> ${reportData.date}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D2: Problem Description</div><p><strong>Problem Statement:</strong> ${nl2br(reportData.problemStatement)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-shield-alt"></i> D3: Containment Actions</div><p><strong>Immediate containment actions:</strong> ${nl2br(reportData.containmentActions)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-search"></i> D4: Root Cause Analysis</div><p><strong>Confirmed root cause(s):</strong> ${nl2br(reportData.rootCause)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-wrench"></i> D5: Corrective Actions</div><p><strong>Proposed corrective actions:</strong> ${nl2br(reportData.correctiveActions)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-check-circle"></i> D6: Effectiveness Verification</div><p><strong>Data showing effectiveness:</strong> ${nl2br(reportData.effectivenessData)}</p></div>
-        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-cogs"></i> D7: Preventive Actions</div><p><strong>Actions to prevent recurrence:</strong> ${nl2br(reportData.preventiveActions)}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-users"></i> D1: Team Information</div><p><strong>Team Leader:</strong> ${reportData.teamLeader}</p><p><strong>Champion / Sponsor:</strong> ${reportData.championSponsor}</p><p><strong>Team Members:</strong> ${reportData.teamMembers}</p><p><strong>Date:</strong> ${reportData.date}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D2: Problem Description</div><p><strong>Problem Statement:</strong> ${nl2br(reportData.problemStatement)}</p>
+          <div style="display:flex; gap:20px; flex-wrap:wrap;"><div style="flex:1;"><strong>IS (What we know):</strong><br>Issue: ${nl2br(reportData.issueDescription)}<br>Location: ${nl2br(reportData.location)}<br>Timing: ${nl2br(reportData.timing)}<br>Magnitude: ${nl2br(reportData.magnitude)}</div><div style="flex:1;"><strong>IS NOT (What we exclude):</strong><br>Issue: ${nl2br(reportData.issueDescriptionNot)}<br>Location: ${nl2br(reportData.locationNot)}<br>Timing: ${nl2br(reportData.timingNot)}<br>Magnitude: ${nl2br(reportData.magnitudeNot)}</div></div>
+        </div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-shield-alt"></i> D3: Containment Actions</div><p><strong>Immediate containment actions:</strong> ${nl2br(reportData.containmentActions)}</p><p><strong>Containment Risk Analysis:</strong> ${nl2br(reportData.containmentRisk)}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-search"></i> D4: Root Cause Analysis</div><p><strong>Occurrence Analysis (5 Whys):</strong> ${nl2br(reportData.occurrence5Whys)}</p><p><strong>Escape Analysis (5 Whys):</strong> ${nl2br(reportData.escape5Whys)}</p><p><strong>Confirmed root cause(s) Summary:</strong> ${nl2br(reportData.rootCause)}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-wrench"></i> D5: Corrective Actions</div><p><strong>Proposed corrective actions:</strong> ${nl2br(reportData.correctiveActions)}</p><p><strong>Selection Rationale:</strong> ${nl2br(reportData.pcaSelectionRationale)}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-check-circle"></i> D6: Effectiveness Verification</div><p><strong>Validation Window / Success Criteria:</strong> ${nl2br(reportData.validationWindow)}</p><p><strong>Data showing effectiveness:</strong> ${nl2br(reportData.effectivenessData)}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-cogs"></i> D7: Preventive Actions</div><p><strong>Actions to prevent recurrence:</strong> ${nl2br(reportData.preventiveActions)}</p><p><strong>PFMEA Updated:</strong> ${reportData.pfmeaUpdated} | <strong>Control Plan Updated:</strong> ${reportData.controlPlanUpdated} ${reportData.docReference ? `| <strong>Doc Ref:</strong> ${reportData.docReference}` : ''}</p></div>
         <div class="discipline-section" style="border-bottom: none;"><div class="discipline-title"><i class="fas fa-trophy"></i> D8: Congratulate the Team</div><p><strong>Team recognition:</strong> ${nl2br(reportData.teamRecognition)}</p></div>`;
 
         if (reportSummaryDiv) {
@@ -1414,17 +1549,14 @@
 
         if (resultsDiv) {
           resultsDiv.style.display = "block";
-          // Hacer scroll hacia los resultados
           resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Also update printable report
         if (printableReportDiv) {
           const headerTitle = document.querySelector('.header h1').innerText;
           printableReportDiv.innerHTML = `<h1>${headerTitle} - Report Summary</h1>${summaryHTML}`;
         }
 
-        // Mostrar notificación
         showNotification("Report generated successfully!");
       }
 
@@ -1438,11 +1570,7 @@
             document.getElementById('eightDForm').reportValidity();
             return;
           }
-
-          // Ensure printable report is updated
           generateReportSummary();
-
-          // Print using the printable report div
           window.print();
         });
       }
@@ -1457,13 +1585,13 @@
           const reportData = getReportData();
           const dataMap = [
             { d: "D0: Plan and Prepare", items: [["Problem Awareness", reportData.d0ProblemAwareness], ["Urgency Level", reportData.d0Urgency], ["Initial Data Collected", reportData.d0InitialData], ["Objectives of the 8D", reportData.d0Objectives]] },
-            { d: "D1: Team Information", items: [["Team Leader", reportData.teamLeader], ["Team Members", reportData.teamMembers], ["Date", reportData.date]] },
-            { d: "D2: Problem Description", items: [["Problem Statement", reportData.problemStatement], ["What is the issue?", reportData.issueDescription], ["Where does it occur?", reportData.location], ["When was it first noticed?", reportData.timing], ["How big is the problem?", reportData.magnitude]] },
-            { d: "D3: Containment Actions", items: [["Immediate containment actions", reportData.containmentActions], ["Implementation date", reportData.containmentDate], ["Responsible person", reportData.containmentResponsible], ["Effectiveness verification", reportData.containmentVerification]] },
-            { d: "D4: Root Cause Analysis", items: [["Potential causes", reportData.potentialCauses], ["Root cause verification", reportData.rootCauseVerification], ["Confirmed root cause(s)", reportData.rootCause]] },
-            { d: "D5: Corrective Actions", items: [["Proposed corrective actions", reportData.correctiveActions], ["Responsible person", reportData.correctiveResponsible], ["Implementation deadline", reportData.correctiveDeadline], ["Verification method", reportData.correctiveVerification]] },
-            { d: "D6: Effectiveness Verification", items: [["Data showing effectiveness", reportData.effectivenessData], ["Date verified", reportData.verificationDate], ["Verified by", reportData.verifiedBy]] },
-            { d: "D7: Preventive Actions", items: [["Actions to prevent recurrence", reportData.preventiveActions], ["Responsible person", reportData.preventiveResponsible], ["Implementation deadline", reportData.preventiveDeadline], ["Verification method", reportData.preventiveVerification]] },
+            { d: "D1: Team Information", items: [["Team Leader", reportData.teamLeader], ["Champion / Sponsor", reportData.championSponsor], ["Team Members", reportData.teamMembers], ["Date", reportData.date]] },
+            { d: "D2: Problem Description", items: [["Problem Statement", reportData.problemStatement], ["IS - Issue", reportData.issueDescription], ["IS - Location", reportData.location], ["IS - Timing", reportData.timing], ["IS - Magnitude", reportData.magnitude], ["IS NOT - Issue", reportData.issueDescriptionNot], ["IS NOT - Location", reportData.locationNot], ["IS NOT - Timing", reportData.timingNot], ["IS NOT - Magnitude", reportData.magnitudeNot]] },
+            { d: "D3: Containment Actions", items: [["Immediate containment actions", reportData.containmentActions], ["Containment Risk Analysis", reportData.containmentRisk], ["Implementation date", reportData.containmentDate], ["Responsible person", reportData.containmentResponsible], ["Effectiveness verification", reportData.containmentVerification]] },
+            { d: "D4: Root Cause Analysis", items: [["5 Whys: Occurrence", reportData.occurrence5Whys], ["5 Whys: Escape", reportData.escape5Whys], ["Root cause verification", reportData.rootCauseVerification], ["Confirmed root cause(s)", reportData.rootCause]] },
+            { d: "D5: Corrective Actions", items: [["Proposed corrective actions", reportData.correctiveActions], ["Selection Rationale", reportData.pcaSelectionRationale], ["Responsible person", reportData.correctiveResponsible], ["Implementation deadline", reportData.correctiveDeadline], ["Verification method", reportData.correctiveVerification]] },
+            { d: "D6: Effectiveness Verification", items: [["Validation Window", reportData.validationWindow], ["Data showing effectiveness", reportData.effectivenessData], ["Date verified", reportData.verificationDate], ["Verified by", reportData.verifiedBy]] },
+            { d: "D7: Preventive Actions", items: [["Actions to prevent recurrence", reportData.preventiveActions], ["PFMEA Updated", reportData.pfmeaUpdated], ["Control Plan Updated", reportData.controlPlanUpdated], ["Document Reference", reportData.docReference], ["Responsible person", reportData.preventiveResponsible], ["Implementation deadline", reportData.preventiveDeadline], ["Verification method", reportData.preventiveVerification]] },
             { d: "D8: Congratulate the Team", items: [["Team recognition", reportData.teamRecognition], ["Lessons learned", reportData.lessonsLearned], ["Knowledge sharing plan", reportData.knowledgeSharing]] }
           ];
 
@@ -1480,15 +1608,28 @@
           XLSX.utils.book_append_sheet(wb, ws, "8D Report");
           XLSX.writeFile(wb, "8D_Report_Sigma_Exacta.xlsx");
 
-          // Mostrar notificación
           showNotification("Report exported to Excel successfully!");
         });
       }
 
       function getReportData() {
-        const ids = ["d0ProblemAwareness", "d0Urgency", "d0InitialData", "d0Objectives", "teamLeader", "teamMembers", "date", "problemStatement", "issueDescription", "location", "timing", "magnitude", "containmentActions", "containmentDate", "containmentResponsible", "containmentVerification", "potentialCauses", "rootCauseVerification", "rootCause", "correctiveActions", "correctiveResponsible", "correctiveDeadline", "correctiveVerification", "effectivenessData", "verificationDate", "verifiedBy", "preventiveActions", "preventiveResponsible", "preventiveDeadline", "preventiveVerification", "teamRecognition", "lessonsLearned", "knowledgeSharing"];
+        const ids = [
+          "d0ProblemAwareness", "d0Urgency", "d0InitialData", "d0Objectives",
+          "teamLeader", "championSponsor", "teamMembers", "date",
+          "problemStatement", "issueDescription", "location", "timing", "magnitude",
+          "issueDescriptionNot", "locationNot", "timingNot", "magnitudeNot",
+          "containmentActions", "containmentRisk", "containmentDate", "containmentResponsible", "containmentVerification",
+          "occurrence5Whys", "escape5Whys", "rootCauseVerification", "rootCause",
+          "correctiveActions", "pcaSelectionRationale", "correctiveResponsible", "correctiveDeadline", "correctiveVerification",
+          "validationWindow", "effectivenessData", "verificationDate", "verifiedBy",
+          "preventiveActions", "pfmeaUpdated", "controlPlanUpdated", "docReference", "preventiveResponsible", "preventiveDeadline", "preventiveVerification",
+          "teamRecognition", "lessonsLearned", "knowledgeSharing"
+        ];
         const data = {};
-        ids.forEach(id => data[id] = document.getElementById(id).value);
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) data[id] = el.value;
+        });
         return data;
       }
     });
