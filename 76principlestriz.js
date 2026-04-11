@@ -7,7 +7,7 @@ const trizStandardSolutions = {
             "1.1.1": {
                 title: "Complete an incomplete system",
                 description: "If there is only S1, add S2 and field F to complete the system",
-                principles: []
+                principles: [5, 24] // Merging, Intermediary
             },
             "1.1.2": {
                 title: "Internal additive substance",
@@ -150,42 +150,42 @@ const trizStandardSolutions = {
                 principles: [35] // Change parameters
             },
             "2.4.1": {
-                title: "Use magnetic system / ferromagnetic materials",
+                title: "Transition to a ferromagnetic Su-Field",
                 description: "Convert a mechanical system into a magnetic one for control",
                 principles: [28] // Replace mechanical system with fields
             },
             "2.4.2": {
-                title: "Ferromagnetic field application",
+                title: "Use of a ferromagnetic field",
                 description: "Apply ferromagnetic fields to system",
                 principles: [28] // Replace mechanical system with fields
             },
             "2.4.3": {
-                title: "Use magnetic liquids",
+                title: "Use of magnetic fluids",
                 description: "Apply magnetic liquids in system",
                 principles: [29] // Pneumatic/hydraulic
             },
             "2.4.4": {
-                title: "Capillary structures with magnetism",
+                title: "Use of capillary-porous structures in magnetic materials",
                 description: "Use capillary/porous structures in magnetic materials",
                 principles: [31] // Porous materials
             },
             "2.4.5": {
-                title: "Temporary ferromagnetic additive",
+                title: "Temporary introduction of a ferromagnetic additive",
                 description: "Introduce ferromagnetic additive temporarily",
                 principles: [24] // Intermediary
             },
             "2.4.6": {
-                title: "Magnetic materials in environment",
+                title: "Introduction of ferromagnetic additives into the environment",
                 description: "Introduce magnetic materials in environment instead of object",
                 principles: [13] // Other way around
             },
             "2.4.7": {
-                title: "Transition to non-magnetic field",
+                title: "Transition from magnetic to another field",
                 description: "Change from magnetic field to another field (e.g., electric)",
                 principles: [28] // Replace mechanical system with fields
             },
             "2.4.8": {
-                title: "Eliminate ferromagnetic component",
+                title: "Elimination of the ferromagnetic component",
                 description: "Remove the ferromagnetic component from the system",
                 principles: [2] // Take out
             }
@@ -305,13 +305,13 @@ const trizStandardSolutions = {
                 principles: [25] // Copying
             },
             "4.4.2": {
-                title: "Modify system for failure analysis",
-                description: "Change parameters to simplify failure analysis",
+                title: "Change parameters for failure analysis",
+                description: "Change the parameters (temperature, pressure, etc.) to simplify failure analysis",
                 principles: [25] // Copying
             },
             "4.4.3": {
-                title: "Modify system elements for failure analysis",
-                description: "Change the elements of the system for better observation",
+                title: "Change elements for failure analysis",
+                description: "Change the elements (components, substances) of the system for better observation",
                 principles: [25] // Copying
             }
         }
@@ -412,70 +412,48 @@ const trizStandardSolutions = {
 // 🗺️ Mapeo de soluciones a tipos de problemas Su-Field (TRIZ puro - Altshuller)
 // ==========================================================
 const solutionMap = {
-    // Soluciones recomendadas para cada tipo de problema Su-Field (TRIZ ortodoxo)
-    // Basado en Altshuller: "The Innovation Algorithm" y seguimientos por Savransky/Royzen/Terninko.
     insufficient: [
-        // Clase 1.1 (Completar o mejorar interacción)
-        "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7", "1.1.8",
-        // En caso mixto insufficient+harmful, Altshuller permite algunas 1.2
+        "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.6", "1.1.7", "1.1.8",
         "1.2.1", "1.2.2", "1.2.3", "1.2.4",
-        // Clase 2 relevantes
         "2.1.1", "2.1.2", "2.1.3", "2.1.6", "2.1.7",
         "2.2.2", "2.2.3",
         "2.3.1", "2.3.2", "2.3.4", "2.3.5",
         "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
-        // Clase 3 (cuando corresponde por cambio de estado/campo)
         "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3"
     ],
-
     harmful: [
-        // Clase 1.2 principal para eliminar/neutralizar efectos dañinos
         "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
-        // Algunos 1.1 aplican en casos concretos
         "1.1.3", "1.1.7",
-        // Clase 2 para modificar/eliminar estructuras problemáticas
         "2.1.4", "2.2.1", "2.3.3", "2.4.8",
-        // Eliminaciones radicales (Clase 5)
         "5.1.3.2", "5.1.3.3"
     ],
-
     difficult: [
-        // Toda la Clase 4 (detección/medición) es la ruta TRIZ para "difficult"
         "4.1.1", "4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.1.6",
         "4.2.1", "4.2.2", "4.2.3", "4.2.4", "4.2.5", "4.2.6",
         "4.3.1", "4.3.2",
         "4.4.1", "4.4.2", "4.4.3",
-        // Altshuller permite como soporte estas simplificaciones de medición
         "5.3.1", "5.3.2"
     ],
-
     missing: [
-        // Añadir sustancia/campo: 1.1.x y luego Clase 2 que agrega recursos
         "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7",
         "2.1.1", "2.1.2", "2.1.3", "2.1.5", "2.1.6", "2.1.7",
         "2.2.2",
         "2.3.1", "2.3.4", "2.3.5",
         "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
         "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3",
-        // Casos en que se crea campo desde el entorno (Clase 5)
         "5.1.1.1", "5.1.1.2", "5.1.1.3"
     ],
-
     excessive: [
-        // 1.2.x para eliminar/absorber exceso
         "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
-        // Clase 2 para eliminar componentes/campos
         "2.1.4", "2.2.1", "2.3.3", "2.4.8",
-        // Eliminaciones radicales (Clase 5)
         "5.1.3.2", "5.1.3.3"
     ],
-
     inefficient: [
-        // Mejoras y optimizaciones (Clase 1 → Clase 2 → Clase 5)
         "1.1.1", "1.1.2", "1.1.4", "1.1.5", "1.1.7",
         "2.1.1", "2.1.3", "2.1.7",
         "2.2.1",
         "2.3.2", "2.3.3",
+        "2.4.7",
         "3.2.3",
         "5.1.1.1", "5.1.1.2", "5.1.1.3",
         "5.1.2.2",
@@ -487,7 +465,7 @@ const solutionMap = {
 };
 
 // ==========================================================
-// 💡 Función para obtener soluciones recomendadas (Existente)
+// 💡 Función para obtener soluciones recomendadas
 // ==========================================================
 function getRecommendedStandardSolutions(problemType) {
     if (!solutionMap[problemType]) {
@@ -497,9 +475,7 @@ function getRecommendedStandardSolutions(problemType) {
     const recommendedIds = solutionMap[problemType];
     const recommendedSolutions = [];
 
-    // Recorrer las soluciones recomendadas por ID
     recommendedIds.forEach(id => {
-        // Buscar la solución en trizStandardSolutions
         for (const classKey in trizStandardSolutions) {
             if (trizStandardSolutions[classKey].solutions[id]) {
                 recommendedSolutions.push({
@@ -508,7 +484,7 @@ function getRecommendedStandardSolutions(problemType) {
                     description: trizStandardSolutions[classKey].solutions[id].description,
                     class: classKey.split(':')[0]
                 });
-                return; // Una vez encontrada, pasar a la siguiente ID
+                return;
             }
         }
     });
@@ -517,14 +493,14 @@ function getRecommendedStandardSolutions(problemType) {
 }
 
 // ==========================================================
-// 🌍 Hacer las variables accesibles globalmente (NUEVO)
+// 🌍 Hacer las variables accesibles globalmente
 // ==========================================================
 window.solutionMap = solutionMap;
 window.trizStandardSolutions = trizStandardSolutions;
 window.getRecommendedStandardSolutions = getRecommendedStandardSolutions;
 
 // ==========================================================
-// 🔍 Función de verificación de integridad (Existente)
+// 🔍 Función de verificación de integridad
 // ==========================================================
 function verifySolutionCount() {
     let total = 0;
