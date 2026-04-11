@@ -2824,6 +2824,20 @@
                                 </div>
                             </div>
 
+                            <!-- NUEVO: Paso 1b para separar espacio/tiempo cuando no hay intersección -->
+                            <div class="solver-step hidden" id="physical-step-1b">
+                                <h4><i class="fas fa-clock"></i> Step 1b: Separate in Time or Space?</h4>
+                                <p>The demands do not intersect. Do they occur at <strong>different times</strong>?</p>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="time-separation" value="yes"
+                                            onchange="updatePhysicalStrategy();"> <strong>Yes, they occur at different
+                                            times</strong> (Separation in Time)</label>
+                                    <label><input type="radio" name="time-separation" value="no"
+                                            onchange="updatePhysicalStrategy();"> <strong>No, they occur at the same
+                                            time but different places</strong> (Separation in Space)</label>
+                                </div>
+                            </div>
+
                             <!-- Paso 2: Para intersección total, separación por condición o sistema -->
                             <div class="solver-step hidden" id="physical-step-2">
                                 <h4><i class="fas fa-exchange-alt"></i> Step 2: For Total Intersection, try Separation
@@ -2980,12 +2994,30 @@
         // Variables para el nuevo flujo de contradicciones físicas (ALGORITMO NUEVO)
         let physicalStrategyFlow = {
             step1: false,
+            step1b: false,
             step2: false,
             selectedIntersection: null,
+            selectedTimeSeparation: null,
             selectedSeparation: null,
             strategy: null,
             categories: []  // Cambiado de 'principles' a 'categories'
         };
+
+        // Función debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const debouncedUpdateSuField = debounce((el) => updateSuFieldDiagram(el), 300);
+        const debouncedUpdateFunctionDiagram = debounce(() => updateFunctionDiagram(), 300);
 
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function switchMainTab(tabId) {
@@ -3273,14 +3305,17 @@
             // Reset physical strategy flow
             physicalStrategyFlow = {
                 step1: false,
+                step1b: false,
                 step2: false,
                 selectedIntersection: null,
+                selectedTimeSeparation: null,
                 selectedSeparation: null,
                 strategy: null,
                 categories: []
             };
 
             // Reset physical steps UI
+            document.getElementById('physical-step-1b').classList.add('hidden');
             document.getElementById('physical-step-2').classList.add('hidden');
             if (document.getElementById('principles-toggle-container')) {
                 document.getElementById('principles-toggle-container').style.display = 'block';
@@ -3577,14 +3612,17 @@
             // Reset physical strategy flow (NUEVO ALGORITMO)
             physicalStrategyFlow = {
                 step1: false,
+                step1b: false,
                 step2: false,
                 selectedIntersection: null,
+                selectedTimeSeparation: null,
                 selectedSeparation: null,
                 strategy: null,
                 categories: []
             };
 
             // Reset physical steps UI (NUEVO ALGORITMO)
+            document.getElementById('physical-step-1b').classList.add('hidden');
             document.getElementById('physical-step-2').classList.add('hidden');
 
             const currentExample = examples[exampleIndex];
@@ -3686,6 +3724,13 @@
                         updatePhysicalStrategy();
                     }
                 }
+                if (currentExample.physicalContradiction.timeSeparation) {
+                    const timeSepRadio = document.querySelector(`input[name="time-separation"][value="${currentExample.physicalContradiction.timeSeparation}"]`);
+                    if (timeSepRadio) {
+                        timeSepRadio.checked = true;
+                        updatePhysicalStrategy();
+                    }
+                }
             }
 
             // Load 9 Windows data
@@ -3749,15 +3794,19 @@
 
             // Obtener la selección del paso 1
             const intersectionTest = document.querySelector('input[name="intersection-test"]:checked');
+            const step1bDiv = document.getElementById('physical-step-1b');
             const step2Div = document.getElementById('physical-step-2');
 
-            // Resetear el paso 2
+            // Resetear el paso 1b y 2
+            step1bDiv.classList.add('hidden');
             step2Div.classList.add('hidden');
 
             if (!intersectionTest) {
                 physicalStrategyFlow.step1 = false;
+                physicalStrategyFlow.step1b = false;
                 physicalStrategyFlow.step2 = false;
                 physicalStrategyFlow.selectedIntersection = null;
+                physicalStrategyFlow.selectedTimeSeparation = null;
                 physicalStrategyFlow.selectedSeparation = null;
                 physicalStrategyFlow.strategy = null;
                 physicalStrategyFlow.categories = [];
@@ -3767,8 +3816,21 @@
             physicalStrategyFlow.step1 = true;
             physicalStrategyFlow.selectedIntersection = intersectionTest.value;
 
-            // Mostrar el paso 2 solo si hay intersección total
-            if (intersectionTest.value === 'total-intersection') {
+            // Mostrar el paso 1b si no hay intersección
+            if (intersectionTest.value === 'no-intersection') {
+                step1bDiv.classList.remove('hidden');
+                const timeSeparation = document.querySelector('input[name="time-separation"]:checked');
+                if (timeSeparation) {
+                    physicalStrategyFlow.step1b = true;
+                    physicalStrategyFlow.selectedTimeSeparation = timeSeparation.value;
+                    updatePhysicalStrategyFlow();
+                } else {
+                    physicalStrategyFlow.step1b = false;
+                    physicalStrategyFlow.selectedTimeSeparation = null;
+                    physicalStrategyFlow.strategy = null;
+                    physicalStrategyFlow.categories = [];
+                }
+            } else if (intersectionTest.value === 'total-intersection') {
                 step2Div.classList.remove('hidden');
                 const separationType = document.querySelector('input[name="separation-type"]:checked');
                 if (separationType) {
@@ -3782,8 +3844,10 @@
                     physicalStrategyFlow.categories = [];
                 }
             } else {
-                // Para no intersección o contiguo, determinar la estrategia directamente
+                // contiguous
+                physicalStrategyFlow.step1b = false;
                 physicalStrategyFlow.step2 = false;
+                physicalStrategyFlow.selectedTimeSeparation = null;
                 physicalStrategyFlow.selectedSeparation = null;
                 updatePhysicalStrategyFlow();
             }
@@ -3796,14 +3860,19 @@
 
             console.log("Physical flow state:", {
                 intersection: physicalStrategyFlow.selectedIntersection,
+                timeSeparation: physicalStrategyFlow.selectedTimeSeparation,
                 separation: physicalStrategyFlow.selectedSeparation
             });
 
             switch (physicalStrategyFlow.selectedIntersection) {
                 case 'no-intersection':
-                    // Sin intersección → Separación en espacio Y tiempo
-                    strategy = "Separation in Space AND Time";
-                    categories = ['separationInSpace', 'separationInTime'];
+                    if (physicalStrategyFlow.selectedTimeSeparation === 'yes') {
+                        strategy = "Separation in Time";
+                        categories = ['separationInTime'];
+                    } else if (physicalStrategyFlow.selectedTimeSeparation === 'no') {
+                        strategy = "Separation in Space";
+                        categories = ['separationInSpace'];
+                    }
                     break;
 
                 case 'contiguous':
@@ -3858,6 +3927,7 @@
                     <p>Follow these steps to determine the appropriate resolution strategy:</p>
                     <ol>
                         <li><strong>Step 1 (Intersection Test):</strong> Analyze if the opposite demands occur in the same or different places/times</li>
+                        <li><strong>Step 1b (For No Intersection):</strong> Determine if separation in time or space is appropriate</li>
                         <li><strong>Step 2 (For Total Intersection):</strong> Try to separate by condition or system level</li>
                         <li><strong>Result:</strong> Each path leads to specific resolution categories</li>
                     </ol>
@@ -3866,6 +3936,7 @@
                 <div style="margin-bottom: 1rem; font-style: italic;">
                     <strong>Current Selection:</strong> 
                     ${physicalStrategyFlow.selectedIntersection ? `Intersection: ${physicalStrategyFlow.selectedIntersection}` : 'Not selected'} | 
+                    ${physicalStrategyFlow.selectedTimeSeparation ? `Time Separation: ${physicalStrategyFlow.selectedTimeSeparation}` : ''}
                     ${physicalStrategyFlow.selectedSeparation ? `Separation: ${physicalStrategyFlow.selectedSeparation}` : ''}
                     ${physicalStrategyFlow.strategy ? `<br/><strong>Recommended Strategy:</strong> ${physicalStrategyFlow.strategy}` : ''}
                 </div>
@@ -3905,7 +3976,14 @@
                         <div class="strategy-example">
                             <strong>Example:</strong> ${getPhysicalContradictionExample(categoryKey)}
                         </div>
-                    </div>
+                `;
+
+                // Añadir warning si es bypass
+                if (categoryKey === 'bypassContradictoryDemands' && categoryData.warning) {
+                    html += `<div style="margin-top: 10px; padding: 8px; background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> ${categoryData.warning}</div>`;
+                }
+
+                html += `</div>
                     
                     <div style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
                         <table class="trends-table">
@@ -4123,7 +4201,7 @@
             });
         }
 
-        // ===== NUEVAS FUNCIONES PARA FUNCTION ANALYSIS =====
+        // ===== FUNCIONES PARA FUNCTION ANALYSIS =====
 
         // Variables para Function Analysis
         let functionAnalysisData = {
@@ -4387,6 +4465,36 @@
             }
         }
 
+        // Función auxiliar para añadir componente si no existe
+        function addComponentIfNotExists(componentName) {
+            if (!componentName) return;
+            const target = functionAnalysisData.targetComponent;
+            if (componentName === target) return; // ya es el target
+
+            if (!functionAnalysisData.systemComponents.includes(componentName) &&
+                !functionAnalysisData.supersystemComponents.includes(componentName)) {
+                // Por defecto lo agregamos como system component
+                functionAnalysisData.systemComponents.push(componentName);
+                updateComponentLists();
+                updateInteractionMatrix();
+            }
+        }
+
+        function refreshFunctionTableOptions() {
+            const allComponents = [
+                ...functionAnalysisData.systemComponents,
+                ...functionAnalysisData.supersystemComponents,
+                functionAnalysisData.targetComponent
+            ].filter(c => c);
+            const optionsHtml = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            document.querySelectorAll('#function-table-body .function-carrier, #function-table-body .function-target').forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Select...</option>' + optionsHtml;
+                if (currentVal) select.value = currentVal;
+            });
+        }
+
         // Añadir fila a la tabla de funciones
         function addFunctionRow() {
             const tableBody = document.getElementById('function-table-body');
@@ -4446,13 +4554,31 @@
 
             tableBody.appendChild(row);
 
-            // Añadir evento para actualizar el diagrama cuando se modifique la fila
+            // Sincronizar componentes cuando se cambien los selects
+            const carrierSelect = row.querySelector('.function-carrier');
+            const targetSelect = row.querySelector('.function-target');
+
+            const syncComponent = (selectEl) => {
+                selectEl.addEventListener('change', function () {
+                    const val = this.value;
+                    if (val) {
+                        addComponentIfNotExists(val);
+                        // Actualizar opciones de todos los selects de la tabla
+                        refreshFunctionTableOptions();
+                    }
+                    debouncedUpdateFunctionDiagram();
+                });
+            };
+
+            syncComponent(carrierSelect);
+            syncComponent(targetSelect);
+
             row.querySelectorAll('select, input').forEach(element => {
-                element.addEventListener('change', updateFunctionDiagram);
-                element.addEventListener('input', updateFunctionDiagram);
+                element.addEventListener('change', debouncedUpdateFunctionDiagram);
+                element.addEventListener('input', debouncedUpdateFunctionDiagram);
             });
 
-            updateFunctionDiagram();
+            debouncedUpdateFunctionDiagram();
         }
 
         // Eliminar fila de función
@@ -4460,7 +4586,7 @@
             const row = document.getElementById(rowId);
             if (row) {
                 row.remove();
-                updateFunctionDiagram();
+                debouncedUpdateFunctionDiagram();
             }
         }
 
@@ -4686,6 +4812,23 @@
             clearResults();
             console.log("Generating report...");
 
+            // Validar que al menos un sistema Su-Field tenga datos
+            const systemElements = document.getElementsByClassName('sufield-system');
+            let hasValidSystem = false;
+            for (let systemElement of systemElements) {
+                const object = systemElement.querySelector('.sufield-object').value.trim();
+                const tool = systemElement.querySelector('.sufield-tool').value.trim();
+                const field = systemElement.querySelector('.sufield-field').value;
+                if (object && tool && field) {
+                    hasValidSystem = true;
+                    break;
+                }
+            }
+            if (!hasValidSystem && systemElements.length > 0) {
+                alert('Please complete at least one Su-Field system (Object, Tool, and Field must be filled).');
+                return;
+            }
+
             problemData = {};
             problemData.system = document.getElementById('problem-system').value || "Not specified";
             problemData.function = document.getElementById('problem-function').value || "Not specified";
@@ -4782,6 +4925,7 @@
             problemData.physicalContradiction = {
                 conflictingParameter: parameter || "Not specified",
                 intersectionTest: physicalStrategyFlow.selectedIntersection,
+                timeSeparation: physicalStrategyFlow.selectedTimeSeparation,
                 separationType: physicalStrategyFlow.selectedSeparation,
                 strategy: physicalStrategyFlow.strategy,
                 categories: physicalStrategyFlow.categories || [], // Guardar las categorías seleccionadas
@@ -4808,24 +4952,22 @@
 
             // Collect Su-Field systems - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
             problemData.sufield = { systems: [] };
-            const systemElements = document.getElementsByClassName('sufield-system');
+            for (let systemElement of systemElements) {
+                const object = systemElement.querySelector('.sufield-object').value.trim();
+                const tool = systemElement.querySelector('.sufield-tool').value.trim();
+                const field = systemElement.querySelector('.sufield-field').value;
+                const type = systemElement.querySelector('.sufield-type').value;
 
-            if (systemElements.length > 0) {
-                for (let systemElement of systemElements) {
-                    const object = systemElement.querySelector('.sufield-object').value;
-                    const tool = systemElement.querySelector('.sufield-tool').value;
-                    const field = systemElement.querySelector('.sufield-field').value;
-                    const type = systemElement.querySelector('.sufield-type').value;
-
+                if (object && tool && field) {
                     const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
                         ? getRecommendedStandardSolutions(type)
                         : [];
 
                     problemData.sufield.systems.push({
-                        object: object || 'S1',  // VALOR POR DEFECTO
-                        tool: tool || 'S2',      // VALOR POR DEFECTO
-                        field: field || 'Field', // VALOR POR DEFECTO
-                        type: type || 'insufficient', // VALOR POR DEFECTO
+                        object: object,
+                        tool: tool,
+                        field: field,
+                        type: type || 'insufficient',
                         suggestion: sufieldSolutions[type] || "No specific suggestion available.",
                         standardSolutions: standardSolutions
                     });
@@ -5179,6 +5321,7 @@
                 html += `<div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
                     <strong>Algorithm Path:</strong><br/>
                     • <strong>Intersection Test:</strong> ${problemData.physicalContradiction.intersectionTest || 'Not selected'}<br/>
+                    ${problemData.physicalContradiction.timeSeparation ? `• <strong>Time/Space Separation:</strong> ${problemData.physicalContradiction.timeSeparation === 'yes' ? 'Separation in Time' : 'Separation in Space'}<br/>` : ''}
                     ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${problemData.physicalContradiction.separationType}<br/>` : ''}
                     • <strong>Result:</strong> ${problemData.physicalContradiction.strategy || 'No strategy selected'}
                 </div>`;
@@ -5189,8 +5332,16 @@
                         <div class="strategy-description"><strong>${problemData.physicalContradiction.strategy}</strong></div>
                         <div class="strategy-example">
                             ${getStrategyDescription(problemData.physicalContradiction.strategy)}
-                        </div>
-                    </div>`;
+                        </div>`;
+
+                    // Añadir nota si es bypass
+                    if (problemData.physicalContradiction.strategy.includes('Bypass')) {
+                        html += `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                            <i class="fas fa-info-circle"></i> <strong>Note:</strong> The principles listed for this strategy are illustrative examples only. In a system transition, any inventive principle may be applicable.
+                        </div>`;
+                    }
+
+                    html += `</div>`;
                 }
 
                 // Mostrar las categorías de resolución
@@ -5262,84 +5413,82 @@
                 html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
 
                 problemData.sufield.systems.forEach((system, index) => {
-                    if (system.object || system.tool || system.field) {
-                        html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
+                    html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
 
-                        html += `<h5>System ${index + 1}: ${system.object || 'S1'} ← ${system.field || 'F'} → ${system.tool || 'S2'}</h5>`;
+                    html += `<h5>System ${index + 1}: ${system.object} ← ${system.field} → ${system.tool}</h5>`;
 
-                        const problemDiagramId = `problem-diagram-${index}`;
-                        const solutionDiagramId = `solution-diagram-${index}`;
+                    const problemDiagramId = `problem-diagram-${index}`;
+                    const solutionDiagramId = `solution-diagram-${index}`;
 
-                        html += `
-                            <div class="solution-transformation">
-                                <div class="before-state">
-                                    <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
-                                    <div class="state-label">Problem State</div>
-                                </div>
-                                
-                                <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                                
-                                <div class="after-state">
-                                    <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
-                                    <div class="state-label">Solution State</div>
-                                </div>
+                    html += `
+                        <div class="solution-transformation">
+                            <div class="before-state">
+                                <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
+                                <div class="state-label">Problem State</div>
                             </div>
-                        `;
-
-                        html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
-                            <div>
-                                <strong>Problem Type:</strong> ${system.type}
-                                <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                            
+                            <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            
+                            <div class="after-state">
+                                <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
+                                <div class="state-label">Solution State</div>
                             </div>
-                        </div>`;
+                        </div>
+                    `;
 
-                        if (system.standardSolutions && system.standardSolutions.length > 0) {
-                            const solutionsByClass = {};
-                            system.standardSolutions.forEach(solution => {
-                                if (!solutionsByClass[solution.class]) {
-                                    solutionsByClass[solution.class] = [];
-                                }
-                                solutionsByClass[solution.class].push(solution);
-                            });
+                    html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                        <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
+                        <div>
+                            <strong>Problem Type:</strong> ${system.type}
+                            <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                        </div>
+                    </div>`;
 
-                            for (const [className, solutions] of Object.entries(solutionsByClass)) {
-                                const classIcon = classIcons[className] || 'fa-cube';
-                                html += `<div class="standard-solution-visual">`;
+                    if (system.standardSolutions && system.standardSolutions.length > 0) {
+                        const solutionsByClass = {};
+                        system.standardSolutions.forEach(solution => {
+                            if (!solutionsByClass[solution.class]) {
+                                solutionsByClass[solution.class] = [];
+                            }
+                            solutionsByClass[solution.class].push(solution);
+                        });
+
+                        for (const [className, solutions] of Object.entries(solutionsByClass)) {
+                            const classIcon = classIcons[className] || 'fa-cube';
+                            html += `<div class="standard-solution-visual">`;
+                            html += `
+                                <div class="class-header">
+                                    <span class="class-icon"><i class="fas ${classIcon}"></i></span>
+                                    <h5>${className}</h5>
+                                </div>
+                            `;
+                            html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
+
+                            html += `<div class="solution-description">`;
+                            html += `<h6>Recommended Standard Solutions:</h6>`;
+
+                            solutions.forEach(solution => {
+                                const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
                                 html += `
-                                    <div class="class-header">
-                                        <span class="class-icon"><i class="fas ${classIcon}"></i></span>
-                                        <h5>${className}</h5>
+                                    <div class="solution-card">
+                                        <div class="solution-header">
+                                            <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
+                                            <strong>${solution.id}: ${solution.title}</strong>
+                                        </div>
+                                        <p>${solution.description}</p>
                                     </div>
                                 `;
-                                html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
+                            });
 
-                                html += `<div class="solution-description">`;
-                                html += `<h6>Recommended Standard Solutions:</h6>`;
-
-                                solutions.forEach(solution => {
-                                    const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
-                                    html += `
-                                        <div class="solution-card">
-                                            <div class="solution-header">
-                                                <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
-                                                <strong>${solution.id}: ${solution.title}</strong>
-                                            </div>
-                                            <p>${solution.description}</p>
-                                        </div>
-                                    `;
-                                });
-
-                                html += `</div></div>`;
-                            }
-                        } else if (typeof getRecommendedStandardSolutions !== 'function') {
-                            html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
-                        } else {
-                            html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                            html += `</div></div>`;
                         }
-
-                        html += `</div>`;
+                    } else if (typeof getRecommendedStandardSolutions !== 'function') {
+                        html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
+                    } else {
+                        html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
                     }
+
+                    html += `</div>`;
                 });
                 html += `</div>`;
             }
@@ -5352,27 +5501,25 @@
             // Dibujar diagramas Su-Field - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
             if (problemData.sufield && problemData.sufield.systems) {
                 problemData.sufield.systems.forEach((system, index) => {
-                    if (system.object || system.tool || system.field) {
-                        const problemDiagramId = `problem-diagram-${index}`;
-                        const solutionDiagramId = `solution-diagram-${index}`;
+                    const problemDiagramId = `problem-diagram-${index}`;
+                    const solutionDiagramId = `solution-diagram-${index}`;
 
-                        if (typeof updateProblemDiagramInSolution === 'function') {
-                            updateProblemDiagramInSolution(problemDiagramId, {
-                                objectText: system.object || 'S1',
-                                toolText: system.tool || 'S2',
-                                fieldType: system.field || 'Field',
-                                problemType: system.type || 'insufficient'
-                            });
-                        }
+                    if (typeof updateProblemDiagramInSolution === 'function') {
+                        updateProblemDiagramInSolution(problemDiagramId, {
+                            objectText: system.object,
+                            toolText: system.tool,
+                            fieldType: system.field,
+                            problemType: system.type || 'insufficient'
+                        });
+                    }
 
-                        if (typeof updateSolutionDiagram === 'function') {
-                            updateSolutionDiagram(
-                                solutionDiagramId,
-                                system.object || 'S1',
-                                system.tool || 'S2',
-                                system.field || 'Field'
-                            );
-                        }
+                    if (typeof updateSolutionDiagram === 'function') {
+                        updateSolutionDiagram(
+                            solutionDiagramId,
+                            system.object,
+                            system.tool,
+                            system.field
+                        );
                     }
                 });
             }
@@ -5615,6 +5762,7 @@
                 ws_data.push(["Type", "Physical Contradiction"]);
                 ws_data.push(["Conflicting Parameter", problemData.physicalContradiction.conflictingParameter]);
                 ws_data.push(["Intersection Test", problemData.physicalContradiction.intersectionTest]);
+                ws_data.push(["Time/Space Separation", problemData.physicalContradiction.timeSeparation]);
                 ws_data.push(["Separation Type", problemData.physicalContradiction.separationType]);
                 ws_data.push(["Recommended Strategy", problemData.physicalContradiction.strategy]);
                 ws_data.push(["Categories", problemData.physicalContradiction.categories.join(', ')]);
@@ -5634,22 +5782,20 @@
 
             if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
                 problemData.sufield.systems.forEach((system, index) => {
-                    if (system.object || system.tool || system.field) {
-                        ws_data.push([]);
-                        ws_data.push([`System ${index + 1}`]);
-                        ws_data.push(["Object (S1)", system.object]);
-                        ws_data.push(["Tool (S2)", system.tool]);
-                        ws_data.push(["Field (F)", system.field]);
-                        ws_data.push(["Problem Type", system.type]);
-                        ws_data.push(["Suggestion", system.suggestion.replace(/<[^>]*>?/gm, '')]);
+                    ws_data.push([]);
+                    ws_data.push([`System ${index + 1}`]);
+                    ws_data.push(["Object (S1)", system.object]);
+                    ws_data.push(["Tool (S2)", system.tool]);
+                    ws_data.push(["Field (F)", system.field]);
+                    ws_data.push(["Problem Type", system.type]);
+                    ws_data.push(["Suggestion", system.suggestion.replace(/<[^>]*>?/gm, '')]);
 
-                        if (system.standardSolutions && system.standardSolutions.length > 0) {
-                            ws_data.push(["Recommended Standard Solutions"]);
-                            ws_data.push(["Solution ID", "Title", "Description"]);
-                            system.standardSolutions.forEach(solution => {
-                                ws_data.push([solution.id, solution.title, solution.description]);
-                            });
-                        }
+                    if (system.standardSolutions && system.standardSolutions.length > 0) {
+                        ws_data.push(["Recommended Standard Solutions"]);
+                        ws_data.push(["Solution ID", "Title", "Description"]);
+                        system.standardSolutions.forEach(solution => {
+                            ws_data.push([solution.id, solution.title, solution.description]);
+                        });
                     }
                 });
             }
@@ -5663,7 +5809,8 @@
 
         function getStrategyDescription(strategy) {
             const descriptions = {
-                "Separation in Space AND Time": "The two opposite demands occur in different places and/or at different times. Apply both separation in space and time principles.",
+                "Separation in Space": "The opposite demands occur in different places. Apply separation in space principles.",
+                "Separation in Time": "The opposite demands occur at different times. Apply separation in time principles.",
                 "Satisfy contradictory demands through physical-chemical changes": "The demands are contiguous (touch at a boundary). Use physical or chemical changes to satisfy both demands simultaneously.",
                 "Separation in Relation (Condition)": "The demands are for different systems, users, or conditions. Separate by perspective, user, or operating condition.",
                 "Separation in System Level": "The whole system has one property while its parts have the opposite. Separate by system hierarchy (macro vs micro level).",
@@ -5701,14 +5848,23 @@
                 });
             });
 
+            // Escuchar cambios en los radio buttons de time-separation
+            const timeSepRadios = document.querySelectorAll('input[name="time-separation"]');
+            timeSepRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    updatePhysicalStrategyFlow();
+                    const tableContainer = document.getElementById('principles-table-container');
+                    if (tableContainer && !tableContainer.classList.contains('hidden')) {
+                        generatePrinciplesTable();
+                    }
+                });
+            });
+
             // Escuchar cambios en los radio buttons de separación
             const separationRadios = document.querySelectorAll('input[name="separation-type"]');
             separationRadios.forEach(radio => {
                 radio.addEventListener('change', function () {
-                    // Actualizar el flujo
-                    updatePhysicalStrategy();
-
-                    // Si la tabla está visible, regenerarla
+                    updatePhysicalStrategyFlow();
                     const tableContainer = document.getElementById('principles-table-container');
                     if (tableContainer && !tableContainer.classList.contains('hidden')) {
                         generatePrinciplesTable();
@@ -5716,11 +5872,73 @@
                 });
             });
         }
+
+        // ===== FUNCIÓN PARA AGREGAR SISTEMA SU-FIELD (usada en addSuFieldSystem) =====
+        function addSuFieldSystem() {
+            const container = document.getElementById('sufield-systems-container');
+            const systemCount = container.children.length;
+            const systemId = 'sufield-system-' + systemCount;
+
+            const systemHTML = `
+                <div class="sufield-system" id="${systemId}">
+                    <div class="sufield-system-header">
+                        <div class="sufield-system-title">Su-Field System ${systemCount + 1}</div>
+                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem('${systemId}')" aria-label="Remove system"><i class="fas fa-minus"></i></button>
+                    </div>
+                    
+                    <div class="sufield-system-fields">
+                        <div class="form-group">
+                            <label for="sufield-object-${systemCount}">Object (S1)</label>
+                            <input type="text" id="sufield-object-${systemCount}" class="sufield-object" placeholder="e.g., The coffee, the user's hand" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-tool-${systemCount}">Tool (S2)</label>
+                            <input type="text" id="sufield-tool-${systemCount}" class="sufield-tool" placeholder="e.g., The mug wall, the robot arm" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-field-${systemCount}">Field (F)</label>
+                            <select id="sufield-field-${systemCount}" class="sufield-field" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                                <option value="">Select a field type</option>
+                                <option value="Mechanical">Mechanical (Force, Pressure)</option>
+                                <option value="Thermal">Thermal (Heat, Cold)</option>
+                                <option value="Electrical">Electrical (Current, Voltage)</option>
+                                <option value="Magnetic">Magnetic (Field, Flux)</option>
+                                <option value="Optical">Optical (Light, Radiation)</option>
+                                <option value="Acoustic">Acoustic (Sound, Vibration)</option>
+                                <option value="Chemical">Chemical (Reaction, Bond)</option>
+                                <option value="Gravitational">Gravitational (Weight, Mass)</option>
+                                <option value="Nuclear">Nuclear (Radiation, Decay)</option>
+                                <option value="Biological">Biological (Growth, Metabolism)</option>
+                                <option value="Other">Other (Specify in text)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="sufield-system-diagram" id="sufield-diagram-${systemCount}" style="width: 100%; max-width: 100%; overflow: hidden;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sufield-type-${systemCount}">Problem Type:</label>
+                        <select id="sufield-type-${systemCount}" class="sufield-type" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                            <option value="insufficient">Useful, but insufficient</option>
+                            <option value="harmful">Harmful or undesired</option>
+                            <option value="difficult">Difficult to measure or detect</option>
+                            <option value="missing">Missing entirely</option>
+                            <option value="excessive">Excessive or too much</option>
+                            <option value="inefficient">Inefficient or wasteful</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', systemHTML);
+            updateSuFieldDiagram(document.getElementById(systemId));
+        }
     </script>
 
     <script src="dexie.min.js"></script>
     <script src="db-sigma.js"></script>
-    
+
 </body>
 
 </html>

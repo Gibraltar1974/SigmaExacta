@@ -73,9 +73,6 @@ const physicalContradictionPrinciples = {
     [StrategyTypes.SYSTEM_LEVEL]: {
         strategy: "Separation in system level",
         description: "Separate contradictory demands between system level and sub-system (parts) level",
-        // Nota doctrinal: La separación en nivel sistema es reconocida en la doctrina MATRIZ actual
-        // (Litvin, 2000s–presente; ver ARIZ-85C extendido). Permite asignar una propiedad contradictoria
-        // al sistema y la opuesta a sus subsistemas.
         principles: [
             { number: 1, name: "Segmentation", description: "Divide the system into independent parts; each part can have opposite property", example: "Replaceable head toothbrush: handle is permanent, head is disposable" },
             { number: 5, name: "Merging", description: "Combine homogeneous objects or operations in space or time", example: "Multihull catamaran: each hull is narrow, together they achieve stability" },
@@ -105,6 +102,7 @@ const physicalContradictionPrinciples = {
         strategy: "Bypass contradictory demands",
         description: "Bypass the need to satisfy contradictory demands by eliminating or redesigning the conflict",
         note: "Extended MATRIZ doctrine — no fixed principle list. Any inventive principle may apply. Principles below are illustrative examples only.",
+        warning: "The principles listed for this strategy are illustrative examples only. In a system transition, any inventive principle may be applicable.",
         principles: [
             { number: 6, name: "Multi-functionality", description: "Have a part perform multiple functions, eliminating the need for dedicated objects", example: "Swiss Army knife: each blade is a separate subsystem serving the whole tool" },
             { number: 13, name: "The other way round", description: "Implement the opposite action or invert the object / process geometrically", example: "Turning a mold inside-out to extract a cast part without disassembly" },

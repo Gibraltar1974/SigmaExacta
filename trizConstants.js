@@ -1,7 +1,7 @@
 // trizconstants.js (versión modificada)
 // Contiene todas las constantes estáticas de datos para la herramienta TRIZ (triz.html)
 
-// Mapeo completo de todos los principios (sin cambios en esta parte)
+// Mapeo completo de todos los principios (ampliado a 48 principios)
 const principles = {
     1: { name: "Segmentation", desc: "Divide an object into independent parts.", icon: "fa-puzzle-piece" },
     2: { name: "Taking out", desc: "Separate an interfering part or property from an object.", icon: "fa-external-link-alt" },
@@ -43,15 +43,15 @@ const principles = {
     38: { name: "Strong oxidants", desc: "Replace ordinary air with enriched air or oxygen.", icon: "fa-fire" },
     39: { name: "Inert atmosphere", desc: "Replace a normal environment with an inert one.", icon: "fa-flask" },
     40: { name: "Composite materials", desc: "Change from uniform to composite materials.", icon: "fa-clone" },
-    // Principios adicionales 2003
-    41: { name: "Directional properties", desc: "Use anisotropic materials or structures.", icon: "fa-arrows-alt" },
-    42: { name: "Homogeneity in materials", desc: "Make interacting elements from the same material.", icon: "fa-equals" },
-    43: { name: "Inexpensive short-life", desc: "Replace expensive durable objects with cheap disposables.", icon: "fa-recycle" },
-    44: { name: "Replacement of mechanical system", desc: "Replace mechanical systems with optical, thermal or acoustic systems.", icon: "fa-microchip" },
-    45: { name: "Feedback introduction", desc: "Introduce feedback to improve system performance.", icon: "fa-sync-alt" },
-    46: { name: "Counterweight application", desc: "Use counterweights to balance systems.", icon: "fa-balance-scale" },
-    47: { name: "Preliminary saturation", desc: "Pre-saturate a system to prevent unwanted effects.", icon: "fa-fill-drip" },
-    48: { name: "Mediator utilization", desc: "Use an intermediate object to transfer or transmit an action.", icon: "fa-hands-helping" }
+    // Principios adicionales 2003 (41-48)
+    41: { name: "Directional properties", desc: "Use anisotropic materials or structures where properties vary with direction.", icon: "fa-arrows-alt" },
+    42: { name: "Homogeneity in materials", desc: "Make interacting elements from the same material to avoid compatibility issues.", icon: "fa-equals" },
+    43: { name: "Inexpensive short-life", desc: "Replace an expensive durable object with a set of inexpensive disposable ones.", icon: "fa-recycle" },
+    44: { name: "Replacement of mechanical system", desc: "Replace a mechanical system with an optical, acoustical, thermal, or olfactory one.", icon: "fa-microchip" },
+    45: { name: "Feedback introduction", desc: "Introduce feedback to improve a process or action.", icon: "fa-sync-alt" },
+    46: { name: "Counterweight application", desc: "Compensate for the weight of an object by merging it with other objects that provide lift.", icon: "fa-balance-scale" },
+    47: { name: "Preliminary saturation", desc: "Pre-saturate a system to prevent unwanted effects or to prepare it for action.", icon: "fa-fill-drip" },
+    48: { name: "Mediator utilization", desc: "Use an intermediary carrier article or process to transfer or transmit an action.", icon: "fa-hands-helping" }
 };
 
 // Mapeo de iconos específicos para principios de contradicciones físicas
@@ -64,7 +64,16 @@ const physicalPrincipleIcons = {
     23: "fa-sync", 24: "fa-hands-helping", 25: "fa-robot", 26: "fa-clone", 27: "fa-boxes",
     28: "fa-microchip", 29: "fa-tint", 30: "fa-layer-group", 31: "fa-filter", 32: "fa-fill-drip",
     33: "fa-align-center", 34: "fa-trash-alt", 35: "fa-thermometer-half", 36: "fa-cloud",
-    37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group"
+    37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group",
+    // Principios adicionales
+    41: "fa-arrows-alt",
+    42: "fa-equals",
+    43: "fa-recycle",
+    44: "fa-microchip",
+    45: "fa-sync-alt",
+    46: "fa-balance-scale",
+    47: "fa-fill-drip",
+    48: "fa-hands-helping"
 };
 
 // Mapeo de iconos para soluciones estándar
