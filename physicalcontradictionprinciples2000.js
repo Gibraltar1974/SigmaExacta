@@ -1,0 +1,322 @@
+// physicalContradictionPrinciples_MATRIZ_current.js
+//
+// Inventive Principles for resolving Physical Contradictions
+// Source: MATRIZ current doctrine (Litvin et al., 2000s–present)
+//         https://matriz.org/resources/
+//         
+
+
+const physicalContradictionPrinciples = {
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 1 — SEPARACIÓN EN EL ESPACIO
+    // Asignar cada propiedad contradictoria a una zona o parte del sistema
+    // ─────────────────────────────────────────────────────────────────────────
+    separationInSpace: {
+        strategy: "Separation in space",
+        description: "Separate contradictory demands in space",
+        principles: [
+            {
+                number: "1",
+                name: "Segmentation",
+                description: "Divide an object into independent parts or increase degree of fragmentation",
+                example: "LED bulb with multiple small diodes instead of single filament"
+            },
+            {
+                number: "2",
+                name: "Taking away",
+                description: "Extract a disturbing part or property from an object",
+                example: "Pencil with separable lead that can be reused"
+            },
+            {
+                number: "3",
+                name: "Local conditions",
+                description: "Provide transition from homogeneous to heterogeneous structure",
+                example: "Socks with anti-slip knobs only on the bottom side"
+            },
+            {
+                number: "4",
+                name: "Asymmetry",
+                description: "Replace symmetrical form with asymmetrical form",
+                example: "Asymmetrical car tire with sidewall reinforcement for better protection"
+            },
+            {
+                number: "7",
+                name: "Nesting",
+                description: "Contain an object inside another, which in turn is placed inside a third object",
+                example: "Telescopic car antenna: each section nests concentrically inside the next"
+            },
+            {
+                number: "17",
+                name: "Transition into new dimension",
+                description: "Remove problems of moving in a line by allowing movement along a plane or in space",
+                example: "Multi-story car park using vertical dimension instead of ground area"
+            },
+            {
+                number: "30",
+                name: "Flexible shells and thin films",
+                description: "Use flexible shells and thin films instead of three-dimensional structures; isolate an object using flexible shells and thin films",
+                example: "Bubble wrap using flexible film air pockets to protect fragile objects during transport"
+            }
+        ]
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 2 — SEPARACIÓN EN EL TIEMPO
+    // Asignar cada propiedad contradictoria a una fase o momento diferente
+    // ─────────────────────────────────────────────────────────────────────────
+    separationInTime: {
+        strategy: "Separation in time",
+        description: "Separate contradictory demands in time",
+        principles: [
+            {
+                number: "9",
+                name: "Prior counteraction",
+                description: "If necessary to carry out action, consider counteraction in advance",
+                example: "Child-resistant bottle caps requiring simultaneous pinching and turning"
+            },
+            {
+                number: "10",
+                name: "Prior action",
+                description: "Carry out required action in advance, in full or in part",
+                example: "Coffee capsules with pre-portioned coffee for single cup"
+            },
+            {
+                number: "11",
+                name: "Beforehand compensation",
+                description: "Compensate for low reliability by countermeasures taken in advance",
+                example: "Pre-stressed concrete beams compensating for future tensile loads"
+            },
+            {
+                number: "15",
+                name: "Dynamics, adjustability",
+                description: "Make characteristics automatically adjust for optimal performance at each stage",
+                example: "Modern office chairs adjustable to individual requirements"
+            },
+            {
+                number: "16",
+                name: "Partial or excessive action",
+                description: "If 100% of a desired effect is difficult to achieve, use slightly more or less of the same method",
+                example: "Spray painting slightly more than required, then sanding back to exact dimensions"
+            },
+            {
+                number: "19",
+                name: "Periodic action",
+                description: "Replace continuous action with periodic one; use pauses between impulses",
+                example: "Jackhammer using periodic impacts to gradually remove material"
+            },
+            {
+                number: "34",
+                name: "Rejection and regeneration",
+                description: "After completing its function, reject or modify an element; restore used up parts",
+                example: "Rechargeable battery that can be regenerated by recharging"
+            }
+        ]
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 3 — SEPARACIÓN EN RELACIÓN (por condición / interfaz)
+    // Cada propiedad se activa bajo condiciones o relaciones distintas
+    // ─────────────────────────────────────────────────────────────────────────
+    separationInRelation: {
+        strategy: "Separation in relation",
+        description: "Separate contradictory demands in relation to conditions or interfaces",
+        principles: [
+            {
+                number: "31",
+                name: "Porous materials",
+                description: "Make object porous or use additional porous elements",
+                example: "Foam padding using air pockets to absorb impact energy"
+            },
+            {
+                number: "32",
+                name: "Optical property changes",
+                description: "Change color, transparency or emissivity depending on conditions",
+                example: "pH test strips changing color based on liquid acidity"
+            },
+            {
+                number: "40",
+                name: "Composite materials",
+                description: "Replace homogeneous material with composite one",
+                example: "Carbon fiber reinforced plastic combining strength and low weight"
+            }
+        ]
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 4 — SEPARACIÓN ENTRE EL SISTEMA Y SUS PARTES
+    // Una propiedad actúa al nivel del sistema; la contraria, al nivel de subsistema
+    // ─────────────────────────────────────────────────────────────────────────
+    separationInSystemLevel: {
+        strategy: "Separation in system level",
+        description: "Separate contradictory demands between system level and sub-system (parts) level",
+        // Nota doctrinal: La separación en nivel sistema es reconocida en la doctrina MATRIZ actual
+        // (Litvin, 2000s–presente; ver ARIZ-85C extendido). Permite asignar una propiedad contradictoria
+        // al sistema y la opuesta a sus subsistemas.
+        principles: [
+            // Nota: El principio 1 (Segmentation) se utiliza canónicamente en separación espacial.
+            // Aquí se omiten duplicaciones para mantener rigor doctrinal.
+            {
+                number: "5",
+                name: "Merging",
+                description: "Combine in space or time homogeneous objects or operations",
+                example: "Multihull catamaran: each hull is narrow, together they achieve stability"
+            },
+            {
+                number: "12",
+                name: "Equipotentiality",
+                description: "Change conditions to eliminate need to work against potential field",
+                example: "Roller cabinets with casters for easy repositioning without lifting"
+            },
+            {
+                number: "33",
+                name: "Homogeneity",
+                description: "Make objects interact with primary object of same material",
+                example: "Biodegradable garbage bags that can be composted together with contents"
+            }
+        ]
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 5 — SATISFACER AMBAS DEMANDAS SIMULTÁNEAMENTE
+    // Emplear cuando la separación no sea factible y el sistema
+    // pueda satisfacer ambas propiedades gracias a fenómenos físico-químicos.
+    // ─────────────────────────────────────────────────────────────────────────
+    satisfyContradictoryDemands: {
+        strategy: "Satisfy contradictory demands",
+        description: "Satisfy both contradictory demands simultaneously via physical or chemical phenomena",
+        note: "Extended MATRIZ doctrine — not present in Litvin 1987/1993. Use after separation strategies.",
+        principles: [
+            {
+                number: "28",
+                name: "Replace mechanical system with fields",
+                description: "Replace mechanical system by optical, acoustical or electromagnetic fields",
+                example: "Keyless entry using radio signals: no mechanical key yet door locks physically"
+            },
+            {
+                number: "35",
+                name: "Parameter changes",
+                description: "Change aggregate state, concentration, flexibility, temperature or other parameters",
+                example: "Glue stick that is solid for clean handling, then liquefies on application surface"
+            },
+            {
+                number: "36",
+                name: "Phase transition",
+                description: "Use phenomena occurring during phase transitions (e.g. volume change, heat release)",
+                example: "Shape memory alloy returning to original form on heating: rigid when cool, flexible when warm"
+            },
+            {
+                number: "37",
+                name: "Thermal expansion",
+                description: "Use thermal expansion or contraction of materials",
+                example: "Heat-shrink tubing: loose for installation, then contracts to grip on heating"
+            },
+            {
+                number: "38",
+                name: "Use strong oxidizers",
+                description: "Replace normal air with enriched air or pure oxygen",
+                example: "Basic oxygen steelmaking: pure oxygen satisfies both high-temperature reaction and low-carbon result"
+            },
+            {
+                number: "39",
+                name: "Inert environment",
+                description: "Replace normal environment with inert one; carry out process in vacuum",
+                example: "Argon-filled incandescent bulb: inert gas satisfies both luminosity and filament longevity"
+            }
+        ]
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ESTRATEGIA 6 — ELUDIR LAS DEMANDAS CONTRADICTORIAS
+    // IMPORTANTE: En MATRIZ oficial, esta estrategia NO tiene una lista fija
+    // de principios asignados. Cualquier principio inventivo puede aplicarse.
+    // La lista siguiente es ILUSTRATIVA — ejemplos de principios frecuentemente
+    // útiles en este modo, no una asignación canónica.
+    // ─────────────────────────────────────────────────────────────────────────
+    bypassContradictoryDemands: {
+        strategy: "Bypass contradictory demands",
+        description: "Bypass the need to satisfy contradictory demands by eliminating or redesigning the conflict",
+        note: "Extended MATRIZ doctrine — no fixed principle list. Any inventive principle may apply. Principles below are illustrative examples only.",
+        principles: [
+            {
+                number: "6",
+                name: "Multi-functionality",
+                description: "Have a part perform multiple functions, eliminating the need for dedicated objects",
+                example: "Swiss Army knife: each blade is a separate subsystem serving the whole tool"
+            },
+            {
+                number: "13",
+                name: "The other way round",
+                description: "Implement the opposite action or invert the object / process geometrically",
+                example: "Turning a mold inside-out to extract a cast part without disassembly"
+            },
+            {
+                number: "24",
+                name: "Intermediary",
+                description: "Use an intermediate object to carry, transfer or compensate",
+                example: "Optical fibre relaying light: bypasses the contradiction of needing both signal speed and electrical safety"
+            },
+            {
+                number: "25",
+                name: "Self service",
+                description: "Make the object service itself and carry out supplementary operations automatically",
+                example: "Solar-powered calculator: eliminates the contradiction between needing power and avoiding batteries"
+            }
+        ]
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Función auxiliar: ejemplo de cada estrategia
+// ─────────────────────────────────────────────────────────────────────────────
+function getPhysicalContradictionExample(strategy) {
+    const examples = {
+        separationInSpace:
+            "Asymmetric USB plug: wide on one side forces correct insertion orientation, " +
+            "separating 'fits in any direction' from 'must connect correctly' in space.",
+        separationInTime:
+            "Piezoelectric lighter: gas flows only when flint is struck — ignition and fuel release " +
+            "happen in overlapping but distinct temporal phases.",
+        separationInRelation:
+            "Thermal insulation panel: dense outer skin under compression, porous foam core under tension — " +
+            "each layer operates under the condition most favourable to its function.",
+        separationInSystemLevel:
+            "Chainmail glove: each ring is rigid (subsystem), the whole glove is flexible (system), " +
+            "separating rigidity and flexibility across levels.",
+        satisfyContradictoryDemands:
+            "Chemical cold pack: single sachet satisfies both 'needs no heat source' and 'must deliver cold' " +
+            "via endothermic phase dissolution.",
+        bypassContradictoryDemands:
+            "Digital thermometer replacing mercury column: the contradiction between precision and toxicity " +
+            "is bypassed by changing the operating principle altogether."
+    };
+    return examples[strategy] || "No example available for this strategy.";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Función auxiliar: localizar un principio por número en todas las estrategias
+// ─────────────────────────────────────────────────────────────────────────────
+function findPrincipleByNumber(number) {
+    const results = [];
+    for (const [strategyKey, strategyData] of Object.entries(physicalContradictionPrinciples)) {
+        for (const principle of strategyData.principles) {
+            if (principle.number === String(number)) {
+                results.push({
+                    strategy: strategyKey,
+                    strategyLabel: strategyData.strategy,
+                    ...principle
+                });
+            }
+        }
+    }
+    return results;
+}
+
+// Exportar para uso en otros módulos
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        physicalContradictionPrinciples,
+        getPhysicalContradictionExample,
+        findPrincipleByNumber
+    };
+}
