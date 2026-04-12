@@ -1,48 +1,70 @@
 // trizconstants.js (versión modificada)
 // Contiene todas las constantes estáticas de datos para la herramienta TRIZ (triz.html)
 
+// Colores para nodos Su-Field (usados por sufield-diagrams.js)
+const nodeColors = {
+    'S1': '#4CAF50',   // Verde - Objeto
+    'S2': '#2196F3',   // Azul - Herramienta
+    'F': '#FF9800'     // Naranja - Campo
+};
+
+// Abreviaturas de campos Su-Field
+const fieldAbbreviations = {
+    'Mechanical': 'Fmech',
+    'Thermal': 'Ftherm',
+    'Electrical': 'Felec',
+    'Magnetic': 'Fmag',
+    'Optical': 'Fopt',
+    'Acoustic': 'Faco',
+    'Chemical': 'Fchem',
+    'Gravitational': 'Fgrav',
+    'Nuclear': 'Fnuc',
+    'Biological': 'Fbio',
+    'Other': 'Fother'
+};
+
 // Mapeo completo de todos los principios (40 principios, sin extensiones)
 const principles = {
-    1: { name: "Segmentation", desc: "Divide an object into independent parts.", icon: "fa-puzzle-piece" },
-    2: { name: "Taking out", desc: "Separate an interfering part or property from an object.", icon: "fa-external-link-alt" },
-    3: { name: "Local quality", desc: "Change an object's structure from uniform to non-uniform.", icon: "fa-bullseye" },
-    4: { name: "Asymmetry", desc: "Change the shape of an object from symmetrical to asymmetrical.", icon: "fa-not-equal" },
-    5: { name: "Merging", desc: "Bring closer together (or merge) identical or similar objects.", icon: "fa-link" },
-    6: { name: "Universality", desc: "Make a part or object perform multiple functions.", icon: "fa-toolbox" },
-    7: { name: "Nested doll", desc: "Place one object inside another.", icon: "fa-layer-group" },
-    8: { name: "Anti-weight", desc: "Compensate for weight by merging with objects that have lift.", icon: "fa-feather-alt" },
-    9: { name: "Preliminary anti-action", desc: "Pre-load with counter-stresses to oppose known undesirable stresses later.", icon: "fa-shield-alt" },
-    10: { name: "Preliminary action", desc: "Perform required changes to an object before it is needed.", icon: "fa-tasks" },
-    11: { name: "Beforehand cushioning", desc: "Prepare emergency means beforehand.", icon: "fa-life-ring" },
-    12: { name: "Equipotentiality", desc: "Limit position changes (e.g. in a gravity field).", icon: "fa-arrows-alt-v" },
-    13: { name: "The other way round", desc: "Invert the action(s) used to solve the problem.", icon: "fa-retweet" },
-    14: { name: "Spheroidality - Curvature", desc: "Use curvilinear parts, surfaces, or forms.", icon: "fa-circle-notch" },
-    15: { name: "Dynamics", desc: "Allow characteristics to change to be optimal.", icon: "fa-sliders-h" },
-    16: { name: "Partial or excessive actions", desc: "If 100% is hard, do slightly less or slightly more.", icon: "fa-adjust" },
-    17: { name: "Another dimension", desc: "Move into a new dimension (e.g. 2D to 3D).", icon: "fa-cube" },
-    18: { name: "Mechanical vibration", desc: "Cause an object to oscillate or vibrate.", icon: "fa-wave-square" },
-    19: { name: "Periodic action", desc: "Instead of continuous action, use periodic or pulsating actions.", icon: "fa-history" },
-    20: { name: "Continuity of useful action", desc: "Carry on work continuously.", icon: "fa-infinity" },
-    21: { name: "Skipping", desc: "Conduct a process at high speed.", icon: "fa-shipping-fast" },
-    22: { name: "Blessing in disguise", desc: "Use harmful factors to achieve a positive effect.", icon: "fa-recycle" },
-    23: { name: "Feedback", desc: "Introduce feedback to improve a process.", icon: "fa-sync-alt" },
-    24: { name: "Intermediary", desc: "Use an intermediary carrier article or process.", icon: "fa-hands-helping" },
-    25: { name: "Self-service", desc: "Make an object serve itself.", icon: "fa-magic" },
-    26: { name: "Copying", desc: "Use simpler and inexpensive copies.", icon: "fa-copy" },
-    27: { name: "Cheap short-living objects", desc: "Replace an expensive object with multiple inexpensive ones.", icon: "fa-box" },
-    28: { name: "Mechanics substitution", desc: "Replace mechanical means with sensory (optical, acoustic) means.", icon: "fa-magnet" },
-    29: { name: "Pneumatics and hydraulics", desc: "Use gas and liquid parts instead of solid parts.", icon: "fa-water" },
-    30: { name: "Flexible shells and thin films", desc: "Use flexible shells and thin films.", icon: "fa-film" },
-    31: { name: "Porous materials", desc: "Make an object porous.", icon: "fa-braille" },
-    32: { name: "Color changes", desc: "Change the color of an object or its environment.", icon: "fa-palette" },
-    33: { name: "Homogeneity", desc: "Make objects interacting with a given object of the same material.", icon: "fa-equals" },
-    34: { name: "Discarding and recovering", desc: "Make portions of an object that have fulfilled their functions go away.", icon: "fa-trash-restore" },
-    35: { name: "Parameter changes", desc: "Change an object's physical state (e.g. gas, liquid, solid).", icon: "fa-thermometer-half" },
-    36: { name: "Phase transitions", desc: "Use phenomena occurring during phase transitions.", icon: "fa-wind" },
-    37: { name: "Thermal expansion", desc: "Use thermal expansion (or contraction) of materials.", icon: "fa-arrows-alt-h" },
-    38: { name: "Strong oxidants", desc: "Replace ordinary air with enriched air or oxygen.", icon: "fa-fire" },
-    39: { name: "Inert atmosphere", desc: "Replace a normal environment with an inert one.", icon: "fa-flask" },
-    40: { name: "Composite materials", desc: "Change from uniform to composite materials.", icon: "fa-clone" }
+    1: { name: "Segmentation", desc: "Divide an object into independent parts.", icon: "fa-puzzle-piece", example: "Modular furniture, segmented garden hose." },
+    2: { name: "Taking out", desc: "Separate an interfering part or property from an object.", icon: "fa-external-link-alt", example: "Noisy compressor placed outside the room." },
+    3: { name: "Local quality", desc: "Change an object's structure from uniform to non-uniform.", icon: "fa-bullseye", example: "Socks with anti-slip knobs only on the bottom." },
+    4: { name: "Asymmetry", desc: "Change the shape of an object from symmetrical to asymmetrical.", icon: "fa-not-equal", example: "Asymmetric car tire with sidewall reinforcement." },
+    5: { name: "Merging", desc: "Bring closer together (or merge) identical or similar objects.", icon: "fa-link", example: "Multihull catamaran for stability." },
+    6: { name: "Universality", desc: "Make a part or object perform multiple functions.", icon: "fa-toolbox", example: "Swiss Army knife." },
+    7: { name: "Nested doll", desc: "Place one object inside another.", icon: "fa-layer-group", example: "Telescopic car antenna." },
+    8: { name: "Anti-weight", desc: "Compensate for weight by merging with objects that have lift.", icon: "fa-feather-alt", example: "Helium balloon lifting a camera." },
+    9: { name: "Preliminary anti-action", desc: "Pre-load with counter-stresses to oppose known undesirable stresses later.", icon: "fa-shield-alt", example: "Child-resistant bottle caps." },
+    10: { name: "Preliminary action", desc: "Perform required changes to an object before it is needed.", icon: "fa-tasks", example: "Pre-portioned coffee capsules." },
+    11: { name: "Beforehand cushioning", desc: "Prepare emergency means beforehand.", icon: "fa-life-ring", example: "Pre-stressed concrete beams." },
+    12: { name: "Equipotentiality", desc: "Limit position changes (e.g. in a gravity field).", icon: "fa-arrows-alt-v", example: "Locks in canals to lift boats." },
+    13: { name: "The other way round", desc: "Invert the action(s) used to solve the problem.", icon: "fa-retweet", example: "Turning a mold inside-out to extract a cast part." },
+    14: { name: "Spheroidality - Curvature", desc: "Use curvilinear parts, surfaces, or forms.", icon: "fa-circle-notch", example: "Dome-shaped stadium roof." },
+    15: { name: "Dynamics", desc: "Allow characteristics to change to be optimal.", icon: "fa-sliders-h", example: "Adjustable office chair." },
+    16: { name: "Partial or excessive actions", desc: "If 100% is hard, do slightly less or slightly more.", icon: "fa-adjust", example: "Spray painting slightly more then sanding back." },
+    17: { name: "Another dimension", desc: "Move into a new dimension (e.g. 2D to 3D).", icon: "fa-cube", example: "Multi-story car park." },
+    18: { name: "Mechanical vibration", desc: "Cause an object to oscillate or vibrate.", icon: "fa-wave-square", example: "Jackhammer using periodic impacts." },
+    19: { name: "Periodic action", desc: "Instead of continuous action, use periodic or pulsating actions.", icon: "fa-history", example: "Piezoelectric lighter: ignition and fuel release in distinct temporal phases." },
+    20: { name: "Continuity of useful action", desc: "Carry on work continuously.", icon: "fa-infinity", example: "Continuous casting in steel production." },
+    21: { name: "Skipping", desc: "Conduct a process at high speed.", icon: "fa-shipping-fast", example: "Flash photography." },
+    22: { name: "Blessing in disguise", desc: "Use harmful factors to achieve a positive effect.", icon: "fa-recycle", example: "Using waste heat to warm a building." },
+    23: { name: "Feedback", desc: "Introduce feedback to improve a process.", icon: "fa-sync-alt", example: "Thermostat controlling room temperature." },
+    24: { name: "Intermediary", desc: "Use an intermediary carrier article or process.", icon: "fa-hands-helping", example: "Optical fibre relaying light signals." },
+    25: { name: "Self-service", desc: "Make an object serve itself.", icon: "fa-magic", example: "Solar-powered calculator." },
+    26: { name: "Copying", desc: "Use simpler and inexpensive copies.", icon: "fa-copy", example: "Crash test dummies instead of real people." },
+    27: { name: "Cheap short-living objects", desc: "Replace an expensive object with multiple inexpensive ones.", icon: "fa-box", example: "Disposable paper cups." },
+    28: { name: "Mechanics substitution", desc: "Replace mechanical means with sensory (optical, acoustic) means.", icon: "fa-magnet", example: "Keyless entry using radio signals." },
+    29: { name: "Pneumatics and hydraulics", desc: "Use gas and liquid parts instead of solid parts.", icon: "fa-water", example: "Air-filled bubble wrap for cushioning." },
+    30: { name: "Flexible shells and thin films", desc: "Use flexible shells and thin films.", icon: "fa-film", example: "Bubble wrap using flexible film air pockets." },
+    31: { name: "Porous materials", desc: "Make an object porous.", icon: "fa-braille", example: "Foam padding absorbing impact energy." },
+    32: { name: "Color changes", desc: "Change the color of an object or its environment.", icon: "fa-palette", example: "pH test strips changing color." },
+    33: { name: "Homogeneity", desc: "Make objects interacting with a given object of the same material.", icon: "fa-equals", example: "Biodegradable garbage bags composted together with contents." },
+    34: { name: "Discarding and recovering", desc: "Make portions of an object that have fulfilled their functions go away.", icon: "fa-trash-restore", example: "Rechargeable battery that can be regenerated." },
+    35: { name: "Parameter changes", desc: "Change an object's physical state (e.g. gas, liquid, solid).", icon: "fa-thermometer-half", example: "Glue stick that liquefies on application." },
+    36: { name: "Phase transitions", desc: "Use phenomena occurring during phase transitions.", icon: "fa-wind", example: "Shape memory alloy returning to original form on heating." },
+    37: { name: "Thermal expansion", desc: "Use thermal expansion (or contraction) of materials.", icon: "fa-arrows-alt-h", example: "Heat-shrink tubing contracting on heating." },
+    38: { name: "Strong oxidants", desc: "Replace ordinary air with enriched air or oxygen.", icon: "fa-fire", example: "Basic oxygen steelmaking for high-temperature reaction." },
+    39: { name: "Inert atmosphere", desc: "Replace a normal environment with an inert one.", icon: "fa-flask", example: "Argon-filled incandescent bulb." },
+    40: { name: "Composite materials", desc: "Change from uniform to composite materials.", icon: "fa-clone", example: "Carbon fiber reinforced plastic combining strength and low weight." }
 };
 
 // Mapeo de iconos específicos para principios de contradicciones físicas
@@ -58,7 +80,7 @@ const physicalPrincipleIcons = {
     37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group"
 };
 
-// Mapeo de iconos para soluciones estándar
+// Mapeo de iconos para soluciones estándar (corregido - HI-02)
 const standardSolutionIcons = {
     "1.1.1": "fa-wrench", "1.1.2": "fa-plus-circle", "1.1.3": "fa-external-link-alt", "1.1.4": "fa-globe",
     "1.1.5": "fa-sync", "1.1.6": "fa-adjust", "1.1.7": "fa-hands-helping", "1.1.8": "fa-shield-alt",
@@ -77,9 +99,9 @@ const standardSolutionIcons = {
     "4.3.4": "fa-search-plus", "4.3.5": "fa-link", "4.3.6": "fa-robot", "4.3.7": "fa-sync",
     "4.3.8": "fa-search-plus", "5.1.1.1": "fa-th", "5.1.1.2": "fa-bolt", "5.1.1.3": "fa-external-link-alt",
     "5.1.1.4": "fa-vial", "5.1.1.5": "fa-map-marker-alt", "5.1.1.6": "fa-clock", "5.1.1.7": "fa-clone",
-    "5.1.2": "fa-bolt", "5.1.3": "fa-trash-alt", "5.1.4": "fa-th", "5.2.1": "fa-recycle",
-    "5.3.1": "fa-cloud", "5.3.2": "fa-arrows-alt-h", "5.3.3": "fa-fire", "5.3.4": "fa-flask",
-    "5.4.1": "fa-robot", "5.5.1": "fa-layer-group"
+    "5.1.2.1": "fa-bolt", "5.1.2.2": "fa-magnet", "5.1.3.1": "fa-trash-alt", "5.1.3.2": "fa-trash-alt",
+    "5.1.3.3": "fa-trash-alt", "5.1.4": "fa-th", "5.2.1": "fa-recycle", "5.2.2": "fa-recycle",
+    "5.3.1": "fa-cloud", "5.3.2": "fa-arrows-alt-h"
 };
 
 // Mapeo de iconos para las clases de soluciones estándar
@@ -267,6 +289,8 @@ if (typeof module !== 'undefined' && module.exports) {
         problemTypeColors,
         sufieldSolutions,
         standardSolutionClasses,
-        examples
+        examples,
+        nodeColors,
+        fieldAbbreviations
     };
 }

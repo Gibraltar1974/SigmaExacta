@@ -2983,6 +2983,19 @@
     <script src="ldst.js"></script>
 
     <script>
+        // ===== FUNCIÓN DE ESCAPE HTML UNIVERSAL (CR-03) =====
+        function esc(str) {
+            if (str == null) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ===== FUNCIÓN PARA SANITIZAR ETIQUETAS MERMAID (ME-04) =====
+        function sanitizeMermaidLabel(label) {
+            return String(label).replace(/["'\[\]\(\)\{\}]/g, '').trim();
+        }
+
         // ===== VARIABLES GLOBALES =====
         let problemData = {};
         let exampleIndex = 0;
@@ -3103,13 +3116,30 @@
                 .then(data => {
                     document.getElementById('header-container').innerHTML = data;
                     initNavigationMenu();
-
-                    // Inicializar tool DESPUÉS de que el header esté cargado
+                })
+                .catch(error => {
+                    console.error('Error loading header:', error);
+                    // Fallback inline navigation (ME-05)
+                    document.getElementById('header-container').innerHTML = `
+                        <div class="top-bar">
+                            <div class="logo-text">Sigma Exacta</div>
+                            <button class="nav-toggle" id="nav-toggle"><i class="fas fa-bars"></i></button>
+                            <nav class="navigation">
+                                <ul class="nav-menu" id="nav-menu">
+                                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                                    <li class="nav-item"><a href="/triz" class="nav-link">TRIZ Tool</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    `;
+                    initNavigationMenu();
+                })
+                .finally(() => {
+                    // Inicializar tool DESPUÉS de que el header esté cargado (o fallback)
                     setTimeout(() => {
                         init();
                     }, 100);
-                })
-                .catch(error => console.error('Error loading header:', error));
+                });
 
             // Asignar eventos a los botones globales
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExampleAndGo);
@@ -3118,9 +3148,9 @@
             // Inicializar Mermaid para Function Analysis
             if (typeof mermaid !== 'undefined') {
                 mermaid.initialize({
-                    startOnLoad: false, // Cambiado a false para control manual
+                    startOnLoad: false,
                     theme: 'default',
-                    securityLevel: 'loose',
+                    securityLevel: 'strict', // ME-04: Cambiado a strict
                     flowchart: {
                         useMaxWidth: true,
                         htmlLabels: true,
@@ -3494,23 +3524,23 @@
 
         // CORREGIDA: Función populateDropdowns con valores 1-based
         function populateDropdowns() {
-                const improvingSelect = document.getElementById('improving-feature');
-                const worseningSelect = document.getElementById('worsening-feature');
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
 
-                improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
-                worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
 
-                const features = getCurrentFeatures();
+            const features = getCurrentFeatures();
 
-                features.forEach((featureName, index) => {
-                    const featureNumber = index + 1; // Valor 1-based
-                    const optionText = `${featureNumber}: ${featureName}`;
-                    improvingSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
-                    worseningSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
-                });
+            features.forEach((featureName, index) => {
+                const featureNumber = index + 1; // Valor 1-based
+                const optionText = `${featureNumber}: ${featureName}`;
+                improvingSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
+                worseningSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
+            });
 
-                improvingFeatureIndex = null;
-                worseningFeatureIndex = null;
+            improvingFeatureIndex = null;
+            worseningFeatureIndex = null;
         }
 
         // NUEVA FUNCIÓN: Para manejar cambios en los dropdowns - CORREGIDA
@@ -3557,39 +3587,39 @@
         }
 
         function updateSelectedFeatures() {
-                const features = getCurrentFeatures();
-                const improvingSpan = document.getElementById('selected-improving');
-                const worseningSpan = document.getElementById('selected-worsening');
+            const features = getCurrentFeatures();
+            const improvingSpan = document.getElementById('selected-improving');
+            const worseningSpan = document.getElementById('selected-worsening');
 
-                const improvingSelect = document.getElementById('improving-feature');
-                const worseningSelect = document.getElementById('worsening-feature');
+            const improvingSelect = document.getElementById('improving-feature');
+            const worseningSelect = document.getElementById('worsening-feature');
 
-                const improvingValue = parseInt(improvingSelect.value);
-                const worseningValue = parseInt(worseningSelect.value);
+            const improvingValue = parseInt(improvingSelect.value);
+            const worseningValue = parseInt(worseningSelect.value);
 
-                if (improvingValue > 0 && improvingValue <= features.length) {
-                    const featureName = features[improvingValue - 1];
-                    improvingSpan.textContent = `${improvingValue}: ${featureName}`;
-                    improvingSpan.title = featureName;
-                    improvingFeatureIndex = improvingValue - 1;
-                } else {
-                    improvingSpan.textContent = 'None';
-                    improvingSpan.title = '';
-                    improvingFeatureIndex = null;
-                }
+            if (improvingValue > 0 && improvingValue <= features.length) {
+                const featureName = features[improvingValue - 1];
+                improvingSpan.textContent = `${improvingValue}: ${featureName}`;
+                improvingSpan.title = featureName;
+                improvingFeatureIndex = improvingValue - 1;
+            } else {
+                improvingSpan.textContent = 'None';
+                improvingSpan.title = '';
+                improvingFeatureIndex = null;
+            }
 
-                if (worseningValue > 0 && worseningValue <= features.length) {
-                    const featureName = features[worseningValue - 1];
-                    worseningSpan.textContent = `${worseningValue}: ${featureName}`;
-                    worseningSpan.title = featureName;
-                    worseningFeatureIndex = worseningValue - 1;
-                } else {
-                    worseningSpan.textContent = 'None';
-                    worseningSpan.title = '';
-                    worseningFeatureIndex = null;
-                }
+            if (worseningValue > 0 && worseningValue <= features.length) {
+                const featureName = features[worseningValue - 1];
+                worseningSpan.textContent = `${worseningValue}: ${featureName}`;
+                worseningSpan.title = featureName;
+                worseningFeatureIndex = worseningValue - 1;
+            } else {
+                worseningSpan.textContent = 'None';
+                worseningSpan.title = '';
+                worseningFeatureIndex = null;
+            }
 
-                updateMatrixDisplay();
+            updateMatrixDisplay();
         }
 
         function loadExample() {
@@ -3932,10 +3962,10 @@
                 
                 <div style="margin-bottom: 1rem; font-style: italic;">
                     <strong>Current Selection:</strong> 
-                    ${physicalStrategyFlow.selectedIntersection ? `Intersection: ${physicalStrategyFlow.selectedIntersection}` : 'Not selected'} | 
-                    ${physicalStrategyFlow.selectedTimeSeparation ? `Time Separation: ${physicalStrategyFlow.selectedTimeSeparation}` : ''}
-                    ${physicalStrategyFlow.selectedSeparation ? `Separation: ${physicalStrategyFlow.selectedSeparation}` : ''}
-                    ${physicalStrategyFlow.strategy ? `<br/><strong>Recommended Strategy:</strong> ${physicalStrategyFlow.strategy}` : ''}
+                    ${physicalStrategyFlow.selectedIntersection ? `Intersection: ${esc(physicalStrategyFlow.selectedIntersection)}` : 'Not selected'} | 
+                    ${physicalStrategyFlow.selectedTimeSeparation ? `Time Separation: ${esc(physicalStrategyFlow.selectedTimeSeparation)}` : ''}
+                    ${physicalStrategyFlow.selectedSeparation ? `Separation: ${esc(physicalStrategyFlow.selectedSeparation)}` : ''}
+                    ${physicalStrategyFlow.strategy ? `<br/><strong>Recommended Strategy:</strong> ${esc(physicalStrategyFlow.strategy)}` : ''}
                 </div>
                 
                 <p style="margin-bottom: 1.5rem; font-style: italic; font-weight: bold;">
@@ -3966,18 +3996,18 @@
                 html += `
                     <div class="physical-strategy-guide" style="border-left: 5px solid ${borderColor}; ${isSelected ? 'background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #27ae60;' : ''}">
                         <div class="strategy-title" style="color: ${borderColor};">
-                            ${categoryData.strategy}
+                            ${esc(categoryData.strategy)}
                             ${isSelected ? ' <span style="color: #27ae60;">✓ (Recommended)</span>' : ''}
                         </div>
-                        <div class="strategy-description">${categoryData.description}</div>
+                        <div class="strategy-description">${esc(categoryData.description)}</div>
                         <div class="strategy-example">
-                            <strong>Example:</strong> ${getPhysicalContradictionExample(categoryKey)}
+                            <strong>Example:</strong> ${esc(getPhysicalContradictionExample(categoryKey))}
                         </div>
                 `;
 
                 // Añadir warning si es bypass
                 if (categoryKey === 'bypassContradictoryDemands' && categoryData.warning) {
-                    html += `<div style="margin-top: 10px; padding: 8px; background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> ${categoryData.warning}</div>`;
+                    html += `<div style="margin-top: 10px; padding: 8px; background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> ${esc(categoryData.warning)}</div>`;
                 }
 
                 html += `</div>
@@ -3999,10 +4029,10 @@
                 categoryData.principles.forEach(principle => {
                     html += `
                         <tr>
-                            <td><strong>${principle.number}</strong></td>
-                            <td><strong>${principle.name}</strong></td>
-                            <td>${principle.description}</td>
-                            <td><em>${principle.example}</em></td>
+                            <td><strong>${esc(principle.number)}</strong></td>
+                            <td><strong>${esc(principle.name)}</strong></td>
+                            <td>${esc(principle.description)}</td>
+                            <td><em>${esc(principle.example)}</em></td>
                         </tr>
                     `;
                 });
@@ -4084,9 +4114,9 @@
 
                     html += `
                             <tr>
-                                <td><strong>${solutionId}</strong></td>
-                                <td>${solution.title}</td>
-                                <td>${className.split(':')[0]}</td>
+                                <td><strong>${esc(solutionId)}</strong></td>
+                                <td>${esc(solution.title)}</td>
+                                <td>${esc(className.split(':')[0])}</td>
                                 <td class="${isInsufficient ? 'matrix-applicable' : ''}">${isInsufficient ? '✓' : ''}</td>
                                 <td class="${isHarmful ? 'matrix-applicable' : ''}">${isHarmful ? '✓' : ''}</td>
                                 <td class="${isDifficult ? 'matrix-applicable' : ''}">${isDifficult ? '✓' : ''}</td>
@@ -4123,42 +4153,42 @@
         }
 
         function createContradictionMatrix() {
-                const matrixTable = document.getElementById('contradiction-matrix');
-                matrixTable.innerHTML = '';
+            const matrixTable = document.getElementById('contradiction-matrix');
+            matrixTable.innerHTML = '';
 
-                const features = getCurrentFeatures();
+            const features = getCurrentFeatures();
 
-                // Cabecera: primera celda vacía, luego el nombre de cada característica que empeora
-                let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
-                for (let i = 0; i < features.length; i++) {
-                    // Mostramos el nombre completo; el tooltip también lo incluye por claridad
-                    headerRow += `<th title="${features[i]}">${features[i]}</th>`;
-                }
-                headerRow += '</tr>';
-                matrixTable.innerHTML += headerRow;
+            // Cabecera: primera celda vacía, luego el nombre de cada característica que empeora
+            let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
+            for (let i = 0; i < features.length; i++) {
+                // Mostramos el nombre completo; el tooltip también lo incluye por claridad
+                headerRow += `<th title="${esc(features[i])}">${esc(features[i])}</th>`;
+            }
+            headerRow += '</tr>';
+            matrixTable.innerHTML += headerRow;
 
-                // Filas de la matriz
-                for (let i = 0; i < features.length; i++) {
-                    // Primera columna: nombre de la característica que mejora
-                    let row = `<tr><th title="${features[i]}">${features[i]}</th>`;
-                    for (let j = 0; j < features.length; j++) {
-                        const cellClass = getCellClass(i, j);
-                        // Los índices para la matriz son 1-based
-                        const cellPrinciples = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
-                        const principleNumbers = cellPrinciples && cellPrinciples.length > 0 ? cellPrinciples.join(', ') : '-';
+            // Filas de la matriz
+            for (let i = 0; i < features.length; i++) {
+                // Primera columna: nombre de la característica que mejora
+                let row = `<tr><th title="${esc(features[i])}">${esc(features[i])}</th>`;
+                for (let j = 0; j < features.length; j++) {
+                    const cellClass = getCellClass(i, j);
+                    // Los índices para la matriz son 1-based
+                    const cellPrinciples = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
+                    const principleNumbers = cellPrinciples && cellPrinciples.length > 0 ? cellPrinciples.join(', ') : '-';
 
-                        const principleNames = cellPrinciples && cellPrinciples.length > 0
-                            ? cellPrinciples.map(p => getPrincipleName(p)).join(', ')
-                            : 'No principles recommended';
+                    const principleNames = cellPrinciples && cellPrinciples.length > 0
+                        ? cellPrinciples.map(p => getPrincipleName(p)).join(', ')
+                        : 'No principles recommended';
 
-                        row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
-                title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
-                <div class="principle-numbers">${principleNumbers}</div>
+                    row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
+                title="Improving: ${esc(features[i])}\nWorsening: ${esc(features[j])}\nPrinciples: ${esc(principleNames)}">
+                <div class="principle-numbers">${esc(principleNumbers)}</div>
             </td>`;
-                    }
-                    row += '</tr>';
-                    matrixTable.innerHTML += row;
                 }
+                row += '</tr>';
+                matrixTable.innerHTML += row;
+            }
         }
 
         function getCellClass(row, col) {
@@ -4313,8 +4343,8 @@
                 const div = document.createElement('div');
                 div.className = 'item-entry';
                 div.innerHTML = `
-                    <span>${component}</span>
-                    <button class="btn-warning" onclick="removeSystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                    <span>${esc(component)}</span>
+                    <button class="btn-warning" onclick="removeSystemComponent('${esc(component)}')" style="padding: 2px 5px; font-size: 0.8em;">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
@@ -4329,8 +4359,8 @@
                 const div = document.createElement('div');
                 div.className = 'item-entry';
                 div.innerHTML = `
-                    <span>${component}</span>
-                    <button class="btn-warning" onclick="removeSupersystemComponent('${component}')" style="padding: 2px 5px; font-size: 0.8em;">
+                    <span>${esc(component)}</span>
+                    <button class="btn-warning" onclick="removeSupersystemComponent('${esc(component)}')" style="padding: 2px 5px; font-size: 0.8em;">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
@@ -4364,14 +4394,14 @@
 
             // Encabezados de columnas con fondo azul oscuro
             allComponents.forEach(component => {
-                html += `<th>${component}</th>`;
+                html += `<th>${esc(component)}</th>`;
             });
 
             html += `</tr></thead><tbody>`;
 
             // Filas de la matriz
             allComponents.forEach(rowComponent => {
-                html += `<tr><th>${rowComponent}</th>`;
+                html += `<tr><th>${esc(rowComponent)}</th>`;
 
                 allComponents.forEach(colComponent => {
                     if (rowComponent === colComponent) {
@@ -4385,9 +4415,9 @@
 
                         html += `
                             <td style="text-align: center;">
-                                <input type="checkbox" id="${interactionId}" 
+                                <input type="checkbox" id="${esc(interactionId)}" 
                                        ${isChecked ? 'checked' : ''}
-                                       onchange="toggleInteraction('${rowComponent}', '${colComponent}')"
+                                       onchange="toggleInteraction('${esc(rowComponent)}', '${esc(colComponent)}')"
                                        class="interaction-checkbox">
                             </td>
                         `;
@@ -4489,7 +4519,7 @@
                 ...functionAnalysisData.supersystemComponents,
                 functionAnalysisData.targetComponent
             ].filter(c => c);
-            const optionsHtml = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
+            const optionsHtml = allComponents.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
 
             document.querySelectorAll('#function-table-body .function-carrier, #function-table-body .function-target').forEach(select => {
                 const currentVal = select.value;
@@ -4515,7 +4545,7 @@
             }
 
             // Crear opciones para los selectores de componentes
-            const componentOptions = allComponents.map(c => `<option value="${c}">${c}</option>`).join('');
+            const componentOptions = allComponents.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
 
             const rowId = 'function-row-' + Date.now();
             const row = document.createElement('tr');
@@ -4644,7 +4674,7 @@
             }
         }
 
-        // Generar código Mermaid para el diagrama de funciones
+        // Generar código Mermaid para el diagrama de funciones (con sanitización)
         function generateFunctionDiagramCode(functions) {
             if (functions.length === 0) {
                 return 'graph LR;\n    A[Define Functions] --> B[Diagram will appear here]';
@@ -4676,7 +4706,7 @@
                 }
             });
 
-            // Crear nodos con formas apropiadas
+            // Crear nodos con formas apropiadas y sanitización (ME-04)
             Object.entries(componentTypes).forEach(([component, type]) => {
                 let shapeStart = '[';
                 let shapeEnd = ']';
@@ -4693,13 +4723,15 @@
                 }
 
                 const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
-                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
+                const safeLabel = sanitizeMermaidLabel(component);
+                lines.push(`    ${nodeId}${shapeStart}"${safeLabel}"${shapeEnd}:::${className}`);
             });
 
             // Crear aristas (conexiones) con estilos basados en propiedades
             functions.forEach((func, index) => {
                 const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
                 const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
+                const safeAction = sanitizeMermaidLabel(func.action);
 
                 let arrow = '-->';
                 let linkStyle = '';
@@ -4721,7 +4753,7 @@
                 }
 
                 // Añadir la arista
-                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+                lines.push(`    ${carrierId} ${arrow}|${safeAction}| ${targetId}`);
 
                 // Añadir estilo de enlace si está especificado
                 if (linkStyle) {
@@ -4865,11 +4897,11 @@
                     functions: functionAnalysisData.functions
                 };
 
-                // Technical Contradiction data - CORREGIDO
+                // Technical Contradiction data - CORREGIDO (CR-02)
                 let improvingIndex = parseInt(document.getElementById('improving-feature').value);
                 let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
 
-                // CORRECCIÓN: Convertir de valores 1-based a índices 0-based
+                // Convertir de valores 1-based a índices 0-based
                 if (improvingIndex > 0) {
                     improvingFeatureIndex = improvingIndex - 1;
                 } else {
@@ -4880,14 +4912,6 @@
                     worseningFeatureIndex = worseningIndex - 1;
                 } else {
                     worseningFeatureIndex = null;
-                }
-
-                // Si no se pudo obtener de los dropdowns, usar las variables globales
-                if (improvingFeatureIndex === null && improvingFeatureIndex !== null) {
-                    improvingIndex = improvingFeatureIndex;
-                }
-                if (worseningFeatureIndex === null && worseningFeatureIndex !== null) {
-                    worseningIndex = worseningFeatureIndex;
                 }
 
                 problemData.technicalContradiction = {
@@ -4979,27 +5003,27 @@
                 // PROBLEM DEFINITION (New Section)
                 html += `<div class="solver-step">
                     <h4><i class="fas fa-tasks"></i> Problem Definition</h4>
-                    <p><strong>System:</strong> ${problemData.system}</p>
-                    <p><strong>Primary Function:</strong> ${problemData.function}</p>
-                    <p><strong>Main Drawback:</strong> ${problemData.harm}</p>
+                    <p><strong>System:</strong> ${esc(problemData.system)}</p>
+                    <p><strong>Primary Function:</strong> ${esc(problemData.function)}</p>
+                    <p><strong>Main Drawback:</strong> ${esc(problemData.harm)}</p>
                 </div>`;
 
                 // IDEAL FINAL RESULT (New Section)
                 html += `<div class="solver-step">
                     <h4><i class="fas fa-rocket"></i> Ideal Final Result (IFR)</h4>
-                    <p><strong>Formulation:</strong> ${problemData.ifr}</p>
+                    <p><strong>Formulation:</strong> ${esc(problemData.ifr)}</p>
                 </div>`;
 
                 // LDST Analysis
                 html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
-                    <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
+                    <p><strong>Life Cycle Stage:</strong> ${esc(document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text)}</p>
                     <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
 
                 problemData.ldst.recommendedLaws.forEach(law => {
                     html += `
                         <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                            <h5>${law.name}</h5>
-                            <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
+                            <h5>${esc(law.name)}</h5>
+                            <p><strong>Related Principles:</strong> ${esc(law.principles.join(', '))}</p>
                             <div>${law.examples}</div>
                         </div>
                     `;
@@ -5015,7 +5039,7 @@
                                 <div class="tese-trend-icon">
                                     <i class="fas fa-lightbulb"></i>
                                 </div>
-                                <div class="tese-trend-name">${principle}</div>
+                                <div class="tese-trend-name">${esc(principle)}</div>
                             </div>
                         `;
                     });
@@ -5043,17 +5067,17 @@
                                 </td>
                                 <td style="padding: 5px; background: #f0f7ff;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                        ${problemData.nineWindows.superPast || 'Not specified'}
+                                        ${esc(problemData.nineWindows.superPast) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #f0f7ff;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                        ${problemData.nineWindows.superPresent || 'Not specified'}
+                                        ${esc(problemData.nineWindows.superPresent) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #f0f7ff;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                        ${problemData.nineWindows.superFuture || 'Not specified'}
+                                        ${esc(problemData.nineWindows.superFuture) || 'Not specified'}
                                     </div>
                                 </td>
                             </tr>
@@ -5063,17 +5087,17 @@
                                 </td>
                                 <td style="padding: 5px; background: #f0fff0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.systemPast || 'Not specified'}
+                                        ${esc(problemData.nineWindows.systemPast) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #f0fff0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.systemPresent || 'Not specified'}
+                                        ${esc(problemData.nineWindows.systemPresent) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #f0fff0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.systemFuture || 'Not specified'}
+                                        ${esc(problemData.nineWindows.systemFuture) || 'Not specified'}
                                     </div>
                                 </td>
                             </tr>
@@ -5083,17 +5107,17 @@
                                 </td>
                                 <td style="padding: 5px; background: #fff0f0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.subPast || 'Not specified'}
+                                        ${esc(problemData.nineWindows.subPast) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #fff0f0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.subPresent || 'Not specified'}
+                                        ${esc(problemData.nineWindows.subPresent) || 'Not specified'}
                                     </div>
                                 </td>
                                 <td style="padding: 5px; background: #fff0f0;">
                                     <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                        ${problemData.nineWindows.subFuture || 'Not specified'}
+                                        ${esc(problemData.nineWindows.subFuture) || 'Not specified'}
                                     </div>
                                 </td>
                             </tr>
@@ -5118,8 +5142,8 @@
                     // Step 1: Main Function
                     html += `<div class="calculation-block" style="margin-bottom: 1rem;">
                         <h5>Step 1: Main Function</h5>
-                        <p><strong>Main Function:</strong> ${problemData.functionAnalysis.mainFunction || 'Not defined'}</p>
-                        <p><strong>Target Component:</strong> ${problemData.functionAnalysis.targetComponent || 'Not defined'}</p>
+                        <p><strong>Main Function:</strong> ${esc(problemData.functionAnalysis.mainFunction) || 'Not defined'}</p>
+                        <p><strong>Target Component:</strong> ${esc(problemData.functionAnalysis.targetComponent) || 'Not defined'}</p>
                     </div>`;
 
                     // Step 2: Component Analysis
@@ -5132,7 +5156,7 @@
 
                     if (problemData.functionAnalysis.systemComponents && problemData.functionAnalysis.systemComponents.length > 0) {
                         problemData.functionAnalysis.systemComponents.forEach(component => {
-                            html += `<li>${component}</li>`;
+                            html += `<li>${esc(component)}</li>`;
                         });
                     } else {
                         html += `<li><em>No system components defined</em></li>`;
@@ -5144,7 +5168,7 @@
 
                     if (problemData.functionAnalysis.supersystemComponents && problemData.functionAnalysis.supersystemComponents.length > 0) {
                         problemData.functionAnalysis.supersystemComponents.forEach(component => {
-                            html += `<li>${component}</li>`;
+                            html += `<li>${esc(component)}</li>`;
                         });
                     } else {
                         html += `<li><em>No supersystem components defined</em></li>`;
@@ -5162,7 +5186,7 @@
                         for (const [interactionId, isChecked] of Object.entries(problemData.functionAnalysis.interactions)) {
                             if (isChecked) {
                                 const [component1, component2] = interactionId.split('||');
-                                html += `<li>${component1} ↔ ${component2}</li>`;
+                                html += `<li>${esc(component1)} ↔ ${esc(component2)}</li>`;
                             }
                         }
 
@@ -5195,12 +5219,12 @@
                         problemData.functionAnalysis.functions.forEach(func => {
                             html += `
                                 <tr>
-                                    <td>${func.carrier}</td>
-                                    <td>${func.action}</td>
-                                    <td>${func.target}</td>
+                                    <td>${esc(func.carrier)}</td>
+                                    <td>${esc(func.action)}</td>
+                                    <td>${esc(func.target)}</td>
                                     <td>${func.category === 'useful' ? 'Useful (U)' : 'Harmful (H)'}</td>
                                     <td>${func.performance === 'normal' ? 'Normal (N)' : (func.performance === 'insufficient' ? 'Insufficient (I)' : 'Excessive (E)')}</td>
-                                    <td>${func.comment || ''}</td>
+                                    <td>${esc(func.comment) || ''}</td>
                                 </tr>
                             `;
                         });
@@ -5267,7 +5291,7 @@
                         <div class="improving-side">
                             <i class="fas fa-arrow-up improving-icon feature-icon"></i>
                             <h4>Improving</h4>
-                            <p>${problemData.technicalContradiction.improvingFeature}</p>
+                            <p>${esc(problemData.technicalContradiction.improvingFeature)}</p>
                         </div>
                         <div class="contradiction-arrow">
                             <i class="fas fa-exchange-alt"></i>
@@ -5275,7 +5299,7 @@
                         <div class="worsening-side">
                             <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
                             <h4>Worsening</h4>
-                            <p>${problemData.technicalContradiction.worseningFeature}</p>
+                            <p>${esc(problemData.technicalContradiction.worseningFeature)}</p>
                         </div>
                     </div>`;
 
@@ -5291,12 +5315,12 @@
                             html += `
                                 <div class="principle-card">
                                     <div class="principle-header">
-                                        <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
-                                        <strong>Principle ${p.id}: ${p.name}</strong>
+                                        <span class="physical-principle-icon"><i class="fas ${esc(physicalPrincipleIcons[p.id] || 'fa-lightbulb')}"></i></span>
+                                        <strong>Principle ${esc(p.id)}: ${esc(p.name)}</strong>
                                     </div>
-                                    <p>${p.desc}</p>
+                                    <p>${esc(p.desc)}</p>
                                     <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                        <strong>Example:</strong> ${esc(p.example || 'Apply this principle to transform your system.')}
                                     </div>
                                 </div>
                             `;
@@ -5311,22 +5335,22 @@
                 if (problemData.physicalContradiction) {
                     html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
 
-                    html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
+                    html += `<p><strong>Conflict:</strong> The parameter "<em>${esc(problemData.physicalContradiction.conflictingParameter) || 'N/A'}</em>" needs opposite states.</p>`;
 
                     html += `<div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
                         <strong>Algorithm Path:</strong><br/>
-                        • <strong>Intersection Test:</strong> ${problemData.physicalContradiction.intersectionTest || 'Not selected'}<br/>
-                        ${problemData.physicalContradiction.timeSeparation ? `• <strong>Time/Space Separation:</strong> ${problemData.physicalContradiction.timeSeparation === 'yes' ? 'Separation in Time' : 'Separation in Space'}<br/>` : ''}
-                        ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${problemData.physicalContradiction.separationType}<br/>` : ''}
-                        • <strong>Result:</strong> ${problemData.physicalContradiction.strategy || 'No strategy selected'}
+                        • <strong>Intersection Test:</strong> ${esc(problemData.physicalContradiction.intersectionTest) || 'Not selected'}<br/>
+                        ${problemData.physicalContradiction.timeSeparation ? `• <strong>Time/Space Separation:</strong> ${esc(problemData.physicalContradiction.timeSeparation) === 'yes' ? 'Separation in Time' : 'Separation in Space'}<br/>` : ''}
+                        ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${esc(problemData.physicalContradiction.separationType)}<br/>` : ''}
+                        • <strong>Result:</strong> ${esc(problemData.physicalContradiction.strategy) || 'No strategy selected'}
                     </div>`;
 
                     if (problemData.physicalContradiction.strategy) {
                         html += `<div class="physical-strategy-guide" style="border-left: 5px solid #27ae60;">
                             <div class="strategy-title">Recommended Resolution Strategy</div>
-                            <div class="strategy-description"><strong>${problemData.physicalContradiction.strategy}</strong></div>
+                            <div class="strategy-description"><strong>${esc(problemData.physicalContradiction.strategy)}</strong></div>
                             <div class="strategy-example">
-                                ${getStrategyDescription(problemData.physicalContradiction.strategy)}
+                                ${esc(getStrategyDescription(problemData.physicalContradiction.strategy))}
                             </div>`;
 
                         // Añadir nota si es bypass
@@ -5352,9 +5376,9 @@
                                             <span class="physical-principle-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
                                                 <i class="fas fa-layer-group"></i>
                                             </span>
-                                            <strong>${category.strategy}</strong>
+                                            <strong>${esc(category.strategy)}</strong>
                                         </div>
-                                        <p>${category.description}</p>
+                                        <p>${esc(category.description)}</p>
                                         
                                         <div style="margin-top: 1rem;">
                                             <h6>Principles in this category:</h6>
@@ -5369,11 +5393,11 @@
                                         <div class="solution-card" style="margin-bottom: 0.5rem;">
                                             <div class="solution-header">
                                                 <span class="principle-icon"><i class="fas fa-lightbulb"></i></span>
-                                                <strong>Principle ${p.id}: ${p.name}</strong>
+                                                <strong>Principle ${esc(p.id)}: ${esc(p.name)}</strong>
                                             </div>
-                                            <p>${p.desc}</p>
+                                            <p>${esc(p.desc)}</p>
                                             <div style="font-size: 0.9rem; color: #666; font-style: italic;">
-                                                <strong>Example:</strong> ${p.example}
+                                                <strong>Example:</strong> ${esc(p.example)}
                                             </div>
                                         </div>
                                     `;
@@ -5390,11 +5414,11 @@
                                 <div class="principle-card">
                                     <div class="principle-header">
                                         <span class="physical-principle-icon"><i class="fas fa-lightbulb"></i></span>
-                                        <strong>Principle ${p.id}: ${p.name}</strong>
+                                        <strong>Principle ${esc(p.id)}: ${esc(p.name)}</strong>
                                     </div>
-                                    <p>${p.desc}</p>
+                                    <p>${esc(p.desc)}</p>
                                     <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                        <strong>Example:</strong> ${esc(p.example || 'Apply this principle to transform your system.')}
                                     </div>
                                 </div>
                             `;
@@ -5410,7 +5434,7 @@
                     problemData.sufield.systems.forEach((system, index) => {
                         html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
 
-                        html += `<h5>System ${index + 1}: ${system.object} ← ${system.field} → ${system.tool}</h5>`;
+                        html += `<h5>System ${index + 1}: ${esc(system.object)} ← ${esc(system.field)} → ${esc(system.tool)}</h5>`;
 
                         const problemDiagramId = `problem-diagram-${index}`;
                         const solutionDiagramId = `solution-diagram-${index}`;
@@ -5432,9 +5456,9 @@
                         `;
 
                         html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
+                            <i class="fas ${esc(problemTypeIcons[system.type])}" style="font-size: 1.5rem; color: ${esc(problemTypeColors[system.type])}; margin-right: 10px;"></i>
                             <div>
-                                <strong>Problem Type:</strong> ${system.type}
+                                <strong>Problem Type:</strong> ${esc(system.type)}
                                 <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
                             </div>
                         </div>`;
@@ -5453,11 +5477,11 @@
                                 html += `<div class="standard-solution-visual">`;
                                 html += `
                                     <div class="class-header">
-                                        <span class="class-icon"><i class="fas ${classIcon}"></i></span>
-                                        <h5>${className}</h5>
+                                        <span class="class-icon"><i class="fas ${esc(classIcon)}"></i></span>
+                                        <h5>${esc(className)}</h5>
                                     </div>
                                 `;
-                                html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
+                                html += `<p>${esc(standardSolutionClasses[className] || 'Standard solutions for this class of problems.')}</p>`;
 
                                 html += `<div class="solution-description">`;
                                 html += `<h6>Recommended Standard Solutions:</h6>`;
@@ -5467,10 +5491,10 @@
                                     html += `
                                         <div class="solution-card">
                                             <div class="solution-header">
-                                                <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
-                                                <strong>${solution.id}: ${solution.title}</strong>
+                                                <span class="standard-solution-icon"><i class="fas ${esc(solutionIcon)}"></i></span>
+                                                <strong>${esc(solution.id)}: ${esc(solution.title)}</strong>
                                             </div>
-                                            <p>${solution.description}</p>
+                                            <p>${esc(solution.description)}</p>
                                         </div>
                                     `;
                                 });
@@ -5480,7 +5504,7 @@
                         } else if (typeof getRecommendedStandardSolutions !== 'function') {
                             html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
                         } else {
-                            html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                            html += `<p><em>No standard solutions found for "${esc(system.type)}".</em></p>`;
                         }
 
                         html += `</div>`;
@@ -5531,7 +5555,7 @@
             }
         }
 
-        // Función auxiliar para generar código Mermaid para resultados
+        // Función auxiliar para generar código Mermaid para resultados (con sanitización)
         function generateFunctionDiagramCodeForResults(functions) {
             if (!functions || functions.length === 0) {
                 return 'graph LR;\n    A[No functions defined]';
@@ -5564,7 +5588,7 @@
                 }
             });
 
-            // Crear nodos con formas apropiadas
+            // Crear nodos con formas apropiadas y sanitización
             Object.entries(componentTypes).forEach(([component, type]) => {
                 let shapeStart = '[';
                 let shapeEnd = ']';
@@ -5581,13 +5605,15 @@
                 }
 
                 const nodeId = component.replace(/[^a-zA-Z0-9]/g, '_');
-                lines.push(`    ${nodeId}${shapeStart}"${component}"${shapeEnd}:::${className}`);
+                const safeLabel = sanitizeMermaidLabel(component);
+                lines.push(`    ${nodeId}${shapeStart}"${safeLabel}"${shapeEnd}:::${className}`);
             });
 
             // Crear aristas (conexiones) con estilos basados en propiedades
             functions.forEach((func, index) => {
                 const carrierId = func.carrier.replace(/[^a-zA-Z0-9]/g, '_');
                 const targetId = func.target.replace(/[^a-zA-Z0-9]/g, '_');
+                const safeAction = sanitizeMermaidLabel(func.action);
 
                 let arrow = '-->';
                 let linkStyle = '';
@@ -5609,7 +5635,7 @@
                 }
 
                 // Añadir la arista
-                lines.push(`    ${carrierId} ${arrow}|${func.action}| ${targetId}`);
+                lines.push(`    ${carrierId} ${arrow}|${safeAction}| ${targetId}`);
 
                 // Añadir estilo de enlace si está especificado
                 if (linkStyle) {
@@ -5804,16 +5830,67 @@
             return descriptions[strategy] || "";
         }
 
-        function getPhysicalContradictionExample(relationship) {
-            const examples = {
-                separationInSpace: "A surgical scalpel needs to be sharp to cut tissue but blunt to not damage surrounding organs. Solution: Use a retractable scalpel that is sharp when extended and protected when retracted.",
-                separationInTime: "An airplane wing needs to be large for takeoff/landing but small for cruising efficiency. Solution: Use retractable flaps and slats.",
-                separationInRelation: "A coffee cup needs to be hot to keep coffee warm but cool to hold. Solution: Use a handle made of insulating material.",
-                separationInSystemLevel: "Traffic light with segmented pole elements for easy repair, separating maintenance requirements at different system levels.",
-                satisfyContradictoryDemands: "Heat packs using phase transition of gel to provide warmth without external heat source, satisfying both heating and portability demands.",
-                bypassContradictoryDemands: "Digital clocks replacing mechanical clockwork, bypassing the need for mechanical timekeeping altogether."
-            };
-            return examples[relationship] || "Apply separation principles to resolve the contradiction.";
+        // ===== FUNCIÓN PARA AGREGAR SISTEMA SU-FIELD (ME-01: IDs monotónicos) =====
+        function addSuFieldSystem() {
+            const container = document.getElementById('sufield-systems-container');
+            globalSuFieldCounter++;
+            const systemId = 'sufield-system-' + globalSuFieldCounter;
+            const diagramId = 'sufield-diagram-' + globalSuFieldCounter;
+
+            const systemHTML = `
+                <div class="sufield-system" id="${systemId}">
+                    <div class="sufield-system-header">
+                        <div class="sufield-system-title">Su-Field System ${globalSuFieldCounter}</div>
+                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem('${systemId}')" aria-label="Remove system"><i class="fas fa-minus"></i></button>
+                    </div>
+                    
+                    <div class="sufield-system-fields">
+                        <div class="form-group">
+                            <label for="sufield-object-${globalSuFieldCounter}">Object (S1)</label>
+                            <input type="text" id="sufield-object-${globalSuFieldCounter}" class="sufield-object" placeholder="e.g., The coffee, the user's hand" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-tool-${globalSuFieldCounter}">Tool (S2)</label>
+                            <input type="text" id="sufield-tool-${globalSuFieldCounter}" class="sufield-tool" placeholder="e.g., The mug wall, the robot arm" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                        </div>
+                        <div class="form-group">
+                            <label for="sufield-field-${globalSuFieldCounter}">Field (F)</label>
+                            <select id="sufield-field-${globalSuFieldCounter}" class="sufield-field" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                                <option value="">Select a field type</option>
+                                <option value="Mechanical">Mechanical (Force, Pressure)</option>
+                                <option value="Thermal">Thermal (Heat, Cold)</option>
+                                <option value="Electrical">Electrical (Current, Voltage)</option>
+                                <option value="Magnetic">Magnetic (Field, Flux)</option>
+                                <option value="Optical">Optical (Light, Radiation)</option>
+                                <option value="Acoustic">Acoustic (Sound, Vibration)</option>
+                                <option value="Chemical">Chemical (Reaction, Bond)</option>
+                                <option value="Gravitational">Gravitational (Weight, Mass)</option>
+                                <option value="Nuclear">Nuclear (Radiation, Decay)</option>
+                                <option value="Biological">Biological (Growth, Metabolism)</option>
+                                <option value="Other">Other (Specify in text)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="sufield-system-diagram" id="${diagramId}" style="width: 100%; max-width: 100%; overflow: hidden;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sufield-type-${globalSuFieldCounter}">Problem Type:</label>
+                        <select id="sufield-type-${globalSuFieldCounter}" class="sufield-type" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
+                            <option value="insufficient">Useful, but insufficient</option>
+                            <option value="harmful">Harmful or undesired</option>
+                            <option value="difficult">Difficult to measure or detect</option>
+                            <option value="missing">Missing entirely</option>
+                            <option value="excessive">Excessive or too much</option>
+                            <option value="inefficient">Inefficient or wasteful</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', systemHTML);
+            updateSuFieldDiagram(document.getElementById(systemId));
         }
 
         // Función para actualizar la tabla de principios en tiempo real cuando cambian los radio buttons
@@ -5857,71 +5934,7 @@
                 });
             });
         }
-
-        // ===== FUNCIÓN PARA AGREGAR SISTEMA SU-FIELD (usada en addSuFieldSystem) =====
-        function addSuFieldSystem() {
-            const container = document.getElementById('sufield-systems-container');
-            const systemCount = container.children.length;
-            const systemId = 'sufield-system-' + systemCount;
-
-            const systemHTML = `
-                <div class="sufield-system" id="${systemId}">
-                    <div class="sufield-system-header">
-                        <div class="sufield-system-title">Su-Field System ${systemCount + 1}</div>
-                        <button type="button" class="btn-warning" onclick="removeSuFieldSystem('${systemId}')" aria-label="Remove system"><i class="fas fa-minus"></i></button>
-                    </div>
-                    
-                    <div class="sufield-system-fields">
-                        <div class="form-group">
-                            <label for="sufield-object-${systemCount}">Object (S1)</label>
-                            <input type="text" id="sufield-object-${systemCount}" class="sufield-object" placeholder="e.g., The coffee, the user's hand" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-tool-${systemCount}">Tool (S2)</label>
-                            <input type="text" id="sufield-tool-${systemCount}" class="sufield-tool" placeholder="e.g., The mug wall, the robot arm" oninput="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
-                        </div>
-                        <div class="form-group">
-                            <label for="sufield-field-${systemCount}">Field (F)</label>
-                            <select id="sufield-field-${systemCount}" class="sufield-field" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
-                                <option value="">Select a field type</option>
-                                <option value="Mechanical">Mechanical (Force, Pressure)</option>
-                                <option value="Thermal">Thermal (Heat, Cold)</option>
-                                <option value="Electrical">Electrical (Current, Voltage)</option>
-                                <option value="Magnetic">Magnetic (Field, Flux)</option>
-                                <option value="Optical">Optical (Light, Radiation)</option>
-                                <option value="Acoustic">Acoustic (Sound, Vibration)</option>
-                                <option value="Chemical">Chemical (Reaction, Bond)</option>
-                                <option value="Gravitational">Gravitational (Weight, Mass)</option>
-                                <option value="Nuclear">Nuclear (Radiation, Decay)</option>
-                                <option value="Biological">Biological (Growth, Metabolism)</option>
-                                <option value="Other">Other (Specify in text)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="sufield-system-diagram" id="sufield-diagram-${systemCount}" style="width: 100%; max-width: 100%; overflow: hidden;">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sufield-type-${systemCount}">Problem Type:</label>
-                        <select id="sufield-type-${systemCount}" class="sufield-type" onchange="debouncedUpdateSuField(this.closest('.sufield-system')); clearResults();">
-                            <option value="insufficient">Useful, but insufficient</option>
-                            <option value="harmful">Harmful or undesired</option>
-                            <option value="difficult">Difficult to measure or detect</option>
-                            <option value="missing">Missing entirely</option>
-                            <option value="excessive">Excessive or too much</option>
-                            <option value="inefficient">Inefficient or wasteful</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', systemHTML);
-            updateSuFieldDiagram(document.getElementById(systemId));
-        }
     </script>
-
-    <!-- Persistence scripts removed; not implemented -->
 </body>
 
 </html>
