@@ -1,6 +1,5 @@
 // TRIZ Contradiction Matrix 2003 -  Darell Mann -Systematic Innovation
 
-
 const trizContradictionMatrix2003 = {
     features: [
         "Weight of Moving object",
@@ -24,7 +23,7 @@ const trizContradictionMatrix2003 = {
         "Stress/Pressure",
         "Strength",
         "Stability",
-        "temperature",
+        "Temperature",
         "Illumination Intensity",
         "Function Efficiency",
         "Loss of Substance",
@@ -2497,32 +2496,10 @@ const trizContradictionMatrix2003 = {
         }
     }
 };
-;
-
-// Funciones de utilidad
-function getInventivePrinciples(improvingFeature, worseningFeature) {
-    if (!trizContradictionMatrix2003.matrix[improvingFeature] ||
-        !trizContradictionMatrix2003.matrix[improvingFeature][worseningFeature]) {
-        return [];
-    }
-    const principleNumbers = trizContradictionMatrix2003.matrix[improvingFeature][worseningFeature];
-    return principleNumbers.map(num => trizContradictionMatrix2003.principles[num - 1]);
-}
-
-function getFeatureName(featureNumber) {
-    return trizContradictionMatrix2003.features[featureNumber - 1];
-}
-
-function getPrincipleName(principleNumber) {
-    return trizContradictionMatrix2003.principles[principleNumber - 1];
-}
 
 // Export para Node.js
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        trizContradictionMatrix2003,
-        getInventivePrinciples,
-        getFeatureName,
-        getPrincipleName
+        trizContradictionMatrix2003
     };
 }

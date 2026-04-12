@@ -1,7 +1,7 @@
 // trizconstants.js (versión modificada)
 // Contiene todas las constantes estáticas de datos para la herramienta TRIZ (triz.html)
 
-// Mapeo completo de todos los principios (ampliado a 48 principios)
+// Mapeo completo de todos los principios (40 principios, sin extensiones)
 const principles = {
     1: { name: "Segmentation", desc: "Divide an object into independent parts.", icon: "fa-puzzle-piece" },
     2: { name: "Taking out", desc: "Separate an interfering part or property from an object.", icon: "fa-external-link-alt" },
@@ -42,16 +42,7 @@ const principles = {
     37: { name: "Thermal expansion", desc: "Use thermal expansion (or contraction) of materials.", icon: "fa-arrows-alt-h" },
     38: { name: "Strong oxidants", desc: "Replace ordinary air with enriched air or oxygen.", icon: "fa-fire" },
     39: { name: "Inert atmosphere", desc: "Replace a normal environment with an inert one.", icon: "fa-flask" },
-    40: { name: "Composite materials", desc: "Change from uniform to composite materials.", icon: "fa-clone" },
-    // Principios adicionales 2003 (41-48)
-    41: { name: "Directional properties", desc: "Use anisotropic materials or structures where properties vary with direction.", icon: "fa-arrows-alt" },
-    42: { name: "Homogeneity in materials", desc: "Make interacting elements from the same material to avoid compatibility issues.", icon: "fa-equals" },
-    43: { name: "Inexpensive short-life", desc: "Replace an expensive durable object with a set of inexpensive disposable ones.", icon: "fa-recycle" },
-    44: { name: "Replacement of mechanical system", desc: "Replace a mechanical system with an optical, acoustical, thermal, or olfactory one.", icon: "fa-microchip" },
-    45: { name: "Feedback introduction", desc: "Introduce feedback to improve a process or action.", icon: "fa-sync-alt" },
-    46: { name: "Counterweight application", desc: "Compensate for the weight of an object by merging it with other objects that provide lift.", icon: "fa-balance-scale" },
-    47: { name: "Preliminary saturation", desc: "Pre-saturate a system to prevent unwanted effects or to prepare it for action.", icon: "fa-fill-drip" },
-    48: { name: "Mediator utilization", desc: "Use an intermediary carrier article or process to transfer or transmit an action.", icon: "fa-hands-helping" }
+    40: { name: "Composite materials", desc: "Change from uniform to composite materials.", icon: "fa-clone" }
 };
 
 // Mapeo de iconos específicos para principios de contradicciones físicas
@@ -59,21 +50,12 @@ const physicalPrincipleIcons = {
     1: "fa-cut", 2: "fa-external-link-alt", 3: "fa-map-marker-alt", 4: "fa-balance-scale-right",
     5: "fa-link", 6: "fa-toolbox", 7: "fa-box-open", 8: "fa-feather-alt", 9: "fa-shield-alt",
     10: "fa-forward", 11: "fa-umbrella", 12: "fa-balance-scale", 13: "fa-exchange-alt",
-    14: "fa-circle", 15: "fa-expand-arrows-alt", 16: "fa-tachometer-alt", 17: "fa-cubes",
+    14: "fa-circle", 15: "fa-expand-arrows-alt", 16: "fa-gauge-high", 17: "fa-cubes",
     18: "fa-wave-square", 19: "fa-redo-alt", 20: "fa-infinity", 21: "fa-running", 22: "fa-recycle",
     23: "fa-sync", 24: "fa-hands-helping", 25: "fa-robot", 26: "fa-clone", 27: "fa-boxes",
     28: "fa-microchip", 29: "fa-tint", 30: "fa-layer-group", 31: "fa-filter", 32: "fa-fill-drip",
     33: "fa-align-center", 34: "fa-trash-alt", 35: "fa-thermometer-half", 36: "fa-cloud",
-    37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group",
-    // Principios adicionales
-    41: "fa-arrows-alt",
-    42: "fa-equals",
-    43: "fa-recycle",
-    44: "fa-microchip",
-    45: "fa-sync-alt",
-    46: "fa-balance-scale",
-    47: "fa-fill-drip",
-    48: "fa-hands-helping"
+    37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group"
 };
 
 // Mapeo de iconos para soluciones estándar
@@ -81,7 +63,7 @@ const standardSolutionIcons = {
     "1.1.1": "fa-wrench", "1.1.2": "fa-plus-circle", "1.1.3": "fa-external-link-alt", "1.1.4": "fa-globe",
     "1.1.5": "fa-sync", "1.1.6": "fa-adjust", "1.1.7": "fa-hands-helping", "1.1.8": "fa-shield-alt",
     "1.2.1": "fa-ban", "1.2.2": "fa-eraser", "1.2.3": "fa-filter", "1.2.4": "fa-balance-scale",
-    "1.2.5": "fa-magnet", "2.1.1": "fa-sitemap", "2.1.2": "fa-link", "2.1.3": "fa-expand-arrows-alt",
+    "1.2.5": "fa-magnet", "2.1.1": "fa-sitemap", "2.1.2": "fa-link", "2.1.3": "fa-up-right-and-down-left-from-center",
     "2.1.4": "fa-compress-arrows-alt", "2.1.5": "fa-object-group", "2.2.1": "fa-sliders-h",
     "2.2.2": "fa-puzzle-piece", "2.2.3": "fa-filter", "2.2.4": "fa-snowflake", "2.2.5": "fa-wave-square",
     "2.2.6": "fa-project-diagram", "2.3.1": "fa-wave-square", "2.3.2": "fa-redo-alt", "2.3.3": "fa-clock",
@@ -106,7 +88,7 @@ const classIcons = {
     "Class 2: Improving system by changing system": "fa-arrow-up",
     "Class 3: System transitions": "fa-exchange-alt",
     "Class 4: Detection and measurement": "fa-ruler",
-    "Class 5: Strategies for simplification/improvement": "fa-simplify"
+    "Class 5: Strategies for simplification/improvement": "fa-scissors"
 };
 
 // Mapeo de iconos para tipos de problemas Su-Field
@@ -226,7 +208,6 @@ const examples = [
         },
 
         // STEP 6: Technical Contradiction (Page 8)
-        // En el ejemplo, cambia la sección de technicalContradiction a:
         technicalContradiction: {
             active: true,
             matrixVersion: "classic",

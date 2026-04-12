@@ -1455,3 +1455,10 @@ const trizContradictionMatrix = {
         }
     }
 };
+
+// Export para Node.js
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        trizContradictionMatrix
+    };
+}

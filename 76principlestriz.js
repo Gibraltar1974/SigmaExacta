@@ -1,5 +1,6 @@
 // TRIZ 76 Standard Solutions - Corrected Implementation
 // Based on Ellen Domb, John Terninko, Joe Miller, Ellen MacGran classification
+// Note: Cross-referencing Standard Solutions with Inventive Principles is an informal analogy for educational purposes.
 const trizStandardSolutions = {
     "Class 1: Improving system with no/little change": {
         description: "13 standard solutions for building or improving Su-Field systems with minimal changes",
@@ -500,7 +501,7 @@ window.trizStandardSolutions = trizStandardSolutions;
 window.getRecommendedStandardSolutions = getRecommendedStandardSolutions;
 
 // ==========================================================
-// 🔍 Función de verificación de integridad
+// 🔍 Función de verificación de integridad (desactivada en producción)
 // ==========================================================
 function verifySolutionCount() {
     let total = 0;
@@ -540,5 +541,5 @@ function verifySolutionCount() {
     return { counts, total, allMatch };
 }
 
-// Verificación automática al cargar
-verifySolutionCount();
+// Verificación automática desactivada en producción
+// verifySolutionCount();

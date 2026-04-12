@@ -65,7 +65,7 @@ const ldstLaws = {
         principles: ["Identification of lagging subsystems", "Harmonization", "Leveling"],
         examples: `
             <div class="tese-example">
-                <i class="fas fa-tachometer-alt"></i>
+                <i class="fas fa-gauge-high"></i>
                 <strong>Examples:</strong> Processors vs memory in computers, 
                 batteries vs screens in mobile devices, engines vs brakes in automobiles
             </div>
@@ -78,7 +78,7 @@ const ldstLaws = {
         principles: ["Integration", "Monopolization", "Expansion"],
         examples: `
             <div class="tese-example">
-                <i class="fas fa-expand-arrows-alt"></i>
+                <i class="fas fa-up-right-and-down-left-from-center"></i>
                 <strong>Examples:</strong> Computer networks (Internet), 
                 integrated transportation systems, mobile application ecosystems
             </div>
@@ -112,14 +112,14 @@ const ldstLaws = {
     }
 };
 
-// Icon mapping for LDST laws (unchanged as these are visual elements)
+// Icon mapping for LDST laws
 const ldstLawIcons = {
     "law1": "fa-cube",
     "law2": "fa-bolt",
     "law3": "fa-music",
     "law4": "fa-rocket",
-    "law5": "fa-tachometer-alt",
-    "law6": "fa-expand-arrows-alt",
+    "law5": "fa-gauge-high",
+    "law6": "fa-up-right-and-down-left-from-center",
     "law7": "fa-atom",
     "law8": "fa-magnet"
 };
@@ -276,8 +276,9 @@ function generateLifecyclePrinciplesExplanation(stage) {
 
     let html = `
         <div class="content-block">
-            <h4><i class="fas fa-lifecycle"></i> ${stageName} - Principles Application Guide</h4>
+            <h4><i class="fas fa-rotate"></i> ${stageName} - Principles Application Guide</h4>
             <p><strong>Focus Area:</strong> ${lifecycleRecommendations[stage]}</p>
+            <p style="font-style: italic; font-size: 0.9rem; color: #666;">Note: Mapping lifecycle stages to specific LDST laws is an educational heuristic, not classical Altshuller doctrine.</p>
     `;
 
     for (const [principle, application] of Object.entries(principles)) {

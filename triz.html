@@ -2973,13 +2973,14 @@
         </div>
     </footer>
 
+    <!-- Scripts en orden corregido: trizconstants.js primero -->
+    <script src="trizconstants.js"></script>
     <script src="trizcontradiction.js"></script>
     <script src="trizcontradiction2003.js"></script>
     <script src="physicalcontradictionprinciples2000.js"></script>
     <script src="76principlestriz.js"></script>
     <script src="sufield-diagrams.js"></script>
     <script src="ldst.js"></script>
-    <script src="trizconstants.js"></script>
 
     <script>
         // ===== VARIABLES GLOBALES =====
@@ -3458,10 +3459,6 @@
             return getCurrentMatrix().features;
         }
 
-        function getCurrentPrinciples() {
-            return getCurrentMatrix().principles;
-        }
-
         function getContradictionPrinciples(improvingFeature, worseningFeature) {
             const matrix = getCurrentMatrix().matrix;
             if (matrix[improvingFeature] && matrix[improvingFeature][worseningFeature]) {
@@ -3470,10 +3467,10 @@
             return [];
         }
 
+        // CORRECCIÓN PRINCIPAL SOLICITADA: Carga del nombre desde trizconstants.js
         function getPrincipleName(principleNumber) {
-            const principles = getCurrentPrinciples();
-            if (principleNumber >= 1 && principleNumber <= principles.length) {
-                return principles[principleNumber - 1];
+            if (typeof principles !== 'undefined' && principles[principleNumber]) {
+                return principles[principleNumber].name;
             }
             return "Unknown Principle";
         }
@@ -4142,11 +4139,11 @@
                 let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
                 for (let j = 0; j < features.length; j++) {
                     const cellClass = getCellClass(i, j);
-                    const principles = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
-                    const principleNumbers = principles && principles.length > 0 ? principles.join(', ') : '-';
+                    const cellPrinciples = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
+                    const principleNumbers = cellPrinciples && cellPrinciples.length > 0 ? cellPrinciples.join(', ') : '-';
 
-                    const principleNames = principles && principles.length > 0
-                        ? principles.map(p => getPrincipleName(p)).join(', ')
+                    const principleNames = cellPrinciples && cellPrinciples.length > 0
+                        ? cellPrinciples.map(p => getPrincipleName(p)).join(', ')
                         : 'No principles recommended';
 
                     row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
@@ -4375,8 +4372,9 @@
                     if (rowComponent === colComponent) {
                         html += `<td style="background: #f0f0f0; text-align: center;">-</td>`;
                     } else {
-                        const interactionId = `${rowComponent}-${colComponent}`;
-                        const reverseInteractionId = `${colComponent}-${rowComponent}`;
+                        // Usamos "||" como separador seguro en lugar de "-"
+                        const interactionId = `${rowComponent}||${colComponent}`;
+                        const reverseInteractionId = `${colComponent}||${rowComponent}`;
                         const isChecked = functionAnalysisData.interactions[interactionId] ||
                             functionAnalysisData.interactions[reverseInteractionId] || false;
 
@@ -4447,8 +4445,8 @@
 
         // Alternar interacción entre componentes
         function toggleInteraction(component1, component2) {
-            const interactionId = `${component1}-${component2}`;
-            const reverseInteractionId = `${component2}-${component1}`;
+            const interactionId = `${component1}||${component2}`;
+            const reverseInteractionId = `${component2}||${component1}`;
             const checkbox = document.getElementById(interactionId);
 
             if (checkbox) {
@@ -4590,68 +4588,54 @@
             }
         }
 
-        // Actualizar diagrama de funciones
-        function updateFunctionDiagram() {
-            // Recopilar todas las funciones de la tabla
-            const functionRows = document.querySelectorAll('#function-table-body tr');
-            functionAnalysisData.functions = [];
+        // Actualizar diagrama de funciones con Mermaid asíncrono y manejo de errores
+        async function updateFunctionDiagram() {
+            try {
+                // Recopilar todas las funciones de la tabla
+                const functionRows = document.querySelectorAll('#function-table-body tr');
+                functionAnalysisData.functions = [];
 
-            functionRows.forEach(row => {
-                const carrier = row.querySelector('.function-carrier')?.value;
-                const action = row.querySelector('.function-action')?.value;
-                const target = row.querySelector('.function-target')?.value;
-                const category = row.querySelector('.function-category')?.value;
-                const performance = row.querySelector('.function-performance')?.value;
-                const comment = row.querySelector('.function-comment')?.value;
+                functionRows.forEach(row => {
+                    const carrier = row.querySelector('.function-carrier')?.value;
+                    const action = row.querySelector('.function-action')?.value;
+                    const target = row.querySelector('.function-target')?.value;
+                    const category = row.querySelector('.function-category')?.value;
+                    const performance = row.querySelector('.function-performance')?.value;
+                    const comment = row.querySelector('.function-comment')?.value;
 
-                if (carrier && action && target) {
-                    functionAnalysisData.functions.push({
-                        carrier,
-                        action,
-                        target,
-                        category: category === 'U' ? 'useful' : 'harmful',
-                        performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
-                        comment
-                    });
-                }
-            });
-
-            // Generar código Mermaid
-            const code = generateFunctionDiagramCode(functionAnalysisData.functions);
-            const container = document.getElementById('faMermaidPreview');
-
-            // Limpiar y renderizar nuevo diagrama
-            container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-            // Re-inicializar Mermaid
-            if (typeof mermaid !== 'undefined') {
-                try {
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
+                    if (carrier && action && target) {
+                        functionAnalysisData.functions.push({
+                            carrier,
+                            action,
+                            target,
+                            category: category === 'U' ? 'useful' : 'harmful',
+                            performance: performance === 'N' ? 'normal' : (performance === 'I' ? 'insufficient' : 'excessive'),
+                            comment
+                        });
                     }
+                });
 
-                    window.mermaidTimeout = setTimeout(() => {
-                        mermaid.init({
-                            startOnLoad: false,
-                            theme: 'default',
-                            securityLevel: 'loose',
-                            flowchart: {
-                                useMaxWidth: true,
-                                htmlLabels: true,
-                                curve: 'basis'
-                            }
-                        }, container.querySelectorAll('.mermaid'));
-                    }, 100);
-                } catch (error) {
-                    console.error('Mermaid rendering error:', error);
-                    container.innerHTML = `
-                        <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                            <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
-                            <p><strong>Function Analysis Diagram</strong></p>
-                            <p>Add functions to the table to see the diagram</p>
-                        </div>
-                    `;
+                // Generar código Mermaid
+                const code = generateFunctionDiagramCode(functionAnalysisData.functions);
+                const container = document.getElementById('faMermaidPreview');
+
+                // Renderizar con la API de promesas de Mermaid
+                if (typeof mermaid !== 'undefined') {
+                    const { svg } = await mermaid.render('function-diagram-svg', code);
+                    container.innerHTML = svg;
+                } else {
+                    container.innerHTML = `<div class="mermaid">${code}</div>`;
                 }
+            } catch (error) {
+                console.error('Error rendering function diagram:', error);
+                const container = document.getElementById('faMermaidPreview');
+                container.innerHTML = `
+                    <div style="color: #666; padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                        <p><i class="fas fa-project-diagram" style="font-size: 2rem; margin-bottom: 10px;"></i></p>
+                        <p><strong>Function Analysis Diagram</strong></p>
+                        <p>Add functions to the table to see the diagram</p>
+                    </div>
+                `;
             }
         }
 
@@ -4809,727 +4793,737 @@
 
         // ===== FUNCIONES DE SOLUCIÓN =====
         function solveProblem() {
-            clearResults();
-            console.log("Generating report...");
+            try {
+                clearResults();
+                console.log("Generating report...");
 
-            // Validar que al menos un sistema Su-Field tenga datos
-            const systemElements = document.getElementsByClassName('sufield-system');
-            let hasValidSystem = false;
-            for (let systemElement of systemElements) {
-                const object = systemElement.querySelector('.sufield-object').value.trim();
-                const tool = systemElement.querySelector('.sufield-tool').value.trim();
-                const field = systemElement.querySelector('.sufield-field').value;
-                if (object && tool && field) {
-                    hasValidSystem = true;
-                    break;
-                }
-            }
-            if (!hasValidSystem && systemElements.length > 0) {
-                alert('Please complete at least one Su-Field system (Object, Tool, and Field must be filled).');
-                return;
-            }
-
-            problemData = {};
-            problemData.system = document.getElementById('problem-system').value || "Not specified";
-            problemData.function = document.getElementById('problem-function').value || "Not specified";
-            problemData.harm = document.getElementById('problem-harm').value || "Not specified";
-            problemData.ifr = document.getElementById('ifr-formulation').value || "Not specified";
-
-            // LDST data
-            const lifecycleStage = document.getElementById('lifecycle-stage').value;
-            const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
-
-            problemData.ldst = {
-                lifecycleStage: lifecycleStage,
-                recommendedLaws: recommendedLaws.map(lawId => {
-                    const law = getLdstData(lawId);
-                    return {
-                        id: lawId,
-                        name: law.name,
-                        principles: law.principles,
-                        examples: law.examples
-                    };
-                })
-            };
-
-            // 9 Windows data
-            problemData.nineWindows = {
-                superPast: document.getElementById('nine-windows-super-past').value,
-                superPresent: document.getElementById('nine-windows-super-present').value,
-                superFuture: document.getElementById('nine-windows-super-future').value,
-                systemPast: document.getElementById('nine-windows-system-past').value,
-                systemPresent: document.getElementById('nine-windows-system-present').value,
-                systemFuture: document.getElementById('nine-windows-system-future').value,
-                subPast: document.getElementById('nine-windows-sub-past').value,
-                subPresent: document.getElementById('nine-windows-sub-present').value,
-                subFuture: document.getElementById('nine-windows-sub-future').value
-            };
-
-            // Function Analysis data
-            problemData.functionAnalysis = {
-                mainFunction: functionAnalysisData.mainFunction,
-                targetComponent: functionAnalysisData.targetComponent,
-                systemComponents: functionAnalysisData.systemComponents,
-                supersystemComponents: functionAnalysisData.supersystemComponents,
-                interactions: functionAnalysisData.interactions,
-                functions: functionAnalysisData.functions
-            };
-
-            // Technical Contradiction data - CORREGIDO
-            let improvingIndex = parseInt(document.getElementById('improving-feature').value);
-            let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
-
-            // CORRECCIÓN: Convertir de valores 1-based a índices 0-based
-            if (improvingIndex > 0) {
-                improvingFeatureIndex = improvingIndex - 1;
-            } else {
-                improvingFeatureIndex = null;
-            }
-
-            if (worseningIndex > 0) {
-                worseningFeatureIndex = worseningIndex - 1;
-            } else {
-                worseningFeatureIndex = null;
-            }
-
-            // Si no se pudo obtener de los dropdowns, usar las variables globales
-            if (improvingFeatureIndex === null && improvingFeatureIndex !== null) {
-                improvingIndex = improvingFeatureIndex;
-            }
-            if (worseningFeatureIndex === null && worseningFeatureIndex !== null) {
-                worseningIndex = worseningFeatureIndex;
-            }
-
-            problemData.technicalContradiction = {
-                improvingFeature: "Not selected",
-                worseningFeature: "Not selected",
-                recommendedPrinciples: []
-            };
-
-            if (improvingFeatureIndex !== null && worseningFeatureIndex !== null && improvingFeatureIndex >= 0 && worseningFeatureIndex >= 0) {
-                const features = getCurrentFeatures();
-                problemData.technicalContradiction.improvingFeature = features[improvingFeatureIndex];
-                problemData.technicalContradiction.worseningFeature = features[worseningFeatureIndex];
-
-                const improvingKey = (improvingFeatureIndex + 1).toString();
-                const worseningKey = (worseningFeatureIndex + 1).toString();
-                const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
-
-                problemData.technicalContradiction.recommendedPrinciples = (principlesList || []).map(id => {
-                    return principles[id] ? { ...principles[id], id } : null;
-                }).filter(p => p !== null);
-            }
-
-            // Physical Contradiction data (ALGORITMO CORREGIDO)
-            const parameter = document.getElementById('conflicting-parameter').value;
-            problemData.physicalContradiction = {
-                conflictingParameter: parameter || "Not specified",
-                intersectionTest: physicalStrategyFlow.selectedIntersection,
-                timeSeparation: physicalStrategyFlow.selectedTimeSeparation,
-                separationType: physicalStrategyFlow.selectedSeparation,
-                strategy: physicalStrategyFlow.strategy,
-                categories: physicalStrategyFlow.categories || [], // Guardar las categorías seleccionadas
-                recommendedPrinciples: []
-            };
-
-            // Recopilar todos los principios de las categorías seleccionadas
-            if (physicalStrategyFlow.categories && physicalStrategyFlow.categories.length > 0) {
-                physicalStrategyFlow.categories.forEach(categoryKey => {
-                    const category = physicalContradictionPrinciples[categoryKey];
-                    if (category && category.principles) {
-                        category.principles.forEach(principle => {
-                            problemData.physicalContradiction.recommendedPrinciples.push({
-                                id: principle.number,
-                                name: principle.name,
-                                desc: principle.description,
-                                example: principle.example,
-                                category: category.strategy // Agregar información de categoría
-                            });
-                        });
+                // Validar que al menos un sistema Su-Field tenga datos
+                const systemElements = document.getElementsByClassName('sufield-system');
+                let hasValidSystem = false;
+                for (let systemElement of systemElements) {
+                    const object = systemElement.querySelector('.sufield-object').value.trim();
+                    const tool = systemElement.querySelector('.sufield-tool').value.trim();
+                    const field = systemElement.querySelector('.sufield-field').value;
+                    if (object && tool && field) {
+                        hasValidSystem = true;
+                        break;
                     }
-                });
-            }
+                }
+                if (!hasValidSystem && systemElements.length > 0) {
+                    alert('Please complete at least one Su-Field system (Object, Tool, and Field must be filled).');
+                    return;
+                }
 
-            // Collect Su-Field systems - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
-            problemData.sufield = { systems: [] };
-            for (let systemElement of systemElements) {
-                const object = systemElement.querySelector('.sufield-object').value.trim();
-                const tool = systemElement.querySelector('.sufield-tool').value.trim();
-                const field = systemElement.querySelector('.sufield-field').value;
-                const type = systemElement.querySelector('.sufield-type').value;
+                problemData = {};
+                problemData.system = document.getElementById('problem-system').value || "Not specified";
+                problemData.function = document.getElementById('problem-function').value || "Not specified";
+                problemData.harm = document.getElementById('problem-harm').value || "Not specified";
+                problemData.ifr = document.getElementById('ifr-formulation').value || "Not specified";
 
-                if (object && tool && field) {
-                    const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
-                        ? getRecommendedStandardSolutions(type)
-                        : [];
+                // LDST data
+                const lifecycleStage = document.getElementById('lifecycle-stage').value;
+                const recommendedLaws = lifecycleToLdstMapping[lifecycleStage] || ["law4"];
 
-                    problemData.sufield.systems.push({
-                        object: object,
-                        tool: tool,
-                        field: field,
-                        type: type || 'insufficient',
-                        suggestion: sufieldSolutions[type] || "No specific suggestion available.",
-                        standardSolutions: standardSolutions
+                problemData.ldst = {
+                    lifecycleStage: lifecycleStage,
+                    recommendedLaws: recommendedLaws.map(lawId => {
+                        const law = getLdstData(lawId);
+                        return {
+                            id: lawId,
+                            name: law.name,
+                            principles: law.principles,
+                            examples: law.examples
+                        };
+                    })
+                };
+
+                // 9 Windows data
+                problemData.nineWindows = {
+                    superPast: document.getElementById('nine-windows-super-past').value,
+                    superPresent: document.getElementById('nine-windows-super-present').value,
+                    superFuture: document.getElementById('nine-windows-super-future').value,
+                    systemPast: document.getElementById('nine-windows-system-past').value,
+                    systemPresent: document.getElementById('nine-windows-system-present').value,
+                    systemFuture: document.getElementById('nine-windows-system-future').value,
+                    subPast: document.getElementById('nine-windows-sub-past').value,
+                    subPresent: document.getElementById('nine-windows-sub-present').value,
+                    subFuture: document.getElementById('nine-windows-sub-future').value
+                };
+
+                // Function Analysis data
+                problemData.functionAnalysis = {
+                    mainFunction: functionAnalysisData.mainFunction,
+                    targetComponent: functionAnalysisData.targetComponent,
+                    systemComponents: functionAnalysisData.systemComponents,
+                    supersystemComponents: functionAnalysisData.supersystemComponents,
+                    interactions: functionAnalysisData.interactions,
+                    functions: functionAnalysisData.functions
+                };
+
+                // Technical Contradiction data - CORREGIDO
+                let improvingIndex = parseInt(document.getElementById('improving-feature').value);
+                let worseningIndex = parseInt(document.getElementById('worsening-feature').value);
+
+                // CORRECCIÓN: Convertir de valores 1-based a índices 0-based
+                if (improvingIndex > 0) {
+                    improvingFeatureIndex = improvingIndex - 1;
+                } else {
+                    improvingFeatureIndex = null;
+                }
+
+                if (worseningIndex > 0) {
+                    worseningFeatureIndex = worseningIndex - 1;
+                } else {
+                    worseningFeatureIndex = null;
+                }
+
+                // Si no se pudo obtener de los dropdowns, usar las variables globales
+                if (improvingFeatureIndex === null && improvingFeatureIndex !== null) {
+                    improvingIndex = improvingFeatureIndex;
+                }
+                if (worseningFeatureIndex === null && worseningFeatureIndex !== null) {
+                    worseningIndex = worseningFeatureIndex;
+                }
+
+                problemData.technicalContradiction = {
+                    improvingFeature: "Not selected",
+                    worseningFeature: "Not selected",
+                    recommendedPrinciples: []
+                };
+
+                if (improvingFeatureIndex !== null && worseningFeatureIndex !== null && improvingFeatureIndex >= 0 && worseningFeatureIndex >= 0) {
+                    const features = getCurrentFeatures();
+                    problemData.technicalContradiction.improvingFeature = features[improvingFeatureIndex];
+                    problemData.technicalContradiction.worseningFeature = features[worseningFeatureIndex];
+
+                    const improvingKey = (improvingFeatureIndex + 1).toString();
+                    const worseningKey = (worseningFeatureIndex + 1).toString();
+                    const principlesList = getContradictionPrinciples(improvingKey, worseningKey);
+
+                    problemData.technicalContradiction.recommendedPrinciples = (principlesList || []).map(id => {
+                        return principles[id] ? { ...principles[id], id } : null;
+                    }).filter(p => p !== null);
+                }
+
+                // Physical Contradiction data (ALGORITMO CORREGIDO)
+                const parameter = document.getElementById('conflicting-parameter').value;
+                problemData.physicalContradiction = {
+                    conflictingParameter: parameter || "Not specified",
+                    intersectionTest: physicalStrategyFlow.selectedIntersection,
+                    timeSeparation: physicalStrategyFlow.selectedTimeSeparation,
+                    separationType: physicalStrategyFlow.selectedSeparation,
+                    strategy: physicalStrategyFlow.strategy,
+                    categories: physicalStrategyFlow.categories || [], // Guardar las categorías seleccionadas
+                    recommendedPrinciples: []
+                };
+
+                // Recopilar todos los principios de las categorías seleccionadas
+                if (physicalStrategyFlow.categories && physicalStrategyFlow.categories.length > 0) {
+                    physicalStrategyFlow.categories.forEach(categoryKey => {
+                        const category = physicalContradictionPrinciples[categoryKey];
+                        if (category && category.principles) {
+                            category.principles.forEach(principle => {
+                                problemData.physicalContradiction.recommendedPrinciples.push({
+                                    id: principle.number,
+                                    name: principle.name,
+                                    desc: principle.description,
+                                    example: principle.example,
+                                    category: category.strategy // Agregar información de categoría
+                                });
+                            });
+                        }
                     });
                 }
-            }
 
-            displayResults();
+                // Collect Su-Field systems - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
+                problemData.sufield = { systems: [] };
+                for (let systemElement of systemElements) {
+                    const object = systemElement.querySelector('.sufield-object').value.trim();
+                    const tool = systemElement.querySelector('.sufield-tool').value.trim();
+                    const field = systemElement.querySelector('.sufield-field').value;
+                    const type = systemElement.querySelector('.sufield-type').value;
+
+                    if (object && tool && field) {
+                        const standardSolutions = (typeof getRecommendedStandardSolutions === 'function')
+                            ? getRecommendedStandardSolutions(type)
+                            : [];
+
+                        problemData.sufield.systems.push({
+                            object: object,
+                            tool: tool,
+                            field: field,
+                            type: type || 'insufficient',
+                            suggestion: sufieldSolutions[type] || "No specific suggestion available.",
+                            standardSolutions: standardSolutions
+                        });
+                    }
+                }
+
+                displayResults();
+            } catch (error) {
+                console.error('Error solving problem:', error);
+                alert('An error occurred while generating the report. Please check the console for details.');
+            }
         }
 
         function displayResults() {
-            const resultsDiv = document.getElementById('results-container');
-            let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+            try {
+                const resultsDiv = document.getElementById('results-container');
+                let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
 
-            // PROBLEM DEFINITION (New Section)
-            html += `<div class="solver-step">
-                <h4><i class="fas fa-tasks"></i> Problem Definition</h4>
-                <p><strong>System:</strong> ${problemData.system}</p>
-                <p><strong>Primary Function:</strong> ${problemData.function}</p>
-                <p><strong>Main Drawback:</strong> ${problemData.harm}</p>
-            </div>`;
+                // PROBLEM DEFINITION (New Section)
+                html += `<div class="solver-step">
+                    <h4><i class="fas fa-tasks"></i> Problem Definition</h4>
+                    <p><strong>System:</strong> ${problemData.system}</p>
+                    <p><strong>Primary Function:</strong> ${problemData.function}</p>
+                    <p><strong>Main Drawback:</strong> ${problemData.harm}</p>
+                </div>`;
 
-            // IDEAL FINAL RESULT (New Section)
-            html += `<div class="solver-step">
-                <h4><i class="fas fa-rocket"></i> Ideal Final Result (IFR)</h4>
-                <p><strong>Formulation:</strong> ${problemData.ifr}</p>
-            </div>`;
+                // IDEAL FINAL RESULT (New Section)
+                html += `<div class="solver-step">
+                    <h4><i class="fas fa-rocket"></i> Ideal Final Result (IFR)</h4>
+                    <p><strong>Formulation:</strong> ${problemData.ifr}</p>
+                </div>`;
 
-            // LDST Analysis
-            html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
-                <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
-                <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
+                // LDST Analysis
+                html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> LDST Analysis</h4>
+                    <p><strong>Life Cycle Stage:</strong> ${document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text}</p>
+                    <p><strong>Recommended Laws of Technical Systems Development:</strong></p>`;
 
-            problemData.ldst.recommendedLaws.forEach(law => {
-                html += `
-                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                        <h5>${law.name}</h5>
-                        <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
-                        <div>${law.examples}</div>
-                    </div>
-                `;
-            });
-
-            html += `
-                <div class="tese-trends-icons">`;
-
-            problemData.ldst.recommendedLaws.forEach(law => {
-                law.principles.forEach(principle => {
+                problemData.ldst.recommendedLaws.forEach(law => {
                     html += `
-                        <div class="tese-trend-item">
-                            <div class="tese-trend-icon">
-                                <i class="fas fa-lightbulb"></i>
-                            </div>
-                            <div class="tese-trend-name">${principle}</div>
+                        <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <h5>${law.name}</h5>
+                            <p><strong>Related Principles:</strong> ${law.principles.join(', ')}</p>
+                            <div>${law.examples}</div>
                         </div>
                     `;
                 });
-            });
 
-            html += `</div>
-                <p style="margin-top: 1rem; font-style: italic; text-align: center;">
-                    Apply these principles according to the fundamental laws of technical systems development
-                </p>
-            </div>`;
+                html += `
+                    <div class="tese-trends-icons">`;
 
-            // 9 Windows Analysis
-            html += `<div class="solver-step"><h4><i class="fas fa-window-restore"></i> 9 Windows Analysis</h4>
-                <div class="nine-windows-container" style="margin-top: 20px;">
-                    <table class="nine-windows-table" style="border-collapse: collapse; width: 100%;">
-                        <tr>
-                            <td style="width: 80px; border: none;"></td>
-                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Past</td>
-                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Present</td>
-                            <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Future</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
-                                Super-System
-                            </td>
-                            <td style="padding: 5px; background: #f0f7ff;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                    ${problemData.nineWindows.superPast || 'Not specified'}
+                problemData.ldst.recommendedLaws.forEach(law => {
+                    law.principles.forEach(principle => {
+                        html += `
+                            <div class="tese-trend-item">
+                                <div class="tese-trend-icon">
+                                    <i class="fas fa-lightbulb"></i>
                                 </div>
-                            </td>
-                            <td style="padding: 5px; background: #f0f7ff;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                    ${problemData.nineWindows.superPresent || 'Not specified'}
-                                </div>
-                            </td>
-                            <td style="padding: 5px; background: #f0f7ff;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
-                                    ${problemData.nineWindows.superFuture || 'Not specified'}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
-                                System
-                            </td>
-                            <td style="padding: 5px; background: #f0fff0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.systemPast || 'Not specified'}
-                                </div>
-                            </td>
-                            <td style="padding: 5px; background: #f0fff0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.systemPresent || 'Not specified'}
-                                </div>
-                            </td>
-                            <td style="padding: 5px; background: #f0fff0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.systemFuture || 'Not specified'}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
-                                Sub-System
-                            </td>
-                            <td style="padding: 5px; background: #fff0f0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.subPast || 'Not specified'}
-                                </div>
-                            </td>
-                            <td style="padding: 5px; background: #fff0f0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.subPresent || 'Not specified'}
-                                </div>
-                            </td>
-                            <td style="padding: 5px; background: #fff0f0;">
-                                <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
-                                    ${problemData.nineWindows.subFuture || 'Not specified'}
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
-                        <strong>Color Guide:</strong> 
-                        <span style="color: #0066cc;">Super-System (Blue)</span> | 
-                        <span style="color: #009900;">System (Green)</span> | 
-                        <span style="color: #cc0000;">Sub-System (Red)</span>
-                    </div>
-                </div>
-                <p style="margin-top: 15px; font-style: italic; text-align: center;">
-                    Use this 9-windows analysis to identify innovation opportunities in different timeframes and system levels.
-                </p>
-            </div>`;
+                                <div class="tese-trend-name">${principle}</div>
+                            </div>
+                        `;
+                    });
+                });
 
-            // Function Analysis
-            if (problemData.functionAnalysis) {
-                html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> Function Analysis</h4>`;
-
-                // Step 1: Main Function
-                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
-                    <h5>Step 1: Main Function</h5>
-                    <p><strong>Main Function:</strong> ${problemData.functionAnalysis.mainFunction || 'Not defined'}</p>
-                    <p><strong>Target Component:</strong> ${problemData.functionAnalysis.targetComponent || 'Not defined'}</p>
+                html += `</div>
+                    <p style="margin-top: 1rem; font-style: italic; text-align: center;">
+                        Apply these principles according to the fundamental laws of technical systems development
+                    </p>
                 </div>`;
 
-                // Step 2: Component Analysis
-                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
-                    <h5>Step 2: Component Analysis</h5>
-                    <div class="panels-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem;">
-                        <div class="panel-half" style="flex: 1; min-width: 300px;">
-                            <h6>System Components:</h6>
-                            <ul>`;
+                // 9 Windows Analysis
+                html += `<div class="solver-step"><h4><i class="fas fa-window-restore"></i> 9 Windows Analysis</h4>
+                    <div class="nine-windows-container" style="margin-top: 20px;">
+                        <table class="nine-windows-table" style="border-collapse: collapse; width: 100%;">
+                            <tr>
+                                <td style="width: 80px; border: none;"></td>
+                                <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Past</td>
+                                <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Present</td>
+                                <td style="text-align: center; font-weight: bold; padding: 10px; background: #f0f7ff;">Future</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                    Super-System
+                                </td>
+                                <td style="padding: 5px; background: #f0f7ff;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                        ${problemData.nineWindows.superPast || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #f0f7ff;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                        ${problemData.nineWindows.superPresent || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #f0f7ff;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0c8ff; border-radius: 4px;">
+                                        ${problemData.nineWindows.superFuture || 'Not specified'}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right; font-weight: bold; padding: 10px; background: #f0fff0; vertical-align: middle;">
+                                    System
+                                </td>
+                                <td style="padding: 5px; background: #f0fff0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.systemPast || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #f0fff0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.systemPresent || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #f0fff0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #a0d0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.systemFuture || 'Not specified'}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right; font-weight: bold; padding: 10px; background: #fff0f0; vertical-align: middle;">
+                                    Sub-System
+                                </td>
+                                <td style="padding: 5px; background: #fff0f0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.subPast || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #fff0f0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.subPresent || 'Not specified'}
+                                    </div>
+                                </td>
+                                <td style="padding: 5px; background: #fff0f0;">
+                                    <div style="padding: 10px; min-height: 80px; border: 1px solid #ffa0a0; border-radius: 4px;">
+                                        ${problemData.nineWindows.subFuture || 'Not specified'}
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <div style="margin-top: 20px; font-size: 0.9rem; color: #666; text-align: center;">
+                            <strong>Color Guide:</strong> 
+                            <span style="color: #0066cc;">Super-System (Blue)</span> | 
+                            <span style="color: #009900;">System (Green)</span> | 
+                            <span style="color: #cc0000;">Sub-System (Red)</span>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-style: italic; text-align: center;">
+                        Use this 9-windows analysis to identify innovation opportunities in different timeframes and system levels.
+                    </p>
+                </div>`;
 
-                if (problemData.functionAnalysis.systemComponents && problemData.functionAnalysis.systemComponents.length > 0) {
-                    problemData.functionAnalysis.systemComponents.forEach(component => {
-                        html += `<li>${component}</li>`;
-                    });
-                } else {
-                    html += `<li><em>No system components defined</em></li>`;
-                }
+                // Function Analysis
+                if (problemData.functionAnalysis) {
+                    html += `<div class="solver-step"><h4><i class="fas fa-project-diagram"></i> Function Analysis</h4>`;
 
-                html += `</ul></div><div class="panel-half" style="flex: 1; min-width: 300px;">
-                            <h6>Supersystem Components:</h6>
-                            <ul>`;
+                    // Step 1: Main Function
+                    html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                        <h5>Step 1: Main Function</h5>
+                        <p><strong>Main Function:</strong> ${problemData.functionAnalysis.mainFunction || 'Not defined'}</p>
+                        <p><strong>Target Component:</strong> ${problemData.functionAnalysis.targetComponent || 'Not defined'}</p>
+                    </div>`;
 
-                if (problemData.functionAnalysis.supersystemComponents && problemData.functionAnalysis.supersystemComponents.length > 0) {
-                    problemData.functionAnalysis.supersystemComponents.forEach(component => {
-                        html += `<li>${component}</li>`;
-                    });
-                } else {
-                    html += `<li><em>No supersystem components defined</em></li>`;
-                }
+                    // Step 2: Component Analysis
+                    html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                        <h5>Step 2: Component Analysis</h5>
+                        <div class="panels-container" style="display: flex; flex-wrap: wrap; gap: 1.25rem;">
+                            <div class="panel-half" style="flex: 1; min-width: 300px;">
+                                <h6>System Components:</h6>
+                                <ul>`;
 
-                html += `</ul></div></div></div>`;
-
-                // Step 3: Interaction Analysis
-                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
-                    <h5>Step 3: Interaction Analysis</h5>`;
-
-                if (Object.keys(problemData.functionAnalysis.interactions).length > 0) {
-                    html += `<p>Components in contact/interaction:</p><ul>`;
-
-                    for (const [interactionId, isChecked] of Object.entries(problemData.functionAnalysis.interactions)) {
-                        if (isChecked) {
-                            const [component1, component2] = interactionId.split('-');
-                            html += `<li>${component1} ↔ ${component2}</li>`;
-                        }
+                    if (problemData.functionAnalysis.systemComponents && problemData.functionAnalysis.systemComponents.length > 0) {
+                        problemData.functionAnalysis.systemComponents.forEach(component => {
+                            html += `<li>${component}</li>`;
+                        });
+                    } else {
+                        html += `<li><em>No system components defined</em></li>`;
                     }
 
-                    html += `</ul>`;
-                } else {
-                    html += `<p><em>No interactions defined</em></p>`;
-                }
+                    html += `</ul></div><div class="panel-half" style="flex: 1; min-width: 300px;">
+                                <h6>Supersystem Components:</h6>
+                                <ul>`;
 
-                html += `</div>`;
+                    if (problemData.functionAnalysis.supersystemComponents && problemData.functionAnalysis.supersystemComponents.length > 0) {
+                        problemData.functionAnalysis.supersystemComponents.forEach(component => {
+                            html += `<li>${component}</li>`;
+                        });
+                    } else {
+                        html += `<li><em>No supersystem components defined</em></li>`;
+                    }
 
-                // Step 4: Functional Analysis (Tabular)
-                html += `<div class="calculation-block" style="margin-bottom: 1rem;">
-                    <h5>Step 4: Functional Analysis (Tabular)</h5>`;
+                    html += `</ul></div></div></div>`;
 
-                if (problemData.functionAnalysis.functions && problemData.functionAnalysis.functions.length > 0) {
-                    html += `<div style="overflow-x: auto;">
-                        <table class="trends-table">
-                            <thead>
-                                <tr>
-                                    <th>Component (function carrier)</th>
-                                    <th>Action (Verb)</th>
-                                    <th>Target (Object of the Function)</th>
-                                    <th>Category</th>
-                                    <th>Performance level</th>
-                                    <th>Comment</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+                    // Step 3: Interaction Analysis
+                    html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                        <h5>Step 3: Interaction Analysis</h5>`;
 
-                    problemData.functionAnalysis.functions.forEach(func => {
-                        html += `
-                            <tr>
-                                <td>${func.carrier}</td>
-                                <td>${func.action}</td>
-                                <td>${func.target}</td>
-                                <td>${func.category === 'useful' ? 'Useful (U)' : 'Harmful (H)'}</td>
-                                <td>${func.performance === 'normal' ? 'Normal (N)' : (func.performance === 'insufficient' ? 'Insufficient (I)' : 'Excessive (E)')}</td>
-                                <td>${func.comment || ''}</td>
-                            </tr>
-                        `;
-                    });
+                    if (Object.keys(problemData.functionAnalysis.interactions).length > 0) {
+                        html += `<p>Components in contact/interaction:</p><ul>`;
 
-                    html += `</tbody></table></div>`;
-                } else {
-                    html += `<p><em>No functions defined</em></p>`;
-                }
+                        for (const [interactionId, isChecked] of Object.entries(problemData.functionAnalysis.interactions)) {
+                            if (isChecked) {
+                                const [component1, component2] = interactionId.split('||');
+                                html += `<li>${component1} ↔ ${component2}</li>`;
+                            }
+                        }
 
-                html += `</div>`;
-
-                // Step 5: Function Model Diagram
-                html += `<div class="calculation-block">
-                    <h5>Step 5: Function Model Diagram</h5>
-                    <div class="mermaid-container" id="resultsMermaidDiagram">
-                        <div class="mermaid">
-                            ${generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions)}
-                        </div>
-                    </div>
-                    
-                    <div class="diagram-legend">
-                        <h6 class="legend-title">Diagram Legend</h6>
-                        <div class="legend-grid">
-                            <div class="legend-item">
-                                <div class="legend-color-box" style="background: #dceeff; border: 2px solid #82b6ff;"></div>
-                                <span>System Component</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color-box" style="background: #ffe6cc; border: 2px solid #d79b00; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"></div>
-                                <span>Supersystem Component (Hexagon)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color-box" style="background: #ffffcc; border: 2px solid #d6b656; border-radius: 10px;"></div>
-                                <span>Target Component (Rounded)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-line-sample" style="background: #000; height: 2px;"></div>
-                                <span>Useful Function (Normal)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-line-sample" style="border: 1px dashed #000; height: 2px;"></div>
-                                <span>Useful Function (Insufficient)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-line-sample" style="background: #000; height: 3px;"></div>
-                                <span>Useful Function (Excessive)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-line-sample" style="background: #e74c3c; height: 3px;"></div>
-                                <span>Harmful Function</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-                html += `</div>`;
-            }
-
-            // Technical Contradiction
-            if (problemData.technicalContradiction) {
-                html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Technical Contradiction</h4>`;
-
-                html += `<div class="contradiction-visual">
-                    <div class="improving-side">
-                        <i class="fas fa-arrow-up improving-icon feature-icon"></i>
-                        <h4>Improving</h4>
-                        <p>${problemData.technicalContradiction.improvingFeature}</p>
-                    </div>
-                    <div class="contradiction-arrow">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <div class="worsening-side">
-                        <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
-                        <h4>Worsening</h4>
-                        <p>${problemData.technicalContradiction.worseningFeature}</p>
-                    </div>
-                </div>`;
-
-                // Matrix Version
-                html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
-                    <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
-                </div>`;
-
-                // Recommended Principles
-                if (problemData.technicalContradiction.recommendedPrinciples && problemData.technicalContradiction.recommendedPrinciples.length > 0) {
-                    html += `<h5>Recommended Inventive Principles:</h5>`;
-                    problemData.technicalContradiction.recommendedPrinciples.forEach(p => {
-                        html += `
-                            <div class="principle-card">
-                                <div class="principle-header">
-                                    <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
-                                    <strong>Principle ${p.id}: ${p.name}</strong>
-                                </div>
-                                <p>${p.desc}</p>
-                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                                    <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html += '<p>No specific principles are recommended based on the current inputs.</p>';
-                }
-                html += `</div>`;
-            }
-
-            // Physical Contradiction (ALGORITMO CORREGIDO)
-            if (problemData.physicalContradiction) {
-                html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
-
-                html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
-
-                html += `<div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
-                    <strong>Algorithm Path:</strong><br/>
-                    • <strong>Intersection Test:</strong> ${problemData.physicalContradiction.intersectionTest || 'Not selected'}<br/>
-                    ${problemData.physicalContradiction.timeSeparation ? `• <strong>Time/Space Separation:</strong> ${problemData.physicalContradiction.timeSeparation === 'yes' ? 'Separation in Time' : 'Separation in Space'}<br/>` : ''}
-                    ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${problemData.physicalContradiction.separationType}<br/>` : ''}
-                    • <strong>Result:</strong> ${problemData.physicalContradiction.strategy || 'No strategy selected'}
-                </div>`;
-
-                if (problemData.physicalContradiction.strategy) {
-                    html += `<div class="physical-strategy-guide" style="border-left: 5px solid #27ae60;">
-                        <div class="strategy-title">Recommended Resolution Strategy</div>
-                        <div class="strategy-description"><strong>${problemData.physicalContradiction.strategy}</strong></div>
-                        <div class="strategy-example">
-                            ${getStrategyDescription(problemData.physicalContradiction.strategy)}
-                        </div>`;
-
-                    // Añadir nota si es bypass
-                    if (problemData.physicalContradiction.strategy.includes('Bypass')) {
-                        html += `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-                            <i class="fas fa-info-circle"></i> <strong>Note:</strong> The principles listed for this strategy are illustrative examples only. In a system transition, any inventive principle may be applicable.
-                        </div>`;
+                        html += `</ul>`;
+                    } else {
+                        html += `<p><em>No interactions defined</em></p>`;
                     }
 
                     html += `</div>`;
-                }
 
-                // Mostrar las categorías de resolución
-                if (problemData.physicalContradiction.categories && problemData.physicalContradiction.categories.length > 0) {
-                    html += `<h5>Resolution Categories:</h5>`;
+                    // Step 4: Functional Analysis (Tabular)
+                    html += `<div class="calculation-block" style="margin-bottom: 1rem;">
+                        <h5>Step 4: Functional Analysis (Tabular)</h5>`;
 
-                    problemData.physicalContradiction.categories.forEach(categoryKey => {
-                        const category = physicalContradictionPrinciples[categoryKey];
-                        if (category) {
+                    if (problemData.functionAnalysis.functions && problemData.functionAnalysis.functions.length > 0) {
+                        html += `<div style="overflow-x: auto;">
+                            <table class="trends-table">
+                                <thead>
+                                    <tr>
+                                        <th>Component (function carrier)</th>
+                                        <th>Action (Verb)</th>
+                                        <th>Target (Object of the Function)</th>
+                                        <th>Category</th>
+                                        <th>Performance level</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                        problemData.functionAnalysis.functions.forEach(func => {
                             html += `
-                                <div class="principle-card" style="border-left: 4px solid #9b59b6;">
-                                    <div class="principle-header">
-                                        <span class="physical-principle-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
-                                            <i class="fas fa-layer-group"></i>
-                                        </span>
-                                        <strong>${category.strategy}</strong>
-                                    </div>
-                                    <p>${category.description}</p>
-                                    
-                                    <div style="margin-top: 1rem;">
-                                        <h6>Principles in this category:</h6>
+                                <tr>
+                                    <td>${func.carrier}</td>
+                                    <td>${func.action}</td>
+                                    <td>${func.target}</td>
+                                    <td>${func.category === 'useful' ? 'Useful (U)' : 'Harmful (H)'}</td>
+                                    <td>${func.performance === 'normal' ? 'Normal (N)' : (func.performance === 'insufficient' ? 'Insufficient (I)' : 'Excessive (E)')}</td>
+                                    <td>${func.comment || ''}</td>
+                                </tr>
                             `;
+                        });
 
-                            // Mostrar solo los principios de esta categoría específica
-                            const categoryPrinciples = problemData.physicalContradiction.recommendedPrinciples
-                                .filter(p => p.category === category.strategy);
+                        html += `</tbody></table></div>`;
+                    } else {
+                        html += `<p><em>No functions defined</em></p>`;
+                    }
 
-                            categoryPrinciples.forEach(p => {
-                                html += `
-                                    <div class="solution-card" style="margin-bottom: 0.5rem;">
-                                        <div class="solution-header">
-                                            <span class="principle-icon"><i class="fas fa-lightbulb"></i></span>
-                                            <strong>Principle ${p.id}: ${p.name}</strong>
-                                        </div>
-                                        <p>${p.desc}</p>
-                                        <div style="font-size: 0.9rem; color: #666; font-style: italic;">
-                                            <strong>Example:</strong> ${p.example}
-                                        </div>
-                                    </div>
-                                `;
-                            });
+                    html += `</div>`;
 
-                            html += `</div></div>`;
-                        }
-                    });
-                } else if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
-                    // Fallback para compatibilidad con versiones anteriores
-                    html += `<h5>Recommended Inventive Principles:</h5>`;
-                    problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
-                        html += `
-                            <div class="principle-card">
-                                <div class="principle-header">
-                                    <span class="physical-principle-icon"><i class="fas fa-lightbulb"></i></span>
-                                    <strong>Principle ${p.id}: ${p.name}</strong>
-                                </div>
-                                <p>${p.desc}</p>
-                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                                    <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                html += `</div>`;
-            }
-
-            // Su-Field Analysis
-            if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
-                html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
-
-                problemData.sufield.systems.forEach((system, index) => {
-                    html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
-
-                    html += `<h5>System ${index + 1}: ${system.object} ← ${system.field} → ${system.tool}</h5>`;
-
-                    const problemDiagramId = `problem-diagram-${index}`;
-                    const solutionDiagramId = `solution-diagram-${index}`;
-
-                    html += `
-                        <div class="solution-transformation">
-                            <div class="before-state">
-                                <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
-                                <div class="state-label">Problem State</div>
-                            </div>
-                            
-                            <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                            
-                            <div class="after-state">
-                                <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
-                                <div class="state-label">Solution State</div>
+                    // Step 5: Function Model Diagram
+                    html += `<div class="calculation-block">
+                        <h5>Step 5: Function Model Diagram</h5>
+                        <div class="mermaid-container" id="resultsMermaidDiagram">
+                            <div class="mermaid">
+                                ${generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions)}
                             </div>
                         </div>
-                    `;
-
-                    html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                        <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
-                        <div>
-                            <strong>Problem Type:</strong> ${system.type}
-                            <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                        
+                        <div class="diagram-legend">
+                            <h6 class="legend-title">Diagram Legend</h6>
+                            <div class="legend-grid">
+                                <div class="legend-item">
+                                    <div class="legend-color-box" style="background: #dceeff; border: 2px solid #82b6ff;"></div>
+                                    <span>System Component</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color-box" style="background: #ffe6cc; border: 2px solid #d79b00; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"></div>
+                                    <span>Supersystem Component (Hexagon)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color-box" style="background: #ffffcc; border: 2px solid #d6b656; border-radius: 10px;"></div>
+                                    <span>Target Component (Rounded)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line-sample" style="background: #000; height: 2px;"></div>
+                                    <span>Useful Function (Normal)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line-sample" style="border: 1px dashed #000; height: 2px;"></div>
+                                    <span>Useful Function (Insufficient)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line-sample" style="background: #000; height: 3px;"></div>
+                                    <span>Useful Function (Excessive)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line-sample" style="background: #e74c3c; height: 3px;"></div>
+                                    <span>Harmful Function</span>
+                                </div>
+                            </div>
                         </div>
                     </div>`;
 
-                    if (system.standardSolutions && system.standardSolutions.length > 0) {
-                        const solutionsByClass = {};
-                        system.standardSolutions.forEach(solution => {
-                            if (!solutionsByClass[solution.class]) {
-                                solutionsByClass[solution.class] = [];
-                            }
-                            solutionsByClass[solution.class].push(solution);
-                        });
+                    html += `</div>`;
+                }
 
-                        for (const [className, solutions] of Object.entries(solutionsByClass)) {
-                            const classIcon = classIcons[className] || 'fa-cube';
-                            html += `<div class="standard-solution-visual">`;
+                // Technical Contradiction
+                if (problemData.technicalContradiction) {
+                    html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Technical Contradiction</h4>`;
+
+                    html += `<div class="contradiction-visual">
+                        <div class="improving-side">
+                            <i class="fas fa-arrow-up improving-icon feature-icon"></i>
+                            <h4>Improving</h4>
+                            <p>${problemData.technicalContradiction.improvingFeature}</p>
+                        </div>
+                        <div class="contradiction-arrow">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="worsening-side">
+                            <i class="fas fa-arrow-down worsening-icon feature-icon"></i>
+                            <h4>Worsening</h4>
+                            <p>${problemData.technicalContradiction.worseningFeature}</p>
+                        </div>
+                    </div>`;
+
+                    // Matrix Version
+                    html += `<div class="matrix-version-info" style="margin-bottom: 1rem; padding: 0.5rem; background: #e3f2fd; border-radius: 4px;">
+                        <strong>Matrix Version:</strong> ${currentMatrixVersion === 'classic' ? 'Classic TRIZ Matrix (39 parameters)' : '2003 TRIZ Matrix (48 parameters)'}
+                    </div>`;
+
+                    // Recommended Principles
+                    if (problemData.technicalContradiction.recommendedPrinciples && problemData.technicalContradiction.recommendedPrinciples.length > 0) {
+                        html += `<h5>Recommended Inventive Principles:</h5>`;
+                        problemData.technicalContradiction.recommendedPrinciples.forEach(p => {
                             html += `
-                                <div class="class-header">
-                                    <span class="class-icon"><i class="fas ${classIcon}"></i></span>
-                                    <h5>${className}</h5>
+                                <div class="principle-card">
+                                    <div class="principle-header">
+                                        <span class="physical-principle-icon"><i class="fas ${physicalPrincipleIcons[p.id] || 'fa-lightbulb'}"></i></span>
+                                        <strong>Principle ${p.id}: ${p.name}</strong>
+                                    </div>
+                                    <p>${p.desc}</p>
+                                    <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                    </div>
                                 </div>
                             `;
-                            html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
-
-                            html += `<div class="solution-description">`;
-                            html += `<h6>Recommended Standard Solutions:</h6>`;
-
-                            solutions.forEach(solution => {
-                                const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
-                                html += `
-                                    <div class="solution-card">
-                                        <div class="solution-header">
-                                            <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
-                                            <strong>${solution.id}: ${solution.title}</strong>
-                                        </div>
-                                        <p>${solution.description}</p>
-                                    </div>
-                                `;
-                            });
-
-                            html += `</div></div>`;
-                        }
-                    } else if (typeof getRecommendedStandardSolutions !== 'function') {
-                        html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
+                        });
                     } else {
-                        html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                        html += '<p>No specific principles are recommended based on the current inputs.</p>';
+                    }
+                    html += `</div>`;
+                }
+
+                // Physical Contradiction (ALGORITMO CORREGIDO)
+                if (problemData.physicalContradiction) {
+                    html += `<div class="solver-step"><h4><i class="fas fa-exchange-alt"></i> Physical Contradiction</h4>`;
+
+                    html += `<p><strong>Conflict:</strong> The parameter "<em>${problemData.physicalContradiction.conflictingParameter || 'N/A'}</em>" needs opposite states.</p>`;
+
+                    html += `<div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
+                        <strong>Algorithm Path:</strong><br/>
+                        • <strong>Intersection Test:</strong> ${problemData.physicalContradiction.intersectionTest || 'Not selected'}<br/>
+                        ${problemData.physicalContradiction.timeSeparation ? `• <strong>Time/Space Separation:</strong> ${problemData.physicalContradiction.timeSeparation === 'yes' ? 'Separation in Time' : 'Separation in Space'}<br/>` : ''}
+                        ${problemData.physicalContradiction.separationType ? `• <strong>Separation Type:</strong> ${problemData.physicalContradiction.separationType}<br/>` : ''}
+                        • <strong>Result:</strong> ${problemData.physicalContradiction.strategy || 'No strategy selected'}
+                    </div>`;
+
+                    if (problemData.physicalContradiction.strategy) {
+                        html += `<div class="physical-strategy-guide" style="border-left: 5px solid #27ae60;">
+                            <div class="strategy-title">Recommended Resolution Strategy</div>
+                            <div class="strategy-description"><strong>${problemData.physicalContradiction.strategy}</strong></div>
+                            <div class="strategy-example">
+                                ${getStrategyDescription(problemData.physicalContradiction.strategy)}
+                            </div>`;
+
+                        // Añadir nota si es bypass
+                        if (problemData.physicalContradiction.strategy.includes('Bypass')) {
+                            html += `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                                <i class="fas fa-info-circle"></i> <strong>Note:</strong> The principles listed for this strategy are illustrative examples only. In a system transition, any inventive principle may be applicable.
+                            </div>`;
+                        }
+
+                        html += `</div>`;
                     }
 
-                    html += `</div>`;
-                });
-                html += `</div>`;
-            }
+                    // Mostrar las categorías de resolución
+                    if (problemData.physicalContradiction.categories && problemData.physicalContradiction.categories.length > 0) {
+                        html += `<h5>Resolution Categories:</h5>`;
 
-            html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+                        problemData.physicalContradiction.categories.forEach(categoryKey => {
+                            const category = physicalContradictionPrinciples[categoryKey];
+                            if (category) {
+                                html += `
+                                    <div class="principle-card" style="border-left: 4px solid #9b59b6;">
+                                        <div class="principle-header">
+                                            <span class="physical-principle-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                                                <i class="fas fa-layer-group"></i>
+                                            </span>
+                                            <strong>${category.strategy}</strong>
+                                        </div>
+                                        <p>${category.description}</p>
+                                        
+                                        <div style="margin-top: 1rem;">
+                                            <h6>Principles in this category:</h6>
+                                `;
 
-            resultsDiv.innerHTML = html;
-            resultsDiv.classList.remove('hidden');
+                                // Mostrar solo los principios de esta categoría específica
+                                const categoryPrinciples = problemData.physicalContradiction.recommendedPrinciples
+                                    .filter(p => p.category === category.strategy);
 
-            // Dibujar diagramas Su-Field - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
-            if (problemData.sufield && problemData.sufield.systems) {
-                problemData.sufield.systems.forEach((system, index) => {
-                    const problemDiagramId = `problem-diagram-${index}`;
-                    const solutionDiagramId = `solution-diagram-${index}`;
+                                categoryPrinciples.forEach(p => {
+                                    html += `
+                                        <div class="solution-card" style="margin-bottom: 0.5rem;">
+                                            <div class="solution-header">
+                                                <span class="principle-icon"><i class="fas fa-lightbulb"></i></span>
+                                                <strong>Principle ${p.id}: ${p.name}</strong>
+                                            </div>
+                                            <p>${p.desc}</p>
+                                            <div style="font-size: 0.9rem; color: #666; font-style: italic;">
+                                                <strong>Example:</strong> ${p.example}
+                                            </div>
+                                        </div>
+                                    `;
+                                });
 
-                    if (typeof updateProblemDiagramInSolution === 'function') {
-                        updateProblemDiagramInSolution(problemDiagramId, {
-                            objectText: system.object,
-                            toolText: system.tool,
-                            fieldType: system.field,
-                            problemType: system.type || 'insufficient'
+                                html += `</div></div>`;
+                            }
+                        });
+                    } else if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
+                        // Fallback para compatibilidad con versiones anteriores
+                        html += `<h5>Recommended Inventive Principles:</h5>`;
+                        problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
+                            html += `
+                                <div class="principle-card">
+                                    <div class="principle-header">
+                                        <span class="physical-principle-icon"><i class="fas fa-lightbulb"></i></span>
+                                        <strong>Principle ${p.id}: ${p.name}</strong>
+                                    </div>
+                                    <p>${p.desc}</p>
+                                    <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                        <strong>Example:</strong> ${p.example || 'Apply this principle to transform your system.'}
+                                    </div>
+                                </div>
+                            `;
                         });
                     }
+                    html += `</div>`;
+                }
 
-                    if (typeof updateSolutionDiagram === 'function') {
-                        updateSolutionDiagram(
-                            solutionDiagramId,
-                            system.object,
-                            system.tool,
-                            system.field
-                        );
-                    }
-                });
+                // Su-Field Analysis
+                if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
+                    html += `<div class="solver-step"><h4><i class="fas fa-atom"></i> Su-Field Analysis & Standard Solutions</h4>`;
+
+                    problemData.sufield.systems.forEach((system, index) => {
+                        html += `<div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">`;
+
+                        html += `<h5>System ${index + 1}: ${system.object} ← ${system.field} → ${system.tool}</h5>`;
+
+                        const problemDiagramId = `problem-diagram-${index}`;
+                        const solutionDiagramId = `solution-diagram-${index}`;
+
+                        html += `
+                            <div class="solution-transformation">
+                                <div class="before-state">
+                                    <div id="${problemDiagramId}" class="sufield-diagram-container"></div>
+                                    <div class="state-label">Problem State</div>
+                                </div>
+                                
+                                <div class="transition-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                                
+                                <div class="after-state">
+                                    <div id="${solutionDiagramId}" class="sufield-diagram-container"></div>
+                                    <div class="state-label">Solution State</div>
+                                </div>
+                            </div>
+                        `;
+
+                        html += `<div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                            <i class="fas ${problemTypeIcons[system.type]}" style="font-size: 1.5rem; color: ${problemTypeColors[system.type]}; margin-right: 10px;"></i>
+                            <div>
+                                <strong>Problem Type:</strong> ${system.type}
+                                <p style="margin: 5px 0 0 0;">${system.suggestion}</p>
+                            </div>
+                        </div>`;
+
+                        if (system.standardSolutions && system.standardSolutions.length > 0) {
+                            const solutionsByClass = {};
+                            system.standardSolutions.forEach(solution => {
+                                if (!solutionsByClass[solution.class]) {
+                                    solutionsByClass[solution.class] = [];
+                                }
+                                solutionsByClass[solution.class].push(solution);
+                            });
+
+                            for (const [className, solutions] of Object.entries(solutionsByClass)) {
+                                const classIcon = classIcons[className] || 'fa-cube';
+                                html += `<div class="standard-solution-visual">`;
+                                html += `
+                                    <div class="class-header">
+                                        <span class="class-icon"><i class="fas ${classIcon}"></i></span>
+                                        <h5>${className}</h5>
+                                    </div>
+                                `;
+                                html += `<p>${standardSolutionClasses[className] || 'Standard solutions for this class of problems.'}</p>`;
+
+                                html += `<div class="solution-description">`;
+                                html += `<h6>Recommended Standard Solutions:</h6>`;
+
+                                solutions.forEach(solution => {
+                                    const solutionIcon = standardSolutionIcons[solution.id] || 'fa-cube';
+                                    html += `
+                                        <div class="solution-card">
+                                            <div class="solution-header">
+                                                <span class="standard-solution-icon"><i class="fas ${solutionIcon}"></i></span>
+                                                <strong>${solution.id}: ${solution.title}</strong>
+                                            </div>
+                                            <p>${solution.description}</p>
+                                        </div>
+                                    `;
+                                });
+
+                                html += `</div></div>`;
+                            }
+                        } else if (typeof getRecommendedStandardSolutions !== 'function') {
+                            html += `<p><em>Error: 76principlestriz.js not loaded. Cannot display standard solutions.</em></p>`;
+                        } else {
+                            html += `<p><em>No standard solutions found for "${system.type}".</em></p>`;
+                        }
+
+                        html += `</div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+
+                resultsDiv.innerHTML = html;
+                resultsDiv.classList.remove('hidden');
+
+                // Dibujar diagramas Su-Field - CON LA CORRECCIÓN PARA VALORES POR DEFECTO
+                if (problemData.sufield && problemData.sufield.systems) {
+                    problemData.sufield.systems.forEach((system, index) => {
+                        const problemDiagramId = `problem-diagram-${index}`;
+                        const solutionDiagramId = `solution-diagram-${index}`;
+
+                        if (typeof updateProblemDiagramInSolution === 'function') {
+                            updateProblemDiagramInSolution(problemDiagramId, {
+                                objectText: system.object,
+                                toolText: system.tool,
+                                fieldType: system.field,
+                                problemType: system.type || 'insufficient'
+                            });
+                        }
+
+                        if (typeof updateSolutionDiagram === 'function') {
+                            updateSolutionDiagram(
+                                solutionDiagramId,
+                                system.object,
+                                system.tool,
+                                system.field
+                            );
+                        }
+                    });
+                }
+
+                // Renderizar el diagrama Mermaid en resultados
+                setTimeout(() => {
+                    updateMermaidDiagramInResults();
+                }, 500);
+
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error displaying results:', error);
+                alert('An error occurred while displaying the report. Please check the console.');
             }
-
-            // Renderizar el diagrama Mermaid en resultados
-            setTimeout(() => {
-                updateMermaidDiagramInResults();
-            }, 500);
-
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Función auxiliar para generar código Mermaid para resultados
@@ -5621,42 +5615,28 @@
             return 'graph LR\n' + lines.join('\n');
         }
 
-        function updateMermaidDiagramInResults() {
-            if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
-                return;
-            }
+        async function updateMermaidDiagramInResults() {
+            try {
+                if (!problemData.functionAnalysis || !problemData.functionAnalysis.functions || problemData.functionAnalysis.functions.length === 0) {
+                    return;
+                }
 
-            const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
-            const container = document.getElementById('resultsMermaidDiagram');
+                const code = generateFunctionDiagramCodeForResults(problemData.functionAnalysis.functions);
+                const container = document.getElementById('resultsMermaidDiagram');
 
-            if (!container) return;
+                if (!container) return;
 
-            // Clear container and render new diagram
-            container.innerHTML = `<div class="mermaid">${code}</div>`;
-
-            // Reinitialize Mermaid with the new diagram
-            if (typeof mermaid !== 'undefined') {
-                try {
-                    // Cancel any pending render
-                    if (window.mermaidTimeout) {
-                        clearTimeout(window.mermaidTimeout);
-                    }
-
-                    // Render with a small delay to asegurar que el DOM esté listo
-                    window.mermaidTimeout = setTimeout(() => {
-                        mermaid.init({
-                            startOnLoad: false,
-                            theme: 'default',
-                            securityLevel: 'loose',
-                            flowchart: {
-                                useMaxWidth: true,
-                                htmlLabels: true,
-                                curve: 'basis'
-                            }
-                        }, container.querySelectorAll('.mermaid'));
-                    }, 100);
-                } catch (error) {
-                    console.error('Mermaid rendering error in results:', error);
+                if (typeof mermaid !== 'undefined') {
+                    const { svg } = await mermaid.render('results-function-diagram-svg', code);
+                    container.innerHTML = svg;
+                } else {
+                    container.innerHTML = `<div class="mermaid">${code}</div>`;
+                }
+            } catch (error) {
+                console.error('Error rendering Mermaid in results:', error);
+                const container = document.getElementById('resultsMermaidDiagram');
+                if (container) {
+                    container.innerHTML = '<p style="color: red;">Error rendering diagram. Please try again.</p>';
                 }
             }
         }
@@ -5936,9 +5916,7 @@
         }
     </script>
 
-    <script src="dexie.min.js"></script>
-    <script src="db-sigma.js"></script>
-
+    <!-- Persistence scripts removed; not implemented -->
 </body>
 
 </html>
