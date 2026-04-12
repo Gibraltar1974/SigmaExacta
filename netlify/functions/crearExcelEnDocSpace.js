@@ -5,7 +5,7 @@ exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
-            body: JSON.stringify({ error: 'Método no permitido' })
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
 
@@ -14,6 +14,8 @@ exports.handler = async (event, context) => {
         const API_KEY = process.env.ONLYOFFICE_API_KEY;
         const DOCSPACE_URL = 'https://docspace-n50o74.onlyoffice.com';
         const roomId = '2600999';
+
+        if (!API_KEY) throw new Error('ONLYOFFICE_API_KEY not configured');
 
         // Generar Excel
         const workbook = XLSX.utils.book_new();
@@ -42,8 +44,8 @@ exports.handler = async (event, context) => {
 
         const nombreFinal = nombreArchivo.endsWith('.xlsx') ? nombreArchivo : `${nombreArchivo}.xlsx`;
 
-        // 1. Crear archivo en DocSpace
-        console.log(`Creando archivo en DocSpace: ${nombreFinal}`);
+        // 1. Crear archivo vacío
+        console.log(`Creating file: ${nombreFinal}`);
         const createResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${roomId}/file`, {
             method: 'POST',
             headers: {
@@ -54,50 +56,31 @@ exports.handler = async (event, context) => {
         });
 
         if (!createResponse.ok) {
-            const errorText = await createResponse.text();
-            console.error('Error al crear archivo:', createResponse.status, errorText);
-            throw new Error(`Error al crear archivo (${createResponse.status}): ${errorText}`);
+            const err = await createResponse.text();
+            throw new Error(`Create file failed (${createResponse.status}): ${err}`);
         }
 
         const createData = await createResponse.json();
         const fileId = createData.response.id;
-        console.log(`Archivo creado con ID: ${fileId}`);
+        console.log(`File created, ID: ${fileId}`);
 
-        // 2. Obtener URL de edición para subir el contenido
-        console.log(`Obteniendo URL de edición para ${fileId}...`);
-        const editResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/file/${fileId}/openedit`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${API_KEY}`
-            }
-        });
-
-        if (!editResponse.ok) {
-            const errorText = await editResponse.text();
-            console.error('Error al obtener URL de edición:', editResponse.status, errorText);
-            throw new Error(`Error al obtener URL de edición (${editResponse.status})`);
-        }
-
-        const editData = await editResponse.json();
-        const editUrl = editData.response.urls.edit;
-
-        // 3. Subir el contenido Excel
-        console.log(`Subiendo contenido de ${excelBuffer.length} bytes a ${editUrl}...`);
-        const uploadResponse = await fetch(editUrl, {
+        // 2. Subir contenido directamente al endpoint del archivo
+        console.log(`Uploading content (${excelBuffer.length} bytes)...`);
+        const uploadResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/file/${fileId}`, {
             method: 'PUT',
             headers: {
+                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/octet-stream'
             },
             body: excelBuffer
         });
 
         if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text();
-            console.error('Error al subir contenido:', uploadResponse.status, errorText);
-            throw new Error(`Error al subir contenido (${uploadResponse.status}): ${errorText}`);
+            const err = await uploadResponse.text();
+            throw new Error(`Upload content failed (${uploadResponse.status}): ${err}`);
         }
 
-        console.log('Contenido subido exitosamente');
+        console.log('Upload successful');
 
         return {
             statusCode: 200,
@@ -105,10 +88,10 @@ exports.handler = async (event, context) => {
         };
 
     } catch (error) {
-        console.error('Error general:', error);
+        console.error('Function error:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: error.message || 'Error interno del servidor' })
+            body: JSON.stringify({ error: error.message })
         };
     }
 };
