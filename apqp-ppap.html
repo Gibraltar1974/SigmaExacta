@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
-        /* ESTILOS EXISTENTES (conservados íntegramente) */
+        /* ===== ESTILOS EXISTENTES (conservados íntegramente) ===== */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -755,6 +755,88 @@
             cursor: help;
         }
 
+        /* ===== NUEVOS ESTILOS PARA EL FOOTER DE FASES ===== */
+        .phase-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+            gap: 1.5rem;
+        }
+
+        .mgmt-review-panel {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex: 1;
+        }
+
+        .mgmt-review-panel h4 {
+            margin: 0 0 1rem 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+        }
+
+        .review-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: flex-end;
+        }
+
+        .review-inputs label {
+            margin-bottom: 0;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-inputs input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.25rem;
+        }
+
+        .review-inputs input[type="date"],
+        .review-inputs input[type="text"] {
+            width: auto;
+            min-width: 140px;
+        }
+
+        .next-phase-arrow .button {
+            font-size: 1.1rem;
+            padding: 1rem 2rem;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 992px) {
+            .phase-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .review-inputs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .review-inputs label {
+                justify-content: space-between;
+            }
+
+            .next-phase-arrow .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         @media (max-width: 768px) {
             .tab-content-wrapper {
                 padding: 1rem;
@@ -851,6 +933,7 @@
             </nav>
 
             <div id="tab-theory" class="wizard-tab-content active">
+                <!-- Contenido de teoría sin cambios -->
                 <div class="tab-content-wrapper">
                     <section class="section">
                         <h2 class="section-title"><i class="fas fa-info-circle"></i> What are APQP & PPAP?</h2>
@@ -932,10 +1015,8 @@
                             <button class="subtab-btn" onclick="switchSubTab('subtab-phase4')">Phase 4</button>
                             <button class="subtab-btn" onclick="switchSubTab('subtab-phase5')">Phase 5</button>
                             <button class="subtab-btn" onclick="switchSubTab('subtab-ppap')">PPAP Checklist</button>
-                            <!-- Nuevos subtabs para cumplimiento AIAG -->
                             <button class="subtab-btn" onclick="switchSubTab('subtab-controlplans')">Control
                                 Plans</button>
-                            <button class="subtab-btn" onclick="switchSubTab('subtab-mgreviews')">Mgmt Reviews</button>
                         </nav>
 
                         <div id="subtab-project-config" class="subtab-content active">
@@ -944,7 +1025,7 @@
 
                         <div id="subtab-phase1" class="subtab-content">
                             <div id="apqp-phase-1"></div>
-                            <div id="feasibility-commitment-section" class="section"></div>
+                            <!-- Se eliminó el div de feasibility commitment -->
                         </div>
 
                         <div id="subtab-phase2" class="subtab-content">
@@ -953,8 +1034,7 @@
 
                         <div id="subtab-phase3" class="subtab-content">
                             <div id="apqp-phase-3"></div>
-                            <!-- Nuevo módulo: Diagrama de Flujo de Proceso (para NCR-004) -->
-                            <div id="process-flow-section" class="section"></div>
+                            <!-- El Process Flow se renderiza dentro del contenedor de la fase 3 -->
                         </div>
 
                         <div id="subtab-phase4" class="subtab-content">
@@ -963,7 +1043,7 @@
 
                         <div id="subtab-phase5" class="subtab-content">
                             <div id="apqp-phase-5"></div>
-                            <div id="lessons-learned-section" class="section"></div>
+                            <!-- Lessons Learned se renderiza dentro del contenedor de la fase 5 -->
                         </div>
 
                         <div id="subtab-ppap" class="subtab-content">
@@ -974,15 +1054,12 @@
                         <div id="subtab-controlplans" class="subtab-content">
                             <div id="control-plans-container"></div>
                         </div>
-
-                        <div id="subtab-mgreviews" class="subtab-content">
-                            <div id="management-reviews-container"></div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="tab-gantt" class="wizard-tab-content">
+                <!-- Contenido de Gantt sin cambios -->
                 <div class="tab-content-wrapper">
                     <section class="section">
                         <h2 class="section-title"><i class="fas fa-chart-bar"></i>APQP Gantt Chart</h2>
@@ -1005,6 +1082,7 @@
             </div>
 
             <div id="tab-action-plan" class="wizard-tab-content">
+                <!-- Contenido de Action Plan sin cambios -->
                 <div class="tab-content-wrapper">
                     <section class="section">
                         <h2 class="section-title"><i class="fas fa-clipboard-check"></i>Automatic Action Plan</h2>
@@ -1275,50 +1353,100 @@
                 </div>`;
         }
 
-        function renderApqpPhases() {
-            state.apqpPhases.forEach((phase, phaseIndex) => {
-                const container = document.getElementById(`apqp-phase-${phase.id}`);
-                if (!container) return;
-                container.innerHTML = `
-                    <h3 class="section-title"><i class="fas ${phase.icon}"></i> ${phase.title}</h3>
-                    <p class="phase-description"><strong>${phase.desc}</strong></p>
-                    <table class="apqp-table">
-                        <thead>
-                            <tr>
-                                <th>Task / Element</th>
-                                <th style="width: 20%;">Responsible</th>
-                                <th style="width: 10%;">Start</th>
-                                <th style="width: 10%;">End</th>
-                                <th style="width: 15%;">Status</th>
-                                <th style="width: 25%;">Notes</th>
-                                <th style="width: 5%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${phase.tasks.map(task => `
-                                <tr class="task-row status-${task.status}" data-task-id="${task.id}" data-phase-index="${phaseIndex}">
-                                    <td><input type="text" placeholder="New task..." value="${task.name}"></td>
-                                    <td>${renderResponsibleDropdown(task.responsible)}</td>
-                                    <td><input type="date" value="${task.start}"></td>
-                                    <td><input type="date" value="${task.end}"></td>
-                                    <td>${renderStatusDropdown(task.status)}</td>
-                                    <td><input type="text" value="${task.notes}"></td>
-                                    <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    <div class="table-actions">
-                        <button class="button secondary add-task-btn" data-phase-index="${phaseIndex}"><i class="fas fa-plus"></i> Add Task</button>
-                    </div>`;
-            });
+        // NUEVO: Función para renderizar el footer de cada fase (Review + Siguiente Fase)
+        function renderPhaseFooter(phaseId) {
+            const phaseNumber = phaseId; // 1, 2, 3, 4, 5
+            const review = state.managementReviews[phaseNumber] || { approved: false, date: '', approver: '' };
+            const isLastPhase = phaseNumber === 5;
+
+            let html = `<div class="phase-footer">`;
+            html += `<div class="mgmt-review-panel" data-phase="${phaseNumber}">`;
+            html += `<h4><i class="fas fa-check-circle"></i> Phase ${phaseNumber} Management Review (Gate)</h4>`;
+            html += `<div class="review-inputs">`;
+            html += `<label><input type="checkbox" class="mr-approved-input" ${review.approved ? 'checked' : ''}> Approved</label>`;
+            html += `<label>Date: <input type="date" class="mr-date-input" value="${review.date || ''}"></label>`;
+            html += `<label>Approver: <input type="text" class="mr-approver-input" value="${review.approver || ''}" placeholder="Name/Title"></label>`;
+            // Botón "Save" eliminado – cambios automáticos vía event listener
+            html += `</div></div>`;
+
+            if (!isLastPhase) {
+                html += `<div class="next-phase-arrow">`;
+                html += `<button class="button success next-phase-btn" data-next-phase="${phaseNumber + 1}">`;
+                html += `<i class="fas fa-arrow-right"></i> Go to Phase ${phaseNumber + 1}`;
+                html += `</button></div>`;
+            } else {
+                html += `<div class="next-phase-arrow">`;
+                html += `<button class="button success" onclick="switchMainTab('tab-action-plan')">`;
+                html += `<i class="fas fa-check-double"></i> Finish & View Action Plan`;
+                html += `</button></div>`;
+            }
+            html += `</div>`;
+            return html;
         }
 
-        // NUEVO: Renderizar módulo de Diagrama de Flujo de Proceso (Phase 3)
-        function renderProcessFlow() {
-            const container = document.getElementById('process-flow-section');
-            if (!container) return;
-            let html = `<h3><i class="fas fa-project-diagram"></i> Process Flow Diagram Steps</h3>
+        // Renderiza el contenido específico de la fase (tasks + modules)
+        function renderPhaseSpecificContent(phaseId, container) {
+            const phase = state.apqpPhases.find(p => p.id === phaseId);
+            if (!phase) return '';
+
+            let html = `
+                <h3 class="section-title"><i class="fas ${phase.icon}"></i> ${phase.title}</h3>
+                <p class="phase-description"><strong>${phase.desc}</strong></p>
+                <table class="apqp-table">
+                    <thead>
+                        <tr>
+                            <th>Task / Element</th>
+                            <th style="width: 20%;">Responsible</th>
+                            <th style="width: 10%;">Start</th>
+                            <th style="width: 10%;">End</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 25%;">Notes</th>
+                            <th style="width: 5%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${phase.tasks.map(task => `
+                            <tr class="task-row status-${task.status}" data-task-id="${task.id}" data-phase-index="${phaseId - 1}">
+                                <td><input type="text" placeholder="New task..." value="${task.name}"></td>
+                                <td>${renderResponsibleDropdown(task.responsible)}</td>
+                                <td><input type="date" value="${task.start}"></td>
+                                <td><input type="date" value="${task.end}"></td>
+                                <td>${renderStatusDropdown(task.status)}</td>
+                                <td><input type="text" value="${task.notes}"></td>
+                                <td><button class="button danger remove-task-btn"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div class="table-actions">
+                    <button class="button secondary add-task-btn" data-phase-index="${phaseId - 1}"><i class="fas fa-plus"></i> Add Task</button>
+                </div>`;
+
+            // Módulos específicos de fase
+            if (phaseId === 3) {
+                html += renderProcessFlowHtml(); // función que devuelve HTML del flujo de proceso
+            } else if (phaseId === 5) {
+                html += renderLessonsLearnedHtml();
+            }
+
+            // Agregar el footer con la revisión gerencial
+            html += renderPhaseFooter(phaseId);
+
+            return html;
+        }
+
+        function renderApqpPhases() {
+            for (let i = 1; i <= 5; i++) {
+                const container = document.getElementById(`apqp-phase-${i}`);
+                if (container) {
+                    container.innerHTML = renderPhaseSpecificContent(i);
+                }
+            }
+        }
+
+        // Función auxiliar para obtener HTML del Process Flow
+        function renderProcessFlowHtml() {
+            let html = `<div id="process-flow-section"><h3><i class="fas fa-project-diagram"></i> Process Flow Diagram Steps</h3>
                 <table id="process-flow-table">
                     <thead><tr><th>Operation #</th><th>Process Step Description</th><th>Action</th></tr></thead>
                     <tbody>`;
@@ -1331,29 +1459,21 @@
             });
             html += `</tbody></table>
                 <button class="button secondary add-pf-row"><i class="fas fa-plus"></i> Add Process Step</button>
-                <p class="hint">These operation numbers will be referenced in the Control Plan for validation (AIAG compliance).</p>`;
-            container.innerHTML = html;
-
-            // Eventos
-            container.querySelector('.add-pf-row').addEventListener('click', () => {
-                state.processFlowSteps.push({ opNumber: '', description: '' });
-                renderProcessFlow();
-            });
-            container.querySelectorAll('.remove-pf-row').forEach(btn => btn.addEventListener('click', (e) => {
-                const row = e.target.closest('tr');
-                const idx = row.dataset.pfIdx;
-                state.processFlowSteps.splice(idx, 1);
-                renderProcessFlow();
-            }));
-            container.querySelectorAll('.pf-op, .pf-desc').forEach(inp => inp.addEventListener('change', (e) => {
-                const row = e.target.closest('tr');
-                const idx = row.dataset.pfIdx;
-                const step = state.processFlowSteps[idx];
-                if (e.target.classList.contains('pf-op')) step.opNumber = e.target.value;
-                else step.description = e.target.value;
-            }));
+                <p class="hint">These operation numbers will be referenced in the Control Plan for validation (AIAG compliance).</p></div>`;
+            return html;
         }
 
+        // Función auxiliar para obtener HTML de Lessons Learned
+        function renderLessonsLearnedHtml() {
+            return `
+                <div id="lessons-learned-section">
+                    <h3>Lessons Learned & Continuous Improvement (Phase 5)</h3>
+                    <div class="form-group"><label>Lessons Learned</label><textarea id="lessons-text" rows="3">${state.lessonsLearned.text || ''}</textarea></div>
+                    <div class="form-group"><label>Improvements Implemented</label><textarea id="improvements-text" rows="3">${state.lessonsLearned.improvements || ''}</textarea></div>
+                </div>`;
+        }
+
+        // Renderizado del PPAP (sin cambios significativos)
         function renderPpapChecklist() {
             const container = document.getElementById('ppap-checklist');
             if (!container) return;
@@ -1471,53 +1591,6 @@
             });
         }
 
-        function renderFeasibilityCommitment() {
-            let container = document.getElementById('feasibility-commitment-section');
-            if (!container) return;
-            container.innerHTML = `
-                <h3>Team Feasibility Commitment (AIAG Phase 1)</h3>
-                <div class="grid-form">
-                    <div class="form-group"><label>Approved</label><input type="checkbox" id="feas-approved" ${state.feasibilityCommitment.approved ? 'checked' : ''}></div>
-                    <div class="form-group"><label>Date</label><input type="date" id="feas-date" value="${state.feasibilityCommitment.date || ''}"></div>
-                    <div class="form-group"><label>Signer (Name/Title)</label><input type="text" id="feas-signer" value="${state.feasibilityCommitment.signer || ''}"></div>
-                    <div class="form-group"><label>Comments</label><textarea id="feas-comments">${state.feasibilityCommitment.comments || ''}</textarea></div>
-                </div>
-                <button class="button primary" id="save-feas">Save Commitment</button>
-            `;
-            document.getElementById('save-feas')?.addEventListener('click', () => {
-                state.feasibilityCommitment.approved = document.getElementById('feas-approved').checked;
-                state.feasibilityCommitment.date = document.getElementById('feas-date').value;
-                state.feasibilityCommitment.signer = document.getElementById('feas-signer').value;
-                state.feasibilityCommitment.comments = document.getElementById('feas-comments').value;
-                alert("Feasibility commitment saved.");
-            });
-        }
-
-        function renderManagementReviews() {
-            let container = document.getElementById('management-reviews-container');
-            if (!container) return;
-            let html = `<h3>Management Reviews per Phase (AIAG)</h3><table><thead><tr><th>Phase</th><th>Approved</th><th>Date</th><th>Approver Name</th></tr></thead><tbody>`;
-            for (let i = 1; i <= 5; i++) {
-                let rev = state.managementReviews[i];
-                html += `<tr>
-                    <td>Phase ${i}</td>
-                    <td><input type="checkbox" class="mr-approved" data-phase="${i}" ${rev.approved ? 'checked' : ''}></td>
-                    <td><input type="date" class="mr-date" data-phase="${i}" value="${rev.date || ''}"></td>
-                    <td><input type="text" class="mr-approver" data-phase="${i}" value="${rev.approver || ''}"></td>
-                </tr>`;
-            }
-            html += `</tbody></table><button class="button primary" id="save-mgreviews">Save Reviews</button>`;
-            container.innerHTML = html;
-            document.getElementById('save-mgreviews')?.addEventListener('click', () => {
-                for (let i = 1; i <= 5; i++) {
-                    state.managementReviews[i].approved = document.querySelector(`.mr-approved[data-phase="${i}"]`).checked;
-                    state.managementReviews[i].date = document.querySelector(`.mr-date[data-phase="${i}"]`).value;
-                    state.managementReviews[i].approver = document.querySelector(`.mr-approver[data-phase="${i}"]`).value;
-                }
-                alert("Management reviews saved.");
-            });
-        }
-
         function renderControlPlans() {
             let container = document.getElementById('control-plans-container');
             if (!container) return;
@@ -1600,22 +1673,6 @@
             });
         }
 
-        function renderLessonsLearned() {
-            let container = document.getElementById('lessons-learned-section');
-            if (!container) return;
-            container.innerHTML = `
-                <h3>Lessons Learned & Continuous Improvement (Phase 5)</h3>
-                <div class="form-group"><label>Lessons Learned</label><textarea id="lessons-text" rows="3">${state.lessonsLearned.text || ''}</textarea></div>
-                <div class="form-group"><label>Improvements Implemented</label><textarea id="improvements-text" rows="3">${state.lessonsLearned.improvements || ''}</textarea></div>
-                <button class="button primary" id="save-lessons">Save</button>
-            `;
-            document.getElementById('save-lessons')?.addEventListener('click', () => {
-                state.lessonsLearned.text = document.getElementById('lessons-text').value;
-                state.lessonsLearned.improvements = document.getElementById('improvements-text').value;
-                alert("Lessons learned saved.");
-            });
-        }
-
         function verifyAIAGCompliance() {
             let issues = [];
             if (!isSequenceValid()) issues.push("❌ Sequence violation: DFMEA → PFMEA → Control Plan and Process Flow before PFMEA.");
@@ -1639,10 +1696,40 @@
             else alert("Compliance issues:\n" + issues.join("\n"));
         }
 
-        // Funciones de eventos (modificadas para guardar N/A justification)
+        // Funciones de eventos (modificadas para guardado automático de revisiones)
         function setupEventListeners() {
             document.addEventListener('change', e => {
                 const target = e.target;
+
+                // Actualizar revisiones gerenciales automáticamente
+                if (target.classList.contains('mr-approved-input') || target.classList.contains('mr-date-input') || target.classList.contains('mr-approver-input')) {
+                    const panel = target.closest('.mgmt-review-panel');
+                    if (panel) {
+                        const phase = parseInt(panel.dataset.phase);
+                        const approved = panel.querySelector('.mr-approved-input').checked;
+                        const date = panel.querySelector('.mr-date-input').value;
+                        const approver = panel.querySelector('.mr-approver-input').value;
+                        state.managementReviews[phase] = { approved, date, approver };
+                    }
+                }
+
+                // Lecciones aprendidas automáticas
+                if (target.id === 'lessons-text') {
+                    state.lessonsLearned.text = target.value;
+                }
+                if (target.id === 'improvements-text') {
+                    state.lessonsLearned.improvements = target.value;
+                }
+
+                // Flujo de proceso automático
+                if (target.classList.contains('pf-op') || target.classList.contains('pf-desc')) {
+                    const row = target.closest('tr');
+                    const idx = row.dataset.pfIdx;
+                    const step = state.processFlowSteps[idx];
+                    if (target.classList.contains('pf-op')) step.opNumber = target.value;
+                    else step.description = target.value;
+                }
+
                 const taskRow = target.closest('tr[data-task-id]');
                 if (!taskRow) return;
                 const taskId = Number(taskRow.dataset.taskId);
@@ -1760,6 +1847,24 @@
                         state.ppapElements = state.ppapElements.filter(el => el.id !== taskId);
                         renderPpapChecklist();
                     }
+                }
+
+                // NUEVO: Agregar paso de flujo de proceso
+                if (target.classList.contains('add-pf-row')) {
+                    state.processFlowSteps.push({ opNumber: '', description: '' });
+                    renderApqpPhases(); // re-render para actualizar fase 3
+                }
+                if (target.classList.contains('remove-pf-row')) {
+                    const row = target.closest('tr');
+                    const idx = row.dataset.pfIdx;
+                    state.processFlowSteps.splice(idx, 1);
+                    renderApqpPhases();
+                }
+
+                // NUEVO: Navegar a la siguiente fase usando la flecha
+                if (target.classList.contains('next-phase-btn')) {
+                    const nextPhase = target.dataset.nextPhase;
+                    switchSubTab(`subtab-phase${nextPhase}`);
                 }
             });
 
@@ -2052,13 +2157,9 @@
         function renderAll() {
             renderProjectSetup();
             renderApqpPhases();
-            renderProcessFlow();        // NUEVO
             renderPpapChecklist();
             renderPSW();
-            renderFeasibilityCommitment();
-            renderManagementReviews();
             renderControlPlans();
-            renderLessonsLearned();
         }
 
         // Inicializar la aplicación cuando el DOM esté listo
