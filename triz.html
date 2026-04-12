@@ -3494,23 +3494,23 @@
 
         // CORREGIDA: Función populateDropdowns con valores 1-based
         function populateDropdowns() {
-            const improvingSelect = document.getElementById('improving-feature');
-            const worseningSelect = document.getElementById('worsening-feature');
+                const improvingSelect = document.getElementById('improving-feature');
+                const worseningSelect = document.getElementById('worsening-feature');
 
-            improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
-            worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
+                improvingSelect.innerHTML = '<option value="-1">Select a feature</option>';
+                worseningSelect.innerHTML = '<option value="-1">Select a feature</option>';
 
-            const features = getCurrentFeatures();
+                const features = getCurrentFeatures();
 
-            // CORRECCIÓN: Usar (i + 1) como valor en lugar de i (índice)
-            features.forEach((param, index) => {
-                const featureNumber = index + 1; // Convertir a número 1-based
-                improvingSelect.innerHTML += `<option value="${featureNumber}" title="${param}">${featureNumber}: ${param}</option>`;
-                worseningSelect.innerHTML += `<option value="${featureNumber}" title="${param}">${featureNumber}: ${param}</option>`;
-            });
+                features.forEach((featureName, index) => {
+                    const featureNumber = index + 1; // Valor 1-based
+                    const optionText = `${featureNumber}: ${featureName}`;
+                    improvingSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
+                    worseningSelect.innerHTML += `<option value="${featureNumber}" title="${featureName}">${optionText}</option>`;
+                });
 
-            improvingFeatureIndex = null;
-            worseningFeatureIndex = null;
+                improvingFeatureIndex = null;
+                worseningFeatureIndex = null;
         }
 
         // NUEVA FUNCIÓN: Para manejar cambios en los dropdowns - CORREGIDA
@@ -3557,39 +3557,39 @@
         }
 
         function updateSelectedFeatures() {
-            const features = getCurrentFeatures();
-            const improvingSpan = document.getElementById('selected-improving');
-            const worseningSpan = document.getElementById('selected-worsening');
+                const features = getCurrentFeatures();
+                const improvingSpan = document.getElementById('selected-improving');
+                const worseningSpan = document.getElementById('selected-worsening');
 
-            // Obtener los valores seleccionados de los dropdowns
-            const improvingSelect = document.getElementById('improving-feature');
-            const worseningSelect = document.getElementById('worsening-feature');
+                const improvingSelect = document.getElementById('improving-feature');
+                const worseningSelect = document.getElementById('worsening-feature');
 
-            const improvingValue = parseInt(improvingSelect.value);
-            const worseningValue = parseInt(worseningSelect.value);
+                const improvingValue = parseInt(improvingSelect.value);
+                const worseningValue = parseInt(worseningSelect.value);
 
-            if (improvingValue > 0 && improvingValue <= features.length) {
-                improvingSpan.textContent = `${improvingValue}: ${features[improvingValue - 1]}`;
-                improvingSpan.title = features[improvingValue - 1];
-                improvingFeatureIndex = improvingValue - 1; // Convertir a índice 0-based
-            } else {
-                improvingSpan.textContent = 'None';
-                improvingSpan.title = '';
-                improvingFeatureIndex = null;
-            }
+                if (improvingValue > 0 && improvingValue <= features.length) {
+                    const featureName = features[improvingValue - 1];
+                    improvingSpan.textContent = `${improvingValue}: ${featureName}`;
+                    improvingSpan.title = featureName;
+                    improvingFeatureIndex = improvingValue - 1;
+                } else {
+                    improvingSpan.textContent = 'None';
+                    improvingSpan.title = '';
+                    improvingFeatureIndex = null;
+                }
 
-            if (worseningValue > 0 && worseningValue <= features.length) {
-                worseningSpan.textContent = `${worseningValue}: ${features[worseningValue - 1]}`;
-                worseningSpan.title = features[worseningValue - 1];
-                worseningFeatureIndex = worseningValue - 1; // Convertir a índice 0-based
-            } else {
-                worseningSpan.textContent = 'None';
-                worseningSpan.title = '';
-                worseningFeatureIndex = null;
-            }
+                if (worseningValue > 0 && worseningValue <= features.length) {
+                    const featureName = features[worseningValue - 1];
+                    worseningSpan.textContent = `${worseningValue}: ${featureName}`;
+                    worseningSpan.title = featureName;
+                    worseningFeatureIndex = worseningValue - 1;
+                } else {
+                    worseningSpan.textContent = 'None';
+                    worseningSpan.title = '';
+                    worseningFeatureIndex = null;
+                }
 
-            // Actualizar también la visualización de la matriz
-            updateMatrixDisplay();
+                updateMatrixDisplay();
         }
 
         function loadExample() {
@@ -4123,37 +4123,42 @@
         }
 
         function createContradictionMatrix() {
-            const matrixTable = document.getElementById('contradiction-matrix');
-            matrixTable.innerHTML = '';
+                const matrixTable = document.getElementById('contradiction-matrix');
+                matrixTable.innerHTML = '';
 
-            const features = getCurrentFeatures();
+                const features = getCurrentFeatures();
 
-            let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
-            for (let i = 0; i < features.length; i++) {
-                headerRow += `<th title="${features[i]}">${features[i].split(':')[0]}</th>`;
-            }
-            headerRow += '</tr>';
-            matrixTable.innerHTML += headerRow;
-
-            for (let i = 0; i < features.length; i++) {
-                let row = `<tr><th title="${features[i]}">${i + 1}</th>`;
-                for (let j = 0; j < features.length; j++) {
-                    const cellClass = getCellClass(i, j);
-                    const cellPrinciples = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
-                    const principleNumbers = cellPrinciples && cellPrinciples.length > 0 ? cellPrinciples.join(', ') : '-';
-
-                    const principleNames = cellPrinciples && cellPrinciples.length > 0
-                        ? cellPrinciples.map(p => getPrincipleName(p)).join(', ')
-                        : 'No principles recommended';
-
-                    row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
-                        title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
-                    <div class="principle-numbers">${principleNumbers}</div>
-                </td>`;
+                // Cabecera: primera celda vacía, luego el nombre de cada característica que empeora
+                let headerRow = '<tr><th class="matrix-corner">Worsening →<br>Desired ↓</th>';
+                for (let i = 0; i < features.length; i++) {
+                    // Mostramos el nombre completo; el tooltip también lo incluye por claridad
+                    headerRow += `<th title="${features[i]}">${features[i]}</th>`;
                 }
-                row += '</tr>';
-                matrixTable.innerHTML += row;
-            }
+                headerRow += '</tr>';
+                matrixTable.innerHTML += headerRow;
+
+                // Filas de la matriz
+                for (let i = 0; i < features.length; i++) {
+                    // Primera columna: nombre de la característica que mejora
+                    let row = `<tr><th title="${features[i]}">${features[i]}</th>`;
+                    for (let j = 0; j < features.length; j++) {
+                        const cellClass = getCellClass(i, j);
+                        // Los índices para la matriz son 1-based
+                        const cellPrinciples = getContradictionPrinciples((i + 1).toString(), (j + 1).toString());
+                        const principleNumbers = cellPrinciples && cellPrinciples.length > 0 ? cellPrinciples.join(', ') : '-';
+
+                        const principleNames = cellPrinciples && cellPrinciples.length > 0
+                            ? cellPrinciples.map(p => getPrincipleName(p)).join(', ')
+                            : 'No principles recommended';
+
+                        row += `<td class="${cellClass}" onclick="selectMatrixCell(${i}, ${j})" 
+                title="Improving: ${features[i]}\nWorsening: ${features[j]}\nPrinciples: ${principleNames}">
+                <div class="principle-numbers">${principleNumbers}</div>
+            </td>`;
+                    }
+                    row += '</tr>';
+                    matrixTable.innerHTML += row;
+                }
         }
 
         function getCellClass(row, col) {
