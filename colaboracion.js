@@ -1,28 +1,34 @@
-let docEditor;
+// colaboracion.js - Versión final estable
+let docEditor = null;
 let currentFileId = null;
 
-async function hacerCheckout() {
+// Exponer explícitamente las funciones al objeto window
+window.hacerCheckout = async function () {
     // Verificar que hay datos del informe
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
         alert("Primero debes generar el informe PDCA.");
         return;
     }
 
-    // Pedir nombre del archivo al usuario
+    // Pedir nombre del archivo
     let nombreArchivo = prompt("Introduce un nombre para el archivo Excel (sin extensión):", "Informe_PDCA");
     if (!nombreArchivo) {
         nombreArchivo = `PDCA_Report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}`;
     } else {
-        nombreArchivo = nombreArchivo.replace(/[\\/:*?"<>|]/g, '_'); // Limpiar caracteres inválidos
+        nombreArchivo = nombreArchivo.replace(/[\\/:*?"<>|]/g, '_');
     }
 
     // Cambiar botones
-    document.getElementById('btnCheckout').style.display = 'none';
-    document.getElementById('btnCheckin').style.display = 'inline-block';
-
+    const btnCheckout = document.getElementById('btnCheckout');
+    const btnCheckin = document.getElementById('btnCheckin');
     const contenedor = document.getElementById('contenedorOnlyOffice');
-    contenedor.style.display = 'block';
-    contenedor.innerHTML = '<p style="text-align:center; padding-top:200px;">Creando archivo en la nube...</p>';
+
+    if (btnCheckout) btnCheckout.style.display = 'none';
+    if (btnCheckin) btnCheckin.style.display = 'inline-block';
+    if (contenedor) {
+        contenedor.style.display = 'block';
+        contenedor.innerHTML = '<p style="text-align:center; padding-top:200px;">Creando archivo en la nube...</p>';
+    }
 
     try {
         const respuesta = await fetch('/.netlify/functions/crearExcelEnDocSpace', {
@@ -39,33 +45,37 @@ async function hacerCheckout() {
             throw new Error(errorData.error || 'Error al crear el archivo');
         }
 
-        const { fileId } = await respuesta.json();
-        currentFileId = fileId;
+        const data = await respuesta.json();
+        currentFileId = data.fileId;
 
-        const config = {
-            id: fileId,
-            frameId: "contenedorOnlyOffice",
-            width: "100%",
-            height: "500px"
-        };
-
-        docEditor = DocSpace.SDK.initEditor(config);
+        // Inicializar editor
+        if (typeof DocSpace !== 'undefined' && DocSpace.SDK) {
+            const config = {
+                id: currentFileId,
+                frameId: "contenedorOnlyOffice",
+                width: "100%",
+                height: "500px"
+            };
+            docEditor = DocSpace.SDK.initEditor(config);
+        } else {
+            throw new Error('SDK de OnlyOffice no disponible');
+        }
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
-        document.getElementById('btnCheckout').style.display = 'inline-block';
-        document.getElementById('btnCheckin').style.display = 'none';
-        contenedor.style.display = 'none';
+        if (btnCheckout) btnCheckout.style.display = 'inline-block';
+        if (btnCheckin) btnCheckin.style.display = 'none';
+        if (contenedor) contenedor.style.display = 'none';
     }
-}
+};
 
-async function hacerCheckin() {
+window.hacerCheckin = async function () {
     if (!currentFileId) {
         alert("No hay ningún archivo abierto.");
         return;
     }
 
-    const usuario = "Usuario SigmaExacta"; // Puedes personalizarlo
+    const usuario = "Usuario SigmaExacta";
     const fecha = new Date().toLocaleString();
 
     try {
@@ -86,10 +96,17 @@ async function hacerCheckin() {
         alert("No se pudo conectar con el backend.");
     }
 
-    // Limpiar editor y restaurar botones
-    document.getElementById('contenedorOnlyOffice').innerHTML = "";
-    document.getElementById('contenedorOnlyOffice').style.display = 'none';
-    document.getElementById('btnCheckout').style.display = 'inline-block';
-    document.getElementById('btnCheckin').style.display = 'none';
+    // Limpiar
+    const contenedor = document.getElementById('contenedorOnlyOffice');
+    if (contenedor) {
+        contenedor.innerHTML = "";
+        contenedor.style.display = 'none';
+    }
+    const btnCheckout = document.getElementById('btnCheckout');
+    const btnCheckin = document.getElementById('btnCheckin');
+    if (btnCheckout) btnCheckout.style.display = 'inline-block';
+    if (btnCheckin) btnCheckin.style.display = 'none';
+
     currentFileId = null;
-}
+    docEditor = null;
+};
