@@ -1,12 +1,11 @@
 const XLSX = require('xlsx');
-const FormData = require('form-data'); // Necesario para enviar multipart/form-data
+const axios = require('axios');
+const FormData = require('form-data');
+const { Readable } = require('stream');
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
-        return {
-            statusCode: 405,
-            body: JSON.stringify({ error: 'Method not allowed' })
-        };
+        return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
     }
 
     try {
@@ -46,45 +45,43 @@ exports.handler = async (event, context) => {
 
         // 1. Crear archivo en DocSpace
         console.log(`Creating file: ${nombreFinal}`);
-        const createResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${roomId}/file`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title: nombreFinal })
-        });
+        const createResponse = await axios.post(
+            `${DOCSPACE_URL}/api/2.0/files/${roomId}/file`,
+            { title: nombreFinal },
+            {
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
 
-        if (!createResponse.ok) {
-            const err = await createResponse.text();
-            throw new Error(`Create file failed (${createResponse.status}): ${err}`);
-        }
-
-        const createData = await createResponse.json();
-        const fileId = createData.response.id;
+        const fileId = createResponse.data.response.id;
         console.log(`File created, ID: ${fileId}`);
 
-        // 2. Subir contenido usando POST con multipart/form-data
+        // 2. Subir contenido usando multipart/form-data con axios
         const form = new FormData();
-        form.append('file', excelBuffer, {
+        // Convertir buffer a stream legible
+        const stream = Readable.from(excelBuffer);
+        form.append('file', stream, {
             filename: nombreFinal,
-            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            knownLength: excelBuffer.length
         });
 
-        console.log(`Uploading content via multipart/form-data...`);
-        const uploadResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${fileId}/upload`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${API_KEY}`,
-                ...form.getHeaders()
-            },
-            body: form
-        });
-
-        if (!uploadResponse.ok) {
-            const err = await uploadResponse.text();
-            throw new Error(`Upload content failed (${uploadResponse.status}): ${err}`);
-        }
+        console.log(`Uploading content via axios...`);
+        const uploadResponse = await axios.post(
+            `${DOCSPACE_URL}/api/2.0/files/${fileId}/upload`,
+            form,
+            {
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    ...form.getHeaders()
+                },
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity
+            }
+        );
 
         console.log('Upload successful');
 
@@ -95,9 +92,10 @@ exports.handler = async (event, context) => {
 
     } catch (error) {
         console.error('Function error:', error);
+        const errorMessage = error.response?.data ? JSON.stringify(error.response.data) : error.message;
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({ error: errorMessage })
         };
     }
 };
