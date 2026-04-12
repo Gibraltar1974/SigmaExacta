@@ -101,6 +101,7 @@ const ldstLaws = {
         id: "law8",
         name: "Law of Increasing S-Field Complexity",
         description: "Systems evolve toward greater complexity of fields and substances",
+        note: "Note: The name 'Law of Increasing S-Field Complexity' is a later pedagogical interpretation. In Altshuller's classical works (e.g., 'Creativity as an Exact Science'), this trend is described as 'Law of Increasing Degree of Su-Field' and is closely related to the 'Law of Transition to the Micro-level'.",
         principles: ["Adding new fields", "Combining fields", "Transforming substances"],
         examples: `
             <div class="tese-example">
@@ -175,7 +176,8 @@ const lifecyclePrinciplesCorrelation = {
 
 // Function to get LDST data by law
 function getLdstData(lawId) {
-    return ldstLaws[lawId] || ldstLaws.law4; // Ideality law by default
+    const law = ldstLaws[lawId];
+    return law ? { ...law } : { ...ldstLaws.law4 }; // Return a copy to avoid mutation
 }
 
 // Function to generate LDST principles icons
@@ -220,7 +222,10 @@ function generateLifecyclePrinciplesTable() {
     for (const [stage, principles] of Object.entries(lifecyclePrinciplesCorrelation)) {
         const stageName = getLifecycleStageName(stage);
         const principlesList = Object.keys(principles).join(', ');
-        const applicationFocus = Object.values(principles)[0]; // First principle's application focus
+        // M-05: Mostrar todos los principios y sus aplicaciones, no solo el primero
+        const applicationFocus = Object.entries(principles)
+            .map(([name, desc]) => `<strong>${name}:</strong> ${desc}`)
+            .join('<br>');
 
         html += `
             <tr>
@@ -273,12 +278,21 @@ function getPrinciplesForLifecycleStage(stage) {
 function generateLifecyclePrinciplesExplanation(stage) {
     const principles = getPrinciplesForLifecycleStage(stage);
     const stageName = getLifecycleStageName(stage);
+    const lawsForStage = lifecycleToLdstMapping[stage] || [];
+
+    // Collect any notes from the laws associated with this stage
+    const lawNotes = lawsForStage
+        .map(lawId => ldstLaws[lawId])
+        .filter(law => law && law.note)
+        .map(law => `<div style="margin-top: 1rem; padding: 0.75rem; background: #e7f1ff; border-left: 4px solid #0d6efd; border-radius: 4px;"><i class="fas fa-info-circle"></i> <strong>Doctrinal Note on ${law.name}:</strong> ${law.note}</div>`)
+        .join('');
 
     let html = `
         <div class="content-block">
             <h4><i class="fas fa-rotate"></i> ${stageName} - Principles Application Guide</h4>
             <p><strong>Focus Area:</strong> ${lifecycleRecommendations[stage]}</p>
             <p style="font-style: italic; font-size: 0.9rem; color: #666;">Note: Mapping lifecycle stages to specific LDST laws is an educational heuristic, not classical Altshuller doctrine.</p>
+            ${lawNotes}
     `;
 
     for (const [principle, application] of Object.entries(principles)) {

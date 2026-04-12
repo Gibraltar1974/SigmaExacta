@@ -48,22 +48,22 @@ const trizStandardSolutions = {
             "1.2.1": {
                 title: "Introduce S3 to eliminate harmful effect",
                 description: "Remove harmful effect by introducing S3 when useful/harmful effects coexist",
-                principles: [22] // Blessing in disguise
+                principles: [24, 35] // Intermediary, Parameter changes
             },
             "1.2.2": {
                 title: "Modify S1/S2 to eliminate harmful effect",
                 description: "Remove harmful effect by modifying elements or adding voids/air/bubbles",
-                principles: [22] // Blessing in disguise
+                principles: [35, 3] // Parameter changes, Local quality
             },
             "1.2.3": {
                 title: "Introduce S3 to absorb harmful field",
                 description: "Introduce element S3 to absorb harmful effects caused by field",
-                principles: [22] // Blessing in disguise
+                principles: [24, 39] // Intermediary, Inert atmosphere
             },
             "1.2.4": {
                 title: "Counteract harmful field with another field",
                 description: "Use F2 to neutralize harmful F1 or gain additional useful effect",
-                principles: [22] // Blessing in disguise
+                principles: [9, 28] // Preliminary anti-action, Mechanics substitution
             },
             "1.2.5": {
                 title: "Eliminate magnetic harmful effects",
@@ -420,12 +420,14 @@ const solutionMap = {
         "2.2.2", "2.2.3",
         "2.3.1", "2.3.2", "2.3.4", "2.3.5",
         "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
-        "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3"
+        "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3",
+        "5.1.1.4", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1"
     ],
     harmful: [
         "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
         "1.1.3", "1.1.7",
         "2.1.4", "2.2.1", "2.3.3", "2.4.8",
+        "5.1.1.6", "5.1.1.7",
         "5.1.3.2", "5.1.3.3"
     ],
     difficult: [
@@ -442,7 +444,7 @@ const solutionMap = {
         "2.3.1", "2.3.4", "2.3.5",
         "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6",
         "3.1.1", "3.1.2", "3.1.3", "3.2.1", "3.2.2", "3.2.3",
-        "5.1.1.1", "5.1.1.2", "5.1.1.3"
+        "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.5", "5.1.1.6", "5.1.1.7", "5.1.2.1"
     ],
     excessive: [
         "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5",
@@ -456,7 +458,7 @@ const solutionMap = {
         "2.3.2", "2.3.3",
         "2.4.7",
         "3.2.3",
-        "5.1.1.1", "5.1.1.2", "5.1.1.3",
+        "5.1.1.1", "5.1.1.2", "5.1.1.3", "5.1.1.4",
         "5.1.2.2",
         "5.1.3.1", "5.1.3.2", "5.1.3.3",
         "5.1.4",

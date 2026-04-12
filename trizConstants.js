@@ -80,27 +80,34 @@ const physicalPrincipleIcons = {
     37: "fa-arrows-alt-h", 38: "fa-fire", 39: "fa-flask", 40: "fa-layer-group"
 };
 
-// Mapeo de iconos para soluciones estándar (corregido - HI-02)
+// Mapeo de iconos para soluciones estándar (corregido - eliminados huérfanos, añadidos faltantes)
 const standardSolutionIcons = {
     "1.1.1": "fa-wrench", "1.1.2": "fa-plus-circle", "1.1.3": "fa-external-link-alt", "1.1.4": "fa-globe",
     "1.1.5": "fa-sync", "1.1.6": "fa-adjust", "1.1.7": "fa-hands-helping", "1.1.8": "fa-shield-alt",
     "1.2.1": "fa-ban", "1.2.2": "fa-eraser", "1.2.3": "fa-filter", "1.2.4": "fa-balance-scale",
-    "1.2.5": "fa-magnet", "2.1.1": "fa-sitemap", "2.1.2": "fa-link", "2.1.3": "fa-up-right-and-down-left-from-center",
-    "2.1.4": "fa-compress-arrows-alt", "2.1.5": "fa-object-group", "2.2.1": "fa-sliders-h",
-    "2.2.2": "fa-puzzle-piece", "2.2.3": "fa-filter", "2.2.4": "fa-snowflake", "2.2.5": "fa-wave-square",
-    "2.2.6": "fa-project-diagram", "2.3.1": "fa-wave-square", "2.3.2": "fa-redo-alt", "2.3.3": "fa-clock",
+    "1.2.5": "fa-magnet",
+    "2.1.1": "fa-sitemap", "2.1.2": "fa-link", "2.1.3": "fa-up-right-and-down-left-from-center",
+    "2.1.4": "fa-compress-arrows-alt", "2.1.5": "fa-object-group",
+    "2.1.6": "fa-microscope", "2.1.7": "fa-atom",
+    "2.2.1": "fa-sliders-h", "2.2.2": "fa-puzzle-piece", "2.2.3": "fa-filter",
+    "2.3.1": "fa-wave-square", "2.3.2": "fa-redo-alt", "2.3.3": "fa-clock",
+    "2.3.4": "fa-thermometer-half", "2.3.5": "fa-play-circle",
     "2.4.1": "fa-magnet", "2.4.2": "fa-bolt", "2.4.3": "fa-tint", "2.4.4": "fa-filter",
     "2.4.5": "fa-plus-circle", "2.4.6": "fa-globe", "2.4.7": "fa-cloud", "2.4.8": "fa-sliders-h",
-    "2.4.9": "fa-puzzle-piece", "3.1.1": "fa-object-group", "3.1.2": "fa-sitemap", "3.1.3": "fa-link",
-    "3.1.4": "fa-network-wired", "3.1.5": "fa-compress-arrows-alt", "3.1.6": "fa-arrow-up",
-    "4.1.1": "fa-thermometer-half", "4.1.2": "fa-clone", "4.1.3": "fa-search", "4.2.1": "fa-bolt",
-    "4.2.2": "fa-magnet", "4.2.3": "fa-magnet", "4.2.4": "fa-wave-square", "4.2.5": "fa-bolt",
-    "4.2.6": "fa-ruler", "4.3.1": "fa-cloud", "4.3.2": "fa-wave-square", "4.3.3": "fa-search",
-    "4.3.4": "fa-search-plus", "4.3.5": "fa-link", "4.3.6": "fa-robot", "4.3.7": "fa-sync",
-    "4.3.8": "fa-search-plus", "5.1.1.1": "fa-th", "5.1.1.2": "fa-bolt", "5.1.1.3": "fa-external-link-alt",
+    "3.1.1": "fa-object-group", "3.1.2": "fa-sitemap", "3.1.3": "fa-link",
+    "3.2.1": "fa-thermometer-three-quarters", "3.2.2": "fa-flask", "3.2.3": "fa-tachometer-alt",
+    "4.1.1": "fa-thermometer-half", "4.1.2": "fa-clone", "4.1.3": "fa-search",
+    "4.1.4": "fa-chart-line", "4.1.5": "fa-stopwatch", "4.1.6": "fa-tree",
+    "4.2.1": "fa-bolt", "4.2.2": "fa-magnet", "4.2.3": "fa-magnet", "4.2.4": "fa-wave-square",
+    "4.2.5": "fa-bolt", "4.2.6": "fa-ruler",
+    "4.3.1": "fa-cloud", "4.3.2": "fa-wave-square",
+    "4.4.1": "fa-bug", "4.4.2": "fa-chart-bar", "4.4.3": "fa-exchange-alt",
+    "5.1.1.1": "fa-th", "5.1.1.2": "fa-bolt", "5.1.1.3": "fa-external-link-alt",
     "5.1.1.4": "fa-vial", "5.1.1.5": "fa-map-marker-alt", "5.1.1.6": "fa-clock", "5.1.1.7": "fa-clone",
-    "5.1.2.1": "fa-bolt", "5.1.2.2": "fa-magnet", "5.1.3.1": "fa-trash-alt", "5.1.3.2": "fa-trash-alt",
-    "5.1.3.3": "fa-trash-alt", "5.1.4": "fa-th", "5.2.1": "fa-recycle", "5.2.2": "fa-recycle",
+    "5.1.2.1": "fa-bolt", "5.1.2.2": "fa-magnet",
+    "5.1.3.1": "fa-trash-alt", "5.1.3.2": "fa-trash-alt", "5.1.3.3": "fa-trash-alt",
+    "5.1.4": "fa-th",
+    "5.2.1": "fa-recycle", "5.2.2": "fa-recycle",
     "5.3.1": "fa-cloud", "5.3.2": "fa-arrows-alt-h"
 };
 
@@ -139,12 +146,13 @@ const sufieldSolutions = {
     inefficient: "<strong>Suggestion:</strong> The action is inefficient. Standard Solutions suggest improving field efficiency, using resonance."
 };
 
+// Nombres de clase unificados con trizStandardSolutions
 const standardSolutionClasses = {
     "Class 1: Improving system with no/little change": "This class focuses on building or improving Su-Field systems.",
     "Class 2: Improving system by changing system": "This class deals with evolving and developing existing Su-Field systems.",
-    "Class 3: Transition to Supersystem and Microlevel": "This class involves transitions to higher-level systems and micro-level structures.",
-    "Class 4: Measurement and Detection Standards": "This class provides solutions for measurement, detection and control problems.",
-    "Class 5: Strategies for simplification and Improvement": "This class offers solutions for simplifying systems."
+    "Class 3: System transitions": "This class involves transitions to higher-level systems and micro-level structures.",
+    "Class 4: Detection and measurement": "This class provides solutions for measurement, detection and control problems.",
+    "Class 5: Strategies for simplification/improvement": "This class offers solutions for simplifying systems."
 };
 
 // SOLO EL EJEMPLO DEL SCREWDRIVER
