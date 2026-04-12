@@ -2,21 +2,21 @@ let docEditor;
 let currentFileId = null;
 
 async function hacerCheckout() {
+    // Verificar que hay datos del informe
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
         alert("Primero debes generar el informe PDCA.");
         return;
     }
 
-    // Pedir al usuario un nombre para el archivo Excel
+    // Pedir nombre del archivo al usuario
     let nombreArchivo = prompt("Introduce un nombre para el archivo Excel (sin extensión):", "Informe_PDCA");
     if (!nombreArchivo) {
-        // Si cancela o deja vacío, usamos un nombre por defecto con timestamp
         nombreArchivo = `PDCA_Report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}`;
     } else {
-        // Limpiar caracteres no válidos para nombre de archivo
-        nombreArchivo = nombreArchivo.replace(/[\\/:*?"<>|]/g, '_');
+        nombreArchivo = nombreArchivo.replace(/[\\/:*?"<>|]/g, '_'); // Limpiar caracteres inválidos
     }
 
+    // Cambiar botones
     document.getElementById('btnCheckout').style.display = 'none';
     document.getElementById('btnCheckin').style.display = 'inline-block';
 
@@ -59,4 +59,37 @@ async function hacerCheckout() {
     }
 }
 
-// hacerCheckin se mantiene igual que antes
+async function hacerCheckin() {
+    if (!currentFileId) {
+        alert("No hay ningún archivo abierto.");
+        return;
+    }
+
+    const usuario = "Usuario SigmaExacta"; // Puedes personalizarlo
+    const fecha = new Date().toLocaleString();
+
+    try {
+        const respuesta = await fetch('/.netlify/functions/hacerCheckin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileId: currentFileId, usuario, fecha })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert(resultado.message);
+        } else {
+            alert("Error: " + resultado.error);
+        }
+    } catch (error) {
+        alert("No se pudo conectar con el backend.");
+    }
+
+    // Limpiar editor y restaurar botones
+    document.getElementById('contenedorOnlyOffice').innerHTML = "";
+    document.getElementById('contenedorOnlyOffice').style.display = 'none';
+    document.getElementById('btnCheckout').style.display = 'inline-block';
+    document.getElementById('btnCheckin').style.display = 'none';
+    currentFileId = null;
+}
