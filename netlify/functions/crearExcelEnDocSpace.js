@@ -1,5 +1,5 @@
-// netlify/functions/crearExcelEnDocSpace.js
 const XLSX = require('xlsx');
+const FormData = require('form-data'); // Necesario para enviar multipart/form-data
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
@@ -44,7 +44,7 @@ exports.handler = async (event, context) => {
 
         const nombreFinal = nombreArchivo.endsWith('.xlsx') ? nombreArchivo : `${nombreArchivo}.xlsx`;
 
-        // 1. Crear archivo vacío
+        // 1. Crear archivo en DocSpace
         console.log(`Creating file: ${nombreFinal}`);
         const createResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${roomId}/file`, {
             method: 'POST',
@@ -64,15 +64,21 @@ exports.handler = async (event, context) => {
         const fileId = createData.response.id;
         console.log(`File created, ID: ${fileId}`);
 
-        // 2. Subir contenido directamente al endpoint del archivo
-        console.log(`Uploading content (${excelBuffer.length} bytes)...`);
-        const uploadResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/file/${fileId}`, {
-            method: 'PUT',
+        // 2. Subir contenido usando POST con multipart/form-data
+        const form = new FormData();
+        form.append('file', excelBuffer, {
+            filename: nombreFinal,
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+
+        console.log(`Uploading content via multipart/form-data...`);
+        const uploadResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${fileId}/upload`, {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${API_KEY}`,
-                'Content-Type': 'application/octet-stream'
+                ...form.getHeaders()
             },
-            body: excelBuffer
+            body: form
         });
 
         if (!uploadResponse.ok) {
