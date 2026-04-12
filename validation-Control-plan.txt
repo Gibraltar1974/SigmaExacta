@@ -1,0 +1,51 @@
+Quality Systems Audit Report (AIAG-VDA Standards)
+Report ID: AUD-EN-2026-001
+
+Date: April 12, 2026
+
+Auditor: Digital AIAG-VDA Audit System (cross reference audit Gemini 3.1 pro, Deepseek v.3.2, Claude Sonnet 4.6 extent)
+
+Object of Audit: Interactive Control Plan Creator Tool
+
+Status: CONFORMANT with Observations
+
+1. OBJECTIVE AND SCOPE
+The objective is to evaluate the structural and methodological integrity of the software tool to ensure that generated Control Plans meet the latest PPAP submission requirements and the expectations of major OEMs (GM, Ford, Stellantis). The scope includes validation of mandatory fields, risk logic, and compliance with the transition from RPN to Action Priority (AP).
+
+2. AUDIT CRITERIA
+AIAG Control Plan Reference Manual (1st Edition / 2024)
+
+AIAG-VDA FMEA Handbook (1st Edition / 2019)
+
+IATF 16949:2016 (Clauses 8.5.1.1 and 7.5)
+
+3. SUMMARY OF FINDINGS
+A. Methodology & Compliance (Full Conformity):
+
+2024 Standard Alignment: The tool correctly implements the mandatory "Error Proofing / Poka-yoke" column (CSS class .th-ep), which is a critical update in the 2024 manual to distinguish physical prevention from human detection.
+
+Risk Evaluation Transition: The software utilizes the Action Priority (AP) logic (High/Medium/Low) from the AIAG-VDA 2019 standard instead of the outdated RPN. This ensures that high-severity failures are prioritized based on standardized S/O/D lookup tables.
+
+Phase Categorization: The header allows for the mandatory selection between Prototype, Pre-launch, and Production phases, aligning with the APQP (Advanced Product Quality Planning) cycle.
+
+B. Data Integrity & Validation:
+
+Submission Control: An active validation system (validationModal) blocks exports if mandatory PPAP fields are missing (e.g., CP Number, Part Number, Supplier Code, Core Team). This directly mitigates the risk of "Major Non-conformities" during external IATF audits.
+
+Persistence: The saveToStorage function (auto-saving every 60s) ensures document continuity and prevents data loss during complex engineering sessions.
+
+C. Special Characteristics Symbology:
+
+The tool supports various industry-standard classification systems, including SC (◆), CC (△), YS (Stellantis Safety), YC (Regulatory), and KC (Key Characteristic). This versatility allows for multi-client use without violating specific OEM requirements.
+
+4. OBSERVATIONS AND MINOR NON-CONFORMANCES
+OBS-01 (Data Security): The use of browser localStorage for storing sensitive engineering data (tolerances, control methods) is efficient but carries risks on shared workstations. It is recommended to implement a "Clear Session" warning upon completion.
+
+OBS-02 (FMEA Traceability): While the tool allows importing PFMEA data, the long-term traceability depends on manual maintenance of the Characteristic ID. A recommendation is to implement a unique, locked ID system to prevent desynchronization between the FMEA and the Control Plan over time.
+
+OBS-03 (Print Optimization): The code includes a @media print layout optimized for A3 Landscape, which is the industry standard for physical shop-floor documentation. This is noted as a significant strength for audit preparation.
+
+5. AUDITOR'S CONCLUSION
+The Interactive Control Plan Creator is a robust and methodologically sound tool that exceeds the capabilities of standard Excel templates. It successfully incorporates the 2024 AIAG technical updates and is suitable for generating high-quality PPAP-level documentation.
+
+Final Result: PASSED / APPROVED

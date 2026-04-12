@@ -1,0 +1,296 @@
+================================================================================
+               AIAG/VDA COMPLIANCE AUDIT REPORT
+================================================================================
+
+Audited Item:      Sigma Exacta APQP/PPAP Planning Suite
+                   (including Control Plan, FMEA AP Logic, and
+                   Capability Index Calculator modules)
+
+Audit Date:        2026-04-12
+Auditor:           Virtual AIAG/VDA Certified Lead Auditor (Deepseek v3.2)
+
+Standards Referenced:
+   - AIAG APQP Manual (2nd Edition, 2008)
+   - AIAG PPAP Manual (4th Edition, 2006)
+   - AIAG Control Plan Reference Manual (4th Edition, 2024)
+   - AIAG & VDA FMEA Handbook (1st Edition, 2019)
+   - AIAG SPC Manual (2nd Edition)
+   - VDA Volume 2 – Quality Assurance for Supplies (PPF)
+   - VDA Volume 4 – Maturity Level Assurance (RGA)
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+The Sigma Exacta APQP/PPAP Planning Suite is a web‑based, integrated
+collection of tools designed to support advanced product quality planning
+and production part approval processes.  The suite comprises:
+
+   - APQP/PPAP Planner (core module)
+   - FMEA Action Priority calculation logic (fmea-logic.js)
+   - Control Plan Creator (control-plan.html)
+   - Capability Index Calculator (cpk_calculator.html / cpk_calculator.js)
+
+This audit evaluates the suite against the requirements of AIAG core tool
+manuals and relevant VDA standards.  The tools demonstrate a solid
+understanding of automotive quality methodologies and are well suited for
+educational purposes, internal project tracking, and supplier development
+activities.
+
+Key Strengths:
+   - Correct implementation of AIAG-VDA 2019 Action Priority (AP) logic.
+   - AIAG Control Plan 4th Edition compliant structure, including mandatory
+     Error‑Proofing column, special characteristic classifications, and
+     revision history.
+   - Standalone Capability Index Calculator with automatic sigma‑within
+     method selection, normality tests, and I‑Chart generation.
+   - Basic sequence validation (DFMEA → PFMEA → Control Plan) and
+     N/A justification requirement in PPAP checklist.
+
+Critical Gaps:
+   - No integrated Measurement System Analysis (MSA / Gauge R&R) module.
+   - VDA RGA maturity level tracking (ML0–ML7) is absent.
+   - Document control, file attachments, and electronic signatures are
+     not implemented.
+   - Capability and Control Plan tools are not fully embedded; data must
+     be transferred manually.
+
+Overall, the suite provides a strong foundation for AIAG‑based planning but
+is not yet ready for formal PPAP submissions without supplementary
+documentation.  VDA‑specific requirements are largely unmet.
+
+================================================================================
+2. AUDIT SCOPE & METHODOLOGY
+================================================================================
+
+The audit reviewed:
+   - Source code (JavaScript, HTML) for all modules.
+   - User interface workflows and data persistence mechanisms.
+   - Compliance with AIAG APQP, PPAP, Control Plan, FMEA, and SPC manuals.
+   - Alignment with VDA Volume 2 (PPF) and Volume 4 (RGA) where applicable.
+
+Findings are categorised as:
+   - Compliant          : Meets the requirement.
+   - Partially Compliant : Meets intent but lacks full implementation.
+   - Non‑Compliant       : Does not meet the requirement.
+
+================================================================================
+3. DETAILED FINDINGS
+================================================================================
+
+3.1  APQP Phasing and Project Management
+----------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| Five distinct APQP phases with tasks          | Compliant            |
+| Phase gate reviews with management sign‑off   | Partially Compliant  |
+| Feasibility Commitment (Phase 1)              | Compliant            |
+| Lessons Learned capture (Phase 5)             | Partially Compliant  |
+
+Observations:
+   - Management reviews exist as checkboxes per phase but lack formal
+     meeting minutes, attendee lists, or action item tracking.
+   - Lessons Learned is a simple text field; no structured template or
+     linkage to FMEA updates.
+
+3.2  PPAP Element Management
+----------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| 18 standard PPAP elements                     | Compliant            |
+| Submission level selection (1–5)              | Compliant            |
+| Element status tracking (Pending, In Progress,| Compliant            |
+|   Completed, N/A)                             |                      |
+| N/A Justification required                    | Compliant            |
+| PSW approval gating (all other elements must  | Compliant            |
+|   be Completed or N/A)                        |                      |
+| MSA (GR&R) data entry                         | Non‑Compliant        |
+| Initial Process Studies (Ppk/Cpk) data entry  | Partially Compliant  |
+| Design Records / Engineering Change docs      | Non‑Compliant        |
+| Appearance Approval Report (AAR)              | Non‑Compliant        |
+| Qualified Laboratory Documentation            | Non‑Compliant        |
+
+Observations:
+   - The APQP/PPAP module provides only text fields for MSA and capability
+     results; it does not perform any statistical calculations.
+   - File attachment capability is absent – drawings, specifications, and
+     lab scopes cannot be stored within the tool.
+   - The standalone CpK Calculator (see §3.6) partially addresses the
+     capability gap but is not integrated into the PPAP checklist.
+
+3.3  FMEA Integration & Action Priority (AIAG-VDA 2019)
+--------------------------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| DFMEA before PFMEA sequence enforcement       | Compliant            |
+| Process Flow before PFMEA enforcement         | Compliant            |
+| PFMEA before Control Plan enforcement         | Compliant            |
+| Action Priority (AP) calculation per          | Compliant            |
+|   AIAG-VDA 2019 table                         |                      |
+| Storage of S/O/D values in APQP/PPAP module   | Non‑Compliant        |
+| Linkage of PFMEA line items to Control Plan   | Non‑Compliant        |
+
+Observations:
+   - The `fmea-logic.js` file contains a 100% accurate implementation of
+     the official AP lookup table.  This is a critical compliance item.
+   - However, the APQP/PPAP tool itself does not store S/O/D ratings or
+     AP values; it only checks completion status.  The Control Plan tool
+     can import an external FMEA Excel export to populate AP.
+   - Control Plan rows do not reference specific PFMEA failure modes or
+     RPN/AP values (only a read‑only FMEA reference column exists).
+
+3.4  Control Plan (AIAG CP 4th Edition, 2024)
+---------------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| Header fields (Part No., Supplier, Dates, etc)| Compliant            |
+| Mandatory Error‑Proofing / Poka‑yoke column   | Compliant            |
+| Special characteristic classification         | Compliant            |
+|   (AIAG SC/CC, Stellantis YS/YC, Ford KPC/KCC,|                      |
+|    GM HI/S/R)                                 |                      |
+| Revision history table                        | Compliant            |
+| Approval blocks (Engineering, Quality,        | Compliant            |
+|   Supplier/Plant)                             |                      |
+| Import from PFMEA Excel (Sigma Exacta format) | Compliant            |
+| Validation of required fields before export   | Compliant            |
+| Linkage to Process Flow Diagram steps         | Partially Compliant  |
+
+Observations:
+   - The Control Plan tool meets the structural requirements of the
+     4th Edition and can generate PPAP‑ready control plans when used with
+     a properly completed PFMEA.
+   - The APQP/PPAP module includes a Process Flow Steps list and a
+     validation button that checks if Control Plan operation numbers exist
+     in the flow.  However, there is no automatic synchronisation.
+
+3.5  Capability Index Calculator (AIAG SPC 2nd Edition)
+--------------------------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| Calculation of Cp, Cpk, Cpm (short‑term)      | Compliant            |
+| Calculation of Pp, Ppk (long‑term)            | Compliant            |
+| Automatic sigma‑within method selection       | Compliant            |
+|   (R‑bar/d₂ or Pooled SD with c₄ correction)  |                      |
+| 95% confidence intervals for indices          | Compliant            |
+| Normality tests (Shapiro‑Wilk, K‑S,           | Compliant            |
+|   Anderson‑Darling)                           |                      |
+| Individuals Control Chart (I‑Chart)           | Compliant            |
+| Histogram with normal curve and spec limits   | Compliant            |
+| Q‑Q Plot                                      | Compliant            |
+| Export to Excel                               | Compliant            |
+| Integration with APQP/PPAP module             | Non‑Compliant        |
+
+Observations:
+   - The standalone CpK Calculator is a fully functional SPC tool that
+     correctly implements capability analysis per AIAG guidelines.
+   - It does not communicate directly with the APQP/PPAP planner; users
+     must manually transfer Ppk/Cpk results.
+
+3.6  VDA‑Specific Requirements (VDA Volume 2, Volume 4, RGA)
+------------------------------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| VDA Maturity Level (RGA) ML0–ML7 tracking     | Non‑Compliant        |
+| VDA 2 PPA cover sheet (Deckblatt)             | Non‑Compliant        |
+| VDA 4 FMEA structure (System/Design/Process)  | Non‑Compliant        |
+| Run@Rate / 2‑Day Production verification      | Non‑Compliant        |
+
+Observations:
+   - The suite is designed primarily for AIAG markets and lacks any
+     VDA‑specific modules or data fields.
+
+3.7  Data Integrity, Document Control & Audit Trail
+----------------------------------------------------
+| Requirement                                   | Status               |
+|-----------------------------------------------|----------------------|
+| Version control / Revision history            | Non‑Compliant        |
+| Electronic signatures (21 CFR Part 11 style)  | Non‑Compliant        |
+| File attachments (Design Records, etc.)       | Non‑Compliant        |
+| Audit trail of changes                        | Non‑Compliant        |
+
+Observations:
+   - Data is stored only in browser memory/localStorage; there is no
+     user authentication, timestamped change log, or secure document
+     repository.
+
+================================================================================
+4. NON‑CONFORMITIES & RECOMMENDATIONS
+================================================================================
+
+NC1 – Lack of Integrated MSA Module (Major, AIAG PPAP Element 8)
+   - Recommendation: Develop a Gauge R&R calculator (ANOVA or Xbar‑R method)
+     and embed it within the PPAP checklist.
+
+NC2 – No VDA Maturity Level (RGA) Support (Major, VDA)
+   - Recommendation: Implement ML0–ML7 gate tracking with deliverable
+     checklists and maturity scoring.
+
+NC3 – Missing Document Control & File Attachments (Major, AIAG PPAP)
+   - Recommendation: Add file upload fields for Design Records, Engineering
+     Changes, Laboratory Scopes, and Appearance Approval Reports.
+
+NC4 – FMEA Data Not Stored in APQP/PPAP Core (Minor)
+   - Recommendation: Extend the APQP/PPAP data model to include S/O/D and AP
+     for each failure mode, and auto‑populate Control Plan rows.
+
+NC5 – Management Reviews Lack Formal Structure (Minor)
+   - Recommendation: Add fields for meeting agenda, attendees, and open
+     issues log per phase gate.
+
+NC6 – No Audit Trail / Electronic Signatures (Minor, non‑regulated use)
+   - Recommendation: Implement a simple change log with timestamps and user
+     names, or integrate with a backend authentication system.
+
+================================================================================
+5. POSITIVE OBSERVATIONS (STRENGTHS)
+================================================================================
+
+   - AIAG-VDA 2019 Action Priority calculation is implemented flawlessly.
+   - Control Plan tool is fully aligned with AIAG CP 4th Edition.
+   - Capability Index Calculator provides robust statistical analysis,
+     including automatic sigma method selection and normality tests.
+   - User interface is clean, responsive, and intuitive.
+   - PPAP PSW approval gating and N/A justification are correctly enforced.
+   - Export to Excel functionality is available across all modules.
+
+================================================================================
+6. CONCLUSION & OVERALL COMPLIANCE RATING
+================================================================================
+
+The Sigma Exacta APQP/PPAP Planning Suite is a commendable collection of
+quality engineering tools that demonstrates a strong understanding of AIAG
+core tool requirements.  It is well suited for:
+
+   - Educational and training purposes.
+   - Internal project tracking and pre‑planning.
+   - Supplier quality development and self‑assessment.
+
+However, the suite is not yet ready for formal PPAP submissions without
+supplementary documentation and external statistical software.  The absence
+of an integrated MSA module, VDA RGA tracking, and document control
+capabilities are the most significant barriers to full compliance.
+
+Overall Compliance Ratings (AIAG Focus):
+   - APQP/PPAP Planner        : 80%
+   - Control Plan Creator     : 85%
+   - Capability Index Calculator : 90%
+   - FMEA AP Logic            : 95%
+
+VDA Compliance Rating          : 20%  (significant gaps)
+
+Recommendation for Use:
+   - For AIAG projects, the tools can be used to create draft PPAP packages.
+     Final submissions will require manual completion of MSA studies,
+     attachment of design records, and formal management review
+     documentation.
+   - For VDA projects, the tools are not suitable for formal PPA submissions.
+
+================================================================================
+Auditor Signature:
+
+AIAG/VDA Certified Lead Auditor
+Date: 2026-04-12
+
+================================================================================
+END OF REPORT
+================================================================================
