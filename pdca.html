@@ -1473,35 +1473,36 @@
         }
 
         function generateReport() {
-            cycleData = {
-                plan: {
-                    problem: document.getElementById('plan-problem').value,
-                    goal: document.getElementById('plan-goal').value,
-                    actions: document.getElementById('plan-actions').value
-                },
-                do: {
-                    execution: document.getElementById('do-execution').value,
-                    problems: document.getElementById('do-problems').value
-                },
-                check: {
-                    data: document.getElementById('check-data').value,
-                    analysis: document.getElementById('check-analysis').value
-                },
-                act: {
-                    conclusions: document.getElementById('act-conclusions').value,
-                    next: document.getElementById('act-next').value
+                cycleData = {
+                    plan: {
+                        problem: document.getElementById('plan-problem').value,
+                        goal: document.getElementById('plan-goal').value,
+                        actions: document.getElementById('plan-actions').value
+                    },
+                    do: {
+                        execution: document.getElementById('do-execution').value,
+                        problems: document.getElementById('do-problems').value
+                    },
+                    check: {
+                        data: document.getElementById('check-data').value,
+                        analysis: document.getElementById('check-analysis').value
+                    },
+                    act: {
+                        conclusions: document.getElementById('act-conclusions').value,
+                        next: document.getElementById('act-next').value
+                    }
+                };
+
+                // Añade esta línea para exponer los datos globalmente
+                window.cycleData = cycleData;
+
+                if (!cycleData.plan.problem && !cycleData.plan.goal) {
+                    alert('Please fill in at least the "Plan" phase to generate a report.');
+                    return;
                 }
-            };
 
-            if (!cycleData.plan.problem && !cycleData.plan.goal) {
-                alert('Please fill in at least the "Plan" phase to generate a report.');
-                return;
-            }
-
-            displayResults();
-
-            // Ir a la pestaña de reporte
-            switchTab('tab-report');
+                displayResults();
+                switchTab('tab-report');
         }
 
         function displayResults() {
