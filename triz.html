@@ -4368,6 +4368,14 @@
             });
         }
 
+        // Función auxiliar para obtener el valor de interacción entre dos componentes (normalizada)
+        function getInteractionValue(comp1, comp2) {
+            // Ordenar alfabéticamente para tener una clave canónica
+            const sorted = [comp1, comp2].sort();
+            const key = `${sorted[0]}||${sorted[1]}`;
+            return functionAnalysisData.interactions[key] || false;
+        }
+
         // CORRECCIÓN DEL HOVER: Actualizar matriz de interacciones con hover que no permanece
         function updateInteractionMatrix() {
             const container = document.getElementById('interaction-matrix-container');
@@ -4407,11 +4415,8 @@
                     if (rowComponent === colComponent) {
                         html += `<td style="background: #f0f0f0; text-align: center;">-</td>`;
                     } else {
-                        // Usamos "||" como separador seguro en lugar de "-"
+                        const isChecked = getInteractionValue(rowComponent, colComponent);
                         const interactionId = `${rowComponent}||${colComponent}`;
-                        const reverseInteractionId = `${colComponent}||${rowComponent}`;
-                        const isChecked = functionAnalysisData.interactions[interactionId] ||
-                            functionAnalysisData.interactions[reverseInteractionId] || false;
 
                         html += `
                             <td style="text-align: center;">
@@ -4480,22 +4485,26 @@
 
         // Alternar interacción entre componentes
         function toggleInteraction(component1, component2) {
-            const interactionId = `${component1}||${component2}`;
-            const reverseInteractionId = `${component2}||${component1}`;
-            const checkbox = document.getElementById(interactionId);
+            // Obtener valor actual (asegurándonos de usar la misma función de normalización)
+            const currentValue = getInteractionValue(component1, component2);
+            const newValue = !currentValue;
 
-            if (checkbox) {
-                functionAnalysisData.interactions[interactionId] = checkbox.checked;
-                functionAnalysisData.interactions[reverseInteractionId] = checkbox.checked;
+            // Guardar con clave normalizada
+            const sorted = [component1, component2].sort();
+            const key = `${sorted[0]}||${sorted[1]}`;
+            functionAnalysisData.interactions[key] = newValue;
 
-                // También actualizar el checkbox inverso si existe
-                const reverseCheckbox = document.getElementById(reverseInteractionId);
-                if (reverseCheckbox && reverseCheckbox.checked !== checkbox.checked) {
-                    reverseCheckbox.checked = checkbox.checked;
-                }
+            // Actualizar checkboxes en la UI
+            const possibleIds = [
+                `${component1}||${component2}`,
+                `${component2}||${component1}`
+            ];
+            possibleIds.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = newValue;
+            });
 
-                updateFunctionDiagram();
-            }
+            updateFunctionDiagram();
         }
 
         // Función auxiliar para añadir componente si no existe
@@ -4793,7 +4802,20 @@
                 functionAnalysisData.supersystemComponents = (exampleData.supersystemComponents || [])
                     .filter(component => component !== targetComponent);
 
-                functionAnalysisData.interactions = exampleData.interactions || {};
+                // NORMALIZAR LAS INTERACCIONES: convertir cualquier formato a "comp1||comp2" ordenado
+                const rawInteractions = exampleData.interactions || {};
+                const normalizedInteractions = {};
+                for (const [key, value] of Object.entries(rawInteractions)) {
+                    // Separar por posibles delimitadores: '-', '_', '||', '->', etc.
+                    const parts = key.split(/[-_|]+/).map(s => s.trim()).filter(s => s);
+                    if (parts.length >= 2) {
+                        const sorted = [parts[0], parts[1]].sort();
+                        const newKey = `${sorted[0]}||${sorted[1]}`;
+                        normalizedInteractions[newKey] = value;
+                    }
+                }
+                functionAnalysisData.interactions = normalizedInteractions;
+
                 functionAnalysisData.functions = exampleData.functions || [];
 
                 // Actualizar listas de componentes
