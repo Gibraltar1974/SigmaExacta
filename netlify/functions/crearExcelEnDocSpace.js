@@ -1,11 +1,12 @@
+// netlify/functions/crearExcelEnDocSpace.js
 const XLSX = require('xlsx');
-const axios = require('axios');
-const FormData = require('form-data');
-const { Readable } = require('stream');
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+        return {
+            statusCode: 405,
+            body: JSON.stringify({ error: 'Method not allowed' })
+        };
     }
 
     try {
@@ -45,45 +46,46 @@ exports.handler = async (event, context) => {
 
         // 1. Crear archivo en DocSpace
         console.log(`Creating file: ${nombreFinal}`);
-        const createResponse = await axios.post(
-            `${DOCSPACE_URL}/api/2.0/files/${roomId}/file`,
-            { title: nombreFinal },
-            {
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        const fileId = createResponse.data.response.id;
-        console.log(`File created, ID: ${fileId}`);
-
-        // 2. Subir contenido usando multipart/form-data con axios
-        const form = new FormData();
-        // Convertir buffer a stream legible
-        const stream = Readable.from(excelBuffer);
-        form.append('file', stream, {
-            filename: nombreFinal,
-            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            knownLength: excelBuffer.length
+        const createResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/${roomId}/file`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: nombreFinal })
         });
 
-        console.log(`Uploading content via axios...`);
-        const uploadResponse = await axios.post(
-            `${DOCSPACE_URL}/api/2.0/files/${fileId}/upload`,
-            form,
-            {
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    ...form.getHeaders()
-                },
-                maxContentLength: Infinity,
-                maxBodyLength: Infinity
-            }
-        );
+        if (!createResponse.ok) {
+            const err = await createResponse.text();
+            throw new Error(`Create file failed (${createResponse.status}): ${err}`);
+        }
 
-        console.log('Upload successful');
+        const createData = await createResponse.json();
+        const fileId = createData.response.id;
+        console.log(`File created, ID: ${fileId}`);
+
+        // 2. Guardar contenido usando PUT con Base64 en JSON
+        const base64Content = excelBuffer.toString('base64');
+        console.log(`Saving content as Base64 (length: ${base64Content.length})...`);
+
+        const saveResponse = await fetch(`${DOCSPACE_URL}/api/2.0/files/file/${fileId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: base64Content,
+                contentEncoding: 'base64'
+            })
+        });
+
+        if (!saveResponse.ok) {
+            const err = await saveResponse.text();
+            throw new Error(`Save content failed (${saveResponse.status}): ${err}`);
+        }
+
+        console.log('Content saved successfully');
 
         return {
             statusCode: 200,
@@ -92,10 +94,9 @@ exports.handler = async (event, context) => {
 
     } catch (error) {
         console.error('Function error:', error);
-        const errorMessage = error.response?.data ? JSON.stringify(error.response.data) : error.message;
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: errorMessage })
+            body: JSON.stringify({ error: error.message })
         };
     }
 };
