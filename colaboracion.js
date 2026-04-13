@@ -1,26 +1,6 @@
-// colaboracion.js - Versión con espera activa del SDK
+// colaboracion.js - Versión simplificada y funcional
 let docEditor = null;
 let currentFileId = null;
-
-// Función auxiliar para esperar a que DocSpace esté disponible
-function waitForDocSpace(timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        if (typeof DocSpace !== 'undefined') {
-            resolve();
-            return;
-        }
-        const start = Date.now();
-        const interval = setInterval(() => {
-            if (typeof DocSpace !== 'undefined') {
-                clearInterval(interval);
-                resolve();
-            } else if (Date.now() - start > timeout) {
-                clearInterval(interval);
-                reject(new Error('Timeout esperando a DocSpace SDK'));
-            }
-        }, 100);
-    });
-}
 
 window.hacerCheckout = async function () {
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
@@ -64,22 +44,20 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Esperar activamente al SDK (hasta 10 segundos)
-        await waitForDocSpace(10000);
-
-        const config = {
-            src: 'https://docspace-n50o74.onlyoffice.com',
-            mode: 'editor',
-            id: currentFileId,
-            width: '100%',
-            height: '500px',
-            frameId: 'contenedorOnlyOffice'
-        };
-
-        docEditor = new DocSpace(config);
-
-        if (docEditor && typeof docEditor.on === 'function') {
-            docEditor.on('ready', () => console.log('Editor listo'));
+        // Ahora asignamos el ID dinámico al editor ya configurado
+        if (typeof DocSpace !== 'undefined' && DocSpace.editor) {
+            DocSpace.editor.setId(currentFileId);
+        } else {
+            // Si no existe el editor, lo inicializamos manualmente
+            const config = {
+                src: 'https://docspace-n50o74.onlyoffice.com',
+                mode: 'editor',
+                id: currentFileId,
+                width: '100%',
+                height: '500px',
+                frameId: 'contenedorOnlyOffice'
+            };
+            docEditor = new DocSpace(config);
         }
 
     } catch (error) {
