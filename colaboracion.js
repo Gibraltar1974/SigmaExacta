@@ -1,8 +1,7 @@
-// colaboracion.js - Versión final estable
+// colaboracion.js - Versión final para modo Editor
 let docEditor = null;
 let currentFileId = null;
 
-// Exponer explícitamente las funciones al objeto window
 window.hacerCheckout = async function () {
     // Verificar que hay datos del informe
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
@@ -31,6 +30,7 @@ window.hacerCheckout = async function () {
     }
 
     try {
+        // Llamar a la función de Netlify que crea el Excel en DocSpace
         const respuesta = await fetch('/.netlify/functions/crearExcelEnDocSpace', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -48,18 +48,31 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Inicializar editor
-        if (typeof DocSpace !== 'undefined' && DocSpace.SDK) {
-            const config = {
-                id: currentFileId,
-                frameId: "contenedorOnlyOffice",
-                width: "100%",
-                height: "500px"
-            };
-            docEditor = DocSpace.SDK.initEditor(config);
-        } else {
-            throw new Error('SDK de OnlyOffice no disponible');
+        // Inicializar el editor en modo Editor
+        if (typeof DocsAPI === 'undefined') {
+            throw new Error('SDK de OnlyOffice no disponible. Asegúrate de haber configurado el modo Editor en el panel de DocSpace.');
         }
+
+        const config = {
+            document: {
+                fileType: 'xlsx',
+                key: currentFileId,          // ID del archivo recién creado
+                title: nombreArchivo + '.xlsx',
+                url: 'https://docspace-n50o74.onlyoffice.com/' // URL base de tu DocSpace
+            },
+            documentType: 'cell',
+            editorConfig: {
+                mode: 'edit',
+                user: {
+                    id: 'guest',
+                    name: 'Usuario SigmaExacta'
+                }
+            },
+            height: '500px',
+            width: '100%'
+        };
+
+        docEditor = new DocsAPI.DocEditor('contenedorOnlyOffice', config);
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
@@ -96,7 +109,7 @@ window.hacerCheckin = async function () {
         alert("No se pudo conectar con el backend.");
     }
 
-    // Limpiar
+    // Limpiar editor y restaurar botones
     const contenedor = document.getElementById('contenedorOnlyOffice');
     if (contenedor) {
         contenedor.innerHTML = "";
@@ -107,6 +120,9 @@ window.hacerCheckin = async function () {
     if (btnCheckout) btnCheckout.style.display = 'inline-block';
     if (btnCheckin) btnCheckin.style.display = 'none';
 
+    if (docEditor) {
+        docEditor.destroyEditor();
+        docEditor = null;
+    }
     currentFileId = null;
-    docEditor = null;
 };
