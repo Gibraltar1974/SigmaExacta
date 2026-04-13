@@ -1,4 +1,4 @@
-// colaboracion.js - Versión final para modo Room
+// colaboracion.js - Versión final para modo room-selector
 let currentFileId = null;
 
 window.hacerCheckout = async function () {
@@ -43,8 +43,8 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // El SDK ya está cargado con la sala; solo limpiamos el contenedor y mostramos la sala
-        contenedor.innerHTML = ''; // El SDK reemplazará el contenido
+        // Limpiamos el mensaje y dejamos que el SDK muestre el selector
+        contenedor.innerHTML = '';
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
