@@ -1,4 +1,4 @@
-// colaboracion.js - Versión corregida (usa DocSpace.SDK)
+// colaboracion.js - Adaptado a SDK 2.1.0 de DocSpace
 let docEditor = null;
 let currentFileId = null;
 
@@ -44,19 +44,22 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Verificar que el SDK de DocSpace está cargado
-        if (typeof DocSpace === 'undefined' || !DocSpace.SDK) {
+        // Verificar que el SDK se ha cargado (objeto global DocSpace)
+        if (typeof DocSpace === 'undefined') {
             throw new Error('SDK de OnlyOffice no disponible. Recarga la página.');
         }
 
+        // Configuración para el SDK 2.1.0
         const config = {
-            id: currentFileId,
-            frameId: "contenedorOnlyOffice",
-            width: "100%",
-            height: "500px"
+            src: 'https://docspace-n50o74.onlyoffice.com',
+            mode: 'editor',
+            id: currentFileId,        // ID del archivo a editar
+            width: '100%',
+            height: '500px',
+            frameId: 'contenedorOnlyOffice'
         };
 
-        docEditor = DocSpace.SDK.initEditor(config);
+        docEditor = new DocSpace(config);
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
@@ -93,6 +96,7 @@ window.hacerCheckin = async function () {
         alert("No se pudo conectar con el backend.");
     }
 
+    // Limpiar
     const contenedor = document.getElementById('contenedorOnlyOffice');
     if (contenedor) {
         contenedor.innerHTML = "";
@@ -103,8 +107,8 @@ window.hacerCheckin = async function () {
     if (btnCheckout) btnCheckout.style.display = 'inline-block';
     if (btnCheckin) btnCheckin.style.display = 'none';
 
-    if (docEditor) {
-        docEditor.destroyEditor();
+    if (docEditor && typeof docEditor.destroy === 'function') {
+        docEditor.destroy();
         docEditor = null;
     }
     currentFileId = null;
