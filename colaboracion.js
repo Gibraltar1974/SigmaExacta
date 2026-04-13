@@ -1,6 +1,26 @@
-// colaboracion.js - Inicialización correcta para SDK 2.1.0
+// colaboracion.js - Versión con espera activa del SDK
 let docEditor = null;
 let currentFileId = null;
+
+// Función auxiliar para esperar a que DocSpace esté disponible
+function waitForDocSpace(timeout = 10000) {
+    return new Promise((resolve, reject) => {
+        if (typeof DocSpace !== 'undefined') {
+            resolve();
+            return;
+        }
+        const start = Date.now();
+        const interval = setInterval(() => {
+            if (typeof DocSpace !== 'undefined') {
+                clearInterval(interval);
+                resolve();
+            } else if (Date.now() - start > timeout) {
+                clearInterval(interval);
+                reject(new Error('Timeout esperando a DocSpace SDK'));
+            }
+        }, 100);
+    });
+}
 
 window.hacerCheckout = async function () {
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
@@ -44,12 +64,9 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Verificar que el SDK existe
-        if (typeof DocSpace === 'undefined') {
-            throw new Error('SDK de OnlyOffice no disponible.');
-        }
+        // Esperar activamente al SDK (hasta 10 segundos)
+        await waitForDocSpace(10000);
 
-        // Configuración exacta como en el panel de DocSpace
         const config = {
             src: 'https://docspace-n50o74.onlyoffice.com',
             mode: 'editor',
@@ -59,14 +76,10 @@ window.hacerCheckout = async function () {
             frameId: 'contenedorOnlyOffice'
         };
 
-        // Crear instancia del editor
         docEditor = new DocSpace(config);
 
-        // La API puede tardar un poco en montar el iframe; opcionalmente podemos escuchar el evento 'ready'
         if (docEditor && typeof docEditor.on === 'function') {
-            docEditor.on('ready', () => {
-                console.log('Editor OnlyOffice listo');
-            });
+            docEditor.on('ready', () => console.log('Editor listo'));
         }
 
     } catch (error) {
@@ -104,7 +117,6 @@ window.hacerCheckin = async function () {
         alert("No se pudo conectar con el backend.");
     }
 
-    // Limpiar
     const contenedor = document.getElementById('contenedorOnlyOffice');
     if (contenedor) {
         contenedor.innerHTML = "";
