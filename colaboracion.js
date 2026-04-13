@@ -1,5 +1,4 @@
-// colaboracion.js - Versión simplificada y funcional
-let docEditor = null;
+// colaboracion.js - Versión final para modo Room
 let currentFileId = null;
 
 window.hacerCheckout = async function () {
@@ -44,21 +43,8 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Ahora asignamos el ID dinámico al editor ya configurado
-        if (typeof DocSpace !== 'undefined' && DocSpace.editor) {
-            DocSpace.editor.setId(currentFileId);
-        } else {
-            // Si no existe el editor, lo inicializamos manualmente
-            const config = {
-                src: 'https://docspace-n50o74.onlyoffice.com',
-                mode: 'editor',
-                id: currentFileId,
-                width: '100%',
-                height: '500px',
-                frameId: 'contenedorOnlyOffice'
-            };
-            docEditor = new DocSpace(config);
-        }
+        // El SDK ya está cargado con la sala; solo limpiamos el contenedor y mostramos la sala
+        contenedor.innerHTML = ''; // El SDK reemplazará el contenido
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
@@ -105,9 +91,5 @@ window.hacerCheckin = async function () {
     if (btnCheckout) btnCheckout.style.display = 'inline-block';
     if (btnCheckin) btnCheckin.style.display = 'none';
 
-    if (docEditor && typeof docEditor.destroy === 'function') {
-        docEditor.destroy();
-        docEditor = null;
-    }
     currentFileId = null;
 };
