@@ -952,6 +952,15 @@
         .main-tool-logo[data-color='9'] {
             background-color: #7ed321;
         }
+
+        /* Estilos para el bloque de colaboración */
+        .seccion-colaboracion {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafbfc;
+        }
     </style>
 </head>
 
@@ -1265,149 +1274,88 @@
         </div>
     </footer>
 
+    <!-- SDK de OnlyOffice DocSpace (room-selector con frameId correcto) -->
+    <script
+        src="https://docspace-n50o74.onlyoffice.com/static/scripts/sdk/2.1.0/api.js?src=https%3A%2F%2Fdocspace-n50o74.onlyoffice.com&mode=room-selector&width=100%25&height=500px&frameId=contenedorOnlyOffice&init=true&showSelectorCancel=true&showSelectorHeader=true&withSearch=true&acceptButtonLabel=Seleccionar&cancelButtonLabel=Cancelar&isButtonMode=false&buttonWithLogo=true"></script>
+
+    <!-- Lógica de colaboración -->
+    <script src="colaboracion.js"></script>
+
     <script>
         // ===== VARIABLES GLOBALES =====
         let cycleData = {};
 
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function switchTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos principales
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el seleccionado
             document.getElementById(tabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Actualizar textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                autoResizeTextarea(textarea);
-            });
+            document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
         }
 
         function switchSubTab(subTabId) {
-            // Quitar clase active de todos los botones y contenidos de subtabs
             document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.subtab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el seleccionado
             document.getElementById(subTabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
             const subtabContainer = document.querySelector('.subtab-content.active');
-            if (subtabContainer) {
-                subtabContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            // Actualizar textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                autoResizeTextarea(textarea);
-            });
+            if (subtabContainer) subtabContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
         }
 
-        // ===== FUNCIONES DE INICIALIZACIÓN =====
         function initializePage() {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
-            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
             if (navToggle && navMenu) {
                 navToggle.addEventListener('click', () => {
                     navMenu.classList.toggle('show-menu');
                     const icon = navToggle.querySelector('i');
                     icon.classList.toggle('fa-bars');
                     icon.classList.toggle('fa-times');
-
-                    if (!navMenu.classList.contains('show-menu')) {
-                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
-                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
-                    }
                 });
             }
-
-            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
-                toolsDropdownToggle.addEventListener('click', (event) => {
-                    if (window.innerWidth <= 992) {
-                        event.preventDefault();
-                        toolsDropdownMenu.classList.toggle('show-submenu');
-                        toolsDropdownContainer.classList.toggle('active');
-                    }
-                });
-            }
-
-            // Auto-resize textareas
             document.querySelectorAll('textarea').forEach(textarea => {
                 textarea.addEventListener('input', function () { autoResizeTextarea(this); });
                 autoResizeTextarea(textarea);
             });
-
-            // Botones globales
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
             document.getElementById('globalResetBtn').addEventListener('click', resetTool);
         }
 
-        // Cargar el header y luego inicializar la página
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
                 setTimeout(initializePage, 10);
             })
-            .catch(error => {
-                console.error('Error loading header:', error);
-            });
+            .catch(error => console.error('Error loading header:', error));
 
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
-        // ===== FUNCIONES DE LA HERRAMIENTA =====
         function resetTool() {
             if (cycleData && Object.keys(cycleData).length > 0) {
-                if (!confirm("Are you sure you want to reset all data? This will clear all entered information.")) {
-                    return;
-                }
+                if (!confirm("Are you sure you want to reset all data?")) return;
             }
-
             cycleData = {};
-            document.querySelectorAll('textarea').forEach(el => {
-                el.value = '';
-                autoResizeTextarea(el);
-            });
+            document.querySelectorAll('textarea').forEach(el => { el.value = ''; autoResizeTextarea(el); });
             document.getElementById('results-container').classList.add('hidden');
             document.getElementById('results-container').innerHTML = '';
-
-            // Ir a la pestaña inicial
             switchTab('tab-start');
-
-            // Mostrar notificación
             showNotification("All data has been reset successfully!");
         }
 
         function loadExample() {
             if (cycleData && Object.keys(cycleData).length > 0) {
-                if (!confirm("Loading example data will replace your current work. Do you want to continue?")) {
-                    return;
-                }
+                if (!confirm("Loading example data will replace your current work. Continue?")) return;
             }
-
-            // Reset primero
             resetTool();
-
-            // Llenar con datos de ejemplo
             document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes, which leads to lower customer satisfaction and higher costs.";
             document.getElementById('plan-goal').value = "By implementing a new streamlined call script and providing targeted training, we will reduce the average call handling time by 15% (to 10.2 minutes or less) within one month, without decreasing the customer satisfaction score.";
             document.getElementById('plan-actions').value = "1. Analyze top 5 call reasons to create a streamlined script (Week 1).\n2. Select a pilot group of 5 agents for training (Week 2).\n3. Train the pilot group on the new script (Week 2).\n4. Monitor the pilot group's call times and CSAT scores for two weeks (Weeks 3-4).";
@@ -1417,92 +1365,49 @@
             document.getElementById('check-analysis').value = "The hypothesis was confirmed: the new script significantly reduced call times. The slight increase in CSAT suggests the script did not harm the customer experience and may have improved it due to faster resolution.";
             document.getElementById('act-conclusions').value = "The streamlined script is an effective method for reducing call handling time. The key learning is that while a script provides structure, a small degree of flexibility is necessary for experienced agents to handle complex cases effectively.";
             document.getElementById('act-next').value = "1. (Standardize) Roll out the revised, slightly more flexible script to all customer support agents, with mandatory training.\n2. (Adjust) Update the standard operating procedure (SOP) to reflect the new process.\n3. (New Cycle) Begin a new PDCA cycle to tackle the 'first-call resolution rate', which was identified as the next key improvement area during analysis.";
-
-            // Actualizar textareas
             document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
-
-            // Ir a la pestaña PDCA Tool
             switchTab('tab-pdca-tool');
-
-            // Mostrar notificación
-            showNotification("Example data loaded successfully! You can now explore the PDCA phases.");
+            showNotification("Example data loaded successfully!");
         }
 
         function showNotification(message) {
-            // Crear elemento de notificación
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: var(--success-color);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                max-width: 300px;
-                font-weight: 600;
-            `;
-
-            // Animación CSS
+            notification.style.cssText = `position: fixed; top: 20px; right: 20px; background-color: var(--success-color); color: white; padding: 15px 20px; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; animation: slideIn 0.3s ease; max-width: 300px; font-weight: 600;`;
             const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes fadeOut {
-                    from { opacity: 1; }
-                    to { opacity: 0; }
-                }
-            `;
+            style.textContent = `@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }`;
             document.head.appendChild(style);
-
             notification.textContent = message;
             document.body.appendChild(notification);
-
-            // Remover después de 3 segundos
-            setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.5s ease';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 500);
-            }, 3000);
+            setTimeout(() => { notification.style.animation = 'fadeOut 0.5s ease'; setTimeout(() => document.body.removeChild(notification), 500); }, 3000);
         }
 
         function generateReport() {
-                cycleData = {
-                    plan: {
-                        problem: document.getElementById('plan-problem').value,
-                        goal: document.getElementById('plan-goal').value,
-                        actions: document.getElementById('plan-actions').value
-                    },
-                    do: {
-                        execution: document.getElementById('do-execution').value,
-                        problems: document.getElementById('do-problems').value
-                    },
-                    check: {
-                        data: document.getElementById('check-data').value,
-                        analysis: document.getElementById('check-analysis').value
-                    },
-                    act: {
-                        conclusions: document.getElementById('act-conclusions').value,
-                        next: document.getElementById('act-next').value
-                    }
-                };
-
-                // Añade esta línea para exponer los datos globalmente
-                window.cycleData = cycleData;
-
-                if (!cycleData.plan.problem && !cycleData.plan.goal) {
-                    alert('Please fill in at least the "Plan" phase to generate a report.');
-                    return;
+            cycleData = {
+                plan: {
+                    problem: document.getElementById('plan-problem').value,
+                    goal: document.getElementById('plan-goal').value,
+                    actions: document.getElementById('plan-actions').value
+                },
+                do: {
+                    execution: document.getElementById('do-execution').value,
+                    problems: document.getElementById('do-problems').value
+                },
+                check: {
+                    data: document.getElementById('check-data').value,
+                    analysis: document.getElementById('check-analysis').value
+                },
+                act: {
+                    conclusions: document.getElementById('act-conclusions').value,
+                    next: document.getElementById('act-next').value
                 }
-
-                displayResults();
-                switchTab('tab-report');
+            };
+            window.cycleData = cycleData;
+            if (!cycleData.plan.problem && !cycleData.plan.goal) {
+                alert('Please fill in at least the "Plan" phase to generate a report.');
+                return;
+            }
+            displayResults();
+            switchTab('tab-report');
         }
 
         function displayResults() {
@@ -1574,17 +1479,16 @@
             html += `<div class="results-actions">
                     <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
                  </div>`;
-                 
-            // --- BLOQUE DE COLABORACIÓN ---
-            html += `
-    <div class="seccion-colaboracion" style="margin-top: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
-        <h3>¿Quieres guardar y colaborar en este informe?</h3>
-        <button id="btnCheckout" onclick="hacerCheckout()">✏️ Lock and Cloud Edit</button>
-        <button id="btnCheckin" onclick="hacerCheckin()" style="display:none;">💾 Guardar Cambios (Checkin)</button>
-        <div id="contenedorOnlyOffice" style="width: 100%; height: 500px; display: none; margin-top: 15px;"></div>
-    </div>
-`;
 
+            // BLOQUE DE COLABORACIÓN
+            html += `
+                <div class="seccion-colaboracion" style="margin-top: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h3>¿Quieres guardar y colaborar en este informe?</h3>
+                    <button id="btnCheckout" onclick="hacerCheckout()">✏️ Bloquear y Editar en la nube</button>
+                    <button id="btnCheckin" onclick="hacerCheckin()" style="display:none;">💾 Guardar Cambios (Checkin)</button>
+                    <div id="contenedorOnlyOffice" style="width: 100%; height: 500px; display: none; margin-top: 15px;"></div>
+                </div>
+            `;
 
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
@@ -1629,14 +1533,8 @@
         }
     </script>
 
-<script src="dexie.min.js"></script>
-<script src="db-sigma.js"></script>
-
-<!-- SDK de OnlyOffice DocSpace (versión 2.1.0) -->
-<div id="ds-frame">Fallback text</div>
-<script src="https://docspace-n50o74.onlyoffice.com/static/scripts/sdk/2.1.0/api.js?src=https%3A%2F%2Fdocspace-n50o74.onlyoffice.com&mode=room-selector&width=100%25&height=500px&frameId=contenedorOnlyOffice&init=false&showSelectorCancel=true&showSelectorHeader=true&withSearch=true&acceptButtonLabel=Seleccionar&cancelButtonLabel=Cancelar&isButtonMode=false&buttonWithLogo=true&events%5BonSelectCallback%5D=function(e)%7Bconsole.log(%22onSelectCallback%22%2Ce)%7D&events%5BonAppError%5D=function(e)%7Breturn%20console.log(%22onAppError%22%2Ce)%7D"></script>
-<!-- Lógica de colaboración -->
-<script src="colaboracion.js"></script>
+    <script src="dexie.min.js"></script>
+    <script src="db-sigma.js"></script>
 
 </body>
 

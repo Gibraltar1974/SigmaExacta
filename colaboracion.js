@@ -1,6 +1,5 @@
-// colaboracion.js - Inicialización manual
+// colaboracion.js - Versión final que respeta el DOM
 let currentFileId = null;
-let docEditor = null;
 
 window.hacerCheckout = async function () {
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
@@ -22,9 +21,14 @@ window.hacerCheckout = async function () {
     if (btnCheckout) btnCheckout.style.display = 'none';
     if (btnCheckin) btnCheckin.style.display = 'inline-block';
     if (contenedor) {
-        contenedor.style.display = 'block';
-        contenedor.innerHTML = '<p style="text-align:center; padding-top:200px;">Creando archivo en la nube...</p>';
+        contenedor.style.display = 'block'; // Se muestra el selector (ya inicializado)
     }
+
+    // Notificación temporal
+    const toast = document.createElement('div');
+    toast.textContent = 'Creando archivo en la nube...';
+    toast.style.cssText = 'position:fixed; top:20px; right:20px; background:#3498db; color:white; padding:10px 20px; border-radius:5px; z-index:9999;';
+    document.body.appendChild(toast);
 
     try {
         const respuesta = await fetch('/.netlify/functions/crearExcelEnDocSpace', {
@@ -44,27 +48,11 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Limpiamos el mensaje de "Creando archivo..."
-        contenedor.innerHTML = '';
-
-        // Inicializamos el SDK manualmente con el fileId
-        if (typeof DocSpace !== 'undefined') {
-            const config = {
-                src: 'https://docspace-n50o74.onlyoffice.com',
-                mode: 'room-selector',
-                width: '100%',
-                height: '500px',
-                frameId: 'contenedorOnlyOffice',
-                roomId: '2600999', // Tu sala
-                id: currentFileId,   // Archivo recién creado (opcional, puede abrirlo directamente)
-                init: true
-            };
-            docEditor = new DocSpace(config);
-        } else {
-            throw new Error('SDK de OnlyOffice no disponible');
-        }
+        toast.textContent = '¡Archivo creado! Búscalo en el selector.';
+        setTimeout(() => toast.remove(), 3000);
 
     } catch (error) {
+        toast.remove();
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
         if (btnCheckout) btnCheckout.style.display = 'inline-block';
         if (btnCheckin) btnCheckin.style.display = 'none';
@@ -100,18 +88,8 @@ window.hacerCheckin = async function () {
     }
 
     const contenedor = document.getElementById('contenedorOnlyOffice');
-    if (contenedor) {
-        contenedor.innerHTML = "";
-        contenedor.style.display = 'none';
-    }
-    const btnCheckout = document.getElementById('btnCheckout');
-    const btnCheckin = document.getElementById('btnCheckin');
-    if (btnCheckout) btnCheckout.style.display = 'inline-block';
-    if (btnCheckin) btnCheckin.style.display = 'none';
-
-    if (docEditor && typeof docEditor.destroy === 'function') {
-        docEditor.destroy();
-        docEditor = null;
-    }
+    if (contenedor) contenedor.style.display = 'none';
+    document.getElementById('btnCheckout').style.display = 'inline-block';
+    document.getElementById('btnCheckin').style.display = 'none';
     currentFileId = null;
 };
