@@ -1,4 +1,4 @@
-// colaboracion.js - Adaptado a SDK 2.1.0 de DocSpace
+// colaboracion.js - Inicialización correcta para SDK 2.1.0
 let docEditor = null;
 let currentFileId = null;
 
@@ -44,22 +44,30 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Verificar que el SDK se ha cargado (objeto global DocSpace)
+        // Verificar que el SDK existe
         if (typeof DocSpace === 'undefined') {
-            throw new Error('SDK de OnlyOffice no disponible. Recarga la página.');
+            throw new Error('SDK de OnlyOffice no disponible.');
         }
 
-        // Configuración para el SDK 2.1.0
+        // Configuración exacta como en el panel de DocSpace
         const config = {
             src: 'https://docspace-n50o74.onlyoffice.com',
             mode: 'editor',
-            id: currentFileId,        // ID del archivo a editar
+            id: currentFileId,
             width: '100%',
             height: '500px',
             frameId: 'contenedorOnlyOffice'
         };
 
+        // Crear instancia del editor
         docEditor = new DocSpace(config);
+
+        // La API puede tardar un poco en montar el iframe; opcionalmente podemos escuchar el evento 'ready'
+        if (docEditor && typeof docEditor.on === 'function') {
+            docEditor.on('ready', () => {
+                console.log('Editor OnlyOffice listo');
+            });
+        }
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
