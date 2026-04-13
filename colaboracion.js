@@ -1,15 +1,13 @@
-// colaboracion.js - Versión final para modo Editor
+// colaboracion.js - Versión corregida (usa DocSpace.SDK)
 let docEditor = null;
 let currentFileId = null;
 
 window.hacerCheckout = async function () {
-    // Verificar que hay datos del informe
     if (!window.cycleData || Object.keys(window.cycleData).length === 0) {
         alert("Primero debes generar el informe PDCA.");
         return;
     }
 
-    // Pedir nombre del archivo
     let nombreArchivo = prompt("Introduce un nombre para el archivo Excel (sin extensión):", "Informe_PDCA");
     if (!nombreArchivo) {
         nombreArchivo = `PDCA_Report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}`;
@@ -17,7 +15,6 @@ window.hacerCheckout = async function () {
         nombreArchivo = nombreArchivo.replace(/[\\/:*?"<>|]/g, '_');
     }
 
-    // Cambiar botones
     const btnCheckout = document.getElementById('btnCheckout');
     const btnCheckin = document.getElementById('btnCheckin');
     const contenedor = document.getElementById('contenedorOnlyOffice');
@@ -30,7 +27,6 @@ window.hacerCheckout = async function () {
     }
 
     try {
-        // Llamar a la función de Netlify que crea el Excel en DocSpace
         const respuesta = await fetch('/.netlify/functions/crearExcelEnDocSpace', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -48,31 +44,19 @@ window.hacerCheckout = async function () {
         const data = await respuesta.json();
         currentFileId = data.fileId;
 
-        // Inicializar el editor en modo Editor
-        if (typeof DocsAPI === 'undefined') {
-            throw new Error('SDK de OnlyOffice no disponible. Asegúrate de haber configurado el modo Editor en el panel de DocSpace.');
+        // Verificar que el SDK de DocSpace está cargado
+        if (typeof DocSpace === 'undefined' || !DocSpace.SDK) {
+            throw new Error('SDK de OnlyOffice no disponible. Recarga la página.');
         }
 
         const config = {
-            document: {
-                fileType: 'xlsx',
-                key: currentFileId,          // ID del archivo recién creado
-                title: nombreArchivo + '.xlsx',
-                url: 'https://docspace-n50o74.onlyoffice.com/' // URL base de tu DocSpace
-            },
-            documentType: 'cell',
-            editorConfig: {
-                mode: 'edit',
-                user: {
-                    id: 'guest',
-                    name: 'Usuario SigmaExacta'
-                }
-            },
-            height: '500px',
-            width: '100%'
+            id: currentFileId,
+            frameId: "contenedorOnlyOffice",
+            width: "100%",
+            height: "500px"
         };
 
-        docEditor = new DocsAPI.DocEditor('contenedorOnlyOffice', config);
+        docEditor = DocSpace.SDK.initEditor(config);
 
     } catch (error) {
         alert('No se pudo crear el archivo colaborativo: ' + error.message);
@@ -109,7 +93,6 @@ window.hacerCheckin = async function () {
         alert("No se pudo conectar con el backend.");
     }
 
-    // Limpiar editor y restaurar botones
     const contenedor = document.getElementById('contenedorOnlyOffice');
     if (contenedor) {
         contenedor.innerHTML = "";
