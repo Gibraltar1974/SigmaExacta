@@ -74,7 +74,7 @@ const QueryHandler = (function () {
                             });
                         }
                     }
-                },
+                }w,
                 'levels': function (value) {
                     console.log('Procesando niveles:', value);
                     // Formato: Level1,Level2|High,Low|TypeA,TypeB
