@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="styles.css">
 
   <style>
-    /* ========== ESTILOS (idénticos a versiones anteriores) ========== */
+    /* ========== ESTILOS ========== */
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #3498db;
@@ -576,6 +576,15 @@
       font-size: 0.9rem;
     }
 
+    .info-message {
+      background-color: #d1ecf1;
+      border-left: 4px solid #17a2b8;
+      padding: 0.75rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
     footer {
       padding: 2rem 1.25rem;
       text-align: center;
@@ -829,6 +838,7 @@
               <p><i class="fas fa-ruler"></i> Kolmogorov-Smirnov D: <span id="ksStat" class="result-value">-</span></p>
               <p><i class="fas fa-percent"></i> KS p-value: <span id="ksPvalue" class="result-value">-</span></p>
 
+              <div id="inputWarningMessage" class="info-message" style="display:none;"></div>
               <div id="mleConvergenceWarning" class="warning-message" style="display:none;">
                 <i class="fas fa-exclamation-triangle"></i> MLE algorithm did not fully converge. Results may be
                 approximate.
@@ -1128,7 +1138,6 @@
         const F_theo = 1 - Math.exp(-Math.pow(t / eta, beta));
         D = Math.max(D, Math.abs(F_emp - F_theo));
       }
-      // Aproximación p-value (asintótica)
       const nEff = sortedFailures.length;
       const lambda = (Math.sqrt(nEff) + 0.12 + 0.11 / Math.sqrt(nEff)) * D;
       let pValue = 1;
@@ -1159,6 +1168,7 @@
       }
     }
 
+    // Intervalos de confianza con FIM mejorada (usando I22 esperada exacta)
     function calculateConfidenceIntervals(failureTimes, suspensionTimes, beta, eta, confLevel, method, mleInfo = null) {
       const z = confLevel === 90 ? 1.645 : confLevel === 95 ? 1.96 : 2.576;
       const r = failureTimes.length;
@@ -1174,14 +1184,14 @@
       const I11 = mleInfo.hessianBeta;
       const times = failureTimes.concat(suspensionTimes);
       const events = failureTimes.map(() => 1).concat(suspensionTimes.map(() => 0));
-      let sum_psi = 0, sum_zeta = 0;
+      let sum_psi = 0;
       for (let i = 0; i < n; i++) {
         const t = times[i], y = Math.log(t / eta), z_i = Math.pow(t / eta, beta), isEvent = events[i];
         sum_psi += isEvent ? (1 - z_i + y * z_i) : (y * z_i);
-        sum_zeta += isEvent ? (1 - 2 * z_i + z_i * z_i) : (z_i * z_i);
       }
       const I12 = -(beta / eta) * sum_psi;
-      const I22 = (beta * beta / (eta * eta)) * sum_zeta;
+      // Usamos la información esperada exacta para I22 (más precisa que la observada aproximada)
+      const I22 = (beta * beta * r) / (eta * eta);
       const det = I11 * I22 - I12 * I12;
       let varBeta, varEta;
       if (det > 1e-10) { varBeta = I22 / det; varEta = I11 / det; }
@@ -1248,9 +1258,33 @@
         const methodType = document.getElementById("calculationMethod").value;
         const rankMethod = document.getElementById("analysisType").value;
         const confLevel = parseInt(document.getElementById("confidenceLevel").value);
-        const failures = failureInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0);
-        const suspensions = suspInput ? suspInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0) : [];
-        if (failures.length < 2) { alert("At least 2 failure times required."); return; }
+
+        // Validación de entrada: filtrar valores <= 0
+        let rawFailures = failureInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+        let rawSuspensions = suspInput ? suspInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v)) : [];
+
+        const invalidFailures = rawFailures.filter(v => v <= 0);
+        const invalidSuspensions = rawSuspensions.filter(v => v <= 0);
+
+        let warningMsg = '';
+        if (invalidFailures.length > 0) {
+          warningMsg += `Removed ${invalidFailures.length} failure time(s) ≤ 0. `;
+        }
+        if (invalidSuspensions.length > 0) {
+          warningMsg += `Removed ${invalidSuspensions.length} suspension time(s) ≤ 0. `;
+        }
+
+        const failures = rawFailures.filter(v => v > 0);
+        const suspensions = rawSuspensions.filter(v => v > 0);
+
+        if (warningMsg) {
+          document.getElementById("inputWarningMessage").style.display = 'block';
+          document.getElementById("inputWarningMessage").innerHTML = `<i class="fas fa-info-circle"></i> ${warningMsg}`;
+        } else {
+          document.getElementById("inputWarningMessage").style.display = 'none';
+        }
+
+        if (failures.length < 2) { alert("At least 2 valid failure times (>0) required."); return; }
         failures.sort((a, b) => a - b);
 
         const n = failures.length, mean = failures.reduce((a, b) => a + b, 0) / n;
@@ -1296,7 +1330,6 @@
           document.getElementById("ksPvalue").textContent = 'N/A';
           document.getElementById("mleConvergenceWarning").style.display = 'none';
         }
-        // Mostrar warning de CI si muestra pequeña o mucha censura
         const censRatio = suspensions.length / (failures.length + suspensions.length);
         document.getElementById("ciWarning").style.display = (failures.length < 5 || censRatio > 0.5) ? 'block' : 'none';
 
@@ -1319,7 +1352,7 @@
 
         lastResult = {
           id: calculationCounter, timestamp: new Date().toLocaleString(), method: params.method,
-          failureTimes: failureInput, suspensionTimes: suspInput || 'None', beta, eta, mttf, rSquared,
+          failureTimes: failures.join(', '), suspensionTimes: suspensions.length ? suspensions.join(', ') : 'None', beta, eta, mttf, rSquared,
           b10, b50, b90, betaCI: ci.beta, etaCI: ci.eta, descriptiveStats: { n, mean, median, stdDev },
           logLik: params.ll, aic: params.aic, bic: params.bic, ksD: params.ksD, ksPvalue: params.ksPvalue
         };
@@ -1421,6 +1454,7 @@
         document.getElementById('aggregatedResultsContainer').innerHTML = '';
         document.getElementById('mleConvergenceWarning').style.display = 'none';
         document.getElementById('ciWarning').style.display = 'none';
+        document.getElementById('inputWarningMessage').style.display = 'none';
       });
       document.getElementById('weibullForm').addEventListener('submit', (e) => { e.preventDefault(); calculateAndDisplay(); });
       document.getElementById('addBtn').addEventListener('click', addResultToList);
