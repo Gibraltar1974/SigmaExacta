@@ -26,12 +26,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <!-- Estilos del header (idéntico al original) -->
   <link rel="stylesheet" href="styles.css">
 
   <style>
-    /* ========== ESTILOS INTERNOS ========== */
+    /* ========== ESTILOS (idénticos a versiones anteriores) ========== */
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #3498db;
@@ -625,25 +623,13 @@
 
   <noscript>
     <nav>
-      <a href="/">Home</a> |
-      <a href="/8d">8D Tool</a> |
-      <a href="/taguchi_doe">Taguchi DOE</a> |
-      <a href="/swot">SWOT Analysis</a> |
-      <a href="/balancedcard">Balanced Scorecard</a> |
-      <a href="/qfd">QFD</a> |
-      <a href="/apqp-ppap">APQP/PPAP</a> |
-      <a href="/ishikawa">Ishikawa</a> |
-      <a href="/fmea">FMEA</a> |
-      <a href="/vave">VAVE</a> |
-      <a href="/eisenhower">Eisenhower Matrix</a> |
-      <a href="/triz">TRIZ</a> |
-      <a href="/weibull">Weibull</a> |
-      <a href="/stack_up_analysis">Tolerance Stack-Up</a> |
-      <a href="/pdca">PDCA</a> |
-      <a href="/design_thinking">Design Thinking</a> |
-      <a href="/pugh">Pugh Matrix</a> |
-      <a href="/cpk_calculator">CpK Calculator</a> |
-      <a href="/control-plan">Control Plan</a>
+      <a href="/">Home</a> | <a href="/8d">8D Tool</a> | <a href="/taguchi_doe">Taguchi DOE</a> | <a href="/swot">SWOT
+        Analysis</a> | <a href="/balancedcard">Balanced Scorecard</a> | <a href="/qfd">QFD</a> | <a
+        href="/apqp-ppap">APQP/PPAP</a> | <a href="/ishikawa">Ishikawa</a> | <a href="/fmea">FMEA</a> | <a
+        href="/vave">VAVE</a> | <a href="/eisenhower">Eisenhower Matrix</a> | <a href="/triz">TRIZ</a> | <a
+        href="/weibull">Weibull</a> | <a href="/stack_up_analysis">Tolerance Stack-Up</a> | <a href="/pdca">PDCA</a> |
+      <a href="/design_thinking">Design Thinking</a> | <a href="/pugh">Pugh Matrix</a> | <a href="/cpk_calculator">CpK
+        Calculator</a> | <a href="/control-plan">Control Plan</a>
     </nav>
   </noscript>
 
@@ -672,7 +658,7 @@
         Formulas</button>
     </nav>
 
-    <!-- PESTAÑA THEORY (TEXTO COMPLETO RESTAURADO) -->
+    <!-- PESTAÑA THEORY (TEXTO COMPLETO) -->
     <div id="tab-theory" class="wizard-tab-content active">
       <div class="container">
         <h2><i class="fas fa-question-circle"></i> What is Weibull Analysis?</h2>
@@ -813,7 +799,7 @@
       </div>
       <div class="container" style="margin-top:0;">
         <p><i class="fas fa-info-circle" style="color: var(--secondary-color);"></i> Once you click "Analyze Failures",
-          you will be automatically redirected to the <strong>Results</strong> tab to see all charts and parameters.</p>
+          you will be automatically redirected to the <strong>Results</strong> tab.</p>
       </div>
       <div class="tab-nav-buttons">
         <button class="btn-next-tab" onclick="switchWizardTab('tab-results')">Go to Results <i
@@ -833,17 +819,23 @@
                   class="result-value">-</span></p>
               <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf"
                   class="result-value">-</span></p>
-              <p><i class="fas fa-chart-line"></i> Coefficient of Determination (R²): <span id="rSquared"
-                  class="result-value">-</span></p>
+              <p><i class="fas fa-chart-line"></i> R² (Weibull plot): <span id="rSquared" class="result-value">-</span>
+              </p>
 
-              <div class="calculation-title" style="margin-top:1.5rem;">Model Goodness-of-Fit</div>
+              <div class="calculation-title" style="margin-top:1.5rem;">Goodness-of-Fit</div>
               <p><i class="fas fa-chart-line"></i> Log-Likelihood: <span id="logLik" class="result-value">-</span></p>
               <p><i class="fas fa-chart-bar"></i> AIC: <span id="aic" class="result-value">-</span></p>
               <p><i class="fas fa-chart-pie"></i> BIC: <span id="bic" class="result-value">-</span></p>
+              <p><i class="fas fa-ruler"></i> Kolmogorov-Smirnov D: <span id="ksStat" class="result-value">-</span></p>
+              <p><i class="fas fa-percent"></i> KS p-value: <span id="ksPvalue" class="result-value">-</span></p>
 
               <div id="mleConvergenceWarning" class="warning-message" style="display:none;">
                 <i class="fas fa-exclamation-triangle"></i> MLE algorithm did not fully converge. Results may be
                 approximate.
+              </div>
+              <div id="ciWarning" class="warning-message" style="display:none;">
+                <i class="fas fa-exclamation-triangle"></i> Small sample or high censoring: confidence intervals may be
+                unreliable. Consider using Profile Likelihood (not available in this web tool).
               </div>
 
               <div class="calculation-title" style="margin-top:1.5rem;">Failure Mode Analysis</div>
@@ -977,27 +969,23 @@
       .then(response => response.text())
       .then(data => {
         document.getElementById('header-container').innerHTML = data;
-
         const navToggle = document.getElementById('nav-toggle');
         const navMenu = document.getElementById('nav-menu');
         const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
         const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
         const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
         if (navToggle && navMenu) {
           navToggle.addEventListener('click', () => {
             navMenu.classList.toggle('show-menu');
             const icon = navToggle.querySelector('i');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-times');
-
             if (!navMenu.classList.contains('show-menu')) {
               toolsDropdownMenu.classList.remove('show-submenu');
               toolsDropdownContainer.classList.remove('active');
             }
           });
         }
-
         if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
           toolsDropdownToggle.addEventListener('click', (event) => {
             if (window.innerWidth <= 992) {
@@ -1023,10 +1011,7 @@
     }
 
     function calculateAdjustedRanks(failureTimes, suspensionTimes, method = 'medianRank') {
-      const data = [
-        ...failureTimes.map(t => ({ time: t, event: 1 })),
-        ...suspensionTimes.map(t => ({ time: t, event: 0 }))
-      ].sort((a, b) => a.time - b.time);
+      const data = [...failureTimes.map(t => ({ time: t, event: 1 })), ...suspensionTimes.map(t => ({ time: t, event: 0 }))].sort((a, b) => a.time - b.time);
       const n = data.length;
       let prevSurvival = 1.0;
       let rank = 0;
@@ -1051,12 +1036,7 @@
           } else {
             F = Math.min(0.999, Math.max(0.001, failureProb));
           }
-          points.push({
-            time: currentTime,
-            rank: F,
-            x: Math.log(currentTime),
-            y: Math.log(-Math.log(1 - F))
-          });
+          points.push({ time: currentTime, rank: F, x: Math.log(currentTime), y: Math.log(-Math.log(1 - F)) });
           prevSurvival = survival;
         }
       }
@@ -1066,9 +1046,7 @@
     function linearRegression(points) {
       const n = points.length;
       let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
-      points.forEach(p => {
-        sumX += p.x; sumY += p.y; sumXY += p.x * p.y; sumX2 += p.x * p.x; sumY2 += p.y * p.y;
-      });
+      points.forEach(p => { sumX += p.x; sumY += p.y; sumXY += p.x * p.y; sumX2 += p.x * p.x; sumY2 += p.y * p.y; });
       const meanX = sumX / n, meanY = sumY / n;
       const ssxx = sumX2 - n * meanX * meanX;
       const ssxy = sumXY - n * meanX * meanY;
@@ -1079,7 +1057,7 @@
       return { slope, intercept, rSquared };
     }
 
-    // MLE robusto con log-space, verificación de convergencia y cálculo de LL/AIC/BIC
+    // MLE robusto (log-space) + convergencia + KS test
     function weibullMLE(failureTimes, suspensionTimes) {
       const times = failureTimes.concat(suspensionTimes);
       const events = failureTimes.map(() => 1).concat(suspensionTimes.map(() => 0));
@@ -1118,43 +1096,54 @@
 
         let delta = score_beta / hessian_beta;
         if (Math.abs(delta) > 2.0) delta = Math.sign(delta) * 2.0;
-
         let beta_new = beta - delta;
         beta_new = Math.max(0.1, Math.min(50, beta_new));
         const eta_new = Math.pow(sum_t_beta / r, 1 / beta_new);
 
         if (Math.abs(beta_new - beta) < tol && Math.abs(eta_new - eta) / eta < tol) {
-          beta = beta_new;
-          eta = eta_new;
-          converged = true;
-          break;
+          beta = beta_new; eta = eta_new; converged = true; break;
         }
-        beta = beta_new;
-        eta = eta_new;
+        beta = beta_new; eta = eta_new;
       }
 
       let ll = r * Math.log(beta) - r * beta * Math.log(eta) + (beta - 1) * sum_log_t_fail;
-      for (let i = 0; i < n; i++) {
-        ll -= Math.pow(times[i] / eta, beta);
-      }
+      for (let i = 0; i < n; i++) ll -= Math.pow(times[i] / eta, beta);
       const aic = 4 - 2 * ll;
       const bic = 2 * Math.log(n) - 2 * ll;
 
       const kmPoints = calculateAdjustedRanks(failureTimes, suspensionTimes, 'medianRank');
-      const xVals = kmPoints.map(p => p.x);
-      const yVals = kmPoints.map(p => p.y);
+      const xVals = kmPoints.map(p => p.x), yVals = kmPoints.map(p => p.y);
       const yPred = xVals.map(xi => beta * (xi - Math.log(eta)));
       const ssRes = yVals.reduce((s, y, i) => s + (y - yPred[i]) ** 2, 0);
       const meanY = yVals.reduce((a, b) => a + b, 0) / yVals.length;
       const ssTot = yVals.reduce((s, y) => s + (y - meanY) ** 2, 0);
       const rSquared = 1 - ssRes / ssTot;
 
+      // KS test
+      const sortedFailures = [...failureTimes].sort((a, b) => a - b);
+      let D = 0;
+      for (let i = 0; i < sortedFailures.length; i++) {
+        const t = sortedFailures[i];
+        const F_emp = (i + 1) / sortedFailures.length;
+        const F_theo = 1 - Math.exp(-Math.pow(t / eta, beta));
+        D = Math.max(D, Math.abs(F_emp - F_theo));
+      }
+      // Aproximación p-value (asintótica)
+      const nEff = sortedFailures.length;
+      const lambda = (Math.sqrt(nEff) + 0.12 + 0.11 / Math.sqrt(nEff)) * D;
+      let pValue = 1;
+      if (lambda < 0.2) pValue = 1;
+      else if (lambda < 1.0) pValue = 1 - (0.028 * lambda);
+      else pValue = 2 * Math.exp(-2 * lambda * lambda);
+      pValue = Math.min(1, Math.max(0, pValue));
+
       return {
         beta, eta, rSquared, ll, aic, bic,
         method: 'Maximum Likelihood (MLE)',
         hessianBeta: -hessian_beta,
         sum_t_beta: Math.pow(eta, beta) * r,
-        converged
+        converged,
+        ksD: D, ksPvalue: pValue
       };
     }
 
@@ -1174,7 +1163,6 @@
       const z = confLevel === 90 ? 1.645 : confLevel === 95 ? 1.96 : 2.576;
       const r = failureTimes.length;
       const n = failureTimes.length + suspensionTimes.length;
-
       if (method !== 'Maximum Likelihood (MLE)' || !mleInfo || r < 3) {
         const seBeta = beta / Math.sqrt(r);
         const seEta = eta / Math.sqrt(r);
@@ -1183,74 +1171,45 @@
           eta: `${Math.round(Math.max(1, eta - z * seEta))} - ${Math.round(eta + z * seEta)} (approx)`
         };
       }
-
       const I11 = mleInfo.hessianBeta;
       const times = failureTimes.concat(suspensionTimes);
       const events = failureTimes.map(() => 1).concat(suspensionTimes.map(() => 0));
-
       let sum_psi = 0, sum_zeta = 0;
       for (let i = 0; i < n; i++) {
-        const t = times[i];
-        const y = Math.log(t / eta);
-        const z_i = Math.pow(t / eta, beta);
-        const isEvent = events[i];
+        const t = times[i], y = Math.log(t / eta), z_i = Math.pow(t / eta, beta), isEvent = events[i];
         sum_psi += isEvent ? (1 - z_i + y * z_i) : (y * z_i);
         sum_zeta += isEvent ? (1 - 2 * z_i + z_i * z_i) : (z_i * z_i);
       }
-
       const I12 = -(beta / eta) * sum_psi;
       const I22 = (beta * beta / (eta * eta)) * sum_zeta;
       const det = I11 * I22 - I12 * I12;
-
       let varBeta, varEta;
-      if (det > 1e-10) {
-        varBeta = I22 / det;
-        varEta = I11 / det;
-      } else {
-        varBeta = Math.pow(beta / Math.sqrt(r), 2);
-        varEta = Math.pow(eta / Math.sqrt(r), 2);
-      }
-
-      varBeta = Math.abs(varBeta);
-      varEta = Math.abs(varEta);
-
+      if (det > 1e-10) { varBeta = I22 / det; varEta = I11 / det; }
+      else { varBeta = Math.pow(beta / Math.sqrt(r), 2); varEta = Math.pow(eta / Math.sqrt(r), 2); }
+      varBeta = Math.abs(varBeta); varEta = Math.abs(varEta);
       const betaLower = Math.max(0.1, beta - z * Math.sqrt(varBeta));
       const betaUpper = beta + z * Math.sqrt(varBeta);
       const etaLower = Math.max(1, eta * Math.exp(-z * Math.sqrt(varEta) / eta));
       const etaUpper = eta * Math.exp(z * Math.sqrt(varEta) / eta);
-
       return {
         beta: `${betaLower.toFixed(3)} - ${betaUpper.toFixed(3)}`,
         eta: `${Math.round(etaLower)} - ${Math.round(etaUpper)}`
       };
     }
 
-    function weibullPDF(t, eta, beta) {
-      if (t <= 0) return 0;
-      const log_r = beta * (Math.log(t) - Math.log(eta));
-      return (beta / eta) * Math.exp((beta - 1) * (Math.log(t) - Math.log(eta)) - Math.exp(log_r));
-    }
-    function weibullCDF(t, eta, beta) {
-      if (t <= 0) return 0;
-      return 1 - Math.exp(-Math.exp(beta * (Math.log(t) - Math.log(eta))));
-    }
-    function weibullHazard(t, eta, beta) {
-      if (t <= 0) return 0;
-      return (beta / eta) * Math.exp((beta - 1) * (Math.log(t) - Math.log(eta)));
-    }
-    function weibullReliability(t, eta, beta) {
-      if (t <= 0) return 1;
-      return Math.exp(-Math.exp(beta * (Math.log(t) - Math.log(eta))));
-    }
+    function weibullPDF(t, eta, beta) { if (t <= 0) return 0; const logr = beta * (Math.log(t) - Math.log(eta)); return (beta / eta) * Math.exp((beta - 1) * (Math.log(t) - Math.log(eta)) - Math.exp(logr)); }
+    function weibullCDF(t, eta, beta) { if (t <= 0) return 0; return 1 - Math.exp(-Math.exp(beta * (Math.log(t) - Math.log(eta)))); }
+    function weibullHazard(t, eta, beta) { if (t <= 0) return 0; return (beta / eta) * Math.exp((beta - 1) * (Math.log(t) - Math.log(eta))); }
+    function weibullReliability(t, eta, beta) { if (t <= 0) return 1; return Math.exp(-Math.exp(beta * (Math.log(t) - Math.log(eta)))); }
 
     function classifyFailureMode(beta) {
-      if (beta < 0.8) return { mode: "Infant Mortality", description: "Decreasing failure rate. Failures are more likely early in life.", class: "mode-infant" };
-      else if (beta <= 1.2) return { mode: "Random Failures", description: "Constant failure rate. Failures occur randomly over time.", class: "mode-random" };
-      else if (beta <= 3.0) return { mode: "Wear-Out Failures", description: "Increasing failure rate. Failures become more likely as the product ages.", class: "mode-wearout" };
-      else return { mode: "Severe Wear-Out", description: "Rapidly increasing failure rate. Severe aging effects.", class: "mode-severe" };
+      if (beta < 0.8) return { mode: "Infant Mortality", description: "Decreasing failure rate.", class: "mode-infant" };
+      else if (beta <= 1.2) return { mode: "Random Failures", description: "Constant failure rate.", class: "mode-random" };
+      else if (beta <= 3.0) return { mode: "Wear-Out Failures", description: "Increasing failure rate.", class: "mode-wearout" };
+      else return { mode: "Severe Wear-Out", description: "Rapidly increasing failure rate.", class: "mode-severe" };
     }
 
-    // ========== INICIALIZACIÓN DE GRÁFICOS Y VARIABLES GLOBALES ==========
+    // ========== GRÁFICOS Y VARIABLES ==========
     let weibullChart, pdfChart, cdfChart, hazardChart, reliabilityChart;
     let lastResult = null;
     let aggregatedResultsData = [];
@@ -1258,11 +1217,8 @@
 
     function initCharts() {
       const ctx = document.getElementById("weibullChartCanvas").getContext("2d");
-      weibullChart = new Chart(ctx, {
-        type: "scatter", data: { datasets: [] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: "logarithmic", title: { display: true, text: "Time to Failure" } }, y: { title: { display: true, text: "ln(ln(1/(1-F(t))))" } } } }
-      });
-      const common = { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', title: { display: true, text: 'Time' } }, y: { title: { display: true, text: 'Value' }, beginAtZero: true } } };
+      weibullChart = new Chart(ctx, { type: "scatter", data: { datasets: [] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: "logarithmic", title: { display: true, text: "Time" } }, y: { title: { display: true, text: "ln(ln(1/(1-F)))" } } } } });
+      const common = { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', title: { display: true, text: 'Time' } }, y: { beginAtZero: true } } };
       pdfChart = new Chart(document.getElementById("pdfChart"), { type: 'line', data: { datasets: [{ label: 'PDF', borderColor: '#3498db' }] }, options: common });
       cdfChart = new Chart(document.getElementById("cdfChart"), { type: 'line', data: { datasets: [{ label: 'CDF', borderColor: '#e74c3c' }] }, options: common });
       hazardChart = new Chart(document.getElementById("hazardChart"), { type: 'line', data: { datasets: [{ label: 'Hazard', borderColor: '#2ecc71' }] }, options: common });
@@ -1292,7 +1248,6 @@
         const methodType = document.getElementById("calculationMethod").value;
         const rankMethod = document.getElementById("analysisType").value;
         const confLevel = parseInt(document.getElementById("confidenceLevel").value);
-        const units = document.getElementById("timeUnits").value;
         const failures = failureInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0);
         const suspensions = suspInput ? suspInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v > 0) : [];
         if (failures.length < 2) { alert("At least 2 failure times required."); return; }
@@ -1304,11 +1259,11 @@
         const sorted = [...failures].sort((a, b) => a - b);
         const median = n % 2 ? sorted[Math.floor(n / 2)] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
         document.getElementById("descriptiveStats").innerHTML = `
-        <div class="stat-card"><div class="stat-label">Sample Size</div><div class="stat-value">${n}</div></div>
-        <div class="stat-card"><div class="stat-label">Mean</div><div class="stat-value">${mean.toFixed(1)}</div></div>
-        <div class="stat-card"><div class="stat-label">Median</div><div class="stat-value">${median.toFixed(1)}</div></div>
-        <div class="stat-card"><div class="stat-label">Std Deviation</div><div class="stat-value">${stdDev.toFixed(1)}</div></div>
-      `;
+          <div class="stat-card"><div class="stat-label">Sample Size</div><div class="stat-value">${n}</div></div>
+          <div class="stat-card"><div class="stat-label">Mean</div><div class="stat-value">${mean.toFixed(1)}</div></div>
+          <div class="stat-card"><div class="stat-label">Median</div><div class="stat-value">${median.toFixed(1)}</div></div>
+          <div class="stat-card"><div class="stat-label">Std Deviation</div><div class="stat-value">${stdDev.toFixed(1)}</div></div>
+        `;
 
         const params = calculateWeibullParams(failures, suspensions, methodType, rankMethod);
         const { beta, eta, rSquared, method } = params;
@@ -1330,13 +1285,20 @@
           document.getElementById("logLik").textContent = params.ll.toFixed(2);
           document.getElementById("aic").textContent = params.aic.toFixed(2);
           document.getElementById("bic").textContent = params.bic.toFixed(2);
+          document.getElementById("ksStat").textContent = params.ksD.toFixed(4);
+          document.getElementById("ksPvalue").textContent = params.ksPvalue.toFixed(4);
           document.getElementById("mleConvergenceWarning").style.display = params.converged ? 'none' : 'block';
         } else {
           document.getElementById("logLik").textContent = 'N/A';
           document.getElementById("aic").textContent = 'N/A';
           document.getElementById("bic").textContent = 'N/A';
+          document.getElementById("ksStat").textContent = 'N/A';
+          document.getElementById("ksPvalue").textContent = 'N/A';
           document.getElementById("mleConvergenceWarning").style.display = 'none';
         }
+        // Mostrar warning de CI si muestra pequeña o mucha censura
+        const censRatio = suspensions.length / (failures.length + suspensions.length);
+        document.getElementById("ciWarning").style.display = (failures.length < 5 || censRatio > 0.5) ? 'block' : 'none';
 
         document.getElementById("failureModeText").textContent = fm.mode;
         document.getElementById("failureModeDescription").textContent = fm.description;
@@ -1357,9 +1319,9 @@
 
         lastResult = {
           id: calculationCounter, timestamp: new Date().toLocaleString(), method: params.method,
-          failureTimes: failureInput, suspensionTimes: suspInput || 'None', units, beta, eta, mttf, rSquared,
+          failureTimes: failureInput, suspensionTimes: suspInput || 'None', beta, eta, mttf, rSquared,
           b10, b50, b90, betaCI: ci.beta, etaCI: ci.eta, descriptiveStats: { n, mean, median, stdDev },
-          logLik: params.ll, aic: params.aic, bic: params.bic
+          logLik: params.ll, aic: params.aic, bic: params.bic, ksD: params.ksD, ksPvalue: params.ksPvalue
         };
         document.getElementById("addBtn").disabled = false;
 
@@ -1399,15 +1361,13 @@
         <div class="result-card-item"><strong>MTTF</strong><span>${lastResult.mttf.toFixed(1)}</span></div>
         <div class="result-card-item"><strong>R²</strong><span>${lastResult.rSquared.toFixed(4)}</span></div>
         ${lastResult.logLik ? `<div class="result-card-item"><strong>LogLik</strong><span>${lastResult.logLik.toFixed(2)}</span></div>` : ''}
-        ${lastResult.aic ? `<div class="result-card-item"><strong>AIC</strong><span>${lastResult.aic.toFixed(2)}</span></div>` : ''}
-        ${lastResult.bic ? `<div class="result-card-item"><strong>BIC</strong><span>${lastResult.bic.toFixed(2)}</span></div>` : ''}
+        ${lastResult.ksD ? `<div class="result-card-item"><strong>KS D</strong><span>${lastResult.ksD.toFixed(4)}</span></div>` : ''}
         <div class="result-card-item"><strong>B10</strong><span>${lastResult.b10.toFixed(0)}</span></div>
         <div class="result-card-item"><strong>B50</strong><span>${lastResult.b50.toFixed(0)}</span></div>
         <div class="result-card-item"><strong>B90</strong><span>${lastResult.b90.toFixed(0)}</span></div>
         <div class="result-card-item"><strong>β CI</strong><span>${lastResult.betaCI}</span></div>
         <div class="result-card-item"><strong>η CI</strong><span>${lastResult.etaCI}</span></div>
-      </div>
-    `;
+      </div>`;
       container.prepend(card);
       calculationCounter++;
       document.getElementById("addBtn").disabled = true;
@@ -1416,10 +1376,10 @@
     function exportExcel() {
       if (!aggregatedResultsData.length) { alert("No results to export."); return; }
       const wsData = aggregatedResultsData.map(r => ({
-        "ID": r.id, "Timestamp": r.timestamp, "Method": r.method, "Failures": r.failureTimes, "Suspensions": r.suspensionTimes,
-        "Beta": r.beta, "Eta": r.eta, "MTTF": r.mttf, "R²": r.rSquared, "LogLik": r.logLik || '', "AIC": r.aic || '', "BIC": r.bic || '',
-        "B10": r.b10, "B50": r.b50, "B90": r.b90, "Beta CI": r.betaCI, "Eta CI": r.etaCI,
-        "Sample Size": r.descriptiveStats.n, "Mean": r.descriptiveStats.mean, "Median": r.descriptiveStats.median, "Std Dev": r.descriptiveStats.stdDev
+        ID: r.id, Timestamp: r.timestamp, Method: r.method, Failures: r.failureTimes, Suspensions: r.suspensionTimes,
+        Beta: r.beta, Eta: r.eta, MTTF: r.mttf, R2: r.rSquared, LogLik: r.logLik || '', AIC: r.aic || '', BIC: r.bic || '',
+        KS_D: r.ksD || '', KS_p: r.ksPvalue || '', B10: r.b10, B50: r.b50, B90: r.b90,
+        Beta_CI: r.betaCI, Eta_CI: r.etaCI, SampleSize: r.descriptiveStats.n, Mean: r.descriptiveStats.mean
       }));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsData), "Weibull Results");
@@ -1441,7 +1401,6 @@
     // ========== EVENT LISTENERS ==========
     document.addEventListener('DOMContentLoaded', () => {
       initCharts();
-
       document.getElementById('globalLoadExampleBtn').addEventListener('click', () => {
         document.getElementById('failureTimes').value = '1500, 2350, 1820, 2100, 2500, 1980, 2700, 2900, 2200, 2600';
         document.getElementById('suspensionTimes').value = '3000, 4000, 3500';
@@ -1449,7 +1408,6 @@
         document.getElementById('methodDescription').innerHTML = '<strong>Maximum Likelihood Estimation (MLE):</strong> Most accurate statistical method, correctly handles suspensions.';
         switchWizardTab('tab-tool');
       });
-
       document.getElementById('globalResetBtn').addEventListener('click', () => {
         document.getElementById('failureTimes').value = '';
         document.getElementById('suspensionTimes').value = '';
@@ -1462,28 +1420,22 @@
         aggregatedResultsData = []; calculationCounter = 1;
         document.getElementById('aggregatedResultsContainer').innerHTML = '';
         document.getElementById('mleConvergenceWarning').style.display = 'none';
+        document.getElementById('ciWarning').style.display = 'none';
       });
-
       document.getElementById('weibullForm').addEventListener('submit', (e) => { e.preventDefault(); calculateAndDisplay(); });
       document.getElementById('addBtn').addEventListener('click', addResultToList);
       document.getElementById('exportBtn').addEventListener('click', exportExcel);
-
       document.getElementById('calculationMethod').addEventListener('change', function () {
-        const desc = this.value === 'mle'
-          ? '<strong>Maximum Likelihood Estimation (MLE):</strong> Most accurate statistical method, correctly handles suspensions.'
-          : '<strong>Linear Regression:</strong> Traditional method. <span style="color:#e67e22;">⚠️ May be biased for small samples (n ≤ 10). MLE is recommended.</span>';
+        const desc = this.value === 'mle' ? '<strong>Maximum Likelihood Estimation (MLE):</strong> Most accurate statistical method, correctly handles suspensions.' : '<strong>Linear Regression:</strong> Traditional method. <span style="color:#e67e22;">⚠️ May be biased for small samples (n ≤ 10). MLE is recommended.</span>';
         document.getElementById('methodDescription').innerHTML = desc;
       });
-
       ['failureTimes', 'suspensionTimes'].forEach(id => {
         const ta = document.getElementById(id);
-        ta.style.height = 'auto';
-        ta.style.height = ta.scrollHeight + 'px';
+        ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
         ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
       });
     });
   </script>
-
   <script src="dexie.min.js"></script>
   <script src="db-sigma.js"></script>
 </body>
