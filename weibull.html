@@ -835,8 +835,10 @@
               <p><i class="fas fa-chart-line"></i> Log-Likelihood: <span id="logLik" class="result-value">-</span></p>
               <p><i class="fas fa-chart-bar"></i> AIC: <span id="aic" class="result-value">-</span></p>
               <p><i class="fas fa-chart-pie"></i> BIC: <span id="bic" class="result-value">-</span></p>
-              <p><i class="fas fa-ruler"></i> Kolmogorov-Smirnov D: <span id="ksStat" class="result-value">-</span></p>
-              <p><i class="fas fa-percent"></i> KS p-value: <span id="ksPvalue" class="result-value">-</span></p>
+              <p><i class="fas fa-ruler"></i> Kolmogorov-Smirnov D: <span id="ksStat" class="result-value">-</span>
+                <span id="ksPvalue" style="font-weight:normal;">(p=<span id="ksPvalueVal">-</span>)</span></p>
+              <p><i class="fas fa-chart-area"></i> Anderson-Darling A²: <span id="adStat" class="result-value">-</span>
+                <span id="adPvalue" style="font-weight:normal;">(p=<span id="adPvalueVal">-</span>)</span></p>
 
               <div id="inputWarningMessage" class="info-message" style="display:none;"></div>
               <div id="mleConvergenceWarning" class="warning-message" style="display:none;">
@@ -1067,7 +1069,7 @@
       return { slope, intercept, rSquared };
     }
 
-    // MLE robusto (log-space) + convergencia + KS test
+    // MLE robusto + KS + Anderson-Darling
     function weibullMLE(failureTimes, suspensionTimes) {
       const times = failureTimes.concat(suspensionTimes);
       const events = failureTimes.map(() => 1).concat(suspensionTimes.map(() => 0));
@@ -1129,7 +1131,7 @@
       const ssTot = yVals.reduce((s, y) => s + (y - meanY) ** 2, 0);
       const rSquared = 1 - ssRes / ssTot;
 
-      // KS test
+      // KS test (solo fallas)
       const sortedFailures = [...failureTimes].sort((a, b) => a - b);
       let D = 0;
       for (let i = 0; i < sortedFailures.length; i++) {
@@ -1140,11 +1142,35 @@
       }
       const nEff = sortedFailures.length;
       const lambda = (Math.sqrt(nEff) + 0.12 + 0.11 / Math.sqrt(nEff)) * D;
-      let pValue = 1;
-      if (lambda < 0.2) pValue = 1;
-      else if (lambda < 1.0) pValue = 1 - (0.028 * lambda);
-      else pValue = 2 * Math.exp(-2 * lambda * lambda);
-      pValue = Math.min(1, Math.max(0, pValue));
+      let ksPvalue = 1;
+      if (lambda < 0.2) ksPvalue = 1;
+      else if (lambda < 1.0) ksPvalue = 1 - (0.028 * lambda);
+      else ksPvalue = 2 * Math.exp(-2 * lambda * lambda);
+      ksPvalue = Math.min(1, Math.max(0, ksPvalue));
+
+      // Anderson-Darling test (solo fallas)
+      let AD = 0;
+      const F_i = sortedFailures.map(t => 1 - Math.exp(-Math.pow(t / eta, beta)));
+      for (let i = 0; i < sortedFailures.length; i++) {
+        const term1 = (2 * i + 1) * Math.log(F_i[i]);
+        const term2 = (2 * (sortedFailures.length - i) - 1) * Math.log(1 - F_i[i]);
+        AD += term1 + term2;
+      }
+      AD = -sortedFailures.length - AD / sortedFailures.length;
+      // Ajuste para muestra pequeña (Stephens)
+      const ADstar = AD * (1 + 0.2 / Math.sqrt(sortedFailures.length));
+      let adPvalue;
+      if (ADstar < 0.2) adPvalue = 1.0;
+      else if (ADstar < 0.3) adPvalue = 0.9;
+      else if (ADstar < 0.4) adPvalue = 0.7;
+      else if (ADstar < 0.5) adPvalue = 0.5;
+      else if (ADstar < 0.6) adPvalue = 0.25;
+      else if (ADstar < 0.7) adPvalue = 0.15;
+      else if (ADstar < 0.8) adPvalue = 0.10;
+      else if (ADstar < 1.0) adPvalue = 0.05;
+      else if (ADstar < 1.2) adPvalue = 0.025;
+      else if (ADstar < 1.5) adPvalue = 0.01;
+      else adPvalue = 0.005;
 
       return {
         beta, eta, rSquared, ll, aic, bic,
@@ -1152,7 +1178,8 @@
         hessianBeta: -hessian_beta,
         sum_t_beta: Math.pow(eta, beta) * r,
         converged,
-        ksD: D, ksPvalue: pValue
+        ksD: D, ksPvalue: ksPvalue,
+        adStat: AD, adPvalue: adPvalue
       };
     }
 
@@ -1168,7 +1195,6 @@
       }
     }
 
-    // Intervalos de confianza con FIM mejorada (usando I22 esperada exacta)
     function calculateConfidenceIntervals(failureTimes, suspensionTimes, beta, eta, confLevel, method, mleInfo = null) {
       const z = confLevel === 90 ? 1.645 : confLevel === 95 ? 1.96 : 2.576;
       const r = failureTimes.length;
@@ -1190,7 +1216,6 @@
         sum_psi += isEvent ? (1 - z_i + y * z_i) : (y * z_i);
       }
       const I12 = -(beta / eta) * sum_psi;
-      // Usamos la información esperada exacta para I22 (más precisa que la observada aproximada)
       const I22 = (beta * beta * r) / (eta * eta);
       const det = I11 * I22 - I12 * I12;
       let varBeta, varEta;
@@ -1259,7 +1284,6 @@
         const rankMethod = document.getElementById("analysisType").value;
         const confLevel = parseInt(document.getElementById("confidenceLevel").value);
 
-        // Validación de entrada: filtrar valores <= 0
         let rawFailures = failureInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
         let rawSuspensions = suspInput ? suspInput.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v)) : [];
 
@@ -1267,12 +1291,8 @@
         const invalidSuspensions = rawSuspensions.filter(v => v <= 0);
 
         let warningMsg = '';
-        if (invalidFailures.length > 0) {
-          warningMsg += `Removed ${invalidFailures.length} failure time(s) ≤ 0. `;
-        }
-        if (invalidSuspensions.length > 0) {
-          warningMsg += `Removed ${invalidSuspensions.length} suspension time(s) ≤ 0. `;
-        }
+        if (invalidFailures.length > 0) warningMsg += `Removed ${invalidFailures.length} failure time(s) ≤ 0. `;
+        if (invalidSuspensions.length > 0) warningMsg += `Removed ${invalidSuspensions.length} suspension time(s) ≤ 0. `;
 
         const failures = rawFailures.filter(v => v > 0);
         const suspensions = rawSuspensions.filter(v => v > 0);
@@ -1320,14 +1340,18 @@
           document.getElementById("aic").textContent = params.aic.toFixed(2);
           document.getElementById("bic").textContent = params.bic.toFixed(2);
           document.getElementById("ksStat").textContent = params.ksD.toFixed(4);
-          document.getElementById("ksPvalue").textContent = params.ksPvalue.toFixed(4);
+          document.getElementById("ksPvalueVal").textContent = params.ksPvalue.toFixed(4);
+          document.getElementById("adStat").textContent = params.adStat.toFixed(4);
+          document.getElementById("adPvalueVal").textContent = params.adPvalue.toFixed(4);
           document.getElementById("mleConvergenceWarning").style.display = params.converged ? 'none' : 'block';
         } else {
           document.getElementById("logLik").textContent = 'N/A';
           document.getElementById("aic").textContent = 'N/A';
           document.getElementById("bic").textContent = 'N/A';
           document.getElementById("ksStat").textContent = 'N/A';
-          document.getElementById("ksPvalue").textContent = 'N/A';
+          document.getElementById("ksPvalueVal").textContent = 'N/A';
+          document.getElementById("adStat").textContent = 'N/A';
+          document.getElementById("adPvalueVal").textContent = 'N/A';
           document.getElementById("mleConvergenceWarning").style.display = 'none';
         }
         const censRatio = suspensions.length / (failures.length + suspensions.length);
@@ -1354,7 +1378,8 @@
           id: calculationCounter, timestamp: new Date().toLocaleString(), method: params.method,
           failureTimes: failures.join(', '), suspensionTimes: suspensions.length ? suspensions.join(', ') : 'None', beta, eta, mttf, rSquared,
           b10, b50, b90, betaCI: ci.beta, etaCI: ci.eta, descriptiveStats: { n, mean, median, stdDev },
-          logLik: params.ll, aic: params.aic, bic: params.bic, ksD: params.ksD, ksPvalue: params.ksPvalue
+          logLik: params.ll, aic: params.aic, bic: params.bic, ksD: params.ksD, ksPvalue: params.ksPvalue,
+          adStat: params.adStat, adPvalue: params.adPvalue
         };
         document.getElementById("addBtn").disabled = false;
 
@@ -1394,7 +1419,8 @@
         <div class="result-card-item"><strong>MTTF</strong><span>${lastResult.mttf.toFixed(1)}</span></div>
         <div class="result-card-item"><strong>R²</strong><span>${lastResult.rSquared.toFixed(4)}</span></div>
         ${lastResult.logLik ? `<div class="result-card-item"><strong>LogLik</strong><span>${lastResult.logLik.toFixed(2)}</span></div>` : ''}
-        ${lastResult.ksD ? `<div class="result-card-item"><strong>KS D</strong><span>${lastResult.ksD.toFixed(4)}</span></div>` : ''}
+        ${lastResult.ksD ? `<div class="result-card-item"><strong>KS D</strong><span>${lastResult.ksD.toFixed(4)} (p=${lastResult.ksPvalue.toFixed(4)})</span></div>` : ''}
+        ${lastResult.adStat ? `<div class="result-card-item"><strong>AD A²</strong><span>${lastResult.adStat.toFixed(4)} (p=${lastResult.adPvalue.toFixed(4)})</span></div>` : ''}
         <div class="result-card-item"><strong>B10</strong><span>${lastResult.b10.toFixed(0)}</span></div>
         <div class="result-card-item"><strong>B50</strong><span>${lastResult.b50.toFixed(0)}</span></div>
         <div class="result-card-item"><strong>B90</strong><span>${lastResult.b90.toFixed(0)}</span></div>
@@ -1411,8 +1437,9 @@
       const wsData = aggregatedResultsData.map(r => ({
         ID: r.id, Timestamp: r.timestamp, Method: r.method, Failures: r.failureTimes, Suspensions: r.suspensionTimes,
         Beta: r.beta, Eta: r.eta, MTTF: r.mttf, R2: r.rSquared, LogLik: r.logLik || '', AIC: r.aic || '', BIC: r.bic || '',
-        KS_D: r.ksD || '', KS_p: r.ksPvalue || '', B10: r.b10, B50: r.b50, B90: r.b90,
-        Beta_CI: r.betaCI, Eta_CI: r.etaCI, SampleSize: r.descriptiveStats.n, Mean: r.descriptiveStats.mean
+        KS_D: r.ksD || '', KS_p: r.ksPvalue || '', AD_A2: r.adStat || '', AD_p: r.adPvalue || '',
+        B10: r.b10, B50: r.b50, B90: r.b90, Beta_CI: r.betaCI, Eta_CI: r.etaCI,
+        SampleSize: r.descriptiveStats.n, Mean: r.descriptiveStats.mean
       }));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsData), "Weibull Results");
