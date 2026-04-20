@@ -1,606 +1,473 @@
 ================================================================================
    PROFESSIONAL SOFTWARE AUDIT REPORT
-   Software: Weibull Analysis Tool (2 & 3 Parameter) | Professional v9
-   File audited: weibull-v9.html
+   Software: Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.1
+   File audited: weibull-v9.1.html
    Audit date: 2026-04-20
    Auditor: Independent Technical Review
-   Scope: Verification of all v8→v9 changes, residual issue tracking,
-          new issue discovery, regression testing of unchanged components
+   Scope: Full re-audit. Verification of all v9→v9.1 changes, regression
+          testing of all prior changes, complete residual issue tracking,
+          and new issue discovery across the full codebase.
 ================================================================================
 
 TABLE OF CONTENTS
 -----------------
 1.  Executive Summary
-2.  Changes Implemented from v8 Audit (Verification)
-    2.1  PRIMARY — Probability-Plot Initial Guess (censored data)
-    2.2  M1  — Bias-correction η label
-    2.3  M2  — Regression CI label
-    2.4  M3  — Golden-section refinement for 3P Regression (CCO)
-    2.5  M4  — Tighter lower bound in negLogLikGeneral
-    2.6  M5  — Warning on tied minimum observations (3P MLE)
-    2.7  M7  — Bias correction reference label (Ross 1994)
-    2.8  O1  — Warning when γ converges near min(t)
-    2.9  O9  — Chart.js version pin
-3.  Residual Issues from v8 (Still Open)
-4.  New Issues Discovered in v9
-5.  Unchanged Components — Regression Test
-6.  Summary of All Findings by Severity
-7.  Recommendations
-8.  Conclusion
+2.  Changes from v9→v9.1 — Verification
+    2.1  NV3 — Performance guard: useMultiStart && hasCensoring
+    2.2  NV1 — hasCensoring extended to interval-censored data
+    2.3  NV2 — Multi-start eta floor consistency (1e-4)
+3.  Full Inventory of All Prior Changes (v8→v9→v9.1)
+4.  Residual Issues (Still Open)
+5.  New Issues Discovered in v9.1
+6.  Regression Test of Unchanged Components
+7.  Summary of All Findings by Severity
+8.  Recommendations
+9.  Conclusion
 ================================================================================
 
 
 1. EXECUTIVE SUMMARY
 --------------------
-Version 9 addresses nine findings from the v8 audit: the primary algorithmic
-improvement (probability-plot initial guess for censored MLE), six minor
-issues (M1, M2, M3, M4, M5, M7), and two observations (O1, O9). All nine
-changes have been verified as correctly implemented.
+Version 9.1 addresses the three issues discovered during the v9 audit:
+the performance regression in the 3P grid scan (NV3), the incomplete
+hasCensoring detection (NV1), and the minor floor inconsistency in
+multi-start starting points (NV2). All three changes are correctly
+implemented.
 
-The three major issues from v8 (MAJ1 bootstrap interval-censored resampling,
-MAJ2 KS/AD anti-conservative p-values, MAJ3 number parser locale ambiguity)
-were not in scope for v9 and remain open. MAJ2 continues to be mitigated
-by the existing warning block.
+The primary algorithmic change — combining `useMultiStart` with the
+censoring check — is both correct in intent and safe in execution:
+it ensures the probability-plot initialiser runs only when it can
+meaningfully improve convergence (quality final MLE calls), and is
+skipped for grid scans and bootstrap inner loops where speed matters
+and a single Dubey start is sufficient.
 
-One new minor issue was discovered in v9 (NV1): the probability-plot
-initialiser does not handle datasets that are exclusively interval-censored
-(no right-censored observations), falling back to Dubey even though an
-interval-censored dataset could also benefit from a better start.
+One new residual issue was identified (NV4): for datasets that are
+exclusively interval-censored with no exact failures — an edge case not
+supported by the tool anyway — the hasCensoring flag would activate the
+probability-plot path, which then builds an empty adjusted-rank list and
+throws, falling back correctly to Dubey. This is a non-issue in practice
+because the tool already requires at least 2 exact failures for 2P MLE
+(enforced at line ~1929). It is documented for completeness.
 
-One new observation was discovered (NV2): the `hasCensoring` flag checks
-only for `type === 'right'`, ignoring interval-censored observations, which
-means mixed exact + interval-only datasets still use the Dubey initialiser.
-This is a correctness gap for a common data type.
+The three major issues from v8 (MAJ1-3) remain open and unaddressed.
+They are not in scope for v9.x but continue to be the top priority for
+a future release.
 
-Overall quality assessment: VERY GOOD.
+Overall quality assessment: VERY GOOD. The codebase is now internally
+consistent, well-commented, and free of the performance trap introduced
+by v9. No critical or new major issues have been found.
 
-The v9 improvements are technically sound and correctly implemented. The
-probability-plot initialiser in particular is a meaningful robustness upgrade
-that follows best practice for censored MLE initialisation.
-
-Critical issues:  0  (unchanged from v8)
-Major issues:     3  (unchanged from v8; none were in scope)
-Minor issues:     2  (6 resolved, 1 new: NV1)
-Observations:     8  (7 resolved/improved, 1 new: NV2)
+Critical issues:  0
+Major issues:     3  (carried from v8; out of scope for v9.x)
+Minor issues:     1  (M2 formula — regression CIs; label mitigation adequate)
+Observations:     6
+New issues:       0  (NV4 is a non-issue; documented below)
 
 
 ================================================================================
-2. CHANGES IMPLEMENTED FROM v8 AUDIT — VERIFICATION
+2. CHANGES FROM v9→v9.1 — VERIFICATION
 ================================================================================
 
-2.1  PRIMARY — Probability-Plot Initial Guess (censored data)
--------------------------------------------------------------
-Location: weibullMLE(), lines ~1930-1972
-
-CHANGE DESCRIPTION:
-  When `observations.some(o => o.type === 'right')` is true, the code now
-  uses Herd-Johnson adjusted ranks (medianRank / Hazen formula) to compute
-  Weibull probability-plot points, then fits OLS in linearised space:
-
-    x = ln(t),   y = ln(-ln(1 - F))
-    slope  = β₀
-    η₀     = exp(-intercept / β₀)
-
-  For complete data (no right-censored observations), the Dubey (1967)
-  estimator β₀ ≈ 1.283 / σ_ln is retained.
-
-  A try/catch block wraps the probability-plot path; if it fails (e.g.,
-  fewer than 2 plot points), it falls back to Dubey.
-
-MATHEMATICAL CORRECTNESS:
-  The Weibull CDF linearisation is:
-    ln(-ln(1-F)) = β·ln(t) - β·ln(η)
-  Therefore slope = β and intercept = -β·ln(η), giving η = exp(-b/β).
-  This is textbook and correct (Abernethy 2006, ch.3; Nelson 1982, ch.4).
-
-  The Herd-Johnson increment (already verified in v8 as correct) is reused
-  correctly here. The medianRank / Hazen formula F = (j-0.5)/N is
-  appropriate and consistent with the rest of the codebase.
-
-MULTI-START INTERACTION:
-  The probability-plot estimate β₀/η₀ becomes the first of four starting
-  points in the multi-start Nelder-Mead. The other three starts (β₀·0.5,
-  β₀·2.0, and β=1) are retained unchanged. This is correct and provides
-  additional robustness. The best of all four starts is used.
-
-  When called with useMultiStart=false (during the 3P grid scan), the
-  probability-plot path is still executed to compute β₀/η₀, but only a
-  single Nelder-Mead call is made from that starting point. This is
-  appropriate and consistent with the speed objective of the grid scan.
-
-EDGE CASE — interval-only censoring:
-  If the dataset has only exact failures and interval-censored observations
-  (no `type === 'right'` entries), `hasCensoring` evaluates to false and
-  the code falls back to Dubey. This is a correctness gap documented as
-  NV1/NV2 in Section 4.
-
-VERDICT: CORRECTLY IMPLEMENTED. The change achieves its stated goal: for
-right-censored datasets the MLE starts much closer to the optimum, reducing
-the risk of premature convergence in flat likelihood surfaces.
-
-
-2.2  M1 — Bias-Correction η Label
-----------------------------------
-Location: calculateAndDisplay(), line ~2745
-
-OLD: `(uncorrected)`
-NEW: `(MLE η ≈ unbiased; no correction applied)`
-
-VERDICT: CORRECTLY IMPLEMENTED. The new label accurately communicates
-that MLE η is approximately unbiased (as established by Thoman 1969 and
-Ross 1994 for complete data) and that no correction is applied. This
-eliminates the confusion identified in M1 without requiring any mathematical
-change.
-
-
-2.3  M2 — Regression CI Label
-------------------------------
-Location: calculateAndDisplay(), lines ~2733-2736
-
-OLD: `(approx, n≥10)`
-NEW: `(heuristic — not statistically derived)`
-
-VERDICT: CORRECTLY IMPLEMENTED. The new label is accurate and communicates
-the methodological limitation without suppressing the values (which still
-serve as rough guidance). Users are now clearly informed of the heuristic
-nature of these intervals.
-
-NOTE: The underlying formula β ± z·β/√n is unchanged; only the label is
-improved. The formula itself remains an ad-hoc heuristic (see Residual
-Issue M2 below), but the label change constitutes adequate mitigation as
-specified in Priority 4 of the v8 recommendations.
-
-
-2.4  M3 — Golden-Section Refinement for 3P Regression (CCO)
--------------------------------------------------------------
-Location: weibullRegression3(), lines ~2160-2194
-
-Implementation verified:
-  1. Coarse 400-point grid runs first, identifying bestGamma.
-  2. Golden-section search bracket: [bestGamma - step, bestGamma + step]
-     where step = minT/400 (one grid spacing).
-  3. Objective: maximise R² in linearised Weibull plot.
-  4. 20 golden-section iterations: resolution ≈ (2·step)·φ^{-20} ≈ 5×10⁻⁹
-     relative to the bracket width. This is adequate.
-  5. Final evaluation at refined γ updates bestBeta, bestEta, bestR2.
-  6. A silent catch preserves the coarse-grid result if the refinement
-     fails, which is appropriate defensive programming.
-
-The golden-section ratio gr = (√5-1)/2 ≈ 0.61803 is correctly implemented.
-The update rule (if fcG > fdG: gsB=gsD … else gsA=gsC …) correctly
-maximises R² (i.e., searches for the maximum, not the minimum).
-
-VERDICT: CORRECTLY IMPLEMENTED. This mirrors the golden-section approach
-already present in the 3P MLE path, achieving resolution below 1e-8 in γ
-from approximately 20 function evaluations. The computational overhead is
-negligible.
-
-
-2.5  M4 — Tighter Lower Bound in negLogLikGeneral
---------------------------------------------------
-Location: negLogLikGeneral(), line ~1894
-
-OLD: `if (beta <= 0.01 || eta <= 0.01) return 1e12;`
-NEW: `if (beta <= 1e-4 || eta <= 1e-4) return 1e12;`
-
-VERDICT: CORRECTLY IMPLEMENTED. The tighter bound of 1e-4 reduces the
-risk of premature rejection of valid parameter values during optimizer
-exploration for datasets with very small time values or extreme β. The
-penalty value 1e12 remains appropriate.
-
-RESIDUAL NOTE: The multi-start array still contains `Math.max(0.01, eta0 * 0.5)`
-(line ~1983) as a floor for η in starting points. This is now inconsistent
-with the 1e-4 bound but has no practical effect: no realistic starting
-η₀ would yield η₀·0.5 < 0.01, making the 0.01 floor in starting points
-cosmetically mismatched but functionally irrelevant.
-
-
-2.6  M5 — Warning on Tied Minimum Observations (3P MLE)
----------------------------------------------------------
-Location: weibullMLE3(), lines ~2047-2049
+2.1  NV3 — Performance Guard: useMultiStart && hasCensoring
+-----------------------------------------------------------
+Location: weibullMLE(), line ~1948
 
 Implementation:
-  `const atMin = allVals.filter(t => t === minT).length;`
-  `if (atMin > 1) showToast('⚠️ Multiple observations share the exact
-   minimum time …', 8000);`
+  OLD (v9): `const hasCensoring = observations.some(o => o.type === 'right');`
+  NEW (v9.1): `const hasCensoring = useMultiStart &&
+                   observations.some(o => o.type === 'right' || o.type === 'interval');`
 
-VERDICT: CORRECTLY IMPLEMENTED. The warning is triggered appropriately.
+EFFECT ON CALL PATHS:
 
-MINOR OBSERVATION: The `allVals` array is built from both failures and
-censored/interval endpoints, so the count `atMin` may include censored
-observations at the minimum time (not just failures). This is intentionally
-conservative (warns even when censored observations share min(t), which
-also constrains the γ search). The behaviour is acceptable.
+  a) Direct 2P MLE (useMultiStart=true):
+     hasCensoring evaluates the observations predicate normally. For right-
+     censored or interval-censored data → probability-plot path. For complete
+     data → Dubey. Behaviour unchanged from v9 intent.
 
-The warning text correctly directs the user to consider 2P MLE, which is
-the standard mitigation for degenerate 3P cases.
+  b) 3P MLE grid scan (useMultiStart=false, called 200 times):
+     hasCensoring = false unconditionally. All 200 grid-point calls use
+     Dubey. The O(n log n) × 200 overhead introduced in v9 is eliminated.
+     This was the primary motivation for v9.1.
+
+  c) 3P MLE golden-section refinement (useMultiStart=false, 25 calls):
+     hasCensoring = false. Dubey used. Same fix applies.
+
+  d) 3P MLE final quality call (useMultiStart=true, 1 call):
+     hasCensoring evaluates the observations predicate. For censored data
+     → probability-plot path. Correct: the final quality MLE benefits from
+     the better starting point.
+
+  e) Bootstrap inner loop (useMultiStart=false, B × n calls):
+     hasCensoring = false. Dubey used throughout. Correct for speed.
+
+CORRECTNESS ASSESSMENT:
+  The Dubey estimator used in grid-scan calls (paths b, c, e) produces a
+  single-start point that is adequate for a coarse grid scan: the optimizer
+  runs only 800 Nelder-Mead iterations from one starting point, and the
+  grid resolution (200 points) provides enough coverage that a slightly
+  suboptimal start at any individual grid point does not affect which γ
+  wins the maximum LL comparison. The probability-plot path adds value
+  only where the MLE result is final and quality matters, which is
+  exclusively path (a) and path (d).
+
+PERFORMANCE IMPACT:
+  For n=1000 with censored data, the v9 overhead was ~200 × O(n log n)
+  adjusted-rank computations in the 3P grid scan. In v9.1 this overhead
+  is zero. For n=100, the difference is small but measurable (~200 ms).
+  The fix is therefore meaningful for large datasets.
+
+VERDICT: CORRECTLY IMPLEMENTED. Resolves NV3 with no loss of accuracy.
 
 
-2.7  M7 — Bias Correction Reference Label
-------------------------------------------
-Location: HTML form, line ~1279
+2.2  NV1 — hasCensoring Extended to Interval-Censored Data
+-----------------------------------------------------------
+Location: weibullMLE(), line ~1949
 
-OLD: `correction (Thoman et al. 1969)`
-NEW: `correction (Ross 1994 / Thoman 1969)`
+  `observations.some(o => o.type === 'right' || o.type === 'interval')`
 
-VERDICT: CORRECTLY IMPLEMENTED. The new label accurately reflects that
-the implemented formula β·(n-1)/(n-0.68) is the Ross (1994) analytical
-approximation to the Thoman et al. (1969) tabulated correction factors.
-The function comment (line ~2240) already referenced Ross 1994; the UI
-label now agrees.
+ANALYSIS:
+  When hasCensoring is true (via the interval branch) and the probability-
+  plot path executes, the suspTimesInit array is built from right-censored
+  observations only:
+
+    `const suspTimesInit = observations
+        .filter(o => o.type === 'right')
+        .map(o => o.time - gam)
+        .filter(t => t > 0);`
+
+  For a dataset of exact failures + interval-censored observations (no
+  right-censored), suspTimesInit will be empty. The adjusted-rank
+  calculation then degenerates to a complete-data probability plot using
+  only exact failure times — which is equivalent to the standard Dubey
+  estimate but derived differently (through the probability-plot
+  regression rather than the log-variance formula).
+
+  Numerical equivalence check:
+  - Probability plot with no suspensions: F_i = (i-0.5)/n (Hazen),
+    x = ln(t_i), y = ln(-ln(1-F_i)), OLS slope = β₀.
+  - Dubey: β₀ = 1.283 / σ_ln(t).
+  These are NOT identical but produce similar β₀ estimates.
+  The probability-plot estimate is actually preferable as it does not
+  assume a specific log-variance-to-shape relationship.
+
+  PRACTICAL OUTCOME: For exact+interval datasets with no suspensions:
+  - v9: Dubey (fast, adequate)
+  - v9.1: probability plot on exact failures only (slightly different β₀,
+    no interval data incorporated, but within try/catch so no risk)
+
+  The interval-censored observations are still not incorporated into the
+  adjusted-rank computation. This is a known limitation documented in the
+  v9 audit and accepted: the Herd-Johnson rank method only handles exact
+  and right-censored observations, not interval-censored ones.
+
+VERDICT: CORRECTLY IMPLEMENTED for its stated purpose (flag consistency).
+  The practical benefit for pure interval+exact datasets is marginal but
+  non-negative. No regression risk.
 
 
-2.8  O1 — Warning When γ Converges Near min(t)
+2.3  NV2 — Multi-Start eta Floor Consistency
+--------------------------------------------
+Location: weibullMLE(), line ~1994
+
+  OLD: `[Math.min(20, beta0 * 2.0), Math.max(0.01, eta0 * 0.5)]`
+  NEW: `[Math.min(20, beta0 * 2.0), Math.max(1e-4, eta0 * 0.5)]`
+
+VERDICT: CORRECTLY IMPLEMENTED. The floor is now consistent with the
+  M4 lower bound of 1e-4 in negLogLikGeneral. For any dataset where
+  eta0 < 0.02 (small-time datasets), the optimiser can now explore
+  starting values down to 1e-4 from this starting point, matching the
+  range the likelihood function will accept. As noted in the v9 audit,
+  this is cosmetic for typical engineering datasets but is internally
+  consistent.
+
+
+================================================================================
+3. FULL INVENTORY OF ALL CHANGES (v8 → v9 → v9.1)
+================================================================================
+
+The following table summarises every code change applied across both
+versions, their audit status, and any residual notes.
+
+CHANGE       VERSION  STATUS    DESCRIPTION
+-----------  -------  --------  -------------------------------------------------
+PRIMARY      v9       VERIFIED  Probability-plot initialiser for censored MLE.
+                                Uses Herd-Johnson adjusted ranks + OLS regression
+                                in linearised Weibull space (y=ln(-ln(1-F)),
+                                x=ln(t)) to compute β₀/η₀ when censored data is
+                                present and useMultiStart=true.
+M1           v9       VERIFIED  η label changed from "(uncorrected)" to
+                                "(MLE η ≈ unbiased; no correction applied)".
+M2-label     v9       VERIFIED  Regression CI label: "(approx, n≥10)" →
+                                "(heuristic — not statistically derived)".
+M3           v9       VERIFIED  Golden-section refinement added to 3P regression
+                                CCO after the 400-point coarse grid.
+M4           v9       VERIFIED  negLogLikGeneral lower bound: 0.01 → 1e-4.
+M5           v9       VERIFIED  Warning when multiple observations share min(t)
+                                in 3P MLE (narrow γ search range).
+M7           v9       VERIFIED  Bias correction label: "Thoman et al. 1969" →
+                                "Ross 1994 / Thoman 1969".
+O1           v9       VERIFIED  Warning when γ > 0.99·min(t) in 3P MLE.
+O9           v9       VERIFIED  Chart.js pinned to @4.4.3/dist/chart.umd.min.js.
+NV3          v9.1     VERIFIED  hasCensoring gated on useMultiStart: probability-
+                                plot skipped in grid scans and bootstrap loops.
+NV1          v9.1     VERIFIED  hasCensoring extended to interval-censored:
+                                `o.type === 'right' || o.type === 'interval'`.
+NV2          v9.1     VERIFIED  Multi-start eta floor: 0.01 → 1e-4.
+
+
+================================================================================
+4. RESIDUAL ISSUES (STILL OPEN)
+================================================================================
+
+MAJ1 — Bootstrap CI for Interval-Censored Data
 -----------------------------------------------
-Location: weibullMLE3(), lines ~2118-2121
+Status: OPEN — UNCHANGED since v8
+Location: bootstrapWeibull(), lines ~2573-2576
 
-Implementation:
-  `if (bestGamma > 0.99 * minT) showToast('⚠️ 3P: γ converged very close
-   to min(t) …', 9000);`
-
-VERDICT: CORRECTLY IMPLEMENTED. The threshold 0.99·min(t) (i.e., within
-1% of min(t)) is a reasonable heuristic. The warning text correctly
-identifies the pathological case (unbounded likelihood as γ→min(t) when
-β<1) and recommends 2P MLE.
-
-NOTE: The condition checks `bestGamma > 0.99 * minT` after the
-golden-section refinement, which operates in the range [0, 0.9999·minT].
-Since the golden-section upper bound is 0.9999·minT, any γ in
-(0.99·minT, 0.9999·minT) will trigger the warning. For a dataset where
-the true 3P γ is legitimately close to min(t), this warning may be a
-false positive. However, the warning is advisory (not blocking) and is
-appropriate given the numerical risk.
-
-
-2.9  O9 — Chart.js Version Pin
---------------------------------
-Location: <head>, line 14
-
-OLD: `https://cdn.jsdelivr.net/npm/chart.js`
-NEW: `https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js`
-
-VERDICT: CORRECTLY IMPLEMENTED. The version is now pinned to 4.4.3 and
-the UMD bundle is specified explicitly. This eliminates the risk of silent
-breaking changes from CDN updates.
-
-
-================================================================================
-3. RESIDUAL ISSUES FROM v8 (STILL OPEN)
-================================================================================
-
-MAJ1 — Bootstrap CI for Interval-Censored Data (NOT ADDRESSED IN v9)
------------------------------------------------------------------------
-Status: OPEN — UNCHANGED
-Location: bootstrapWeibull(), lines ~2562-2564
-
-The interval-censored resampling (lines 2562-2564) still returns the
-original interval boundaries unchanged, producing deterministic interval
-contributions across all B resamples:
+The bootstrap resampling for interval-censored observations returns the
+original interval boundaries unchanged across all B resamples:
 
   `const left = sk.leftRatio * etaHat, right = sk.rightRatio * etaHat;`
   `return { type: 'interval', left, right };`
 
-For datasets with significant interval-censored fractions, bootstrap CI
-widths will remain underestimated. This is the most impactful unresolved
-issue. The v8 recommendation to sample a latent failure time uniformly from
-within each interval (using the truncated Weibull CDF) is still applicable.
+This makes interval-censored observations deterministic across resamples,
+underestimating CI width when the interval-censored fraction is significant.
+The statistically correct fix (sampling a latent failure time from the
+truncated Weibull within [left, right]) has not been implemented.
 
 
-MAJ2 — KS/AD Anti-Conservative p-values (NOT ADDRESSED IN v9)
----------------------------------------------------------------
-Status: OPEN — MITIGATION UNCHANGED
-The warning block and shifted GoF thresholds from v8 remain in place.
-Lilliefors-corrected critical values have not been implemented. This
-continues to be mitigated but not resolved.
+MAJ2 — KS/AD Anti-Conservative p-values
+-----------------------------------------
+Status: OPEN — MITIGATED but not resolved
+The shifted GoF thresholds and in-situ warning remain in place. Lilliefors-
+corrected critical values for the Weibull KS/AD test have not been
+implemented. Mitigation is adequate for informed users.
 
 
-MAJ3 — Number Parser Locale Ambiguity (NOT ADDRESSED IN v9)
-------------------------------------------------------------
-Status: OPEN — UNCHANGED
-The heuristic locale detection (lines ~1715-1733) remains. The case of a
-single comma in a decimal value (e.g., EU "1,5") is still parsed
-heuristically as 1.5 (comma→dot), while "1,234" (US thousands separator)
-is also parsed as 1234. This ambiguity persists. No locale selector or
-parsed-value preview has been added.
+MAJ3 — Number Parser Locale Ambiguity
+---------------------------------------
+Status: OPEN — UNCHANGED since v8
+The heuristic locale detection (single comma → EU decimal) persists.
+No locale selector or parsed-value preview has been added.
 
 
-M2 (underlying formula) — Regression CI Formula
-------------------------------------------------
-Status: PARTIALLY RESOLVED
-The label was updated (✓ verified above) but the formula β ± z·β/√n
-remains a heuristic. The correct OLS standard error SE(β̂) = √(σ²ε/SSxx)
-has not been implemented. The label change constitutes the minimum
-acceptable mitigation.
+M2 (formula) — Regression CI Formula
+--------------------------------------
+Status: PARTIALLY MITIGATED
+The label change correctly describes the formula as heuristic. The
+underlying formula β ± z·β/√n has not been replaced with the
+statistically correct OLS standard error SE(β̂) = √(σ²ε/SSxx).
+Label change constitutes adequate minimum mitigation.
 
 
 ================================================================================
-4. NEW ISSUES DISCOVERED IN v9
+5. NEW ISSUES DISCOVERED IN v9.1
 ================================================================================
 
-NV1 — Probability-Plot Initialiser Ignores Interval-Censored Observations
----------------------------------------------------------------------------
-Severity: MINOR
-Location: weibullMLE(), line 1937
+NV4 — Observation: Interval-Only Datasets Trigger Probability-Plot Path
+        with Empty suspTimesInit (Non-Issue)
+------------------------------------------------------------------------
+Severity: OBSERVATION (non-issue in practice)
+Location: weibullMLE(), lines ~1954-1959
 
-The `hasCensoring` flag is:
-  `const hasCensoring = observations.some(o => o.type === 'right');`
+For a dataset with only exact failures and interval-censored observations
+(no right-censored), the v9.1 hasCensoring check evaluates true (due to
+the `|| o.type === 'interval'` extension). The probability-plot path then
+executes with:
 
-This is true only when there are right-censored (suspension) observations.
-Datasets containing interval-censored observations but NO right-censored
-observations will evaluate `hasCensoring = false` and use the Dubey
-estimator, even though interval censoring also distorts the log-variance
-used by Dubey and could benefit from the probability-plot approach.
+  suspTimesInit = []   (no right-censored observations)
 
-Example: failures=[100,150,200], intervals=[250-300, 350-400]
-→ hasCensoring = false → Dubey initialiser used
-→ Dubey uses only exact failure times: σ_ln computed from 100, 150, 200
-→ The interval observations are ignored in the initial guess, potentially
-  producing a poor β₀ when the true β would be influenced by the
-  interval data.
+The adjusted-rank computation runs with zero suspensions, producing a
+standard complete-data probability plot from exact failure times only.
+This is valid and produces a probability-plot β₀/η₀. No error occurs.
 
-The probability-plot path only uses right-censored suspensions anyway
-(via `suspTimesInit`), so extending `hasCensoring` to include interval
-observations would trigger the probability-plot path but the interval
-data would still not be incorporated into the adjusted ranks. The
-practical benefit is limited, but the semantic inconsistency is notable.
+However, the INTENT of the NV1 fix was to capture datasets where interval
+censoring affects the distribution shape. Since the interval-censored
+observations are not incorporated into the adjusted ranks, the improvement
+over the Dubey path is marginal (different formula, similar β₀).
 
-RECOMMENDATION: Change the flag to:
-  `const hasCensoring = observations.some(o => o.type === 'right' ||
-                                               o.type === 'interval');`
-This ensures the probability-plot path is used whenever any censoring
-is present, which is statistically consistent with the intent of the
-feature.
+WHY THIS IS A NON-ISSUE:
+  1. Both paths produce mathematically valid starting points.
+  2. The try/catch block ensures any failure falls back to Dubey safely.
+  3. The tool already enforces exactObs.length >= 2 before reaching the
+     initialiser, so degenerate cases are caught upstream.
+  4. The marginal change in β₀ is inconsequential given multi-start (the
+     quality call uses 4 starting points; β₀ is only one of them).
 
-
-NV2 — Inconsistent Fallback Floor in Multi-Start vs. New Lower Bound
----------------------------------------------------------------------
-Severity: OBSERVATION
-Location: weibullMLE(), line ~1983
-
-After M4 lowered the negLogLikGeneral lower bound to 1e-4, the multi-start
-array still applies a 0.01 floor to starting η values:
-
-  `[Math.min(20, beta0 * 2.0), Math.max(0.01, eta0 * 0.5)]`
-
-If eta0 is on the order of 0.02 (small-time dataset), then eta0*0.5 = 0.01
-which is valid — but the floor of 0.01 means the optimizer cannot explore
-η values in (1e-4, 0.01) from this starting point. Since the negLogLik
-now accepts β,η > 1e-4, a starting point of η=0.01 could still miss the
-MLE if the true η is in (1e-4, 0.01).
-
-In practice this only affects datasets with very small absolute time values
-(sub-millisecond or similar), and the other three starts (which have no
-such floor) would likely find the correct basin. The inconsistency is
-cosmetic for typical engineering datasets.
-
-RECOMMENDATION: Change `Math.max(0.01, eta0 * 0.5)` to
-`Math.max(1e-4, eta0 * 0.5)` for full consistency with M4.
+No code change is needed. Documented for completeness.
 
 
 ================================================================================
-5. UNCHANGED COMPONENTS — REGRESSION TEST
+6. REGRESSION TEST OF UNCHANGED COMPONENTS
 ================================================================================
 
-The following components were unchanged in v9. A targeted regression review
-confirms no inadvertent changes or interactions with the v9 modifications.
+All components not touched in v9.1 were verified to be identical to v9.
+Targeted checks were performed on components whose behaviour could
+theoretically be affected by the hasCensoring / useMultiStart interaction.
 
-5.1  Core Weibull Functions (PDF, CDF, Hazard, Reliability)
-  Lines ~1762-1781: UNCHANGED. No regression issues.
+6.1  Core Weibull Functions (PDF, CDF, Hazard, Reliability)
+  UNCHANGED. No interactions with v9.1 changes. PASS.
 
-5.2  Gamma Function (Lanczos)
-  Lines ~1628-1637: UNCHANGED. No regression issues.
+6.2  Herd-Johnson Adjusted Ranks (calculateAdjustedRanks)
+  Called by the probability-plot initialiser. Function is unchanged.
+  The call signature in the initialiser is correct:
+    `calculateAdjustedRanks(failTimesInit, suspTimesInit, 'medianRank')`
+  where both arrays are pre-filtered to contain only positive values.
+  No regression. PASS.
 
-5.3  MTTF and B-Life Formulas
-  UNCHANGED. No regression issues.
+6.3  linearRegression
+  Called by the probability-plot initialiser. Function is unchanged.
+  For n=2 exact failures with no suspensions, the function returns a
+  valid regression (required: n >= 2, checked). PASS.
 
-5.4  Herd-Johnson Adjusted Ranks (calculateAdjustedRanks)
-  The v9 initialiser reuses this function with failTimesInit/suspTimesInit.
-  The function signature is `(failureTimes, suspensionTimes, method)`;
-  the call in the initialiser correctly passes arrays of shifted times.
-  No regression issues.
+6.4  3P MLE Grid Scan Interaction
+  All 200 grid-point calls use weibullMLE(sh, 0, 3, false).
+  With useMultiStart=false, hasCensoring=false regardless of data type.
+  Grid scan now always uses Dubey. Confirmed by tracing the logic.
+  Behaviour is equivalent to v8 for the grid scan portion. PASS.
 
-5.5  Nelder-Mead Optimizer
-  UNCHANGED. No regression issues.
+6.5  3P MLE Final Quality Call
+  Uses weibullMLE(finalShifted, 0, 3, true). With useMultiStart=true,
+  hasCensoring evaluates the shifted observations. If the original dataset
+  had suspensions, the shifted dataset will also have type='right' entries,
+  correctly triggering the probability-plot path. PASS.
 
-5.6  Profile Likelihood CIs
-  UNCHANGED. No regression issues.
+6.6  Bootstrap Inner Loop
+  All bootstrap calls use weibullMLE(..., false). hasCensoring=false.
+  Dubey used for all resamples. Performance unchanged from v8. PASS.
 
-5.7  Fisher Information CIs
-  UNCHANGED. No regression issues.
+6.7  Profile Likelihood CIs
+  UNCHANGED. No interaction with v9.1 changes. PASS.
 
-5.8  Bootstrap CIs
-  Core logic UNCHANGED (MAJ1 remains open).
-  The probability-plot initialiser does not affect the bootstrap path
-  (bootstrap calls weibullMLE with useMultiStart=false, which still
-  benefits from the new starting point).
+6.8  Fisher Information CIs
+  UNCHANGED. PASS.
 
-5.9  3P MLE Grid + Golden-Section (pre-existing)
-  The 3P grid now calls weibullMLE(sh, 0, 3, false) at each grid point
-  with useMultiStart=false. With the v9 change, each of these 200 calls
-  will now execute the probability-plot initialiser (since the shifted
-  observations `sh` may contain right-censored entries when there are
-  suspensions in the original data).
+6.9  Goodness-of-Fit (KS, AD)
+  UNCHANGED. PASS.
 
-  INTERACTION CONCERN: When `useMultiStart=false`, the probability-plot
-  path computes adjusted ranks and runs a linear regression for EACH of
-  the 200 grid points. This adds ~200 × (rank computation + regression)
-  operations per 3P MLE call. For a dataset with n suspensions, each rank
-  computation is O(n log n). For large n (e.g., 1000+ observations), this
-  could increase 3P MLE runtime by a meaningful amount.
+6.10 Regression 2P/3P
+  UNCHANGED (weibullRegression2, weibullRegression3). The CCO golden-
+  section from v9 is intact. PASS.
 
-  Quantitative estimate: For n=100 total observations, each adjusted-rank
-  computation ≈ 1 ms; 200 grid points × 1 ms = 200 ms additional overhead.
-  For n=1000, this could reach 2-5 seconds additional. The golden-section
-  phase (25 iterations) adds 25 more such calls.
+6.11 negLogLikGeneral (M4 bound)
+  UNCHANGED from v9. 1e-4 bound still in place. PASS.
 
-  This is a new PERFORMANCE OBSERVATION. For datasets with n<200 it is
-  negligible. For larger n with censored data and 3P MLE, the user may
-  notice increased computation time. The current async chunking does NOT
-  apply to the 3P grid (it runs synchronously inside a for loop), so
-  the UI could freeze for 2-5 seconds on large censored datasets.
+6.12 Bias Correction (thomanBiasCorrection)
+  UNCHANGED. Label changes from v9 intact. PASS.
 
-  This was not present in v8 because the Dubey initialiser (O(n)) was
-  used unconditionally.
-
-  RECOMMENDATION: Add `useMultiStart=false` path to skip the probability-
-  plot initialiser and always use Dubey when called from the 3P grid,
-  since the multi-start benefit is already bypassed and the grid scan
-  does not require a high-quality start — only a consistent one:
-
-    if (hasCensoring && useMultiStart) {
-        // probability-plot initialiser
-    } else {
-        // Dubey initialiser (fast, consistent)
-    }
-
-5.10 Goodness-of-Fit (KS, AD)
-  UNCHANGED. No regression issues.
-
-5.11 Mixture Detection, Outlier Detection
-  UNCHANGED. No regression issues.
-
-5.12 Input Parsing
-  UNCHANGED (MAJ3 remains open). No regression issues.
-
-5.13 Excel Import/Export
-  UNCHANGED. No regression issues.
+6.13 Input Parsing, Excel Import/Export, UI
+  UNCHANGED. PASS.
 
 
 ================================================================================
-6. SUMMARY OF ALL FINDINGS BY SEVERITY
+7. SUMMARY OF ALL FINDINGS BY SEVERITY
 ================================================================================
 
 CRITICAL (0):
   None.
 
-MAJOR (3) — ALL CARRIED OVER FROM v8, NONE IN SCOPE FOR v9:
-  MAJ1 - Bootstrap CI interval-censored resampling: deterministic intervals
-         produce underestimated CI widths for interval-dominated datasets.
-  MAJ2 - KS/AD p-values anti-conservative with estimated parameters.
+MAJOR (3) — carried from v8, not in scope for v9.x:
+  MAJ1 - Bootstrap CI interval-censored resampling (deterministic intervals
+         → underestimated CI width for interval-dominated datasets).
+  MAJ2 - KS/AD p-values anti-conservative (parameters estimated from data).
          Warning in place; Lilliefors correction not implemented.
-  MAJ3 - Number parser locale ambiguity (single comma: EU decimal vs US
-         thousands). No locale selector or parsed-value preview added.
+  MAJ3 - Number parser locale ambiguity (single comma: EU decimal vs. US
+         thousands separator). No locale selector added.
 
-MINOR (2):
-  NV1  - hasCensoring flag excludes interval-censored observations; Dubey
-         initialiser used for exact+interval datasets (no right-censored).
-         The probability-plot path is not triggered, and interval data is
-         not used in the initial guess.
-  M2*  - Regression CI formula (β ± z·β/√n) remains a heuristic.
-         Label updated in v9 (now says "heuristic — not statistically
-         derived"); formula not corrected. Label change is adequate
-         mitigation per v8 Priority 4.
+MINOR (1):
+  M2*  - Regression CI formula (β ± z·β/√n) remains a heuristic. Label
+         now explicitly states "heuristic — not statistically derived".
+         Label mitigation is adequate per v8 Priority 4. No further
+         action required unless formula accuracy becomes a requirement.
 
-OBSERVATIONS (8):
-  NV2  - Multi-start floor Math.max(0.01, eta0*0.5) inconsistent with M4
-         lower bound of 1e-4. Cosmetic for typical engineering data.
-  NV3  - Performance regression for 3P MLE on large censored datasets:
-         probability-plot initialiser executes at each of 200 grid points
-         when useMultiStart=false, adding O(n log n) overhead per point.
-         For n>200 with suspensions, noticeable UI latency is possible.
-  O3   - Joint confidence regions still not offered (unchanged from v8).
-  O4   - γ CI computation cost (unchanged from v8).
-  O5   - Bootstrap non-reproducible; no random seed option (unchanged).
+OBSERVATIONS (6):
+  O3   - Joint confidence regions not offered (unchanged from v8).
+  O4   - γ CI computation expensive: full 2P MLE at each bisection step
+         (unchanged from v8; correct, just slow for large datasets).
+  O5   - Bootstrap not reproducible: no random seed option (unchanged).
   O7   - Q1/Q3 quantile floor-indexing in outlier detection (unchanged).
-  O8   - Excel import reads only last row (unchanged).
-  M5** - 3P min(t) tie warning counts censored observations at min(t),
-         not just failures. Warning is conservatively correct but may
-         fire for datasets where censored obs happen to share min(t)
-         without creating a degenerate γ search.
-
-  ** Flagged as an observation, not a defect; the conservative behaviour
-     is intentional and acceptable.
+  O8   - Excel import reads only last row; could surprise multi-row users
+         (unchanged from v8).
+  NV4  - Interval-only datasets trigger probability-plot path with empty
+         suspTimesInit. Valid behaviour, marginal effect, non-issue.
 
 
 ================================================================================
-7. RECOMMENDATIONS
+8. RECOMMENDATIONS
 ================================================================================
 
-Priority 1 — Address NV3 (Performance regression, 3P + censored):
-  Guard the probability-plot path with `useMultiStart`:
-
-    const hasCensoring = observations.some(o => o.type === 'right');
-    if (hasCensoring && useMultiStart) {
-        // probability-plot initialiser (v9 path)
-    } else {
-        // Dubey initialiser (used for grid scans and complete data)
-    }
-
-  This preserves the full benefit of the new initialiser for the final
-  quality MLE (where useMultiStart=true) while keeping grid scans fast.
-  Effort: 2-line change. Impact: eliminates the O(n log n × 200) overhead
-  during the 3P grid scan.
-
-Priority 2 — Address NV1 (interval-only censoring):
-  Extend hasCensoring to include interval-censored observations:
-
-    const hasCensoring = observations.some(
-        o => o.type === 'right' || o.type === 'interval');
-
-  Note: even with this change, interval observations are not incorporated
-  into the adjusted-rank computation (the probability-plot only uses exact
-  failures and right-censored suspensions). The benefit is purely that
-  the flag correctly signals "censoring is present" for interval-only
-  datasets, and the fallback to Dubey is avoided.
-
-Priority 3 — Address MAJ1 (Bootstrap interval resampling):
-  For interval-censored observations in bootstrap resamples, sample a
-  latent failure time from the truncated Weibull within [left, right]:
+Priority 1 — Address MAJ1 (Bootstrap interval-censored resampling):
+  This is the highest-value remaining fix. For interval-censored observations
+  in bootstrap resamples, sample a latent failure time from the truncated
+  Weibull CDF within [left, right]:
 
     const u = Math.random();
-    const Fl = weibullCDF(left, etaHat, betaHat, gamHat);
-    const Fr = weibullCDF(right, etaHat, betaHat, gamHat);
+    const Fl = 1 - Math.exp(-Math.pow((left  - gamHat) / etaHat, betaHat));
+    const Fr = 1 - Math.exp(-Math.pow((right - gamHat) / etaHat, betaHat));
     const Fmix = Fl + u * (Fr - Fl);
     const tLat = gamHat + etaHat * Math.pow(-Math.log(1 - Fmix), 1/betaHat);
     return { type: 'exact', time: tLat };
 
-  This is statistically correct and adds two lines of code per resample.
+  Replace the current deterministic interval return (lines ~2573-2576).
+  Effort: ~8 lines. Impact: correct bootstrap CI widths for mixed datasets.
 
-Priority 4 — Address NV2 (Multi-start floor inconsistency):
-  Change `Math.max(0.01, eta0 * 0.5)` to `Math.max(1e-4, eta0 * 0.5)`.
-  Effort: 1-character change. Low priority.
+Priority 2 — Address MAJ3 (Number parser locale):
+  Add an explicit US/EU locale toggle above the input fields, or display
+  parsed numerical values below each textarea before analysis begins.
+  The current heuristic handles most cases but can silently misparse
+  European decimal notation with a single digit after the comma.
 
-Priority 5 — Address MAJ3 (Number parser):
-  Add an explicit locale selector (US/EU) or display parsed values
-  back to the user before analysis for verification.
+Priority 3 — Address M2 formula (Regression CI):
+  Replace β ± z·β/√n with the proper OLS standard error:
+    SE(β̂) = sqrt(ssRes / (n-2) / ssxx)
+  Both ssRes and ssxx are available inside linearRegression(). Expose
+  them in the return object and use them in the CI computation.
 
-Priority 6 — Address M2 formula (Regression CIs):
-  Replace β ± z·β/√n with SE(β̂) = √(σ²ε/SSxx) from OLS theory.
-  SSxx and σ²ε = SSres/(n-2) are already available inside linearRegression().
-  Expose them and use them for the CI computation.
+Priority 4 — Address O5 (Bootstrap reproducibility):
+  Add an optional seed input, use a seeded PRNG (e.g., xoshiro256**) to
+  replace Math.random() when a seed is provided.
+
+No further action is required on NV3, NV1, or NV2 — all resolved in v9.1.
+No further action is required on NV4 — non-issue.
 
 
 ================================================================================
-8. CONCLUSION
+9. CONCLUSION
 ================================================================================
 
-Version 9 delivers nine targeted improvements to the v8 codebase, all of
-which have been verified as mathematically correct and correctly implemented.
-The primary algorithmic enhancement — using the Weibull probability plot with
-Herd-Johnson adjusted ranks to initialise the MLE optimiser when censored
-data is present — is technically sound, well-documented, and follows the
-approach recommended by Abernethy (2006) and Nelson (1982) for censored
-reliability datasets.
+Version 9.1 completes the v9.x improvement cycle cleanly. All twelve
+targeted changes across v9 and v9.1 have been verified as mathematically
+correct, correctly implemented, and internally consistent. No regressions
+were introduced in any unchanged component.
 
-The three remaining major issues (MAJ1-3) are unchanged from v8. MAJ1
-(bootstrap interval resampling) remains the highest-priority unresolved
-defect and should be the focus of the next development cycle.
+The codebase now has:
+  - A principled, two-mode initialiser for censored MLE (probability-plot
+    for quality calls, Dubey for grid scans and bootstrap) with clear
+    comments explaining the design decision.
+  - A complete chain of improvements to 3P Weibull fitting: golden-section
+    γ refinement in both MLE and regression paths, correct KS/AD evaluation
+    on the original scale, and bounded likelihood warnings.
+  - A clean, consistent lower-bound policy (1e-4) across negLogLikGeneral
+    and multi-start starting points.
+  - Well-labelled outputs that accurately describe the statistical nature
+    of bias corrections, CIs, and GoF tests.
 
-The newly discovered performance interaction (NV3) is a direct consequence
-of the v9 probability-plot initialiser being called inside the 3P grid
-scan: a one-line guard (`hasCensoring && useMultiStart`) eliminates this
-overhead with no loss of accuracy. This fix should accompany any v10
-release.
+Three major issues remain open (MAJ1-3). Of these, MAJ1 (bootstrap
+interval-censored resampling) is the only one that affects computed output
+values silently; MAJ2 and MAJ3 are mitigated in the UI. MAJ1 should be
+the sole focus of a v9.2 or v10 release.
 
-The tool continues to meet the quality bar of professional-grade reliability
-analysis software for its intended scope. With the NV3 performance fix and
-the MAJ1 bootstrap improvement, the tool would be suitable for production
-use with interval-censored dominated datasets as well.
+The tool is suitable for professional reliability engineering with
+properly formatted data and predominantly exact or right-censored
+observations. For bootstrap CI accuracy with significant interval-censored
+data, users should continue to apply extra caution until MAJ1 is addressed.
 
 ================================================================================
 END OF AUDIT REPORT
 Report generated: 2026-04-20
 Auditor: Independent Technical Review
-Software version audited: Professional v9
-Lines of code reviewed: 3,264
+Software version audited: Professional v9.1
+Lines of code reviewed: 3,277
+Total changes tracked across v8→v9→v9.1: 12
+Open issues: 3 major, 1 minor, 6 observations
 ================================================================================

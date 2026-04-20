@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
-    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9</title>
+    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.1</title>
     <meta name="description"
         content="Professional Weibull analysis tool for reliability engineering. 2-parameter and 3-parameter Weibull with MLE and regression. Calculate β, η, γ, MTTF, B-lives, PDF, CDF, hazard and reliability functions. Goodness-of-fit tests, confidence intervals, probability plots.">
     <meta name="keywords"
@@ -1993,16 +1993,28 @@
                 const exactObs = observations.filter(o => o.type === 'exact');
                 if (exactObs.length < 2) throw new Error('Need at least 2 exact failures.');
                 // ── Initial guess strategy ─────────────────────────────────────────
-                // When censored data is present, use the Weibull probability plot
-                // (Herd-Johnson adjusted ranks → linearised regression) to obtain β₀ and η₀.
+                // When censored data is present AND this is a quality MLE call
+                // (useMultiStart=true), use the Weibull probability plot with
+                // Herd-Johnson adjusted ranks to obtain β₀ and η₀.
                 // This places the MLE start much closer to the optimum than the
                 // Dubey estimator, which uses only failure times and can be unstable
                 // under high censoring (Abernethy 2006, ch.3; Nelson 1982).
-                // For complete data, fall back to the faster Dubey (1967) estimator.
-                const hasCensoring = observations.some(o => o.type === 'right');
+                //
+                // The probability-plot path is intentionally SKIPPED when
+                // useMultiStart=false (3P grid scan / bootstrap inner loops):
+                // those calls need only a fast, consistent start — not a high-quality
+                // one — and running an O(n log n) rank computation at each of 200
+                // grid points would add unnecessary latency for large censored datasets.
+                //
+                // hasCensoring covers both right-censored and interval-censored data
+                // (NV1 fix): even datasets with only interval observations benefit
+                // from the probability-plot path when called as a final quality MLE.
+                // For complete data or grid-scan calls, fall back to Dubey (1967).
+                const hasCensoring = useMultiStart &&
+                    observations.some(o => o.type === 'right' || o.type === 'interval');
                 let beta0, eta0;
                 if (hasCensoring) {
-                    // Probability-plot initialiser (v9 method)
+                    // Probability-plot initialiser (v9.1 method)
                     try {
                         const failTimesInit = exactObs.map(o => o.time - gam).filter(t => t > 0);
                         const suspTimesInit = observations
@@ -2044,7 +2056,7 @@
                     const multiStarts = [
                         [beta0, eta0],
                         [Math.max(0.1, beta0 * 0.5), Math.min(eta0 * 2.0, 1e9)],
-                        [Math.min(20, beta0 * 2.0), Math.max(0.01, eta0 * 0.5)],
+                        [Math.min(20, beta0 * 2.0), Math.max(1e-4, eta0 * 0.5)],
                         [1.0, eta0]
                     ];
                     for (const start of multiStarts) {
