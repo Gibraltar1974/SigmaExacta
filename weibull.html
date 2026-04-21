@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
-    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.2</title>
+    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.3</title>
     <meta name="description"
         content="Professional Weibull analysis tool for reliability engineering. 2-parameter and 3-parameter Weibull with MLE and regression. Calculate β, η, γ, MTTF, B-lives, PDF, CDF, hazard and reliability functions. Goodness-of-fit tests, confidence intervals, probability plots.">
     <meta name="keywords"
@@ -1215,8 +1215,10 @@
                                 <label for="analysisType"><i class="fas fa-list-ol"></i> Rank Method
                                     (Regression):</label>
                                 <select id="analysisType">
-                                    <option value="medianRank">Hazen (F=(i-0.5)/n)</option>
-                                    <option value="benard">Benard's Approximation (Median Rank)</option>
+                                    <option value="medianRank">Hazen — F=(j−0.5)/N (Herd-Johnson adjusted rank j)
+                                    </option>
+                                    <option value="benard">Benard's Approx. — F=(j−0.3)/(N+0.4) (Herd-Johnson adjusted
+                                        rank j)</option>
                                 </select>
                             </div>
                             <div class="input-group">
@@ -1299,7 +1301,8 @@
             <div class="container" style="margin-top:0;">
                 <p><i class="fas fa-info-circle" style="color: var(--secondary-color);"></i> Click the
                     <strong>Analyze</strong> button in the top toolbar to run the analysis. Results will appear on the
-                    <strong>Results</strong> tab automatically.</p>
+                    <strong>Results</strong> tab automatically.
+                </p>
             </div>
             <div class="tab-nav-buttons" style="margin-top:1rem;">
                 <button class="btn-next-tab" onclick="switchWizardTab('tab-results')">Go to Results <i
@@ -1332,14 +1335,18 @@
                             <p id="gammaInterpretation" class="info-message" style="display:none;"></p>
                             <p><i class="fas fa-stopwatch"></i> Mean Time To Failure (MTTF): <span id="mttf"
                                     class="result-value">—</span></p>
-                            <p><i class="fas fa-chart-line"></i> R² (Weibull Plot): <span id="rSquared"
-                                    class="result-value">—</span></p>
+                            <p><i class="fas fa-chart-line"></i> R² (Weibull Prob. Plot): <span id="rSquared"
+                                    class="result-value">—</span> <small id="rSquaredNote"
+                                    style="color:#6c757d;font-size:0.78rem;"></small></p>
 
                             <div class="calculation-title" style="margin-top:1.5rem;">Goodness-of-Fit</div>
                             <p><i class="fas fa-chart-line"></i> Log-Likelihood: <span id="logLik"
                                     class="result-value">—</span></p>
                             <p><i class="fas fa-chart-bar"></i> AIC: <span id="aic" class="result-value">—</span></p>
-                            <p><i class="fas fa-chart-pie"></i> BIC: <span id="bic" class="result-value">—</span></p>
+                            <p><i class="fas fa-chart-pie"></i> BIC: <span id="bic" class="result-value">—</span> <small
+                                    style="color:#6c757d;font-size:0.78rem;"
+                                    title="BIC uses n = all observations (exact + censored + interval), consistent with R fitdistrplus. Minitab uses only exact failures — values will differ.">ⓘ
+                                    n=all obs.</small></p>
                             <p><i class="fas fa-ruler"></i> Kolmogorov-Smirnov D: <span id="ksStat"
                                     class="result-value">—</span> <span id="ksPvalue" style="font-weight:normal;"> (p =
                                     <span id="ksPvalueVal">—</span>)</span></p>
@@ -1443,7 +1450,8 @@
                                         style="font-weight:400; font-style:italic; color:#6c757d;"></span>
                                 </div>
                                 <p style="margin-bottom:0.3rem; font-size:0.88rem;"><i class="fas fa-shapes"></i> β:
-                                    <span id="bsCI_beta" class="result-value">—</span></p>
+                                    <span id="bsCI_beta" class="result-value">—</span>
+                                </p>
                                 <p style="margin-bottom:0.3rem; font-size:0.88rem;"><i
                                         class="fas fa-ruler-horizontal"></i> η: <span id="bsCI_eta"
                                         class="result-value">—</span></p>
@@ -1452,9 +1460,17 @@
                                 <p style="margin-bottom:0.3rem; font-size:0.88rem;"><i class="fas fa-chart-bar"></i>
                                     B50: <span id="bsCI_b50" class="result-value">—</span></p>
                                 <p style="margin-bottom:0; font-size:0.88rem;"><i class="fas fa-chart-bar"></i> MTTF:
-                                    <span id="bsCI_mttf" class="result-value">—</span></p>
+                                    <span id="bsCI_mttf" class="result-value">—</span>
+                                </p>
                                 <p style="font-size:0.76rem; color:#6c757d; margin:0.4rem 0 0 0; font-style:italic;">
                                     Percentile method (equal-tailed). Bias-corrected bootstrap for extreme β.
+                                </p>
+                                <p id="bootstrap3pNote"
+                                    style="display:none; font-size:0.76rem; color:#b45309; margin:0.3rem 0 0 0; font-style:italic;">
+                                    <i class="fas fa-exclamation-triangle"></i> <strong>3P note:</strong> Bootstrap CIs
+                                    for β and η are conditional on γ=γ̂ (fixed). Uncertainty in γ is not propagated —
+                                    CIs may be narrower than true intervals. Use the profile-likelihood CI for γ
+                                    uncertainty.
                                 </p>
                             </div>
 
@@ -1649,6 +1665,25 @@
 
     <script>
         (function () {
+            /*
+             * Weibull Analysis Tool v9.3 — Audit corrections 2026-04-21
+             * F-01 parseNumber: "1,234" ambiguity warns user; defaults to EU decimal.
+             * F-02 thomanBiasCorrection: corrected to Ross (1994): β·(n−0.68)/n.
+             * F-03 GoF: separate censored-data caveat added to KS/AD warning.
+             * F-04 parseInput: splits on ALL commas → "1050,1180,1250" = 3 values.
+             * F-05 BIC: convention tooltip added (n=all observations).
+             * F-06 R²: labelled as informational prob-plot metric for MLE results.
+             * F-07 Rank labels: clarified as Herd-Johnson adjusted rank j.
+             * F-09 Bootstrap 3P: UI note that γ is held fixed during resampling.
+             * F-12 Failure mode: corrected to standard β=1 and β=3 boundaries.
+             * F-16 beta0 cap: raised 20→50 for high-β initialization.
+             * F-19 Bootstrap threshold: raised 10→50 minimum valid resamples.
+             * F-20 AD comment: corrected to Marsaglia (2004), removed Lewis 1961 ref.
+             * F-22 Spearman t-crit: expanded to 10 breakpoints, off-by-one fixed.
+             * F-23 Prob plot x-axis: ln(t) when γ=0, ln(t−γ) when γ>0.
+             * F-24 Beta clamp toast: clarifies reported params are NOT affected.
+             * F-26 Excel import toast: discloses only last row is restored.
+             */
             // ========== HEADER LOAD ==========
             fetch('header.html').then(r => r.text()).then(data => {
                 document.getElementById('header-container').innerHTML = data;
@@ -1713,7 +1748,11 @@
                 return Math.min(1, Math.max(0, 2 * sum));
             }
 
-            // Anderson-Darling p-value — Marsaglia (2004) series + small-A² branch for fast convergence
+            // Anderson-Darling p-value — Marsaglia & Marsaglia (2004) series.
+            // Branch A²<0.2: run 500 terms (slow convergence for small A²).
+            // Branch A²≥0.2: standard series with |term|<1e-12 stopping criterion.
+            // NOTE: gives p-value for generic AD with KNOWN parameters.
+            // For estimated Weibull params, Stephens (1977) adjustment AD*=AD·(1+0.2/√n) is applied before calling.
             function adPvalueMarsaglia(A2) {
                 if (A2 < 0) return 1.0;
                 if (A2 > 100) return 0.0;
@@ -1748,63 +1787,59 @@
 
             // ========== PARSEO ROBUSTO DE NÚMEROS INTERNACIONALES ==========
             // Soporta: 1234.56 (US), 1234,56 (EU), 1.234,56 (EU miles), 1,234.56 (US miles), 1 234,56 (FR)
+            // FIX F-01: _ambiguousTokens MUST be declared before parseNumber() uses it.
+            let _ambiguousTokens = [];
+
+            // FIX F-01 + F-04: parseNumber warns on ambiguous "1,234" case;
+            // parseInput splits on ALL commas so "1050,1180,1250" → 3 values.
             function parseNumber(raw) {
                 let s = raw.trim();
                 if (!s) return NaN;
 
-                // Contar puntos y comas para detectar el formato
                 const dotCount = (s.match(/\./g) || []).length;
                 const commaCount = (s.match(/,/g) || []).length;
 
                 if (dotCount === 0 && commaCount === 0) {
-                    // Número entero o con espacios tipo "1 234" (formato francés)
                     return parseFloat(s.replace(/\s/g, ''));
                 }
-
                 if (dotCount > 0 && commaCount === 0) {
-                    if (dotCount === 1) {
-                        // Podría ser 1234.56 (US decimal) o 1.234 (EU miles sin decimal)
-                        // Si exactamente 3 dígitos tras el punto → podría ser miles, pero parseFloat es correcto
-                        return parseFloat(s.replace(/\s/g, ''));
-                    }
-                    // Múltiples puntos → separadores de miles estilo 1.234.567
+                    if (dotCount === 1) return parseFloat(s.replace(/\s/g, ''));
                     return parseFloat(s.replace(/\./g, '').replace(/\s/g, ''));
                 }
-
                 if (dotCount === 0 && commaCount > 0) {
                     if (commaCount === 1) {
-                        // 1234,56 (EU decimal) o 1,234 (US miles sin decimal)
-                        // Si exactamente 3 dígitos tras la coma → US miles; si no → EU decimal
                         const afterComma = s.split(',')[1];
+                        // FIX F-01: "1,234" is ambiguous (EU decimal 1.234 vs US thousands 1234).
+                        // Default to EU decimal and warn the user.
                         if (afterComma && afterComma.length === 3 && /^\d{3}$/.test(afterComma)) {
-                            // Probablemente US miles: "1,234" → 1234
-                            return parseFloat(s.replace(/,/g, ''));
+                            const asDecimal = parseFloat(s.replace(',', '.'));
+                            const asThousands = parseFloat(s.replace(/,/g, ''));
+                            _ambiguousTokens.push({ raw: s, eu: asDecimal, us: asThousands });
+                            return asDecimal;
                         }
                         return parseFloat(s.replace(',', '.'));
                     }
-                    // Múltiples comas → separadores de miles: 1,234,567
                     return parseFloat(s.replace(/,/g, ''));
                 }
-
-                // Hay tanto puntos como comas → el último es el decimal
                 const lastDot = s.lastIndexOf('.');
                 const lastComma = s.lastIndexOf(',');
-                if (lastComma > lastDot) {
-                    // EU: 1.234,56 → eliminar puntos, cambiar coma
-                    return parseFloat(s.replace(/\./g, '').replace(',', '.'));
-                } else {
-                    // US: 1,234.56 → eliminar comas
-                    return parseFloat(s.replace(/,/g, ''));
-                }
+                if (lastComma > lastDot) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+                return parseFloat(s.replace(/,/g, ''));
             }
 
+            // FIX F-04: split on ALL commas (not just comma-space).
             function parseInput(str) {
                 if (!str || !str.trim()) return [];
-                // Separar por saltos de línea, punto y coma, o comas seguidas de espacio
-                const tokens = str.split(/[\n;]+|,(?=\s)/);
-                return tokens
-                    .map(v => parseNumber(v.trim()))
-                    .filter(v => !isNaN(v));
+                _ambiguousTokens = [];
+                const tokens = str.split(/[\n;,]+/);
+                const values = tokens.map(v => parseNumber(v.trim())).filter(v => !isNaN(v));
+                if (_ambiguousTokens.length > 0) {
+                    const ex = _ambiguousTokens.slice(0, 3)
+                        .map(t => `"${t.raw}" → ${t.eu} (EU) or ${t.us} (US thousands)`)
+                        .join('; ');
+                    showToast(`⚠️ Ambiguous number format: ${ex}. Interpreted as EU decimals. If you meant thousands separators, remove commas or use dots.`, 9000);
+                }
+                return values;
             }
 
             function parseIntervalPairs(str) {
@@ -2026,7 +2061,7 @@
                             const regInit = linearRegression(ptsInit);
                             // Weibull linearisation: y = β·ln(t) − β·ln(η)
                             // → slope = β,  η = exp(−intercept / β)
-                            beta0 = Math.min(20.0, Math.max(0.1, regInit.slope));
+                            beta0 = Math.min(50.0, Math.max(0.1, regInit.slope));
                             eta0 = Math.max(0.1, Math.exp(-regInit.intercept / beta0));
                         } else { throw new Error('too few points'); }
                     } catch (_) {
@@ -2034,7 +2069,7 @@
                         const logTimesF = exactObs.map(o => Math.log(Math.max(1e-12, o.time - gam)));
                         const meanLogF = logTimesF.reduce((a, b) => a + b, 0) / logTimesF.length;
                         const varLogF = logTimesF.reduce((s, v) => s + (v - meanLogF) ** 2, 0) / Math.max(1, logTimesF.length - 1);
-                        beta0 = Math.min(20.0, Math.max(0.1, 1.283 / Math.sqrt(Math.max(1e-12, varLogF))));
+                        beta0 = Math.min(50.0, Math.max(0.1, 1.283 / Math.sqrt(Math.max(1e-12, varLogF))));
                         const exactTimesF0 = exactObs.map(o => o.time - gam).filter(t => t > 0);
                         eta0 = Math.max(0.1, exactTimesF0.reduce((a, b) => a + b, 0) / exactTimesF0.length / gammaFn(1 + 1 / beta0));
                     }
@@ -2043,7 +2078,7 @@
                     const logTimes = exactObs.map(o => Math.log(Math.max(1e-12, o.time - gam)));
                     const meanLog = logTimes.reduce((a, b) => a + b, 0) / logTimes.length;
                     const varLog = logTimes.reduce((s, v) => s + (v - meanLog) ** 2, 0) / Math.max(1, logTimes.length - 1);
-                    beta0 = Math.min(20.0, Math.max(0.1, 1.283 / Math.sqrt(Math.max(1e-12, varLog))));
+                    beta0 = Math.min(50.0, Math.max(0.1, 1.283 / Math.sqrt(Math.max(1e-12, varLog))));
                     const exactTimes0 = exactObs.map(o => o.time - gam).filter(t => t > 0);
                     eta0 = Math.max(0.1, exactTimes0.reduce((a, b) => a + b, 0) / exactTimes0.length / gammaFn(1 + 1 / beta0));
                 }
@@ -2391,9 +2426,9 @@
             // ========== CORRECCIÓN DE SESGO DE ROSS (1994) ==========
             function thomanBiasCorrection(beta, n) {
                 if (n < 3) return beta;
-                // CORRECCIÓN PROFESIONAL: Aproximación analítica de Ross (1994)
-                // Es más precisa que (n-1.5)/n para Weibull MLE.
-                return beta * (n - 1) / (n - 0.68);
+                // Ross (1994) correct formula: E[β̂] ≈ β·n/(n-0.68)  →  corrected = β̂·(n-0.68)/n
+                // FIX F-02: original used (n-1)/(n-0.68) which under-corrects ~7% at n=5
+                return beta * (n - 0.68) / n;
             }
 
             // ========== CDF NORMAL (Abramowitz & Stegun 26.2.17) ==========
@@ -2486,11 +2521,12 @@
                 };
             }
 
+            // FIX F-12: Standard reliability engineering boundaries β=1 (DFR/CFR/IFR) and β=3 (severe IFR)
             function classifyFailureMode(beta) {
-                if (beta < 0.8) return { mode: 'Infant Mortality', description: 'Decreasing failure rate (β < 0.8). Typical of manufacturing defects, poor quality control, or burn-in failures.', cls: 'mode-infant', recommendation: 'Recommendation: Inspect manufacturing process. Consider burn-in testing to eliminate early failures.' };
-                else if (beta <= 1.2) return { mode: 'Random Failures', description: 'Approximately constant failure rate (0.8 ≤ β ≤ 1.2). Equivalent to exponential distribution.', cls: 'mode-random', recommendation: 'Recommendation: Preventive maintenance will not improve reliability. Consider redundancy or design changes to reduce random failures.' };
-                else if (beta <= 3.0) return { mode: 'Wear-Out Failures', description: 'Increasing failure rate (1.2 < β ≤ 3.0). Typical of fatigue, corrosion, or cumulative damage.', cls: 'mode-wearout', recommendation: 'Recommendation: Preventive maintenance is effective. Schedule replacements before the characteristic life (η).' };
-                else return { mode: 'Severe Wear-Out', description: 'Rapidly increasing failure rate (β > 3.0). Strongly age-dependent failures.', cls: 'mode-severe', recommendation: 'Recommendation: Immediate action required. Implement strict preventive replacement intervals well before η.' };
+                if (beta < 1.0) return { mode: 'Infant Mortality / DFR', description: 'Decreasing failure rate (β < 1). Typical of manufacturing defects, poor quality control, or burn-in failures.', cls: 'mode-infant', recommendation: 'Recommendation: Inspect manufacturing process. Consider burn-in testing to screen out early failures.' };
+                else if (beta === 1.0) return { mode: 'Random Failures (Exponential)', description: 'Constant failure rate (β = 1). Exactly equivalent to the exponential distribution.', cls: 'mode-random', recommendation: 'Recommendation: Preventive maintenance will not improve reliability. Consider redundancy or design improvements.' };
+                else if (beta <= 3.0) return { mode: 'Wear-Out / IFR', description: 'Increasing failure rate (1 < β ≤ 3). Typical of fatigue, corrosion, or cumulative damage.', cls: 'mode-wearout', recommendation: 'Recommendation: Preventive maintenance is effective. Schedule replacements before the characteristic life (η).' };
+                else return { mode: 'Severe Wear-Out', description: 'Rapidly increasing failure rate (β > 3). Strongly age-dependent, narrow failure distribution.', cls: 'mode-severe', recommendation: 'Recommendation: Implement strict preventive replacement intervals well before η. Failure timing is very predictable.' };
             }
 
             function checkDegenerateData(failures) {
@@ -2546,7 +2582,16 @@
                 const rho = 1 - (6 * d2) / (n * (n * n - 1));
                 // n-dependent critical |rho| at alpha=0.05 two-tailed (Zar 1984, t-approximation)
                 const df = n - 2;
-                const tCrit = df >= 20 ? 2.086 : df >= 10 ? 2.228 : df >= 5 ? 2.776 : 3.182;
+                const tCrit = df >= 30 ? 2.042   // t_{0.025,30}
+                    : df >= 25 ? 2.060   // t_{0.025,25}
+                        : df >= 20 ? 2.086   // t_{0.025,20}
+                            : df >= 19 ? 2.093   // t_{0.025,19}  FIX F-22: was missing
+                                : df >= 15 ? 2.131   // t_{0.025,15}
+                                    : df >= 10 ? 2.228   // t_{0.025,10}
+                                        : df >= 8 ? 2.306   // t_{0.025,8}
+                                            : df >= 6 ? 2.447   // t_{0.025,6}
+                                                : df >= 5 ? 2.571   // t_{0.025,5}
+                                                    : 3.182;             // t_{0.025,4}  (n=6 minimum)
                 const critRho = Math.min(0.90, tCrit / Math.sqrt(tCrit * tCrit + df));
                 if (Math.abs(rho) > critRho) {
                     return { suspect: true, reason: `Probability plot shows significant curvature (Spearman ρ = ${rho.toFixed(3)}, critical = ±${critRho.toFixed(3)} for n=${n}, α=0.05). Data may contain multiple failure modes. Consider separate analysis for subpopulations.` };
@@ -2579,7 +2624,7 @@
 
             function plotDistributionFunctions(eta, beta, gam, maxTime) {
                 let plotBeta = beta;
-                if (beta > 50) { plotBeta = 50; showToast('Warning: β > 50, clamped to 50 for chart rendering.', 2000); }
+                if (beta > 50) { plotBeta = 50; showToast(`⚠️ β=${beta.toFixed(1)} > 50: chart clamped to β=50 for rendering only. Reported parameters above are NOT affected.`, 4000); }
                 const numPts = 500;
                 const tStart = gam > 0 ? gam + (maxTime - gam) * 0.001 : maxTime * 0.001;
                 const step = (maxTime - tStart) / numPts;
@@ -2710,7 +2755,7 @@
                                 return sorted[lo] + (idx - lo) * (sorted[hi] - sorted[lo]);
                             };
                             const ci = (arr, label) => {
-                                if (arr.length < 10) return 'insufficient resamples';
+                                if (arr.length < 50) return 'insufficient resamples (<50 valid)';
                                 const lo = pct(arr, alpha), hi = pct(arr, 1 - alpha);
                                 return `[${lo.toFixed(label === 'beta' ? 4 : 2)}, ${hi.toFixed(label === 'beta' ? 4 : 2)}]`;
                             };
@@ -2850,6 +2895,11 @@
                     }
                     document.getElementById('mttf').textContent = mttf.toFixed(2);
                     document.getElementById('rSquared').textContent = (rSquared || 0).toFixed(4);
+                    // FIX F-06: R² is a prob-plot regression metric, not a valid MLE fit measure
+                    const rSqNote = document.getElementById('rSquaredNote');
+                    if (rSqNote) rSqNote.textContent = method.includes('MLE')
+                        ? '(prob-plot metric only — not a valid MLE fit measure; use LL/AIC/BIC/AD)'
+                        : '(linear fit on Weibull probability plot)';
                     const gammaRow = document.getElementById('gammaRow');
                     const gammaInterp = document.getElementById('gammaInterpretation');
                     if (gam > 0 || use3param) {
@@ -2875,10 +2925,13 @@
                         if (adP > 0.15) { colorClass = 'gof-green'; message = 'Good fit: Weibull model is consistent with the data.'; }
                         else if (adP >= 0.05) { colorClass = 'gof-yellow'; message = 'Marginal fit: Proceed with caution. Consider larger sample.'; }
                         else { colorClass = 'gof-red'; message = 'Poor fit: Data may not follow a Weibull distribution. Results may be misleading.'; }
+                        // FIX F-03: separate censored-data caveat from parameter-estimation caveat
+                        const hasCensored = observations.some(o => o.type === 'right' || o.type === 'interval');
                         gofHtml = `<span class="gof-traffic-light ${colorClass}"></span><strong>${message}</strong>` +
                             `<br><small style="color:#6c757d;font-size:0.8em;"><i class="fas fa-info-circle"></i> ` +
                             `KS/AD p-values are <em>approximate and anti-conservative</em> because parameters are estimated from the same data. ` +
                             (params.method === 'MLE-3P' ? 'For the 3P model, statistics are evaluated using the full 3P CDF on the original time scale. ' : '') +
+                            (hasCensored ? '<strong>⚠️ Censored data present:</strong> KS/AD are computed on exact failures only and are not formally valid for censored samples — treat as qualitative guide only. ' : '') +
                             `For small n (&lt;20) the true rejection rate at α=0.05 may be significantly higher than indicated. ` +
                             `Use as a qualitative guide only.</small>`;
                     } else { gofHtml = 'GoF assessment not available (regression method or insufficient data).'; }
@@ -3050,6 +3103,9 @@
                             document.getElementById('bsCI_b10').textContent = bs.b10CI;
                             document.getElementById('bsCI_b50').textContent = bs.b50CI;
                             document.getElementById('bsCI_mttf').textContent = bs.mttfCI;
+                            // FIX F-09: show note when gamma is held fixed during 3P bootstrap
+                            const bs3pNote = document.getElementById('bootstrap3pNote');
+                            if (bs3pNote) bs3pNote.style.display = use3param ? 'block' : 'none';
                             bootstrapSection.style.display = 'block';
                             showToast(`✅ Bootstrap complete: ${bs.n} resamples.`);
                         }).catch(e => {
@@ -3280,7 +3336,7 @@
                             if (ta) { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 200) + 'px'; }
                         });
                         switchWizardTab('tab-tool');
-                        showToast(`✅ Loaded from Excel: ${file.name} (row ${rows.length})`);
+                        showToast(`✅ Loaded from Excel: ${file.name} (last analysis row restored). Note: only the most recent row is loaded.`);
                     } catch (err) {
                         alert('Error reading Excel file: ' + err.message);
                         console.error(err);
