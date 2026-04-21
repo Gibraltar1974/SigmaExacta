@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
-    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.1</title>
+    <title>Weibull Analysis Tool (2 & 3 Parameter) | Professional v9.2</title>
     <meta name="description"
         content="Professional Weibull analysis tool for reliability engineering. 2-parameter and 3-parameter Weibull with MLE and regression. Calculate β, η, γ, MTTF, B-lives, PDF, CDF, hazard and reliability functions. Goodness-of-fit tests, confidence intervals, probability plots.">
     <meta name="keywords"
@@ -2612,9 +2612,17 @@
                     const skeleton = observations.map(o => {
                         if (o.type === 'exact') return { type: 'exact' };
                         if (o.type === 'right') return { type: 'right', censorRatio: o.time / etaHat };
-                        // interval: keep relative width; resample mid-point from CDF
-                        return { type: 'interval', leftRatio: o.left / etaHat, rightRatio: o.right / etaHat };
+                        // interval: store absolute boundaries for truncated-Weibull latent sampling (MAJ1 fix)
+                        return { type: 'interval', left: o.left, right: o.right };
                     });
+
+                    // Weibull CDF on original scale — used for interval latent time sampling (MAJ1 fix)
+                    // F(t) = 1 − exp(−((t−γ)/η)^β)
+                    const wCDF = (t) => {
+                        const ts = t - gamHat;
+                        if (ts <= 0) return 0;
+                        return 1 - Math.exp(-Math.pow(ts / etaHat, betaHat));
+                    };
 
                     // Inverse Weibull CDF: quantile function
                     const wquant = (p) => gamHat + etaHat * Math.pow(-Math.log(1 - p), 1 / betaHat);
@@ -2638,9 +2646,23 @@
                                         // Keep censoring time fixed (Type I censoring)
                                         return { type: 'right', time: sk.censorRatio * etaHat };
                                     }
-                                    // interval: resample within the original interval
-                                    const left = sk.leftRatio * etaHat, right = sk.rightRatio * etaHat;
-                                    return { type: 'interval', left, right };
+                                    // MAJ1 FIX: sample a latent failure time from the
+                                    // truncated Weibull CDF within [left, right].
+                                    // This is statistically correct and ensures interval
+                                    // observations contribute full variability to bootstrap CIs.
+                                    {
+                                        const Fl = wCDF(sk.left);
+                                        const Fr = wCDF(sk.right);
+                                        const dF = Fr - Fl;
+                                        if (dF > 1e-15) {
+                                            const u = Math.random();
+                                            const Fmix = Math.min(1 - 1e-15, Math.max(1e-15, Fl + u * dF));
+                                            const tLat = wquant(Fmix);
+                                            return { type: 'exact', time: tLat };
+                                        }
+                                        // Degenerate interval (F_left ≈ F_right): keep as interval
+                                        return { type: 'interval', left: sk.left, right: sk.right };
+                                    }
                                 });
 
                                 // Fit MLE — single start for speed inside bootstrap

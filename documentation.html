@@ -599,58 +599,106 @@
             </section>
 
             <section id="weibull-analysis" class="doc-section" aria-labelledby="weibull-heading">
-                <h2 id="weibull-heading">Weibull Analysis</h2>
+                <h2 id="weibull-heading">Weibull Analysis (2P &amp; 3P) – Professional Reliability Tool</h2>
                 <h3>Purpose of the Tool</h3>
-                <p>Use this tool to analyze failure data and make predictions about the reliability of a product. It is
-                    critical for:</p>
+                <p>This advanced Weibull analysis tool is designed for reliability engineers to model life data, predict failures,
+                    and support maintenance and warranty decisions. It supports both <strong>2‑parameter</strong> and
+                    <strong>3‑parameter</strong> Weibull distributions, with robust estimation methods and comprehensive
+                    diagnostics. Use it to:</p>
                 <ul>
-                    <li>Predicting the percentage of units that will fail by a certain time (warranty analysis).</li>
-                    <li>Determining the Mean Time To Failure (MTTF) to understand expected lifespan.</li>
-                    <li>Identifying the nature of failures (infant mortality, random, or wear-out) via the Beta (β)
-                        parameter.</li>
-                    <li>Informing maintenance strategies and spare parts planning.</li>
+                    <li>Model time‑to‑failure data with exact, right‑censored (suspensions), and interval‑censored observations.
+                    </li>
+                    <li>Choose between <strong>Maximum Likelihood Estimation (MLE)</strong> – recommended for censored data – and
+                        classical <strong>Linear Regression</strong> (probability plot).</li>
+                    <li>Estimate the <strong>location parameter γ</strong> (3P Weibull) to identify a guaranteed failure‑free
+                        period.</li>
+                    <li>Obtain key reliability metrics: <strong>β (shape), η (scale), γ (threshold), MTTF, B‑lives (B10, B50,
+                            B90)</strong>.</li>
+                    <li>Assess goodness‑of‑fit with <strong>Kolmogorov‑Smirnov</strong> and <strong>Anderson‑Darling</strong> tests
+                        (with traffic‑light interpretation).</li>
+                    <li>Compute confidence intervals: Likelihood‑Ratio (LR) and asymptotic Fisher information, plus optional
+                        <strong>parametric bootstrap</strong>.</li>
+                    <li>Perform likelihood‑ratio test to decide whether 3P significantly improves over 2P.</li>
+                    <li>Visualise the Weibull probability plot, PDF, CDF, hazard function, and reliability curve.</li>
+                    <li>Predict failure probability at a given time and evaluate warranty reliability targets.</li>
+                    <li>Save multiple analyses to a history list and export all results to Excel.</li>
                 </ul>
                 <h4>Origin and Background</h4>
-                <p>The Weibull distribution is named after Swedish engineer <strong>Waloddi Weibull</strong>. In the
-                    1930s-40s, he sought a flexible statistical function to model real-world material fatigue and
-                    failure data, which existing distributions couldn't handle. The genius of his distribution lies in
-                    the <strong>shape parameter, Beta (β)</strong>, which acts as a powerful diagnostic tool. A Beta
-                    &lt; 1 indicates infant mortality, Beta ≈ 1 suggests random failures, and Beta &gt; 1 signifies
-                    wear-out failures. The U.S. Air Force was a crucial early adopter, using it to predict component
-                    lifespans. Today, companies from <strong>General Motors</strong> (warranty analysis) to
-                    <strong>Stryker</strong> (medical implant reliability) rely on it.
-                </p>
+                <p>The Weibull distribution was popularised by Swedish engineer <strong>Waloddi Weibull</strong> in the 1930s‑50s.
+                    Its flexibility – controlled by the shape parameter β – makes it the standard model in reliability engineering.
+                    The <strong>2‑parameter</strong> form (β, η) is widely used; the <strong>3‑parameter</strong> extension adds a
+                    location (threshold) parameter γ, which represents a minimum life before which no failures occur. This tool
+                    implements modern estimation techniques (MLE via Nelder‑Mead, profile likelihood CIs) and follows best practices
+                    from <em>The New Weibull Handbook</em> (Abernethy) and ISO 22514‑2.</p>
                 <h3>How to Use the Weibull Analysis Tool</h3>
-                <p>The tool simplifies the complex calculations involved in Weibull analysis, providing key reliability
-                    metrics and a visual plot.</p>
+                <p>The tool is organised into four tabs: <strong>Theory &amp; Info</strong>, <strong>Calculator</strong>,
+                    <strong>Results</strong>, and <strong>Formulas</strong>. The main workflow happens in the Calculator and Results
+                    tabs.</p>
                 <ol>
                     <li>
-                        <h4>Step 1: Input Failure and Suspension Data</h4>
-                        <p>Enter your data into the appropriate text areas: <strong>Failure Times</strong> (times at
-                            which failures occurred, separated by commas) and optional <strong>Suspension Times</strong>
-                            (run times for units that did <em>not</em> fail). Including suspension data provides a more
-                            accurate analysis.</p>
+                        <h4>Step 1 – Configure Analysis &amp; Enter Data</h4>
+                        <p>In the <strong>Calculator</strong> tab:</p>
+                        <ul>
+                            <li>Toggle <strong>3‑Parameter Weibull</strong> if you suspect a failure‑free period (requires ≥3 exact
+                                failures).</li>
+                            <li>Select <strong>Calculation Method</strong>: <em>MLE</em> (handles all censoring types; recommended)
+                                or <em>Linear Regression</em> (classic probability plot; does not support interval data).</li>
+                            <li>Choose <strong>Rank Method</strong> (for regression) and <strong>Confidence Level</strong> (90%,
+                                95%, 99%).</li>
+                            <li>Enter <strong>Failure Times</strong> (exact failures), <strong>Suspension Times</strong>
+                                (right‑censored), and <strong>Interval‑Censored Data</strong> (pairs like “100‑150”). Values can be
+                                separated by commas, spaces, or newlines.</li>
+                            <li>Optionally set a <strong>Predict Time</strong> to obtain failure probability, and a <strong>Warranty
+                                    Target</strong> for reliability KPI.</li>
+                            <li>Enable <strong>Bootstrap CIs</strong> (MLE only) for robust percentile intervals – note this adds
+                                computation time.</li>
+                        </ul>
                     </li>
                     <li>
-                        <h4>Step 2: Analyze the Data</h4>
-                        <p>Click "Analyze Failures." The tool performs a regression analysis to fit the data to the
-                            Weibull distribution.</p>
+                        <h4>Step 2 – Run the Analysis</h4>
+                        <p>Click the <strong>Analyze</strong> button in the top toolbar. The tool automatically switches to the
+                            <strong>Results</strong> tab and displays all outputs.</p>
                     </li>
                     <li>
-                        <h4>Step 3: Interpret the Results</h4>
-                        <p>The output provides: <strong>Beta (β)</strong> (failure mode), <strong>Eta (η)</strong>
-                            (characteristic life at 63.2% failure), <strong>Mean Time To Failure (MTTF)</strong>, and a
-                            <strong>Weibull Probability Plot</strong> to visualize how well the data fits the model.
-                        </p>
+                        <h4>Step 3 – Interpret the Results</h4>
+                        <p>The Results tab is divided into several panels:</p>
+                        <ul>
+                            <li><strong>Weibull Parameters:</strong> β, η, γ (if 3P), MTTF, R² of the probability plot. Small‑sample
+                                bias correction (Ross 1994) can be toggled.</li>
+                            <li><strong>Goodness‑of‑Fit:</strong> Log‑Likelihood, AIC, BIC, KS and AD statistics with approximate
+                                p‑values. A traffic‑light indicator gives a qualitative fit assessment.</li>
+                            <li><strong>Failure Mode Analysis:</strong> Classifies β into infant mortality, random, wear‑out, or
+                                severe wear‑out, with practical recommendations.</li>
+                            <li><strong>B‑Life Percentiles:</strong> B10, B50 (median), B90 – times at which 10%, 50%, and 90% of
+                                the population have failed.</li>
+                            <li><strong>Confidence Intervals:</strong> Likelihood‑Ratio CIs for β, η, γ; asymptotic Fisher CIs; and,
+                                if requested, parametric bootstrap CIs.</li>
+                            <li><strong>LR Test (2P vs 3P):</strong> Indicates whether adding γ significantly improves the model
+                                (boundary‑corrected test).</li>
+                            <li><strong>Probability Plot &amp; Distribution Charts:</strong> Interactive Weibull plot with fitted
+                                line, plus PDF, CDF, hazard, and reliability curves.</li>
+                            <li><strong>Descriptive Statistics:</strong> Sample size, mean, median, standard deviation, and a list
+                                of failure times with outlier detection.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Step 4 – Save to History and Export</h4>
+                        <p>Click <strong>“Save this analysis to history”</strong> to store the current result. You can accumulate
+                            multiple analyses (e.g., different datasets or methods) in the history list. Use the <strong>Save
+                                As</strong> button to open the export dialog and download all saved analyses to a structured Excel
+                            workbook, which includes parameters, confidence intervals, GoF metrics, and references.</p>
                     </li>
                 </ol>
+                <div class="note">
+                    <strong>Advanced Features:</strong> The tool implements robust MLE optimisation, profile‑likelihood confidence
+                    intervals, Herd‑Johnson adjusted ranks for censored data, and parametric bootstrap. Outlier detection and
+                    mixture‑of‑failure‑modes warnings help identify data issues. The 3‑parameter MLE includes a grid search with
+                    golden‑section refinement to avoid local optima.
+                </div>
                 <a href="weibull.html" class="btn" aria-label="Open Weibull Analysis Tool"><i class="fas fa-chart-line"
                         aria-hidden="true"></i> Open Weibull Analysis</a>
-                <p style="text-align: right; margin-top: 20px;"><a href="#toc"
-                        aria-label="Volver al Índice de Herramientas"
-                        style="font-size: 1.8rem; color: var(--secondary-color);"><i
-                            class="fas fa-arrow-circle-up"></i></a></p>
-            </section>
+                <p style="text-align: right; margin-top: 20px;"><a href="#toc" aria-label="Volver al Índice de Herramientas"
+                        style="font-size: 1.8rem; color: var(--secondary-color);"><i class="fas fa-arrow-circle-up"></i></a></p>  </section>
 
             <section id="pdca-cycle" class="doc-section" aria-labelledby="pdca-heading">
                 <h2 id="pdca-heading">PDCA Cycle (Deming Wheel)</h2>
