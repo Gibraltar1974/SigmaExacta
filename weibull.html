@@ -1217,7 +1217,8 @@
                                 <select id="analysisType">
                                     <option value="medianRank">Hazen — F=(j−0.5)/N (Herd-Johnson adjusted rank j)
                                     </option>
-                                    <option value="benard">Benard's Approx. — F=(j−0.3)/(N+0.4) (Herd-Johnson adjusted
+                                    <option value="benard" selected>Benard's Approx. — F=(j−0.3)/(N+0.4) (Herd-Johnson
+                                        adjusted
                                         rank j)</option>
                                 </select>
                             </div>
@@ -1756,22 +1757,36 @@
             function adPvalueMarsaglia(A2) {
                 if (A2 < 0) return 1.0;
                 if (A2 > 100) return 0.0;
-                // For very small A²: use the large-sample tail approximation (Lewis 1961)
-                // p ≈ 1 - F_chi2(A²·nF·correction, 1) — or simply: series with exp(-c²) terms converge poorly
-                // Alternative: for A² < 0.2 use Shorack & Wellner (1986) large-x expansion of 1-Ψ(t)
+                // FIX W-02: For A² < 0.2 the Marsaglia (2004) series uses exp(-c²π²/2) where
+                // c = (4j+1)π/(8A²). For small A² this argument is enormous and exp() underflows
+                // to 0 even at j=0, making the series return p≈0 (worst possible fit) when the
+                // correct value is p→1 (perfect fit). The fix uses the asymptotic tail expansion
+                // that is numerically stable for A²→0 (Marsaglia & Marsaglia 2004, eqs. 1–2):
+                //   p ≈ (√(2π)/A²) · Σ_{j=0}^{K} (-1)^j·(4j+1)·exp(-(4j+1)²π²/(8A²))
+                // For A²→0 all terms underflow → sum=0 → p=0 is still wrong, so we clamp the
+                // leading j=0 contribution directly:
+                //   leading_exponent = -π²/(8A²)
+                // If this is so negative that exp() = 0, p must be ≥ 1 − ε (excellent fit).
+                // We therefore return p = 1 when the leading term underflows.
                 if (A2 < 0.2) {
-                    // p ≈ 1 − (A²/6)^0.5 expansion (rough) → use the Marsaglia series but run 500 terms
+                    // Asymptotic complement expansion: numerically stable for small A²
+                    // p = (√(2π)/A²) · Σ_{j=0}^{K} (-1)^j·(4j+1)·exp(-(4j+1)²π²/(8A²))
                     const pi = Math.PI;
+                    // Guard: if leading exponent underflows, fit is essentially perfect
+                    const leadExp = -(pi * pi) / (8 * A2);
+                    if (leadExp < -745) return 1.0; // exp underflows to 0; p ≥ 1 − ε
                     let sum = 0.0;
-                    for (let j = 0; j < 500; j++) {
-                        const c = (4 * j + 1) * pi / (8 * A2);
-                        const expTerm = Math.exp(-c * c * pi * pi / 2);
-                        const term = (j % 2 === 0 ? 1 : -1) * (4 * j + 1) * expTerm;
+                    for (let j = 0; j < 200; j++) {
+                        const fj = 4 * j + 1;
+                        const exponent = -(fj * fj * pi * pi) / (8 * A2);
+                        if (exponent < -745) break; // remaining terms are 0
+                        const term = (j % 2 === 0 ? 1 : -1) * fj * Math.exp(exponent);
                         sum += term;
-                        if (j > 5 && Math.abs(term) < 1e-15) break;
+                        if (j > 1 && Math.abs(term) < 1e-15 * Math.abs(sum + 1e-300)) break;
                     }
                     return Math.min(1.0, Math.max(0.0, sum * Math.sqrt(2 * pi) / A2));
                 }
+                // Standard Marsaglia (2004) series for A² ≥ 0.2 — correct and convergent
                 const pi = Math.PI;
                 let sum = 0.0;
                 let j = 0, term;
@@ -1795,6 +1810,15 @@
             function parseNumber(raw) {
                 let s = raw.trim();
                 if (!s) return NaN;
+
+                // FIX W-06: Handle scientific notation explicitly BEFORE decimal/thousands logic.
+                // Covers standard "1.5e3", "1.5E-3", and EU decimal variant "1,5e3".
+                // Normalise EU decimal comma in the mantissa (e.g. "1,5e3" → "1.5e3").
+                const sciMatch = s.match(/^([+-]?\d+(?:[.,]\d+)?)\s*[eE]([+-]?\d+)$/);
+                if (sciMatch) {
+                    const mantissa = sciMatch[1].replace(',', '.');
+                    return parseFloat(mantissa + 'e' + sciMatch[2]);
+                }
 
                 const dotCount = (s.match(/\./g) || []).length;
                 const commaCount = (s.match(/,/g) || []).length;
@@ -2870,18 +2894,26 @@
 
                     let ci;
                     if (method.includes('MLE')) {
-                        ci = calculateLRConfidenceIntervals(observations, beta, eta, gam, confLevel, use3param);
+                        // FIX D-04: use bias-corrected parameters (betaUsed/etaUsed) so that CIs are
+                        // centred on the same estimate that is displayed. When no bias correction is
+                        // applied betaUsed === beta, so there is no change in behaviour for that case.
+                        ci = calculateLRConfidenceIntervals(observations, betaUsed, etaUsed, gam, confLevel, use3param);
                     } else {
                         const z = confLevel === 90 ? 1.645 : confLevel === 95 ? 1.96 : 2.576;
                         const regrCIApprox = nF < 10
                             ? `[–, –] (n<10: asymptotic CI unreliable)`
                             : null;
+                        // FIX D-01: for n ∈ [10,20] add explicit "illustrative only" tag
+                        const regrCITag = nF < 10 ? '' : nF <= 20
+                            ? ' (heuristic — illustrative only; not statistically derived; unreliable for n≤20)'
+                            : ' (heuristic — not statistically derived)';
                         ci = {
-                            beta: regrCIApprox ?? `[${Math.max(0.05, beta - z * beta / Math.sqrt(nF)).toFixed(3)}, ${(beta + z * beta / Math.sqrt(nF)).toFixed(3)}] (heuristic — not statistically derived)`,
-                            eta: regrCIApprox ?? `[${Math.round(eta * Math.exp(-z / Math.sqrt(nF)))}, ${Math.round(eta * Math.exp(z / Math.sqrt(nF)))}] (heuristic — not statistically derived)`,
+                            beta: regrCIApprox ?? `[${Math.max(0.05, beta - z * beta / Math.sqrt(nF)).toFixed(3)}, ${(beta + z * beta / Math.sqrt(nF)).toFixed(3)}]${regrCITag}`,
+                            eta: regrCIApprox ?? `[${Math.round(eta * Math.exp(-z / Math.sqrt(nF)))}, ${Math.round(eta * Math.exp(z / Math.sqrt(nF)))}]${regrCITag}`,
                             gamma: null
                         };
                         if (nF < 10) showToast('⚠️ Regression CIs suppressed: asymptotic Gaussian approximation is not valid for n<10. Use MLE method for reliable intervals.', 7000);
+                        else if (nF <= 20) showToast('⚠️ Regression CIs for n≤20 are heuristic and illustrative only. Use MLE with bootstrap for statistically valid intervals.', 7000);
                     }
 
                     document.getElementById('beta').textContent = beta.toFixed(4);
@@ -3096,8 +3128,13 @@
                             }
                         ).then(bs => {
                             bsProgressContainer.style.display = 'none';
+                            // FIX D-08: Report N_success/B explicitly so the user can assess
+                            // whether selection bias (only converged resamples kept) may narrow CIs.
+                            const failedResamples = B - bs.n;
+                            const successRate = bs.n / B;
                             document.getElementById('bootstrapNLabel').textContent =
-                                ` — ${bs.n} valid resamples of ${B}`;
+                                ` — ${bs.n} valid resamples of ${B}` +
+                                (failedResamples > 0 ? ` (${failedResamples} failed/discarded)` : '');
                             document.getElementById('bsCI_beta').textContent = bs.betaCI;
                             document.getElementById('bsCI_eta').textContent = bs.etaCI;
                             document.getElementById('bsCI_b10').textContent = bs.b10CI;
@@ -3107,7 +3144,12 @@
                             const bs3pNote = document.getElementById('bootstrap3pNote');
                             if (bs3pNote) bs3pNote.style.display = use3param ? 'block' : 'none';
                             bootstrapSection.style.display = 'block';
-                            showToast(`✅ Bootstrap complete: ${bs.n} resamples.`);
+                            // FIX D-08: warn if many resamples failed — CI width may be underestimated
+                            if (successRate < 0.80) {
+                                showToast(`⚠️ Bootstrap: only ${bs.n}/${B} resamples converged (${Math.round(successRate * 100)}%). CI width may be underestimated due to selection bias. Consider simpler model or larger dataset.`, 8000);
+                            } else {
+                                showToast(`✅ Bootstrap complete: ${bs.n}/${B} valid resamples.`);
+                            }
                         }).catch(e => {
                             bsProgressContainer.style.display = 'none';
                             showToast('⚠️ Bootstrap failed: ' + e.message, 5000);
