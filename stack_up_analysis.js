@@ -6,19 +6,19 @@ let calculationCount = 0;
 let vectorOrientation = 'horizontal';
 
 // Mathematical functions
-function gamma(z) { 
+function gamma(z) {
     if (z <= 0) return Infinity;
     if (z === 0.5) return Math.sqrt(Math.PI);
-    
+
     const g = 7;
-    const C = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 
-               771.32342877765313, -176.61502916214059, 12.507343278686905, 
-               -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
-    
+    const C = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+        771.32342877765313, -176.61502916214059, 12.507343278686905,
+        -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+
     if (z < 0.5) {
         return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
     }
-    
+
     z -= 1;
     let x = C[0];
     for (let i = 1; i < g + 2; i++) {
@@ -33,8 +33,8 @@ class DistributionValidator {
     static validateDistribution(nominal, distribution, params) {
         const errors = [];
         const warnings = [];
-        
-        switch(distribution) {
+
+        switch (distribution) {
             case 'normal':
                 return this.validateNormal(nominal, params);
             case 'lognormal':
@@ -57,11 +57,11 @@ class DistributionValidator {
     static validateNormal(nominal, params) {
         const errors = [];
         const warnings = [];
-        
+
         if (params.paramType === 'tolerance') {
             const upper = params.upperLimit || 0;
             const lower = params.lowerLimit || 0;
-            
+
             if (upper <= lower) {
                 errors.push('Upper limit must be higher than lower limit');
             }
@@ -80,121 +80,113 @@ class DistributionValidator {
                 errors.push('Cpk must be positive');
             }
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings };
     }
 
     static validateLognormal(nominal, params) {
         const errors = [];
         const warnings = [];
-        
+
         const { mu, sigmaLog, gamma: gammaParam } = params;
-        
-        // Calculate theoretical mean of lognormal
+
         const theoreticalMean = gammaParam + Math.exp(mu + (sigmaLog * sigmaLog) / 2);
-        const tolerance = 0.01 * nominal; // 1% tolerance
-        
+        const tolerance = 0.01 * nominal;
+
         if (Math.abs(theoreticalMean - nominal) > tolerance) {
             warnings.push(`Lognormal parameters produce a mean of ${theoreticalMean.toFixed(4)}, not ${nominal}. Consider adjusting μ.`);
         }
-        
+
         if (sigmaLog <= 0) {
             errors.push('The log standard deviation must be positive');
         }
-        
+
         if (gammaParam >= nominal) {
             warnings.push('The location parameter should be less than the nominal value');
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings };
     }
 
     static validateBeta(nominal, params) {
         const errors = [];
         const warnings = [];
-        
+
         const { alpha, betaShape, A, B } = params;
-        
+
         if (A >= B) {
             errors.push('The lower limit (A) must be less than the upper limit (B)');
         }
-        
+
         if (nominal <= A || nominal >= B) {
             errors.push('The nominal value must be strictly between A and B');
         }
-        
+
         if (alpha <= 0 || betaShape <= 0) {
             errors.push('The alpha and beta parameters must be positive');
         }
-        
-        // Validación adicional para parámetros muy pequeños
+
         if (alpha < 0.1 || betaShape < 0.1) {
             warnings.push('Very small alpha/beta values may lead to numerical instability');
         }
-        
-        // Calculate theoretical mean of Beta
+
         const theoreticalMean = A + (B - A) * (alpha / (alpha + betaShape));
-        const tolerance = 0.02 * (B - A); // 2% of range
-        
+        const tolerance = 0.02 * (B - A);
+
         if (Math.abs(theoreticalMean - nominal) > tolerance) {
             warnings.push(`The theoretical mean is ${theoreticalMean.toFixed(4)}. Consider adjusting parameters.`);
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings };
     }
 
     static validateExponential(nominal, params) {
         const errors = [];
         const warnings = [];
-        
+
         const { lambda, gamma: gammaParam } = params;
-        
+
         if (lambda <= 0) {
             errors.push('The rate (λ) must be positive');
         }
-        
-        // Theoretical mean of exponential
-        const theoreticalMean = gammaParam + 1/lambda;
-        const tolerance = 0.05 * nominal; // 5% tolerance
-        
+
+        const theoreticalMean = gammaParam + 1 / lambda;
+        const tolerance = 0.05 * nominal;
+
         if (Math.abs(theoreticalMean - nominal) > tolerance) {
             warnings.push(`The parameters produce a mean of ${theoreticalMean.toFixed(4)}. Consider adjusting λ.`);
         }
-        
+
         if (gammaParam >= nominal) {
             warnings.push('The location parameter should be lower than the nominal value');
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings };
     }
 
     static validateWeibull(nominal, params) {
         const errors = [];
         const warnings = [];
-        
-        // CORRECCIÓN: Renombrar gamma a gammaParam para evitar conflicto
+
         const { beta, eta, gamma: gammaParam } = params;
-        
+
         if (beta <= 0 || eta <= 0) {
             errors.push('The parameters beta and eta must be positive');
         }
-        
-        // Validar que gamma + eta > 0 para evitar valores no definidos
+
         if (gammaParam + eta <= 0) {
             errors.push('The sum of location (γ) and scale (η) parameters must be positive');
         }
-        
-        // Validar que el nominal esté dentro del rango esperado
+
         if (gammaParam >= nominal) {
             warnings.push('The location parameter should typically be less than the nominal value');
         }
-        
-        // CORRECCIÓN: Usar gammaParam y asegurar que la función gamma existe
+
         if (typeof gamma === 'function') {
             try {
-                const theoreticalMean = gammaParam + eta * gamma(1 + 1/beta);
+                const theoreticalMean = gammaParam + eta * gamma(1 + 1 / beta);
                 const tolerance = 0.05 * nominal;
-                
+
                 if (Math.abs(theoreticalMean - nominal) > tolerance) {
                     warnings.push(`The theoretical mean is ${theoreticalMean.toFixed(4)}. Consider adjusting the parameters.`);
                 }
@@ -202,14 +194,14 @@ class DistributionValidator {
                 warnings.push('Could not calculate theoretical mean for Weibull distribution');
             }
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings };
     }
 
     static validateTriangular(nominal, params) {
         const errors = [];
         const { A, B, C } = params;
-        
+
         if (A >= B) {
             errors.push('A must be lower than B');
         }
@@ -219,21 +211,21 @@ class DistributionValidator {
         if (nominal < A || nominal > B) {
             errors.push('The nominal value must be between A and B');
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings: [] };
     }
 
     static validateUniform(nominal, params) {
         const errors = [];
         const { A, B } = params;
-        
+
         if (A >= B) {
             errors.push('A must be lower than B');
         }
         if (nominal < A || nominal > B) {
             errors.push('The nominal value must be between A and B');
         }
-        
+
         return { isValid: errors.length === 0, errors, warnings: [] };
     }
 }
@@ -244,25 +236,24 @@ function validateDimensionInput(inputElement) {
     const nominal = parseFloat(container.querySelector('.dim-nominal').value);
     const distribution = container.querySelector('.dim-distribution').value;
     const params = getCurrentParams(container);
-    
+
     const validation = DistributionValidator.validateDistribution(nominal, distribution, params);
-    
-    // Show errors/warnings
+
     const errorDiv = container.querySelector('.validation-feedback');
     if (!errorDiv) {
         const newErrorDiv = document.createElement('div');
         newErrorDiv.className = 'validation-feedback';
         container.appendChild(newErrorDiv);
     }
-    
+
     if (!validation.isValid) {
-        errorDiv.innerHTML = validation.errors.map(err => 
+        errorDiv.innerHTML = validation.errors.map(err =>
             `<div class="validation-error-message"><i class="fas fa-exclamation-circle"></i> ${err}</div>`
         ).join('');
         container.classList.add('validation-error');
         container.classList.remove('validation-warning');
     } else if (validation.warnings.length > 0) {
-        errorDiv.innerHTML = validation.warnings.map(warn => 
+        errorDiv.innerHTML = validation.warnings.map(warn =>
             `<div class="validation-warning-message"><i class="fas fa-exclamation-triangle"></i> ${warn}</div>`
         ).join('');
         container.classList.add('validation-warning');
@@ -271,7 +262,7 @@ function validateDimensionInput(inputElement) {
         errorDiv.innerHTML = '<div class="validation-success-message"><i class="fas fa-check-circle"></i> Valid parameters</div>';
         container.classList.remove('validation-error', 'validation-warning');
     }
-    
+
     return validation.isValid;
 }
 
@@ -347,20 +338,20 @@ function getCurrentParams(container) {
 function validateAllDimensions() {
     const dimensions = document.querySelectorAll('.dimension-input');
     let allValid = true;
-    
+
     dimensions.forEach(dim => {
         const isValid = validateDimensionInput(dim.querySelector('.dim-nominal'));
         if (!isValid) allValid = false;
     });
-    
+
     return allValid;
 }
 
 // --- Distribution Sampling Functions ---
 function boxMullerTransform() {
     let u = 0, v = 0;
-    while(u === 0) u = Math.random(); 
-    while(v === 0) v = Math.random();
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 function getRandomNormal(mean, stddev) {
@@ -388,7 +379,7 @@ function getRandomLognormal(mu, sigma) {
 }
 function getRandomBeta(alpha, beta, a, b) {
     if (alpha <= 0 || beta <= 0) return (a + b) / 2;
-    
+
     let maxPdf = 1;
     if (alpha > 1 && beta > 1) {
         const mode = (alpha - 1) / (alpha + beta - 2);
@@ -396,7 +387,7 @@ function getRandomBeta(alpha, beta, a, b) {
     } else {
         maxPdf = 3;
     }
-    
+
     while (true) {
         const x = Math.random();
         const y = Math.random() * maxPdf;
@@ -414,11 +405,11 @@ function getRandomExponential(lambda) {
 function validateInput(input) {
     const container = input.closest('.dimension-input');
     const errorMessage = container.querySelector('.error-message');
-    
+
     input.classList.remove('error');
     container.classList.remove('error');
     if (errorMessage) errorMessage.classList.remove('show');
-    
+
     if (input.classList.contains('dim-nominal')) {
         const value = parseFloat(input.value);
         if (isNaN(value) || value < 0) {
@@ -431,7 +422,7 @@ function validateInput(input) {
             return false;
         }
     }
-    
+
     if (input.classList.contains('normal-param-input')) {
         const value = parseFloat(input.value);
         if (isNaN(value)) {
@@ -443,7 +434,7 @@ function validateInput(input) {
             }
             return false;
         }
-        
+
         if (input.classList.contains('dist-param-a') || input.classList.contains('dist-param-b')) {
             const a = container.querySelector('.dist-param-a');
             const b = container.querySelector('.dist-param-b');
@@ -458,8 +449,8 @@ function validateInput(input) {
                 return false;
             }
         }
-        
-        if (input.classList.contains('dist-param-beta') || input.classList.contains('dist-param-eta') || 
+
+        if (input.classList.contains('dist-param-beta') || input.classList.contains('dist-param-eta') ||
             input.classList.contains('dist-param-lambda') || input.classList.contains('dist-param-alpha') ||
             input.classList.contains('dist-param-beta-shape')) {
             if (value <= 0) {
@@ -473,10 +464,9 @@ function validateInput(input) {
             }
         }
     }
-    
-    // Intelligent distribution validation
+
     validateDimensionInput(input);
-    
+
     return true;
 }
 
@@ -485,14 +475,14 @@ function handleNormalParamChange(selectElement) {
     const dynamicInputDiv = inputContainer.querySelector('.normal-param-inputs-dynamic');
     const paramType = selectElement.value;
     dynamicInputDiv.innerHTML = '';
-    
+
     const lastTolPlus = parseFloat(inputContainer.dataset.lastTolPlus) || 0.1;
     const lastTolMinus = parseFloat(inputContainer.dataset.lastTolMinus) || 0.1;
     const lastSigma = parseFloat(inputContainer.dataset.lastSigma) || 0.033;
     const lastCpk = parseFloat(inputContainer.dataset.lastCpk) || 1.33;
-    
+
     if (paramType === 'tolerance') {
-         dynamicInputDiv.innerHTML = `
+        dynamicInputDiv.innerHTML = `
             <label>Upper Limit:</label>
             <input type="number" class="dim-tolerance-plus normal-param-input" value="${(parseFloat(inputContainer.querySelector('.dim-nominal').value) + lastTolPlus).toFixed(4)}" step="0.001" 
                    oninput="this.closest('.dimension-input').dataset.lastTolPlus = (this.value - parseFloat(this.closest('.dimension-input').querySelector('.dim-nominal').value)).toFixed(4); updateVisualization(); validateInput(this)">
@@ -508,10 +498,10 @@ function handleNormalParamChange(selectElement) {
         `;
     } else if (paramType === 'cpk') {
         const cpkValues = [1.00, 1.33, 1.67, 2.00];
-        let optionsHTML = cpkValues.map(val => 
+        let optionsHTML = cpkValues.map(val =>
             `<option value="${val.toFixed(2)}" ${parseFloat(val.toFixed(2)) === parseFloat(lastCpk.toFixed(2)) ? 'selected' : ''}>${val}</option>`
         ).join('');
-        
+
         dynamicInputDiv.innerHTML = `
             <label>Cpk:</label>
             <select class="normal-param-cpk normal-param-input" title="Process Capability Index (Cpk)" 
@@ -525,14 +515,14 @@ function handleNormalParamChange(selectElement) {
     validateInput(selectElement);
 }
 
-function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus: 0.01, minus: 0.01}, normalParamType = 'tolerance', normalParamValue = 0) {
+function updateDistributionInputs(selectElement, nominal = 0, tolerance = { plus: 0.01, minus: 0.01 }, normalParamType = 'tolerance', normalParamValue = 0) {
     const inputContainer = selectElement.closest('.dimension-input');
     const paramsDiv = inputContainer.querySelector('.distribution-params');
     const dynamicInputDiv = inputContainer.querySelector('.normal-param-inputs-dynamic');
     const dist = selectElement.value;
-    
+
     const nominalVal = parseFloat(inputContainer.querySelector('.dim-nominal').value) || 0;
-    
+
     const initialTolPlus = inputContainer.dataset.lastTolPlus = inputContainer.dataset.lastTolPlus || tolerance.plus.toFixed(4);
     const initialTolMinus = inputContainer.dataset.lastTolMinus = inputContainer.dataset.lastTolMinus || tolerance.minus.toFixed(4);
     const defaultSigma = Math.max(parseFloat(initialTolPlus), parseFloat(initialTolMinus)) / 3;
@@ -544,14 +534,14 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
     const minVal = nominalVal - parseFloat(initialTolMinus);
     const maxVal = nominalVal + parseFloat(initialTolPlus);
     const avgTol = (parseFloat(initialTolPlus) + parseFloat(initialTolMinus)) / 2;
-    
+
     dynamicInputDiv.innerHTML = '';
     paramsDiv.style.display = 'flex';
 
     if (dist === 'normal') {
         paramsDiv.querySelector('.normal-param-selector').style.display = 'inline-block';
         paramsDiv.querySelector('label[for]').style.display = 'inline-block';
-        
+
         let initialParamsHTML;
         let initialSelectorValue = normalParamType;
 
@@ -563,11 +553,11 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
             `;
         } else if (normalParamType === 'cpk') {
             const cpkValues = [1.00, 1.33, 1.67, 2.00];
-            let optionsHTML = cpkValues.map(val => 
+            let optionsHTML = cpkValues.map(val =>
                 `<option value="${val.toFixed(2)}" ${parseFloat(val.toFixed(2)) === parseFloat(initialCpk) ? 'selected' : ''}>${val}</option>`
             ).join('');
 
-             initialParamsHTML = `
+            initialParamsHTML = `
                 <label>Cpk:</label>
                 <select class="normal-param-cpk normal-param-input" title="Process Capability Index (Cpk)" 
                         onchange="this.closest('.dimension-input').dataset.lastCpk = this.value; updateVisualization(); validateInput(this)">
@@ -586,14 +576,14 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
                        oninput="this.closest('.dimension-input').dataset.lastTolMinus = (parseFloat(this.closest('.dimension-input').querySelector('.dim-nominal').value) - this.value).toFixed(4); updateVisualization(); validateInput(this)">
             `;
         }
-        
+
         paramsDiv.querySelector('.normal-param-selector').value = initialSelectorValue;
         dynamicInputDiv.innerHTML = initialParamsHTML;
 
     } else if (dist === 'homo') {
         paramsDiv.querySelector('.normal-param-selector').style.display = 'none';
         paramsDiv.querySelector('label[for]').style.display = 'none';
-        
+
         dynamicInputDiv.innerHTML = `
             <label>Min (A):</label>
             <input type="number" class="dist-param-a normal-param-input" value="${minVal.toFixed(4)}" step="any" title="Minimum value (A)"
@@ -620,11 +610,11 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
     } else if (dist === 'weibull') {
         paramsDiv.querySelector('.normal-param-selector').style.display = 'none';
         paramsDiv.querySelector('label[for]').style.display = 'none';
-        
+
         const beta = 3.5;
         const eta = avgTol / 3;
         const gammaVal = minVal;
-        
+
         dynamicInputDiv.innerHTML = `
             <label>Shape (β):</label>
             <input type="number" class="dist-param-beta normal-param-input" value="${beta.toFixed(2)}" step="0.1" min="0.1" title="Shape parameter (beta)"
@@ -639,11 +629,11 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
     } else if (dist === 'lognormal') {
         paramsDiv.querySelector('.normal-param-selector').style.display = 'none';
         paramsDiv.querySelector('label[for]').style.display = 'none';
-        
+
         const mu = Math.log(nominalVal > 0 ? nominalVal : 1);
         const sigmaLog = 0.1;
         const gammaVal = minVal * 0.9;
-        
+
         dynamicInputDiv.innerHTML = `
             <label>μ (log mean):</label>
             <input type="number" class="dist-param-mu normal-param-input" value="${mu.toFixed(4)}" step="any" title="Mu parameter (log of median)"
@@ -660,7 +650,7 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
         paramsDiv.querySelector('label[for]').style.display = 'none';
         const alpha = 2;
         const beta = 2;
-        
+
         dynamicInputDiv.innerHTML = `
             <label>α (alpha):</label>
             <input type="number" class="dist-param-alpha normal-param-input" value="${alpha.toFixed(2)}" step="0.1" min="0.1" title="Alpha shape parameter"
@@ -678,10 +668,10 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
     } else if (dist === 'exponential') {
         paramsDiv.querySelector('.normal-param-selector').style.display = 'none';
         paramsDiv.querySelector('label[for]').style.display = 'none';
-        
+
         const lambda = 1 / avgTol;
         const gammaVal = minVal;
-        
+
         dynamicInputDiv.innerHTML = `
             <label>λ (rate):</label>
             <input type="number" class="dist-param-lambda normal-param-input" value="${lambda.toFixed(4)}" step="any" min="0.001" title="Lambda rate parameter"
@@ -691,7 +681,7 @@ function updateDistributionInputs(selectElement, nominal = 0, tolerance = {plus:
                    oninput="validateInput(this)">
         `;
     }
-    
+
     // Validate after updating
     setTimeout(() => {
         validateInput(selectElement);
@@ -709,14 +699,14 @@ function getDimensionData() {
         const nominal = parseFloat(el.querySelector('.dim-nominal').value) || 0;
         const name = el.querySelector('.dim-name').value || `Dim ${index + 1}`;
         const sign = el.querySelector('.sign-btn.active').dataset.sign === '-' ? -1 : 1;
-        
+
         let tolerancePlus = 0, toleranceMinus = 0, stddev = 0;
         const additionalParams = {};
 
         if (distribution === 'normal') {
             const paramSelector = el.querySelector('.normal-param-selector');
             const paramType = paramSelector ? paramSelector.value : 'tolerance';
-            
+
             if (paramType === 'tolerance') {
                 const upperLimitInput = el.querySelector('.dim-tolerance-plus');
                 const lowerLimitInput = el.querySelector('.dim-tolerance-minus');
@@ -748,38 +738,38 @@ function getDimensionData() {
                 }
             }
             additionalParams.paramType = paramType;
-            
+
         } else {
             allNormal = false;
             const dynamicDiv = el.querySelector('.normal-param-inputs-dynamic');
-            
+
             if (distribution === 'homo') {
                 additionalParams.A = parseFloat(dynamicDiv.querySelector('.dist-param-a').value) || 0;
                 additionalParams.B = parseFloat(dynamicDiv.querySelector('.dist-param-b').value) || 0;
                 stddev = Math.abs(additionalParams.B - additionalParams.A) / Math.sqrt(12);
                 tolerancePlus = additionalParams.B - nominal;
                 toleranceMinus = nominal - additionalParams.A;
-                
+
             } else if (distribution === 'triangular') {
                 additionalParams.A = parseFloat(dynamicDiv.querySelector('.dist-param-a').value) || 0;
                 additionalParams.B = parseFloat(dynamicDiv.querySelector('.dist-param-b').value) || 0;
                 additionalParams.C = parseFloat(dynamicDiv.querySelector('.dist-param-c').value) || 0;
-                stddev = Math.sqrt((additionalParams.A**2 + additionalParams.B**2 + additionalParams.C**2 - 
-                                   additionalParams.A*additionalParams.B - additionalParams.A*additionalParams.C - 
-                                   additionalParams.B*additionalParams.C) / 18);
+                stddev = Math.sqrt((additionalParams.A ** 2 + additionalParams.B ** 2 + additionalParams.C ** 2 -
+                    additionalParams.A * additionalParams.B - additionalParams.A * additionalParams.C -
+                    additionalParams.B * additionalParams.C) / 18);
                 tolerancePlus = additionalParams.B - nominal;
                 toleranceMinus = nominal - additionalParams.A;
-                
+
             } else if (distribution === 'weibull') {
                 additionalParams.beta = parseFloat(dynamicDiv.querySelector('.dist-param-beta').value) || 1;
                 additionalParams.eta = parseFloat(dynamicDiv.querySelector('.dist-param-eta').value) || 1;
                 additionalParams.gamma = parseFloat(dynamicDiv.querySelector('.dist-param-gamma').value) || 0;
-                
+
                 // CORRECCIÓN: Manejar casos edge en Weibull
                 if (additionalParams.beta > 0 && additionalParams.eta > 0) {
                     try {
-                        const term1 = gamma(1 + 2/additionalParams.beta);
-                        const term2 = Math.pow(gamma(1 + 1/additionalParams.beta), 2);
+                        const term1 = gamma(1 + 2 / additionalParams.beta);
+                        const term2 = Math.pow(gamma(1 + 1 / additionalParams.beta), 2);
                         const variance = Math.pow(additionalParams.eta, 2) * (term1 - term2);
                         stddev = Math.sqrt(Math.max(0, variance));
                     } catch (e) {
@@ -788,41 +778,41 @@ function getDimensionData() {
                 }
                 tolerancePlus = 3 * stddev; // Aproximación
                 toleranceMinus = 3 * stddev;
-                
+
             } else if (distribution === 'lognormal') {
                 additionalParams.mu = parseFloat(dynamicDiv.querySelector('.dist-param-mu').value) || 0;
                 additionalParams.sigmaLog = parseFloat(dynamicDiv.querySelector('.dist-param-sigma-log').value) || 0.1;
                 additionalParams.gamma = parseFloat(dynamicDiv.querySelector('.dist-param-gamma').value) || 0;
-                
+
                 try {
-                    const variance = (Math.exp(Math.pow(additionalParams.sigmaLog, 2)) - 1) * 
-                                     Math.exp(2 * additionalParams.mu + Math.pow(additionalParams.sigmaLog, 2));
+                    const variance = (Math.exp(Math.pow(additionalParams.sigmaLog, 2)) - 1) *
+                        Math.exp(2 * additionalParams.mu + Math.pow(additionalParams.sigmaLog, 2));
                     stddev = Math.sqrt(Math.max(0, variance));
                 } catch (e) {
                     stddev = 1; // Fallback
                 }
                 tolerancePlus = 3 * stddev;
                 toleranceMinus = 3 * stddev;
-                
+
             } else if (distribution === 'beta') {
                 additionalParams.alpha = parseFloat(dynamicDiv.querySelector('.dist-param-alpha').value) || 2;
                 additionalParams.betaShape = parseFloat(dynamicDiv.querySelector('.dist-param-beta-shape').value) || 2;
                 additionalParams.A = parseFloat(dynamicDiv.querySelector('.dist-param-a').value) || 0;
                 additionalParams.B = parseFloat(dynamicDiv.querySelector('.dist-param-b').value) || 1;
-                
+
                 const range = additionalParams.B - additionalParams.A;
                 const alphaBetaSum = additionalParams.alpha + additionalParams.betaShape;
                 if (alphaBetaSum > 0 && additionalParams.alpha > 0 && additionalParams.betaShape > 0) {
-                    stddev = range * Math.sqrt(additionalParams.alpha * additionalParams.betaShape / 
-                                              (Math.pow(alphaBetaSum, 2) * (alphaBetaSum + 1)));
+                    stddev = range * Math.sqrt(additionalParams.alpha * additionalParams.betaShape /
+                        (Math.pow(alphaBetaSum, 2) * (alphaBetaSum + 1)));
                 }
                 tolerancePlus = additionalParams.B - nominal;
                 toleranceMinus = nominal - additionalParams.A;
-                
+
             } else if (distribution === 'exponential') {
                 additionalParams.lambda = parseFloat(dynamicDiv.querySelector('.dist-param-lambda').value) || 1;
                 additionalParams.gamma = parseFloat(dynamicDiv.querySelector('.dist-param-gamma').value) || 0;
-                
+
                 stddev = additionalParams.lambda > 0 ? 1 / additionalParams.lambda : 1;
                 tolerancePlus = 3 * stddev;
                 toleranceMinus = 3 * stddev;
@@ -850,16 +840,16 @@ function calculateMonteCarlo(dimensions, sampleSize) {
     let samples = [];
     let validSamples = 0;
     const maxAttempts = sampleSize * 3; // Aumentar límite de intentos
-    
+
     for (let i = 0; i < sampleSize && validSamples < maxAttempts; i++) {
         let stack = 0;
         let isValid = true;
-        
+
         dimensions.forEach(dim => {
             let sample;
             try {
                 const mean = dim.nominal;
-                
+
                 if (dim.distribution === 'normal') {
                     sample = getRandomNormal(mean, dim.stddev);
                 } else if (dim.distribution === 'homo') {
@@ -867,7 +857,7 @@ function calculateMonteCarlo(dimensions, sampleSize) {
                 } else if (dim.distribution === 'triangular') {
                     sample = getRandomTriangular(dim.additionalParams.A, dim.additionalParams.B, dim.additionalParams.C);
                 } else if (dim.distribution === 'weibull') {
-                     sample = dim.additionalParams.gamma + getRandomWeibull(dim.additionalParams.beta, dim.additionalParams.eta);
+                    sample = dim.additionalParams.gamma + getRandomWeibull(dim.additionalParams.beta, dim.additionalParams.eta);
                 } else if (dim.distribution === 'lognormal') {
                     sample = dim.additionalParams.gamma + getRandomLognormal(dim.additionalParams.mu, dim.additionalParams.sigmaLog);
                 } else if (dim.distribution === 'beta') {
@@ -877,7 +867,7 @@ function calculateMonteCarlo(dimensions, sampleSize) {
                 } else {
                     sample = mean;
                 }
-                
+
                 // Verificar que el sample es finito y dentro de límites razonables
                 if (!isFinite(sample) || Math.abs(sample) > 1e10) {
                     isValid = false;
@@ -887,18 +877,18 @@ function calculateMonteCarlo(dimensions, sampleSize) {
                 console.error(`Error generating sample for dimension ${dim.name}:`, error);
                 isValid = false;
             }
-            
+
             if (isValid) {
                 stack += sample * dim.sign;
             }
         });
-        
+
         if (isValid && isFinite(stack) && Math.abs(stack) < 1e10) {
             samples.push(stack);
             validSamples++;
         }
     }
-    
+
     if (samples.length === 0) {
         console.error("No valid samples generated in Monte Carlo simulation");
         return {
@@ -910,9 +900,9 @@ function calculateMonteCarlo(dimensions, sampleSize) {
             samples: []
         };
     }
-    
+
     console.log(`Monte Carlo simulation completed: ${samples.length} valid samples`);
-    
+
     const sum = samples.reduce((acc, val) => acc + val, 0);
     const nominalSum = sum / samples.length;
     const sumSqDev = samples.reduce((sum, val) => sum + (val - nominalSum) ** 2, 0);
@@ -929,36 +919,36 @@ function calculateMonteCarlo(dimensions, sampleSize) {
     };
 }
 
-// CORREGIDA: Función calculate con validación mejorada
+// CORREGIDA: Función calculate con validación mejorada y redirección corregida
 function calculate() {
     console.log("Starting tolerance calculation...");
-    
+
     // Validar todas las dimensiones antes de calcular
     if (!validateAllDimensions()) {
         console.error("Validation failed - aborting calculation");
         alert('Please correct the errors in the distribution parameters before calculating.');
         return;
     }
-    
+
     try {
         const { dimensions, allNormal } = getDimensionData();
         const sampleSize = parseInt(document.getElementById('sampleSize').value) || 10000;
-        
+
         console.log(`Processing ${dimensions.length} dimensions, allNormal: ${allNormal}`);
-        
+
         if (dimensions.length === 0) {
             alert('Please add at least one dimension.');
             return;
         }
 
         // Verificar que todos los valores sean finitos
-        const hasInvalidValues = dimensions.some(dim => 
-            !isFinite(dim.nominal) || 
-            !isFinite(dim.tolerancePlus) || 
+        const hasInvalidValues = dimensions.some(dim =>
+            !isFinite(dim.nominal) ||
+            !isFinite(dim.tolerancePlus) ||
             !isFinite(dim.toleranceMinus) ||
             !isFinite(dim.stddev)
         );
-        
+
         if (hasInvalidValues) {
             alert('Invalid numerical values detected. Please check your inputs.');
             return;
@@ -968,7 +958,7 @@ function calculate() {
         const nominalSum = dimensions.reduce((sum, dim) => sum + (dim.nominal * dim.sign), 0);
         const toleranceSumPlus = dimensions.reduce((sum, dim) => sum + Math.abs(dim.tolerancePlus), 0);
         const toleranceSumMinus = dimensions.reduce((sum, dim) => sum + Math.abs(dim.toleranceMinus), 0);
-        
+
         document.getElementById('arithmetic-nominal').textContent = nominalSum.toFixed(4);
         document.getElementById('arithmetic-tolerance').textContent = `+${toleranceSumPlus.toFixed(4)} / -${toleranceSumMinus.toFixed(4)}`;
         document.getElementById('arithmetic-max').textContent = (nominalSum + toleranceSumPlus).toFixed(4);
@@ -981,7 +971,7 @@ function calculate() {
 
         if (allNormal) {
             const stddevRSS = Math.sqrt(dimensions.reduce((sum, dim) => sum + Math.pow(dim.stddev, 2), 0));
-            const toleranceRSS = 3 * stddevRSS; 
+            const toleranceRSS = 3 * stddevRSS;
 
             probabilisticResults = {
                 nominal: nominalSum,
@@ -992,10 +982,10 @@ function calculate() {
             };
             methodLabel = "RSS (Formula)";
             console.log("Using RSS method for all-normal distributions");
-            
+
             document.getElementById('rss-results').style.display = 'block';
             document.getElementById('montecarlo-results').style.display = 'none';
-            
+
         } else {
             probabilisticResults = {
                 nominal: monteCarloResults.nominal,
@@ -1006,11 +996,11 @@ function calculate() {
             };
             methodLabel = "Monte Carlo (Mixed)";
             console.log("Using Monte Carlo method for mixed distributions");
-            
+
             document.getElementById('rss-results').style.display = 'none';
             document.getElementById('montecarlo-results').style.display = 'flex';
         }
-        
+
         document.getElementById('probabilistic-nominal').textContent = probabilisticResults.nominal.toFixed(4);
         document.getElementById('probabilistic-stddev').textContent = probabilisticResults.stddev.toFixed(4);
         document.getElementById('probabilistic-tolerance').textContent = `±${probabilisticResults.tolerance.toFixed(4)} (3σ)`;
@@ -1037,13 +1027,11 @@ function calculate() {
         });
 
         console.log("Tolerance calculation completed successfully");
-        document.getElementById('resultsTab').click();
+
+        // CORRECCIÓN: Ocultar historial y navegar a la pestaña de resultados usando switchWizardTab
         document.getElementById('results-history').style.display = 'none';
-        
-        setTimeout(() => {
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-        
+        switchWizardTab('tab-results');
+
     } catch (error) {
         console.error("Error during calculation:", error);
         alert('An error occurred during calculation. Please check your inputs and try again.');
@@ -1056,16 +1044,16 @@ function updateChart(samples, title) {
     }
 
     const ctx = document.getElementById('distributionChart').getContext('2d');
-    
+
     const numBins = 50;
     const min = Math.min(...samples);
     const max = Math.max(...samples);
     const range = max - min;
     const binSize = range / numBins;
-    
+
     const bins = new Array(numBins).fill(0);
     const labels = new Array(numBins).fill(0).map((_, i) => (min + (i * binSize)).toFixed(4));
-    
+
     samples.forEach(sample => {
         let binIndex = Math.floor((sample - min) / binSize);
         if (binIndex === numBins) binIndex = numBins - 1;
@@ -1073,7 +1061,7 @@ function updateChart(samples, title) {
             bins[binIndex]++;
         }
     });
-    
+
     chart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -1117,7 +1105,7 @@ function updateChart(samples, title) {
                         autoSkip: true,
                         maxRotation: 45,
                         minRotation: 0,
-                        callback: function(value, index, values) {
+                        callback: function (value, index, values) {
                             return (index % 5 === 0) ? labels[index] : '';
                         }
                     }
@@ -1135,20 +1123,20 @@ function updateChart(samples, title) {
 }
 
 // CORREGIDA: Función addDimension con parámetros más estables
-function addDimension(name = '', nominal = 10, tolerance = {plus: 0.1, minus: 0.1}, distribution = 'normal', normalParams = {paramType: 'tolerance', sigma: 0, cpk: 0}, sign = '+', specificParams = {}) {
+function addDimension(name = '', nominal = 10, tolerance = { plus: 0.1, minus: 0.1 }, distribution = 'normal', normalParams = { paramType: 'tolerance', sigma: 0, cpk: 0 }, sign = '+', specificParams = {}) {
     const container = document.getElementById('dimensions-container');
-    
+
     const emptyState = container.querySelector('.empty-state');
     if (emptyState) {
         emptyState.remove();
     }
-    
+
     const div = document.createElement('div');
     div.className = 'dimension-input';
-    
+
     div.dataset.lastTolPlus = tolerance.plus.toFixed(4);
     div.dataset.lastTolMinus = tolerance.minus.toFixed(4);
-    
+
     const defaultSigma = Math.max(tolerance.plus, tolerance.minus) / 3;
     div.dataset.lastSigma = (normalParams.sigma > 0 ? normalParams.sigma : defaultSigma).toFixed(4);
     div.dataset.lastCpk = (normalParams.cpk > 0 ? normalParams.cpk : 1.33).toFixed(2);
@@ -1188,14 +1176,14 @@ function addDimension(name = '', nominal = 10, tolerance = {plus: 0.1, minus: 0.
         <div class="validation-feedback"></div>
     `;
     container.appendChild(div);
-    
+
     const selectElement = div.querySelector('.dim-distribution');
-    
+
     // Guardar los parámetros específicos en el elemento para usarlos después
     div.dataset.specificParams = JSON.stringify(specificParams);
-    
+
     updateDistributionInputs(selectElement, nominal, tolerance, normalParams.paramType, normalParams.paramType === 'sigma' ? normalParams.sigma : normalParams.cpk);
-    
+
     // Después de actualizar los inputs, establecer los valores específicos si existen
     setTimeout(() => {
         if (Object.keys(specificParams).length > 0) {
@@ -1211,7 +1199,7 @@ function addDimension(name = '', nominal = 10, tolerance = {plus: 0.1, minus: 0.
 function applySpecificParams(container, specificParams) {
     const dynamicDiv = container.querySelector('.normal-param-inputs-dynamic');
     if (!dynamicDiv) return;
-    
+
     Object.keys(specificParams).forEach(param => {
         const input = dynamicDiv.querySelector(`[class*="${param}"]`);
         if (input) {
@@ -1230,13 +1218,13 @@ function loadExampleData() {
     dimensionCount = 0;
 
     // Dimensión A: Normal (válida por defecto)
-    addDimension('A', 10, {plus: 0.1, minus: 0.1}, 'normal', {paramType: 'tolerance'}, '+'); 
+    addDimension('A', 10, { plus: 0.1, minus: 0.1 }, 'normal', { paramType: 'tolerance' }, '+');
 
     // Dimensión B: Lognormal - parámetros más estables
     let gammaB = 9.0;  // Más cercano al nominal
     let sigmaLogB = 0.05; // Menor desviación
     let muB = Math.log(10 - gammaB); // Ajustado para nominal 10
-    addDimension('B', 10, {plus: 0.15, minus: 0.05}, 'lognormal', {paramType: 'tolerance'}, '+', {
+    addDimension('B', 10, { plus: 0.15, minus: 0.05 }, 'lognormal', { paramType: 'tolerance' }, '+', {
         mu: muB,
         'sigma-log': sigmaLogB,
         gamma: gammaB
@@ -1247,7 +1235,7 @@ function loadExampleData() {
     let BC = 10.5;
     let alphaC = 3;  // Mayor alpha para más estabilidad
     let betaShapeC = 3; // Mayor beta para más estabilidad
-    addDimension('C', 10, {plus: 0.2, minus: 0.2}, 'beta', {paramType: 'tolerance'}, '-', {
+    addDimension('C', 10, { plus: 0.2, minus: 0.2 }, 'beta', { paramType: 'tolerance' }, '-', {
         alpha: alphaC,
         'beta-shape': betaShapeC,
         a: AC,
@@ -1257,7 +1245,7 @@ function loadExampleData() {
     // Dimensión D: Exponential - parámetros más realistas
     let gammaD = 9.0;
     let lambdaD = 2;
-    addDimension('D', 9.5, {plus: 0.1, minus: 0.05}, 'exponential', {paramType: 'tolerance'}, '+', {
+    addDimension('D', 9.5, { plus: 0.1, minus: 0.05 }, 'exponential', { paramType: 'tolerance' }, '+', {
         lambda: lambdaD,
         gamma: gammaD
     });
@@ -1268,11 +1256,11 @@ function loadExampleData() {
 function removeSpecificDimension(button) {
     const container = document.getElementById('dimensions-container');
     const dimensionElement = button.closest('.dimension-input');
-    
+
     if (dimensionElement) {
         container.removeChild(dimensionElement);
         dimensionCount--;
-        
+
         if (container.querySelectorAll('.dimension-input').length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -1282,7 +1270,7 @@ function removeSpecificDimension(button) {
                 </div>
             `;
         }
-        
+
         updateVisualization();
     }
 }
@@ -1290,11 +1278,11 @@ function removeSpecificDimension(button) {
 function toggleSign(button) {
     const container = button.closest('.dimension-input');
     const buttons = container.querySelectorAll('.sign-btn');
-    
+
     buttons.forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     button.classList.add('active');
     updateVisualization();
 }
@@ -1303,7 +1291,7 @@ function resetData() {
     const container = document.getElementById('dimensions-container');
     container.innerHTML = '';
     dimensionCount = 0;
-    
+
     container.innerHTML = `
         <div class="empty-state">
             <i class="fas fa-inbox"></i>
@@ -1311,35 +1299,35 @@ function resetData() {
             <p style="font-size: 0.9rem;">Click "Add Dimension" below to start building your tolerance stack-up analysis</p>
         </div>
     `;
-    
+
     document.getElementById('arithmetic-nominal').textContent = '-';
     document.getElementById('arithmetic-tolerance').textContent = '-';
     document.getElementById('arithmetic-max').textContent = '-';
     document.getElementById('arithmetic-min').textContent = '-';
-    
+
     document.getElementById('probabilistic-nominal').textContent = '-';
     document.getElementById('probabilistic-stddev').textContent = '-';
     document.getElementById('probabilistic-tolerance').textContent = '-';
     document.getElementById('probabilistic-max').textContent = '-';
     document.getElementById('probabilistic-min').textContent = '-';
-    
+
     document.getElementById('montecarlo-nominal').textContent = '-';
     document.getElementById('montecarlo-stddev').textContent = '-';
     document.getElementById('montecarlo-tolerance').textContent = '-';
     document.getElementById('montecarlo-max').textContent = '-';
     document.getElementById('montecarlo-min').textContent = '-';
-    
+
     document.getElementById('montecarlo-results').style.display = 'none';
     document.getElementById('rss-results').style.display = 'block';
-    
+
     if (chart) {
         chart.destroy();
         chart = null;
     }
-    
+
     calculationHistory = [];
     document.getElementById('results-history').style.display = 'none';
-    
+
     updateVisualization();
 }
 
@@ -1356,7 +1344,7 @@ function listResults() {
     calculationHistory.forEach((record, index) => {
         const block = document.createElement('div');
         block.className = 'calculation-block';
-        
+
         let dimsTable = `
             <h4>Input Data (Calculation #${record.id})</h4>
             <div class="table-wrapper">
@@ -1374,25 +1362,25 @@ function listResults() {
                 <tbody>
         `;
         record.dimensions.forEach(dim => {
-             let paramDetail = '';
-             if (dim.distribution === 'normal') {
-                 paramDetail = `Type: ${dim.additionalParams.paramType}`;
-                 if (dim.additionalParams.cpk) paramDetail += `, Cpk: ${dim.additionalParams.cpk.toFixed(2)}`;
-                 if (dim.additionalParams.sigma) paramDetail += `, σ: ${dim.additionalParams.sigma.toFixed(4)}`;
-                 paramDetail += `, Tol: +${dim.tolerancePlus.toFixed(4)} / -${dim.toleranceMinus.toFixed(4)}`;
-             } else if (dim.distribution === 'homo') {
-                 paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'triangular') {
-                 paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Mode (C): ${dim.additionalParams.C.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'weibull') {
-                 paramDetail = `Shape (β): ${dim.additionalParams.beta.toFixed(2)}, Scale (η): ${dim.additionalParams.eta.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             } else if (dim.distribution === 'lognormal') {
-                 paramDetail = `μ: ${dim.additionalParams.mu.toFixed(4)}, σ: ${dim.additionalParams.sigmaLog.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             } else if (dim.distribution === 'beta') {
-                 paramDetail = `α: ${dim.additionalParams.alpha.toFixed(2)}, β: ${dim.additionalParams.betaShape.toFixed(2)}, Min: ${dim.additionalParams.A.toFixed(4)}, Max: ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'exponential') {
-                 paramDetail = `λ: ${dim.additionalParams.lambda.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             }
+            let paramDetail = '';
+            if (dim.distribution === 'normal') {
+                paramDetail = `Type: ${dim.additionalParams.paramType}`;
+                if (dim.additionalParams.cpk) paramDetail += `, Cpk: ${dim.additionalParams.cpk.toFixed(2)}`;
+                if (dim.additionalParams.sigma) paramDetail += `, σ: ${dim.additionalParams.sigma.toFixed(4)}`;
+                paramDetail += `, Tol: +${dim.tolerancePlus.toFixed(4)} / -${dim.toleranceMinus.toFixed(4)}`;
+            } else if (dim.distribution === 'homo') {
+                paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'triangular') {
+                paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Mode (C): ${dim.additionalParams.C.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'weibull') {
+                paramDetail = `Shape (β): ${dim.additionalParams.beta.toFixed(2)}, Scale (η): ${dim.additionalParams.eta.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            } else if (dim.distribution === 'lognormal') {
+                paramDetail = `μ: ${dim.additionalParams.mu.toFixed(4)}, σ: ${dim.additionalParams.sigmaLog.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            } else if (dim.distribution === 'beta') {
+                paramDetail = `α: ${dim.additionalParams.alpha.toFixed(2)}, β: ${dim.additionalParams.betaShape.toFixed(2)}, Min: ${dim.additionalParams.A.toFixed(4)}, Max: ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'exponential') {
+                paramDetail = `λ: ${dim.additionalParams.lambda.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            }
 
             dimsTable += `
                 <tr>
@@ -1406,7 +1394,7 @@ function listResults() {
             `;
         });
         dimsTable += '</tbody></table></div>';
-        
+
         let resultsTable = `
             <h4 style="margin-top: 1.5rem;">Results (Method: ${record.method})</h4>
             <div class="table-wrapper">
@@ -1431,7 +1419,7 @@ function listResults() {
                         <td>N/A</td>
                     </tr>
         `;
-        
+
         // CORRECCIÓN: Mostrar solo los métodos correspondientes al cálculo realizado
         if (record.method === 'RSS') {
             resultsTable += `
@@ -1456,20 +1444,20 @@ function listResults() {
                 </tr>
             `;
         }
-        
+
         resultsTable += '</tbody></table></div>';
 
         block.innerHTML = dimsTable + resultsTable;
         historyDiv.appendChild(block);
     });
-    
+
     setTimeout(() => {
         historyDiv.scrollIntoView({ behavior: 'smooth' });
     }, 100);
 }
 
 function exportToExcel() {
-     if (calculationHistory.length === 0) {
+    if (calculationHistory.length === 0) {
         alert('No calculation data to export.');
         return;
     }
@@ -1481,29 +1469,29 @@ function exportToExcel() {
 
     calculationHistory.forEach(record => {
         data.push([`--- Calculation #${record.id} (Method: ${record.method}) ---`]);
-        
+
         data.push(["Dimension Input:"]);
         data.push(["Name", "Sign", "Nominal", "Distribution", "Std Dev (σ)", "Parameters"]);
         record.dimensions.forEach(dim => {
             let paramDetail = '';
-             if (dim.distribution === 'normal') {
-                 paramDetail = `Type: ${dim.additionalParams.paramType}`;
-                 if (dim.additionalParams.cpk) paramDetail += `, Cpk: ${dim.additionalParams.cpk.toFixed(2)}`;
-                 if (dim.additionalParams.sigma) paramDetail += `, σ: ${dim.additionalParams.sigma.toFixed(4)}`;
-                  paramDetail += `, Tol: +${dim.tolerancePlus.toFixed(4)} / -${dim.toleranceMinus.toFixed(4)}`;
-             } else if (dim.distribution === 'homo') {
-                 paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'triangular') {
-                 paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Mode (C): ${dim.additionalParams.C.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'weibull') {
-                 paramDetail = `Shape (β): ${dim.additionalParams.beta.toFixed(2)}, Scale (η): ${dim.additionalParams.eta.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             } else if (dim.distribution === 'lognormal') {
-                 paramDetail = `μ: ${dim.additionalParams.mu.toFixed(4)}, σ: ${dim.additionalParams.sigmaLog.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             } else if (dim.distribution === 'beta') {
-                 paramDetail = `α: ${dim.additionalParams.alpha.toFixed(2)}, β: ${dim.additionalParams.betaShape.toFixed(2)}, Min: ${dim.additionalParams.A.toFixed(4)}, Max: ${dim.additionalParams.B.toFixed(4)}`;
-             } else if (dim.distribution === 'exponential') {
-                 paramDetail = `λ: ${dim.additionalParams.lambda.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
-             }
+            if (dim.distribution === 'normal') {
+                paramDetail = `Type: ${dim.additionalParams.paramType}`;
+                if (dim.additionalParams.cpk) paramDetail += `, Cpk: ${dim.additionalParams.cpk.toFixed(2)}`;
+                if (dim.additionalParams.sigma) paramDetail += `, σ: ${dim.additionalParams.sigma.toFixed(4)}`;
+                paramDetail += `, Tol: +${dim.tolerancePlus.toFixed(4)} / -${dim.toleranceMinus.toFixed(4)}`;
+            } else if (dim.distribution === 'homo') {
+                paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'triangular') {
+                paramDetail = `Min (A): ${dim.additionalParams.A.toFixed(4)}, Mode (C): ${dim.additionalParams.C.toFixed(4)}, Max (B): ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'weibull') {
+                paramDetail = `Shape (β): ${dim.additionalParams.beta.toFixed(2)}, Scale (η): ${dim.additionalParams.eta.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            } else if (dim.distribution === 'lognormal') {
+                paramDetail = `μ: ${dim.additionalParams.mu.toFixed(4)}, σ: ${dim.additionalParams.sigmaLog.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            } else if (dim.distribution === 'beta') {
+                paramDetail = `α: ${dim.additionalParams.alpha.toFixed(2)}, β: ${dim.additionalParams.betaShape.toFixed(2)}, Min: ${dim.additionalParams.A.toFixed(4)}, Max: ${dim.additionalParams.B.toFixed(4)}`;
+            } else if (dim.distribution === 'exponential') {
+                paramDetail = `λ: ${dim.additionalParams.lambda.toFixed(4)}, Loc (γ): ${dim.additionalParams.gamma.toFixed(4)}`;
+            }
             data.push([
                 dim.name,
                 dim.sign > 0 ? '+' : '-',
@@ -1525,7 +1513,7 @@ function exportToExcel() {
             record.arithmetic.min.toFixed(4),
             "N/A"
         ]);
-        
+
         // CORRECCIÓN: Exportar solo los métodos correspondientes al cálculo realizado
         if (record.method === 'RSS') {
             data.push([
@@ -1546,7 +1534,7 @@ function exportToExcel() {
                 record.monteCarlo.stddev.toFixed(6)
             ]);
         }
-        
+
         data.push([]);
         data.push([]);
     });
@@ -1594,8 +1582,8 @@ function drawPerpendicularLine(ctx, x, y, orientation, length) {
 
 function updateVisualization() {
     requestAnimationFrame(() => {
-         const { dimensions } = getDimensionData();
-         drawVectors(dimensions, vectorOrientation);
+        const { dimensions } = getDimensionData();
+        drawVectors(dimensions, vectorOrientation);
     });
 }
 
@@ -1603,7 +1591,7 @@ function drawVectors(dimensions, orientation) {
     const canvas = document.getElementById('vectorCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
@@ -1614,7 +1602,7 @@ function drawVectors(dimensions, orientation) {
 
     ctx.clearRect(0, 0, width, height);
     ctx.font = "12px 'Nunito', sans-serif";
-    
+
     if (dimensions.length === 0) {
         ctx.fillStyle = '#bdc3c7';
         ctx.textAlign = 'center';
@@ -1640,9 +1628,9 @@ function drawVectors(dimensions, orientation) {
     const perpLineLength = 15;
 
     const scale = total_span_unscaled > 0 ? (((orientation === 'horizontal' ? width : height) - 2 * padding) / total_span_unscaled) : 1;
-    
+
     let originX, originY;
-    
+
     const drawingWidth = (orientation === 'horizontal')
         ? total_span_unscaled * scale
         : (dimensions.length + 1.5) * offsetAmount;
@@ -1660,7 +1648,7 @@ function drawVectors(dimensions, orientation) {
         originX = drawingStartX;
         originY = drawingStartY + (max_pos_unscaled * scale);
     }
-    
+
     let current_pos_scaled = 0;
     const initial_x = (orientation === 'horizontal') ? originX : originX + offsetAmount / 2;
     const initial_y = (orientation === 'horizontal') ? originY + offsetAmount / 2 : originY;
@@ -1677,11 +1665,11 @@ function drawVectors(dimensions, orientation) {
             start_y = originY + (i + 0.5) * offsetAmount;
             end_x = start_x + length_scaled;
             end_y = start_y;
-            
+
             ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
             ctx.fillStyle = color;
-            ctx.fillText((dim.sign > 0 ? '+' : '-') + (dim.name || `Dim ${i+1}`), start_x + length_scaled / 2, start_y - textOffset);
-        } else { 
+            ctx.fillText((dim.sign > 0 ? '+' : '-') + (dim.name || `Dim ${i + 1}`), start_x + length_scaled / 2, start_y - textOffset);
+        } else {
             start_x = originX + (i + 0.5) * offsetAmount;
             start_y = originY - current_pos_scaled;
             end_x = start_x;
@@ -1689,9 +1677,9 @@ function drawVectors(dimensions, orientation) {
 
             ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
             ctx.fillStyle = color;
-            ctx.fillText((dim.sign > 0 ? '+' : '-') + (dim.name || `Dim ${i+1}`), start_x + textOffset + 5, start_y - length_scaled / 2);
+            ctx.fillText((dim.sign > 0 ? '+' : '-') + (dim.name || `Dim ${i + 1}`), start_x + textOffset + 5, start_y - length_scaled / 2);
         }
-        
+
         drawArrow(ctx, start_x, start_y, end_x, end_y, arrowSize, color);
         drawPerpendicularLine(ctx, end_x, end_y, orientation, perpLineLength);
         current_pos_scaled += length_scaled;
@@ -1715,7 +1703,7 @@ function drawVectors(dimensions, orientation) {
         res_start_y = originY;
         res_end_x = res_start_x;
         res_end_y = originY - current_pos_scaled;
-        
+
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         ctx.fillStyle = resultColor;
         ctx.fillText('R', res_start_x + textOffset + 5, res_start_y - current_pos_scaled / 2);
@@ -1744,7 +1732,7 @@ function openTab(evt, tabName) {
 }
 
 // DOM Content Loaded Event
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
     const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
@@ -1756,21 +1744,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const icon = navToggle.querySelector('i');
         icon.classList.toggle('fa-bars');
         icon.classList.toggle('fa-times');
-        
+
         if (!navMenu.classList.contains('show-menu')) {
             toolsDropdownMenu.classList.remove('show-submenu');
             toolsDropdownContainer.classList.remove('active');
         }
     });
-    
+
     toolsDropdownToggle.addEventListener('click', (event) => {
         if (window.innerWidth <= 992) {
-            event.preventDefault(); 
+            event.preventDefault();
             toolsDropdownMenu.classList.toggle('show-submenu');
             toolsDropdownContainer.classList.toggle('active');
         }
     });
-    
+
     updateVisualization();
     window.addEventListener('resize', updateVisualization);
 
@@ -1780,6 +1768,6 @@ document.addEventListener('DOMContentLoaded', function() {
             validateInput(event.target);
         }
     });
-    
+
     document.getElementById('montecarlo-results').style.display = 'none';
 });

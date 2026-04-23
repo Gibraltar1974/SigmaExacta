@@ -5,32 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free online calculator for Tolerance Stack-Up Analysis for Mechancial Assemblies. Optimize mechanical designs with worst-case, Root Sum Square (RSS), and Monte Carlo simulation methods. No limitations in the number of dimensions.">
+        content="Free online calculator for Tolerance Stack-Up Analysis for Mechanical Assemblies. Optimize mechanical designs with worst-case, Root Sum Square (RSS), and Monte Carlo simulation methods. No limitations in the number of dimensions.">
     <meta name="keywords"
         content="open source, free software, tolerance analysis, tolerance stack-up, stackup, dimension chain, worst-case method, RSS method, tolerance calculation, Monte Carlo simulation, GD&T, mechanical design, engineering, Sigma Exacta, statistical distributions, normal distribution, homogeneous distribution, weibull distribution, lognormal distribution, exponential distribution ">
     <title>Tolerance Stack-Up Analysis Calculator | Free Online Tool | Sigma Exacta</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="stack_up_analysis.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Añadir esto en la sección head después de los otros enlaces -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
-        crossorigin="anonymous"></script>
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous">
+        </script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
         integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
+        onload="renderMathInElement(document.body);">
+        </script>
 
     <style>
-        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) TIPO TRIZ ===== */
-        /* Se usan nombres de clases específicos para no chocar con los estilos existentes */
-
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #5856d6;
@@ -44,18 +43,14 @@
             --light-color: #ecf0f1;
         }
 
-        /* ===== ESTILOS PARA ANCHO COMPLETO ===== */
-        /* Asegurar que body y html ocupen el 100% del ancho */
         html,
         body {
             width: 100%;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            /* Prevenir scroll horizontal no deseado */
         }
 
-        /* Modificar el contenedor principal para ocupar ancho completo */
         .main-content-wrapper {
             width: 100%;
             max-width: 100%;
@@ -63,7 +58,6 @@
             padding: 0;
         }
 
-        /* Asegurar que los contenedores internos no limiten el ancho */
         .container,
         .calculator-section,
         .tabcontent,
@@ -73,19 +67,17 @@
             width: 100%;
         }
 
-        /* Ajustar el canvas de visualización para ancho completo */
         #vectorCanvas {
             width: 100% !important;
             max-width: 100% !important;
         }
 
-        /* Ajustar los resultados para mejor visualización en pantalla completa */
         .results {
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* --- BOTONES PRINCIPALES SOBRE LAS TABS --- */
+        /* --- BOTONES PRINCIPALES SOBRE LAS TABS (ESTILO TAGUCHI) --- */
         .main-action-buttons {
             display: flex;
             justify-content: center;
@@ -107,6 +99,18 @@
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
         .main-action-buttons .btn-example {
@@ -120,17 +124,99 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
-            background-color: var(--danger-color);
+        .main-action-buttons .btn-analyze {
+            background-color: var(--primary-color);
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
-            background-color: #a5281c;
+        .main-action-buttons .btn-analyze:hover {
+            background-color: #1a252f;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
+        .main-action-buttons .btn-save {
+            background-color: #6c5ce7;
+            color: white;
+        }
+
+        .main-action-buttons .btn-save:hover {
+            background-color: #5849c2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== MODAL STYLES (IDÉNTICOS A TAGUCHI) ===== */
+        .stackup-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stackup-modal.show {
+            display: flex;
+        }
+
+        .stackup-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .stackup-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stackup-modal-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stackup-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .stackup-modal-footer button {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .stackup-modal-cancel {
+            background: none !important;
+            border: 1px solid #ccc !important;
+            color: #555 !important;
+        }
+
+        .stackup-modal-cancel:hover {
+            background: #f5f5f5 !important;
+            transform: none !important;
+        }
+
+        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
         .tabs-nav {
             display: flex;
             background-color: #f1f5f9;
@@ -192,7 +278,6 @@
             border-top: 1px solid #e1e5e9;
         }
 
-        /* Usamos 'wizard-tab-content' para diferenciarlo de 'tabcontent' interno de la calculadora */
         .wizard-tab-content {
             display: none;
             padding: 2rem;
@@ -264,7 +349,6 @@
                 font-size: 0.9rem;
             }
 
-            /* Mejorar la visualización en móviles */
             .main-header {
                 padding: 1rem;
             }
@@ -297,7 +381,6 @@
             }
         }
 
-        /* Ajuste para que los containers dentro de las pestañas no tengan márgenes excesivos */
         .wizard-tab-content .container {
             margin-top: 0;
             margin-bottom: 2rem;
@@ -306,7 +389,6 @@
             border: none;
         }
 
-        /* CORRECCIÓN: Estilos para que las fórmulas se vean correctamente */
         .formula-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -344,7 +426,6 @@
             line-height: 1.4;
         }
 
-        /* Estilos para KaTeX */
         .katex {
             font-size: 1.1em !important;
         }
@@ -391,11 +472,36 @@
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
         }
+
+        .dist-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .dist-info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 3px solid var(--attractive-color);
+        }
+
+        .dist-info-card h5 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .dist-info-card p {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 0;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header container donde se cargará dinámicamente el header -->
     <div id="header-container"></div>
 
     <noscript>
@@ -430,18 +536,83 @@
                 Tolerance Stack-Up Analysis Calculator</h1>
             <p>Perform tolerance stack-up analysis using arithmetic, probabilistic, and Monte Carlo methods.</p>
 
-            <!-- BOTONES PRINCIPALES -->
             <div class="main-action-buttons">
-                <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-vial"></i> Load Example
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
+                <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-play-circle"></i> Load Example
+                </button>
+                <button id="globalAnalyzeBtn" class="btn-analyze">
+                    <i class="fas fa-calculator"></i> Analyze
+                </button>
+                <button id="globalSaveBtn" class="btn-save">
+                    <i class="fas fa-file-excel"></i> Export
                 </button>
             </div>
         </header>
 
-        <!-- NAVEGACIÓN DE PESTAÑAS (WIZARD) -->
+        <!-- MODAL DE CARGA -->
+        <div id="loadModal" class="stackup-modal">
+            <div class="stackup-modal-box">
+                <div class="stackup-modal-header">
+                    <div class="stackup-modal-icon" style="background:linear-gradient(135deg,#0d6efd,#339af0);">
+                        <i class="fas fa-folder-open" style="color:white;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:800;">Load Stack-Up Analysis</div>
+                        <div style="font-size:0.85rem;color:#888;">Import a previously exported Excel file</div>
+                    </div>
+                </div>
+                <div
+                    style="background:#f1f5f9;border-left:4px solid #0d6efd;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+                    Select an <strong>.xlsx</strong> file exported from this tool to restore your dimensions and
+                    results.
+                </div>
+                <label
+                    style="display:flex;gap:0.6rem;padding:0.75rem;background:#f8f9fa;border-radius:6px;border:1.5px solid #dee2e6;margin-bottom:0.5rem;cursor:pointer;align-items:center;">
+                    <i class="fas fa-file-excel" style="color:#0d6efd;font-size:1.2rem;"></i>
+                    <span><strong>Choose Excel file</strong><br><small id="loadFileLabel">No file
+                            selected</small></span>
+                    <input type="file" id="modalFileInput" accept=".xlsx,.xls" style="display:none;">
+                </label>
+                <div class="stackup-modal-footer">
+                    <button id="loadCancelBtn" class="stackup-modal-cancel">Cancel</button>
+                    <button id="loadConfirmBtn"
+                        style="background:linear-gradient(135deg,#0d6efd,#0b5ed7);color:white;"><i
+                            class="fas fa-upload"></i> Load</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE EXPORTACIÓN -->
+        <div id="exportModal" class="stackup-modal">
+            <div class="stackup-modal-box">
+                <div class="stackup-modal-header">
+                    <div class="stackup-modal-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+                        <i class="fas fa-file-excel" style="color:white;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:800;">Export to Excel</div>
+                        <div style="font-size:0.85rem;color:#888;">Download analysis results</div>
+                    </div>
+                </div>
+                <div
+                    style="background:#f1f5f9;border-left:4px solid #6c5ce7;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+                    Download a comprehensive Excel report of your tolerance stack-up analysis including all dimensions,
+                    methods, and results.
+                </div>
+                <div class="stackup-modal-footer">
+                    <button id="exportCancelBtn" class="stackup-modal-cancel">Cancel</button>
+                    <button id="exportConfirmBtn"
+                        style="background:linear-gradient(135deg,#6c5ce7,#5849c2);color:white;"><i
+                            class="fas fa-download"></i> Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN PRINCIPAL (WIZARD) -->
         <nav class="tabs-nav">
             <button class="tab-btn active" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i> Theory &
                 Info</button>
@@ -458,32 +629,26 @@
             <section class="container" style="width: 100%; max-width: 100%; margin: 0; border-radius: 0;">
                 <h2><i class="fas fa-question-circle"></i> What is Tolerance Stack-Up Analysis?</h2>
                 <p>Tolerance stack-up analysis is a fundamental process in mechanical design used to study the
-                    accumulation
-                    of variation in an assembly. Each component of a product has dimensional tolerances (a permitted
-                    variation in its size). This analysis calculates the combined effect of these tolerances to predict
-                    the
-                    final dimensional variation of the assembly, ensuring that parts fit together correctly and the
-                    product
-                    functions as intended. A tolerance stack-up analysis allows to assess the effect of geometrical
-                    errors
-                    before manufacturing. Consequently, any defects can be easily fixed at a very low cost and in a
-                    short
-                    time.</p>
+                    accumulation of variation in an assembly. Each component of a product has dimensional tolerances (a
+                    permitted variation in its size). This analysis calculates the combined effect of these tolerances
+                    to
+                    predict the final dimensional variation of the assembly, ensuring that parts fit together correctly
+                    and the product functions as intended. A tolerance stack-up analysis allows to assess the effect of
+                    geometrical errors before manufacturing. Consequently, any defects can be easily fixed at a very low
+                    cost and in a short time.</p>
             </section>
 
             <section class="container" style="width: 100%; max-width: 100%; margin: 0; border-radius: 0;">
                 <h2><i class="fas fa-history"></i> Brief History</h2>
                 <p>The concept of interchangeable parts dates back to the Industrial Revolution, but the systematic
-                    analysis
-                    of their accumulation gained momentum in the 20th century, especially with the rise of mass
-                    production.
-                    The need to predict and control variation became critical. Walter A. Shewhart's work in the 1920s on
-                    <strong>Statistical Process Control (SPC)</strong> laid the groundwork for probabilistic methods.
-                    Later,
-                    the development and standardization of <strong>Geometric Dimensioning and Tolerancing
-                        (GD&T)</strong>
-                    provided a precise language for defining tolerances, making analyses more robust and reliable.
-                </p>
+                    analysis of their accumulation gained momentum in the 20th century, especially with the rise of mass
+                    production. The need to predict and control variation became critical. Walter A. Shewhart's work in
+                    the 1920s on <strong>Statistical Process Control (SPC)</strong> laid the groundwork for
+                    probabilistic
+                    methods. Later, the development and standardization of <strong>Geometric Dimensioning and
+                        Tolerancing
+                        (GD&T)</strong> provided a precise language for defining tolerances, making analyses more robust
+                    and reliable.</p>
             </section>
 
             <section class="container" style="width: 100%; max-width: 100%; margin: 0; border-radius: 0;">
@@ -492,49 +657,41 @@
                     Statistical. The Statistical method is dynamically chosen between the classic Root Sum Square (RSS)
                     method or a Monte Carlo simulation based on the distribution types you select for the components.
                 </p>
-
                 <h4><strong>1. Arithmetic Method (Worst-Case)</strong></h4>
                 <p>This is the simplest and most conservative method, assuming a <strong>uniform distribution</strong>
-                    for
-                    all components. It calculates the absolute maximum and minimum possible assembly dimensions by
-                    summing
-                    all component tolerances at their most unfavorable condition. The worst-case method requires
-                    inspection
-                    of each part. It is suitable for low volume very high value products, such as jet engines.</p>
+                    for all components. It calculates the absolute maximum and minimum possible assembly dimensions by
+                    summing all component tolerances at their most unfavorable condition. The worst-case method requires
+                    inspection of each part. It is suitable for low volume very high value products, such as jet
+                    engines.
+                </p>
                 <ul>
                     <li><strong>Advantage:</strong> Guarantees that 100% of assemblies will meet specifications.</li>
                     <li><strong>Disadvantage:</strong> Leads to the tightest, most expensive component tolerances, as
                         the
                         "worst-case" is statistically unlikely.</li>
                 </ul>
-
                 <h4><strong>2. Statistical Method (RSS or Monte Carlo Simulation)</strong></h4>
                 <p>This method uses component distribution types to predict a more realistic variation range for the
                     assembly. This method assumes that the machine or process is working in their specifications limit
-                    (the
-                    machine work according to its manufacturer specifications, no shift or abnormal conditions when
-                    making
-                    parts). The calculation method is chosen as follows:</p>
+                    (the machine work according to its manufacturer specifications, no shift or abnormal conditions when
+                    making parts). The calculation method is chosen as follows:</p>
                 <ul>
                     <li>If <strong>all components</strong> are set to a <strong>Normal</strong> distribution, the method
                         defaults to the highly efficient <strong>Root Sum of Squares (RSS)</strong>. RSS statistically
-                        sums
-                        tolerances, assuming deviations in one direction are offset by deviations in the other.</li>
+                        sums tolerances, assuming deviations in one direction are offset by deviations in the other.
+                    </li>
                     <li>If <strong>any component</strong> is set to a <strong>non-Normal</strong> distribution (Weibull,
                         Triangular, Homogeneous, Lognormal, Beta, or Exponential), the tool automatically switches to a
                         <strong>Monte Carlo Simulation</strong>. This uses computational power to simulate the assembly
                         thousands of times, generating a complete statistical distribution of the possible assembly
                         outcomes.
                     </li>
-                    <li>This tool calculates the standard deviation (σ) based on your input (Tolerance, σ value, or
-                        C<sub>pk</sub>) to define the process spread for each component.</li>
+                    <li>This tool calculates the standard deviation (&sigma;) based on your input (Tolerance, &sigma;
+                        value, or C<sub>pk</sub>) to define the process spread for each component.</li>
                 </ul>
-
                 <h4><strong>3. Component Distributions & Manufacturing Relevance</strong></h4>
                 <p>Selecting the correct distribution is crucial for accurate analysis, as it models how a process
-                    actually
-                    performs:</p>
-
+                    actually performs:</p>
                 <div class="dist-info-grid">
                     <div class="dist-info-card">
                         <h5><strong>Normal (Gaussian)</strong></h5>
@@ -547,8 +704,7 @@
                     <div class="dist-info-card">
                         <h5><strong>Homogeneous (Uniform)</strong></h5>
                         <p>Assumes that every value within the tolerance range has an <strong>equal probability</strong>
-                            of
-                            occurring. <strong>Relevance:</strong> Highly conservative. Often used to model purchased
+                            of occurring. <strong>Relevance:</strong> Highly conservative. Often used to model purchased
                             components that are checked only at the boundary limits (Go/No-Go gauging), or where process
                             data is unavailable, leading to a worst-case risk assessment.</p>
                     </div>
@@ -563,55 +719,44 @@
                     </div>
                     <div class="dist-info-card">
                         <h5><strong>Weibull</strong></h5>
-                        <p>A flexible distribution defined by shape (β), scale (η), and often a location (γ) parameter.
-                            While commonly used for reliability/life analysis, it models dimensional distributions that
-                            are
-                            <strong>skewed</strong> or non-symmetrical, often near a process boundary or for materials
-                            with
-                            inherent non-linear variation. <strong>Relevance:</strong> Useful for modeling wear,
-                            grinding
-                            processes, or thin film deposition where variation might be heavily skewed.
-                        </p>
+                        <p>A flexible distribution defined by shape (&beta;), scale (&eta;), and often a location
+                            (&gamma;) parameter. While commonly used for reliability/life analysis, it models
+                            dimensional
+                            distributions that are <strong>skewed</strong> or non-symmetrical, often near a process
+                            boundary or for materials with inherent non-linear variation. <strong>Relevance:</strong>
+                            Useful for modeling wear, grinding processes, or thin film deposition where variation might
+                            be heavily skewed.</p>
                     </div>
                     <div class="dist-info-card">
                         <h5><strong>Lognormal</strong></h5>
                         <p>A distribution where the logarithm of the variable follows a normal distribution, resulting
-                            in a
-                            <strong>right-skewed</strong> shape. Values cannot be negative, making it ideal for strictly
-                            positive dimensions when shifted with a location parameter. <strong>Relevance:</strong>
-                            Common
-                            in processes with <strong>multiplicative errors</strong> such as coating thickness, particle
-                            size in powder metallurgy, electroplating depth, or chemical vapor deposition. Also models
-                            fatigue life and material strength properties.
+                            in
+                            a <strong>right-skewed</strong> shape. Values cannot be negative, making it ideal for
+                            strictly positive dimensions when shifted with a location parameter.
+                            <strong>Relevance:</strong> Common in processes with <strong>multiplicative errors</strong>
+                            such as coating thickness, particle size in powder metallurgy, electroplating depth, or
+                            chemical vapor deposition. Also models fatigue life and material strength properties.
                         </p>
                     </div>
                     <div class="dist-info-card">
                         <h5><strong>Beta</strong></h5>
                         <p>A highly flexible distribution bounded between a minimum and maximum, defined by shape
-                            parameters
-                            (α, β). Can model symmetric, left-skewed, right-skewed, or U-shaped distributions.
-                            <strong>Relevance:</strong> Useful for <strong>bounded processes</strong> with known
-                            physical
-                            limits, such as percentage-based measurements (e.g., material composition, hardness
-                            indices),
-                            surface finish within specification limits, or when expert judgment suggests variation is
-                            not
-                            normally distributed but constrained.
-                        </p>
+                            parameters (&alpha;, &beta;). Can model symmetric, left-skewed, right-skewed, or U-shaped
+                            distributions. <strong>Relevance:</strong> Useful for <strong>bounded processes</strong>
+                            with
+                            known physical limits, such as percentage-based measurements (e.g., material composition,
+                            hardness indices), surface finish within specification limits, or when expert judgment
+                            suggests variation is not normally distributed but constrained.</p>
                     </div>
                     <div class="dist-info-card">
                         <h5><strong>Exponential</strong></h5>
                         <p>Models the time or distance between independent events occurring at a constant average rate,
                             characterized by a <strong>memoryless property</strong> and strong right skew. Needs a
-                            location
-                            parameter for dimensional analysis. <strong>Relevance:</strong> Primarily used in
-                            reliability
-                            engineering for modeling <strong>failure rates</strong> or time-to-failure for components
-                            with
-                            constant hazard rates. In dimensional analysis, it can represent the distribution of defect
-                            spacing, inter-arrival times in production lines, or processes where most values cluster
-                            near a
-                            minimum value with a long tail.</p>
+                            location parameter for dimensional analysis. <strong>Relevance:</strong> Primarily used in
+                            reliability engineering for modeling <strong>failure rates</strong> or time-to-failure for
+                            components with constant hazard rates. In dimensional analysis, it can represent the
+                            distribution of defect spacing, inter-arrival times in production lines, or processes where
+                            most values cluster near a minimum value with a long tail.</p>
                     </div>
                 </div>
             </section>
@@ -622,15 +767,13 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA -->
+        <!-- PESTAÑA 2: HERRAMIENTA CALCULADORA (solo Input Data y Stack-up Visualization) -->
         <div id="tab-tool" class="wizard-tab-content">
             <div class="calculator-section" style="box-shadow: none; margin: 0; width: 100%; max-width: 100%;">
                 <div class="tab">
-                    <button class="tablinks active" onclick="openTab(event, 'input')"><i class="fas fa-edit"></i> Input
-                        Data</button>
-                    <button class="tablinks" onclick="openTab(event, 'analysis-results')" id="resultsTab"><i
-                            class="fas fa-chart-line"></i> Analysis Results</button>
-                    <button class="tablinks" onclick="openTab(event, 'visualization')"><i
+                    <button class="tablinks active" onclick="openToolTab(event, 'input')"><i class="fas fa-edit"></i>
+                        Input Data</button>
+                    <button class="tablinks" onclick="openToolTab(event, 'visualization')"><i
                             class="fas fa-project-diagram"></i> Stack-up Visualization</button>
                 </div>
 
@@ -642,8 +785,7 @@
                                 <i class="fas fa-inbox"></i>
                                 <p>No dimensions added yet</p>
                                 <p style="font-size: 0.9rem;">Click "Add Dimension" below to start building your
-                                    tolerance
-                                    stack-up analysis</p>
+                                    tolerance stack-up analysis</p>
                             </div>
                         </div>
                         <div class="add-remove-btns">
@@ -654,42 +796,6 @@
                             <input type="number" id="sampleSize" value="10000" min="1000" max="1000000">
                         </div>
                         <button onclick="calculate()"><i class="fas fa-calculator"></i> Calculate</button>
-                    </div>
-                </div>
-
-                <div id="analysis-results" class="tabcontent">
-                    <h3><i class="fas fa-chart-line"></i> Analysis Results</h3>
-                    <div class="results">
-                        <div class="result-method">
-                            <h4><i class="fas fa-calculator"></i> Arithmetic Method (Worst-Case)</h4>
-                            <p>Nominal value: <span id="arithmetic-nominal" class="badge badge-primary">-</span></p>
-                            <p>Tolerance: <span id="arithmetic-tolerance" class="badge badge-primary">-</span></p>
-                            <p>Maximum: <span id="arithmetic-max" class="badge badge-primary">-</span></p>
-                            <p>Minimum: <span id="arithmetic-min" class="badge badge-primary">-</span></p>
-                        </div>
-                        <div class="result-method" id="rss-results">
-                            <h4><i class="fas fa-chart-bar"></i> Probabilistic Method (RSS)</h4>
-                            <p>Nominal value: <span id="probabilistic-nominal" class="badge badge-primary">-</span></p>
-                            <p>Standard deviation: <span id="probabilistic-stddev" class="badge badge-primary">-</span>
-                            </p>
-                            <p>Tolerance: <span id="probabilistic-tolerance" class="badge badge-primary">-</span></p>
-                            <p>Maximum: <span id="probabilistic-max" class="badge badge-primary">-</span></p>
-                            <p>Minimum: <span id="probabilistic-min" class="badge badge-primary">-</span></p>
-                        </div>
-                        <div id="montecarlo-results" class="result-method">
-                            <div class="montecarlo-data">
-                                <h4><i class="fas fa-random"></i> Monte Carlo Results</h4>
-                                <p>Nominal value: <span id="montecarlo-nominal" class="badge badge-primary">-</span></p>
-                                <p>Standard deviation: <span id="montecarlo-stddev" class="badge badge-primary">-</span>
-                                </p>
-                                <p>Tolerance: <span id="montecarlo-tolerance" class="badge badge-primary">-</span></p>
-                                <p>Maximum: <span id="montecarlo-max" class="badge badge-primary">-</span></p>
-                                <p>Minimum: <span id="montecarlo-min" class="badge badge-primary">-</span></p>
-                            </div>
-                            <div class="montecarlo-chart-container">
-                                <canvas id="distributionChart"></canvas>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -706,6 +812,9 @@
                         <canvas id="vectorCanvas"></canvas>
                     </div>
                 </div>
+
+                <!-- Contenedor oculto para compatibilidad con versiones anteriores del script -->
+                <div id="analysis-results" class="tabcontent" style="display:none;"></div>
             </div>
 
             <div class="tab-nav-buttons">
@@ -714,15 +823,46 @@
             </div>
         </div>
 
-        <!-- NUEVA PESTAÑA 3: RESULTS -->
+        <!-- PESTAÑA 3: RESULTS (contiene los resultados y el botón de historial) -->
         <div id="tab-results" class="wizard-tab-content">
             <section class="container" style="width: 100%; max-width: 100%; margin: 0; border-radius: 0;">
                 <h2><i class="fas fa-chart-bar"></i> Detailed Results</h2>
                 <p>View and export detailed calculation results and history.</p>
 
+                <!-- BLOQUE DE RESULTADOS (antes en subpestaña Analysis Results) -->
+                <div class="results" style="margin-top: 1.5rem;">
+                    <div class="result-method">
+                        <h4><i class="fas fa-calculator"></i> Arithmetic Method (Worst-Case)</h4>
+                        <p>Nominal value: <span id="arithmetic-nominal" class="badge badge-primary">-</span></p>
+                        <p>Tolerance: <span id="arithmetic-tolerance" class="badge badge-primary">-</span></p>
+                        <p>Maximum: <span id="arithmetic-max" class="badge badge-primary">-</span></p>
+                        <p>Minimum: <span id="arithmetic-min" class="badge badge-primary">-</span></p>
+                    </div>
+                    <div class="result-method" id="rss-results">
+                        <h4><i class="fas fa-chart-bar"></i> Probabilistic Method (RSS)</h4>
+                        <p>Nominal value: <span id="probabilistic-nominal" class="badge badge-primary">-</span></p>
+                        <p>Standard deviation: <span id="probabilistic-stddev" class="badge badge-primary">-</span></p>
+                        <p>Tolerance: <span id="probabilistic-tolerance" class="badge badge-primary">-</span></p>
+                        <p>Maximum: <span id="probabilistic-max" class="badge badge-primary">-</span></p>
+                        <p>Minimum: <span id="probabilistic-min" class="badge badge-primary">-</span></p>
+                    </div>
+                    <div id="montecarlo-results" class="result-method">
+                        <div class="montecarlo-data">
+                            <h4><i class="fas fa-random"></i> Monte Carlo Results</h4>
+                            <p>Nominal value: <span id="montecarlo-nominal" class="badge badge-primary">-</span></p>
+                            <p>Standard deviation: <span id="montecarlo-stddev" class="badge badge-primary">-</span></p>
+                            <p>Tolerance: <span id="montecarlo-tolerance" class="badge badge-primary">-</span></p>
+                            <p>Maximum: <span id="montecarlo-max" class="badge badge-primary">-</span></p>
+                            <p>Minimum: <span id="montecarlo-min" class="badge badge-primary">-</span></p>
+                        </div>
+                        <div class="montecarlo-chart-container">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="export-section" style="margin: 2rem 0;">
-                    <button onclick="listResults()"><i class="fas fa-list"></i> List Results</button>
-                    <button onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                    <button onclick="listResults()"><i class="fas fa-list"></i> Add to History</button>
                 </div>
 
                 <div id="results-history" style="display: none; margin-top: 2rem;"></div>
@@ -744,7 +884,6 @@
                         <div>$$ X = A + (B - A) \cdot U $$</div>
                         <p>where \( U \sim \text{Uniform}(0,1) \)</p>
                     </div>
-                    <!-- Reemplazar el item triangular existente con esta versión mejorada -->
                     <div class="formula-item triangular-formula">
                         <h3>Triangular Distribution</h3>
                         <div>$$ F_c = \frac{C - A}{B - A} $$</div>
@@ -796,15 +935,14 @@
                             <li><code>U, V</code>: Uniform(0,1) random variables</li>
                             <li><code>Z</code>: Standard normal random variable</li>
                             <li><code>X</code>: Random variable for dimension</li>
-                            <li><code>μ, σ</code>: Mean and standard deviation</li>
+                            <li><code>&mu;, &sigma;</code>: Mean and standard deviation</li>
                             <li><code>A, B, C</code>: Parameters for distributions (min, max, mode)</li>
-                            <li><code>β, η, γ</code>: Weibull parameters (shape, scale, location)</li>
-                            <li><code>α, β</code>: Beta distribution shape parameters</li>
-                            <li><code>λ</code>: Exponential distribution rate parameter</li>
+                            <li><code>&beta;, &eta;, &gamma;</code>: Weibull parameters (shape, scale, location)</li>
+                            <li><code>&alpha;, &beta;</code>: Beta distribution shape parameters</li>
+                            <li><code>&lambda;</code>: Exponential distribution rate parameter</li>
                             <li><code>T<sub>i</sub><sup>+</sup>, T<sub>i</sub><sup>-</sup></code>: Plus and minus
-                                tolerances for
-                                dimension i</li>
-                            <li><code>σ<sub>i</sub></code>: Standard deviation for dimension i</li>
+                                tolerances for dimension i</li>
+                            <li><code>&sigma;<sub>i</sub></code>: Standard deviation for dimension i</li>
                             <li><code>N</code>: Number of Monte Carlo samples</li>
                             <li><code>S<sub>j</sub></code>: j-th Monte Carlo sample of the stack</li>
                         </ul>
@@ -820,24 +958,22 @@
                 analysis (e.g., Worst-Case, Root Sum Square, and Monte Carlo simulation). The tools on this site are
                 independent implementations for educational use. While we strive for accuracy, we make no warranty or
                 guarantee regarding the results. All calculations, engineering decisions, and designs based on the
-                output of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not
-                liable for any damages, losses, or product failures resulting from the use of this website.</p>
+                output
+                of this tool are the sole responsibility of the user. Sigma Exacta and its creators are not liable for
+                any damages, losses, or product failures resulting from the use of this website.</p>
         </div>
     </footer>
 
-    <!-- Script para cargar el header dinámicamente -->
     <script>
         // Cargar el header dinámicamente
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                // Inicializar el menú después de cargar el header
                 initializeMenu();
             })
             .catch(error => console.error('Error loading header:', error));
 
-        // Función para inicializar el menú desplegable
         function initializeMenu() {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
@@ -851,7 +987,6 @@
                     const icon = navToggle.querySelector('i');
                     icon.classList.toggle('fa-bars');
                     icon.classList.toggle('fa-times');
-
                     if (!navMenu.classList.contains('show-menu')) {
                         toolsDropdownMenu.classList.remove('show-submenu');
                         toolsDropdownContainer.classList.remove('active');
@@ -870,61 +1005,391 @@
             }
         }
 
-        // ===== LÓGICA DE PESTAÑAS WIZARD =====
+        // ===== LÓGICA DE PESTAÑAS PRINCIPALES (WIZARD) =====
         function switchWizardTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos de wizard
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el contenido seleccionado
             document.getElementById(tabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
-            // Scroll al top suavemente
+            if (tabId === 'tab-results') {
+                setTimeout(() => {
+                    if (typeof updateDistributionChart === 'function') updateDistributionChart();
+                }, 300);
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Event listeners para los botones globales
+        // ===== LÓGICA DE SUBPESTAÑAS DENTRO DE CALCULATOR TOOL =====
+        function openToolTab(evt, tabName) {
+            document.querySelectorAll(".tabcontent").forEach(el => el.style.display = "none");
+            document.querySelectorAll(".tablinks").forEach(el => el.classList.remove("active"));
+            const target = document.getElementById(tabName);
+            if (target) {
+                target.style.display = "block";
+                evt.currentTarget.classList.add("active");
+
+                if (tabName === 'visualization') {
+                    setTimeout(() => {
+                        if (typeof updateVisualization === 'function') updateVisualization();
+                    }, 150);
+                } else if (tabName === 'input') {
+                    setTimeout(() => {
+                        if (typeof updateVisualization === 'function') updateVisualization();
+                    }, 150);
+                }
+            }
+        }
+
+        // Compatibilidad con código antiguo que llama a openTab(event, 'analysis-results')
+        function openTab(evt, tabName) {
+            if (tabName === 'analysis-results') {
+                // Redirigir a la pestaña de resultados del wizard
+                switchWizardTab('tab-results');
+                return;
+            }
+            openToolTab(evt, tabName);
+        }
+
+        // ===== NOTIFICACIÓN =====
+        function showStackupNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'stackup-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'fadeOutNotif 0.5s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        // ===== EXPORTACIÓN / IMPORTACIÓN EXCEL =====
+        function getDimensionsData() {
+            const container = document.getElementById('dimensions-container');
+            if (!container) return [];
+            const selects = container.querySelectorAll('select');
+            const dimensions = [];
+            selects.forEach(select => {
+                const row = select.closest('div');
+                if (!row) return;
+                const inputs = Array.from(row.querySelectorAll('input')).filter(inp => inp.type !== 'hidden');
+                if (inputs.length === 0) {
+                    const parentRow = select.closest(
+                        'div.dimension-entry, div.dimension-card, div.dimension-row, div[class*="dimension"]');
+                    if (parentRow) {
+                        const parentInputs = Array.from(parentRow.querySelectorAll('input')).filter(inp => inp.type !==
+                            'hidden');
+                        if (parentInputs.length >= 3) inputs.push(...parentInputs);
+                    }
+                }
+                let name = '',
+                    nominal = '',
+                    tolPlus = '',
+                    tolMinus = '',
+                    sign = '+';
+                if (inputs.length >= 3) {
+                    const nameInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase().includes(
+                        'name')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes('name'));
+                    const nominalInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase().includes(
+                        'nominal')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes('nominal'));
+                    const plusInput = inputs.find(inp => inp.placeholder && (inp.placeholder.includes('+') || inp
+                        .placeholder.toLowerCase().includes('plus'))) || inputs.find(inp => inp.id && (inp.id.includes(
+                            'plus') || inp.id.includes('upper')));
+                    const minusInput = inputs.find(inp => inp.placeholder && (inp.placeholder.includes('-') || inp
+                        .placeholder.toLowerCase().includes('minus'))) || inputs.find(inp => inp.id && (inp.id.includes(
+                            'minus') || inp.id.includes('lower')));
+                    const signInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase().includes(
+                        'sign')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes('sign'));
+                    if (nominalInput && plusInput && minusInput) {
+                        name = nameInput ? nameInput.value : '';
+                        nominal = nominalInput.value;
+                        tolPlus = plusInput.value;
+                        tolMinus = minusInput.value;
+                        sign = signInput ? signInput.value : '+';
+                    } else {
+                        name = inputs[0] ? inputs[0].value : '';
+                        nominal = inputs[1] ? inputs[1].value : '';
+                        tolPlus = inputs[2] ? inputs[2].value : '';
+                        tolMinus = inputs[3] ? inputs[3].value : '';
+                        if (inputs[4] && inputs[4].type !== 'number') sign = inputs[4].value;
+                    }
+                }
+                if (nominal || tolPlus || tolMinus) {
+                    dimensions.push({
+                        name,
+                        nominal,
+                        tolPlus,
+                        tolMinus,
+                        distribution: select.value || 'Normal',
+                        sign
+                    });
+                }
+            });
+            if (dimensions.length === 0) {
+                const rows = container.querySelectorAll(
+                    '.dimension-entry, .dimension-card, .dimension-row, .dimension-item');
+                rows.forEach(row => {
+                    const inputs = Array.from(row.querySelectorAll('input')).filter(inp => inp.type !== 'hidden');
+                    if (inputs.length >= 3) {
+                        const nameInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase()
+                            .includes('name')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes(
+                                'name'));
+                        const nominalInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase()
+                            .includes('nominal')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes(
+                                'nominal'));
+                        const plusInput = inputs.find(inp => inp.placeholder && (inp.placeholder.includes('+') ||
+                            inp.placeholder.toLowerCase().includes('plus'))) || inputs.find(inp => inp.id && (inp
+                                .id.includes('plus') || inp.id.includes('upper')));
+                        const minusInput = inputs.find(inp => inp.placeholder && (inp.placeholder.includes('-') ||
+                            inp.placeholder.toLowerCase().includes('minus'))) || inputs.find(inp => inp.id && (inp
+                                .id.includes('minus') || inp.id.includes('lower')));
+                        const signInput = inputs.find(inp => inp.placeholder && inp.placeholder.toLowerCase()
+                            .includes('sign')) || inputs.find(inp => inp.id && inp.id.toLowerCase().includes(
+                                'sign'));
+                        const distSelect = row.querySelector('select');
+                        if (nominalInput && plusInput && minusInput) {
+                            dimensions.push({
+                                name: nameInput ? nameInput.value : '',
+                                nominal: nominalInput.value,
+                                tolPlus: plusInput.value,
+                                tolMinus: minusInput.value,
+                                distribution: distSelect ? distSelect.value : 'Normal',
+                                sign: signInput ? signInput.value : '+'
+                            });
+                        } else if (inputs.length >= 4) {
+                            dimensions.push({
+                                name: inputs[0].value,
+                                nominal: inputs[1].value,
+                                tolPlus: inputs[2].value,
+                                tolMinus: inputs[3].value,
+                                distribution: distSelect ? distSelect.value : 'Normal',
+                                sign: inputs[4] ? inputs[4].value : '+'
+                            });
+                        }
+                    }
+                });
+            }
+            return dimensions;
+        }
+
+        function getResultValue(id) {
+            const el = document.getElementById(id);
+            return el ? el.textContent : '-';
+        }
+
+        function exportStackupToExcel() {
+            const dimensions = getDimensionsData();
+            if (dimensions.length === 0) {
+                alert('No dimensions found. Please add at least one dimension before exporting.');
+                return;
+            }
+            const wb = XLSX.utils.book_new();
+            const summaryData = [
+                ['Tolerance Stack-Up Analysis Report'],
+                ['Export Date', new Date().toLocaleString()],
+                ['Number of Dimensions', dimensions.length],
+                ['Monte Carlo Sample Size', document.getElementById('sampleSize')?.value || '10000'],
+                [''],
+                ['Results Summary'],
+                ['Method', 'Nominal', 'Tolerance', 'Maximum', 'Minimum', 'Std Dev'],
+                ['Arithmetic (Worst-Case)', getResultValue('arithmetic-nominal'), getResultValue(
+                    'arithmetic-tolerance'), getResultValue('arithmetic-max'), getResultValue('arithmetic-min'), '-'],
+                ['Probabilistic (RSS)', getResultValue('probabilistic-nominal'), getResultValue(
+                    'probabilistic-tolerance'), getResultValue('probabilistic-max'), getResultValue(
+                        'probabilistic-min'), getResultValue('probabilistic-stddev')],
+                ['Monte Carlo', getResultValue('montecarlo-nominal'), getResultValue('montecarlo-tolerance'),
+                    getResultValue('montecarlo-max'), getResultValue('montecarlo-min'), getResultValue(
+                        'montecarlo-stddev')
+                ],
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
+            const dimData = [
+                ['Dimensions'],
+                ['Name', 'Sign', 'Nominal', 'Tolerance (+)', 'Tolerance (-)', 'Distribution'],
+                ...dimensions.map(d => [d.name, d.sign, d.nominal, d.tolPlus, d.tolMinus, d.distribution])
+            ];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dimData), 'Dimensions');
+            const fileName = `StackUp_Analysis_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            showStackupNotification('Excel file exported successfully!');
+        }
+
+        function loadStackupFromExcel(workbook) {
+            if (!workbook.Sheets['Dimensions']) throw new Error(
+                'The selected file does not contain a "Dimensions" sheet. Please use a file exported from this tool.');
+            const dimSheet = workbook.Sheets['Dimensions'];
+            const dimData = XLSX.utils.sheet_to_json(dimSheet, { header: 1 });
+            if (dimData.length < 3) throw new Error('No dimension data found in the file.');
+            if (typeof resetData === 'function') resetData();
+            const dataRows = dimData.slice(2).filter(row => row.length >= 5);
+            dataRows.forEach((row, index) => {
+                const name = row[0] || '',
+                    sign = row[1] || '+',
+                    nominal = row[2] || '',
+                    tolPlus = row[3] || '',
+                    tolMinus = row[4] || '',
+                    distribution = row[5] || 'Normal';
+                if (typeof addDimension === 'function') addDimension();
+                setTimeout(() => {
+                    const container = document.getElementById('dimensions-container');
+                    if (!container) return;
+                    const allCards = container.querySelectorAll(
+                        '.dimension-card, .dimension-row, [data-dimension], .dimension-entry, .dimension-item'
+                    );
+                    const card = allCards[allCards.length - 1];
+                    if (!card) return;
+                    const nameInput = card.querySelector(
+                        '.dim-name, [name*="name"], input[placeholder*="Name"]');
+                    const nominalInput = card.querySelector(
+                        '.dim-nominal, [name*="nominal"], input[placeholder*="Nominal"]');
+                    const tolPlusInput = card.querySelector(
+                        '.dim-tol-plus, [name*="tol_plus"], input[placeholder*="Plus"]');
+                    const tolMinusInput = card.querySelector(
+                        '.dim-tol-minus, [name*="tol_minus"], input[placeholder*="Minus"]');
+                    const distSelect = card.querySelector('select');
+                    const signInput = card.querySelector(
+                        '.dim-sign, [name*="sign"], input[placeholder*="Sign"]');
+                    if (nameInput) nameInput.value = name;
+                    if (nominalInput) nominalInput.value = nominal;
+                    if (tolPlusInput) tolPlusInput.value = tolPlus;
+                    if (tolMinusInput) tolMinusInput.value = tolMinus;
+                    if (distSelect) distSelect.value = distribution;
+                    if (signInput) signInput.value = sign;
+                    [nameInput, nominalInput, tolPlusInput, tolMinusInput, distSelect, signInput].forEach(
+                        el => { if (el) el.dispatchEvent(new Event('change', { bubbles: true })); });
+                }, 100);
+            });
+            if (workbook.Sheets['Summary']) {
+                const summarySheet = workbook.Sheets['Summary'];
+                const summaryData = XLSX.utils.sheet_to_json(summarySheet, { header: 1 });
+                for (const row of summaryData) {
+                    if (row[0] === 'Monte Carlo Sample Size' && row[1]) {
+                        const sampleSizeInput = document.getElementById('sampleSize');
+                        if (sampleSizeInput) sampleSizeInput.value = row[1];
+                    }
+                }
+            }
+            return dataRows.length;
+        }
+
+        // ===== EVENTOS DE BOTONES Y MODALES =====
         document.addEventListener('DOMContentLoaded', function () {
-            // Botón global de Load Example
             document.getElementById('globalLoadExampleBtn').addEventListener('click', function () {
-                loadExampleData();
-                // Cambiar a la pestaña del calculator tool
+                if (typeof loadExampleData === 'function') loadExampleData();
                 switchWizardTab('tab-tool');
             });
 
-            // Botón global de Reset All
-            document.getElementById('globalResetBtn').addEventListener('click', function () {
-                if (confirm("Are you sure you want to reset all data? This will remove all dimensions.")) {
-                    resetData();
-                }
+            document.getElementById('globalAnalyzeBtn').addEventListener('click', function () {
+                switchWizardTab('tab-tool');
+                setTimeout(() => {
+                    if (typeof calculate === 'function') {
+                        try {
+                            calculate();
+                        } catch (e) {
+                            console.error('Calculation error:', e);
+                        }
+                        switchWizardTab('tab-results');
+                        showStackupNotification('Analysis completed successfully!');
+                    } else {
+                        alert(
+                            'Calculation function not available. Please use the Calculate button in the Calculator Tool tab.'
+                        );
+                    }
+                }, 200);
             });
+
+            document.getElementById('globalLoadBtn').addEventListener('click', function () {
+                document.getElementById('loadFileLabel').textContent = 'No file selected';
+                document.getElementById('modalFileInput').value = '';
+                document.getElementById('loadModal').classList.add('show');
+            });
+
+            document.getElementById('globalSaveBtn').addEventListener('click', function () {
+                const dims = getDimensionsData();
+                if (dims.length === 0) {
+                    alert('Please add at least one dimension before exporting.');
+                    return;
+                }
+                const arithmeticNominal = document.getElementById('arithmetic-nominal');
+                if (!arithmeticNominal || arithmeticNominal.textContent === '-' || arithmeticNominal
+                    .textContent === '') {
+                    alert('Please run the analysis (Calculate) before exporting.');
+                    return;
+                }
+                document.getElementById('exportModal').classList.add('show');
+            });
+
+            document.getElementById('modalFileInput').addEventListener('change', function () {
+                document.getElementById('loadFileLabel').textContent = this.files[0] ? this.files[0]
+                    .name : 'No file selected';
+            });
+
+            document.getElementById('loadCancelBtn').addEventListener('click', function () {
+                document.getElementById('loadModal').classList.remove('show');
+            });
+
+            document.getElementById('loadModal').addEventListener('click', function (e) {
+                if (e.target === this) this.classList.remove('show');
+            });
+
+            document.getElementById('loadConfirmBtn').addEventListener('click', function () {
+                const file = document.getElementById('modalFileInput').files[0];
+                if (!file) {
+                    alert('Please select an Excel file first.');
+                    return;
+                }
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                    alert('Please select a valid Excel file (.xlsx or .xls).');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const numLoaded = loadStackupFromExcel(workbook);
+                        document.getElementById('loadModal').classList.remove('show');
+                        switchWizardTab('tab-tool');
+                        showStackupNotification(
+                            `Successfully loaded ${numLoaded} dimensions from Excel!`);
+                    } catch (err) {
+                        console.error('Error loading Excel file:', err);
+                        alert('Error loading file: ' + err.message);
+                    }
+                };
+                reader.onerror = function () { alert('Error reading the file. Please try again.'); };
+                reader.readAsArrayBuffer(file);
+            });
+
+            document.getElementById('exportCancelBtn').addEventListener('click', function () {
+                document.getElementById('exportModal').classList.remove('show');
+            });
+
+            document.getElementById('exportModal').addEventListener('click', function (e) {
+                if (e.target === this) this.classList.remove('show');
+            });
+
+            document.getElementById('exportConfirmBtn').addEventListener('click', function () {
+                document.getElementById('exportModal').classList.remove('show');
+                exportStackupToExcel();
+            });
+
+            window.exportToExcel = exportStackupToExcel;
+            console.log('Stack-Up Analysis: Modal system initialized with robust dimension detection.');
         });
-
-        // Función para sub-tabs dentro de Calculator Tool
-        function openTab(evt, tabName) {
-            // Ocultar todos los tabcontent
-            document.querySelectorAll(".tabcontent").forEach(el => el.style.display = "none");
-            // Remover clase active de todos los tablinks
-            document.querySelectorAll(".tablinks").forEach(el => el.classList.remove("active"));
-            // Mostrar el tab actual y agregar clase active al botón
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.classList.add("active");
-
-            // Si es la pestaña de input, actualizar visualización
-            if (tabName === 'input' || tabName === 'visualization') {
-                updateVisualization();
-            }
-        }
     </script>
 
-    <script src="stack_up_analysis.js"></script>
+    <script src="stack_up_analysis.js">
+    </script>
 
-    <script src="dexie.min.js"></script>
-    <script src="db-sigma.js"></script>
+    <script src="dexie.min.js">
+    </script>
+    <script src="db-sigma.js">
+    </script>
 
 </body>
 
