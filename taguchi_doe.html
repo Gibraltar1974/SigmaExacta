@@ -139,6 +139,17 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-example {
             background-color: var(--performance-color);
             color: white;
@@ -150,15 +161,88 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
-            background-color: var(--danger-color);
+        .main-action-buttons .btn-analyze {
+            background-color: var(--primary-color);
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
-            background-color: #a5281c;
+        .main-action-buttons .btn-analyze:hover {
+            background-color: #1a252f;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-save {
+            background-color: #6c5ce7;
+            color: white;
+        }
+
+        .main-action-buttons .btn-save:hover {
+            background-color: #5849c2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .taguchi-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .taguchi-modal.show {
+            display: flex;
+        }
+
+        .taguchi-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .taguchi-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .taguchi-modal-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .taguchi-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .taguchi-modal-footer button {
+            margin: 0;
+        }
+
+        .taguchi-modal-cancel {
+            background: none !important;
+            border: 1px solid #ccc !important;
+            color: #555 !important;
+        }
+
+        .taguchi-modal-cancel:hover {
+            background: #f5f5f5 !important;
+            transform: none !important;
         }
 
         /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) IDÉNTICOS ===== */
@@ -731,14 +815,80 @@
             <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
 
             <div class="main-action-buttons">
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
+                <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
                 <button id="globalLoadExampleBtn" class="btn-example">
                     <i class="fas fa-play-circle"></i> Load Example
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
+                <button id="globalAnalyzeBtn" class="btn-analyze">
+                    <i class="fas fa-calculator"></i> Analyze
+                </button>
+                <button id="globalSaveBtn" class="btn-save">
+                    <i class="fas fa-file-excel"></i> Export
                 </button>
             </div>
         </header>
+
+        <!-- Load Modal -->
+        <div id="loadModal" class="taguchi-modal">
+            <div class="taguchi-modal-box">
+                <div class="taguchi-modal-header">
+                    <div class="taguchi-modal-icon" style="background:linear-gradient(135deg,#0d6efd,#339af0);">
+                        <i class="fas fa-folder-open" style="color:white;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:800;">Load Experiment</div>
+                        <div style="font-size:0.85rem;color:#888;">Import a previously exported Excel file</div>
+                    </div>
+                </div>
+                <div
+                    style="background:#f1f5f9;border-left:4px solid #0d6efd;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+                    Select an <strong>.xlsx</strong> file exported from this tool to restore your experiment data and
+                    results.
+                </div>
+                <label
+                    style="display:flex;gap:0.6rem;padding:0.75rem;background:#f8f9fa;border-radius:6px;border:1.5px solid #dee2e6;margin-bottom:0.5rem;cursor:pointer;align-items:center;">
+                    <i class="fas fa-file-excel" style="color:#0d6efd;font-size:1.2rem;"></i>
+                    <span><strong>Choose Excel file</strong><br><small id="loadFileLabel">No file
+                            selected</small></span>
+                    <input type="file" id="modalFileInput" accept=".xlsx,.xls" style="display:none;">
+                </label>
+                <div class="taguchi-modal-footer">
+                    <button id="loadCancelBtn" class="taguchi-modal-cancel">Cancel</button>
+                    <button id="loadConfirmBtn"
+                        style="background:linear-gradient(135deg,#0d6efd,#0b5ed7);color:white;"><i
+                            class="fas fa-upload"></i> Load</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Modal -->
+        <div id="exportModal" class="taguchi-modal">
+            <div class="taguchi-modal-box">
+                <div class="taguchi-modal-header">
+                    <div class="taguchi-modal-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+                        <i class="fas fa-file-excel" style="color:white;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:800;">Export to Excel</div>
+                        <div style="font-size:0.85rem;color:#888;">Download analysis results</div>
+                    </div>
+                </div>
+                <div
+                    style="background:#f1f5f9;border-left:4px solid #6c5ce7;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+                    Download a comprehensive Excel report of your Taguchi analysis including all data, S/N ratios,
+                    ANOVA, and optimal settings.
+                </div>
+                <div class="taguchi-modal-footer">
+                    <button id="exportCancelBtn" class="taguchi-modal-cancel">Cancel</button>
+                    <button id="exportConfirmBtn"
+                        style="background:linear-gradient(135deg,#6c5ce7,#5849c2);color:white;"><i
+                            class="fas fa-download"></i> Export</button>
+                </div>
+            </div>
+        </div>
 
         <div class="tabs-container">
             <nav class="tabs-nav">
@@ -827,8 +977,8 @@
                                 <strong>Design & Data</strong> tab.
                             </li>
                             <li><strong>Enter Data:</strong> Enter your measured results for each run.</li>
-                            <li><strong>Calculate:</strong> Go to the <strong>Analysis & Report</strong> tab and click
-                                "Calculate Full Analysis".</li>
+                            <li><strong>Calculate:</strong> Click <strong>"Analyze"</strong> in the top toolbar to run
+                                the full analysis and jump to the <strong>Analysis & Report</strong> tab.</li>
                         </ol>
                     </div>
 
@@ -947,14 +1097,9 @@
 
                             <div id="no-analysis-msg" style="text-align: center; padding: 2rem; color: #7f8c8d;">
                                 <p><i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i></p>
-                                <p>No analysis generated yet. Please enter data in the "Design & Data" tab and then
-                                    click the button below to calculate.</p>
-
-                                <div style="text-align: center; margin-top: 2rem;">
-                                    <button type="button" id="calculate-analysis" class="btn-calculate">
-                                        <i class="fas fa-calculator"></i> Calculate Full Analysis
-                                    </button>
-                                </div>
+                                <p>No analysis generated yet. Please enter data in the <strong>"Design &amp;
+                                        Data"</strong> tab, then click <strong>"Analyze"</strong> above to calculate.
+                                </p>
                             </div>
                         </div>
 
@@ -1047,7 +1192,6 @@
 
     <script>
         // ===== INICIALIZACIÓN GLOBAL INMEDIATA =====
-        // Esto debe ejecutarse ANTES de cualquier otra cosa
         (function () {
             window.experimentData = window.experimentData || {};
             window.allCharts = window.allCharts || [];
@@ -1057,43 +1201,34 @@
             console.log('window.experimentData definido:', window.experimentData !== undefined);
         })();
 
-        // Código JavaScript que funcionará con el header
         document.addEventListener('DOMContentLoaded', function () {
             console.log('DOMContentLoaded - experimentData:', window.experimentData);
 
-            // Función para cambiar entre tabs (IDÉNTICA A KANO)
             window.switchWizardTab = function (tabId) {
-                // Quitar clase active de todos los botones y contenidos
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
 
-                // Activar el contenido seleccionado
                 const tabElement = document.getElementById(tabId);
                 if (tabElement) {
                     tabElement.classList.add('active');
                 }
 
-                // Activar botón correspondiente
                 const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
                 if (activeBtn) {
                     activeBtn.classList.add('active');
                 }
 
-                // Scroll al top suavemente
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
-            // Cargar el header dinámicamente - MISMO CÓDIGO QUE EN KANO.HTML
             fetch('header.html')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('header-container').innerHTML = data;
-                    // Inicializar el menú después de cargar el header
                     initNavigationMenu();
                 })
                 .catch(error => console.error('Error loading header:', error));
 
-            // Función para inicializar el menú de navegación - MISMA QUE EN KANO.HTML
             function initNavigationMenu() {
                 const navToggle = document.getElementById('nav-toggle');
                 const navMenu = document.getElementById('nav-menu');
@@ -1125,14 +1260,14 @@
                 }
             }
 
-            // Elementos del DOM - RESTAURADOS DEL ORIGINAL
             const DOM = {
                 addFactorBtn: document.getElementById('add-factor'),
                 generateDesignBtn: document.getElementById('generate-design'),
-                calculateAnalysisBtn: document.getElementById('calculate-analysis'),
                 exportExcelBtn: document.getElementById('export-excel'),
+                globalLoadBtn: document.getElementById('globalLoadBtn'),
                 globalLoadExampleBtn: document.getElementById('globalLoadExampleBtn'),
-                globalResetBtn: document.getElementById('globalResetBtn'),
+                globalAnalyzeBtn: document.getElementById('globalAnalyzeBtn'),
+                globalSaveBtn: document.getElementById('globalSaveBtn'),
                 factorsContainer: document.getElementById('factors-container'),
                 orthogonalArrayDiv: document.getElementById('orthogonal-array'),
                 experimentInfoDiv: document.getElementById('experiment-info'),
@@ -1142,17 +1277,140 @@
                 noAnalysisMsg: document.getElementById('no-analysis-msg')
             };
 
-            // Inicializar
             function init() {
-                // Añadir primer factor por defecto
                 addFactorInput();
 
-                // Event listeners
                 DOM.addFactorBtn.addEventListener('click', () => addFactorInput());
                 DOM.generateDesignBtn.addEventListener('click', generateDesign);
-                DOM.calculateAnalysisBtn.addEventListener('click', runFullAnalysis);
                 DOM.globalLoadExampleBtn.addEventListener('click', loadExampleData);
-                DOM.globalResetBtn.addEventListener('click', resetForm);
+                DOM.globalAnalyzeBtn.addEventListener('click', runFullAnalysis);
+
+                // Load button → opens load modal
+                DOM.globalLoadBtn.addEventListener('click', () => {
+                    document.getElementById('loadFileLabel').textContent = 'No file selected';
+                    document.getElementById('modalFileInput').value = '';
+                    document.getElementById('loadModal').classList.add('show');
+                });
+
+                // Load modal logic
+                document.getElementById('modalFileInput').addEventListener('change', function () {
+                    document.getElementById('loadFileLabel').textContent = this.files[0] ? this.files[0].name : 'No file selected';
+                });
+                document.getElementById('loadCancelBtn').addEventListener('click', () => {
+                    document.getElementById('loadModal').classList.remove('show');
+                });
+                document.getElementById('loadModal').addEventListener('click', function (e) {
+                    if (e.target === this) this.classList.remove('show');
+                });
+
+                // ===== NUEVA LÓGICA DE CARGA DE EXCEL =====
+                // Dentro de DOMContentLoaded, en la parte del loadConfirmBtn
+                document.getElementById('loadConfirmBtn').addEventListener('click', () => {
+                    const file = document.getElementById('modalFileInput').files[0];
+                    if (!file) {
+                        alert('Please select an Excel file first.');
+                        return;
+                    }
+
+                    const fileName = file.name.toLowerCase();
+                    if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                        alert('Please select a valid Excel file (.xlsx or .xls).');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+
+                            if (!workbook.Sheets['Summary'] || !workbook.Sheets['Design Data']) {
+                                throw new Error('The selected file does not appear to be a valid Taguchi export. Missing required sheets.');
+                            }
+
+                            // Reconstruir datos desde Excel
+                            reconstructFromExcel(workbook);
+
+                            // Guardar los resultados antes de que generateDesignTable los reinicie
+                            const savedResults = [...window.experimentData.results];
+
+                            // Regenerar la tabla de diseño
+                            if (window.experimentData.selectedArray) {
+                                generateDesignTable();
+
+                                // Restaurar los resultados verdaderos en el objeto
+                                window.experimentData.results = savedResults;
+
+                                // Rellenar los inputs de respuesta
+                                const responseInputs = document.querySelectorAll('.response-input');
+                                responseInputs.forEach((input, i) => {
+                                    const val = savedResults[i];
+                                    if (val !== null && val !== undefined && !isNaN(val)) {
+                                        input.value = val;
+                                    }
+                                });
+
+                                // Restaurar campos del formulario
+                                document.getElementById('experiment-name').value = window.experimentData.name || '';
+                                document.getElementById('objective').value = window.experimentData.objective || '';
+                                document.getElementById('response-variable').value = window.experimentData.responseVariable || '';
+
+                                // Restaurar tipo S/N
+                                const snrRadio = document.querySelector(`input[name="snr-type"][value="${window.experimentData.snrType}"]`);
+                                if (snrRadio) {
+                                    snrRadio.checked = true;
+                                    snrRadio.dispatchEvent(new Event('change'));
+                                }
+
+                                // Restaurar target nominal
+                                if (window.experimentData.snrType === 'nominal' && window.experimentData.nominalTarget !== null) {
+                                    document.getElementById('nominal-target').value = window.experimentData.nominalTarget;
+                                    document.getElementById('nominal-target-group').classList.remove('hidden');
+                                }
+
+                                // Restaurar factores en el formulario
+                                DOM.factorsContainer.innerHTML = '';
+                                (window.experimentData.factors || []).forEach(f => addFactorInput(f.name, f.levels.join(', ')));
+
+                                // Ir a la pestaña de datos
+                                switchWizardTab('tab-data');
+                            }
+
+                            document.getElementById('loadModal').classList.remove('show');
+                            showNotification('Experiment loaded successfully from Excel!');
+                        } catch (err) {
+                            console.error('Error loading Excel file:', err);
+                            alert('Error loading file: ' + err.message);
+                        }
+                    };
+                    reader.onerror = function () {
+                        alert('Error reading the file. Please try again.');
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+
+                // ===== FIN NUEVA LÓGICA DE CARGA =====
+
+                // Export button
+                DOM.globalSaveBtn.addEventListener('click', () => {
+                    if (!window.experimentData || !window.experimentData.predictedResult) {
+                        alert('Please run an analysis before exporting.');
+                        return;
+                    }
+                    document.getElementById('exportModal').classList.add('show');
+                });
+
+                // Export modal logic
+                document.getElementById('exportCancelBtn').addEventListener('click', () => {
+                    document.getElementById('exportModal').classList.remove('show');
+                });
+                document.getElementById('exportModal').addEventListener('click', function (e) {
+                    if (e.target === this) this.classList.remove('show');
+                });
+                document.getElementById('exportConfirmBtn').addEventListener('click', () => {
+                    document.getElementById('exportModal').classList.remove('show');
+                    exportToExcelTaguchi(window.calculationCount);
+                });
 
                 // Manejar cambio en tipo S/N
                 document.querySelectorAll('input[name="snr-type"]').forEach(radio => {
@@ -1165,6 +1423,146 @@
                         }
                     });
                 });
+            }
+
+            // ===== FUNCIÓN DE RECONSTRUCCIÓN DESDE EXCEL =====
+            function reconstructFromExcel(workbook) {
+                // Leer hoja Summary
+                const summarySheet = workbook.Sheets['Summary'];
+                const summaryData = XLSX.utils.sheet_to_json(summarySheet, { header: 1 });
+
+                let expName = '', expObjective = '';
+                for (const row of summaryData) {
+                    if (row[0] === 'Experiment Name') expName = row[1] || '';
+                    if (row[0] === 'Objective') expObjective = row[1] || '';
+                }
+
+                // Leer hoja Design Data
+                const designSheet = workbook.Sheets['Design Data'];
+                const designData = XLSX.utils.sheet_to_json(designSheet, { header: 1 });
+
+                if (designData.length < 3) {
+                    throw new Error('Design Data sheet is empty or has insufficient data.');
+                }
+
+                const headers = designData[1];
+                // headers: ["Run", "Factor1", ..., "FactorN", "ResponseName", "S/N Ratio (...)"]
+                const responseIndex = headers.length - 2;
+                const snrIndex = headers.length - 1;
+
+                const factorNames = headers.slice(1, responseIndex);
+                const responseVariable = headers[responseIndex];
+
+                // Extraer S/N type del encabezado
+                const snrHeader = headers[snrIndex] || '';
+                let snrType = 'smaller';
+                let nominalTarget = null;
+
+                if (snrHeader.includes('Smaller')) snrType = 'smaller';
+                else if (snrHeader.includes('Larger')) snrType = 'larger';
+                else if (snrHeader.includes('Nominal')) {
+                    snrType = 'nominal';
+                    const match = snrHeader.match(/Target:\s*([\d.]+)/);
+                    if (match) nominalTarget = parseFloat(match[1]);
+                }
+
+                // Extraer filas de datos
+                const dataRows = designData.slice(2).filter(row => row.length >= headers.length);
+
+                if (dataRows.length === 0) {
+                    throw new Error('No data rows found in Design Data sheet.');
+                }
+
+                const numRuns = dataRows.length;
+
+                // Reconstruir factores con niveles
+                const factors = [];
+                const factorLevelMap = [];
+
+                for (let f = 0; f < factorNames.length; f++) {
+                    const levelsSet = [];
+                    const levelMap = {};
+                    for (const row of dataRows) {
+                        const levelText = String(row[1 + f] || '').trim();
+                        if (levelText && !(levelText in levelMap)) {
+                            levelMap[levelText] = levelsSet.length + 1;
+                            levelsSet.push(levelText);
+                        }
+                    }
+                    if (levelsSet.length === 0) {
+                        levelsSet.push('Level 1', 'Level 2');
+                        levelMap['Level 1'] = 1;
+                        levelMap['Level 2'] = 2;
+                    }
+                    factors.push({
+                        name: factorNames[f],
+                        levels: levelsSet
+                    });
+                    factorLevelMap.push(levelMap);
+                }
+
+                // Reconstruir array ortogonal y resultados
+                const array = [];
+                const results = [];
+
+                for (const row of dataRows) {
+                    const runArray = [];
+                    for (let f = 0; f < factorNames.length; f++) {
+                        const levelText = String(row[1 + f] || '').trim();
+                        const levelIdx = factorLevelMap[f][levelText] || 1;
+                        runArray.push(levelIdx);
+                    }
+                    array.push(runArray);
+
+                    const respVal = parseFloat(row[responseIndex]);
+                    results.push(isNaN(respVal) ? null : respVal);
+                }
+
+                // Buscar si coincide con algún array conocido
+                let arrayName = 'Custom';
+                const knownArrays = TaguchiCalculator.orthogonalArrays;
+                for (const [key, val] of Object.entries(knownArrays)) {
+                    if (val.runs === numRuns && val.factors >= factorNames.length) {
+                        let matches = true;
+                        for (let i = 0; i < numRuns && matches; i++) {
+                            for (let f = 0; f < factorNames.length && matches; f++) {
+                                if (array[i][f] !== val.array[i][f]) {
+                                    matches = false;
+                                }
+                            }
+                        }
+                        if (matches) {
+                            arrayName = key;
+                            break;
+                        }
+                    }
+                }
+
+                const selectedArray = {
+                    name: arrayName,
+                    runs: numRuns,
+                    factors: factorNames.length,
+                    array: array
+                };
+
+                // Reconstruir experimentData completo
+                window.experimentData = {
+                    name: expName,
+                    objective: expObjective,
+                    factors: factors,
+                    responseVariable: responseVariable,
+                    selectedArray: selectedArray,
+                    results: results,
+                    snrType: snrType,
+                    nominalTarget: nominalTarget,
+                    factorEffects: {},
+                    anova: {},
+                    predictedResult: null,
+                    optimalSettings: {},
+                    snrEffects: { perRun: Array(numRuns).fill(0) }
+                };
+
+                console.log('Datos reconstruidos desde Excel:', window.experimentData);
             }
 
             // Funciones básicas
@@ -1187,26 +1585,20 @@
 
             function generateDesign() {
                 console.log('=== GENERATE DESIGN INICIADO ===');
-                console.log('window.experimentData disponible:', window.experimentData);
 
-                // Asegurar que experimentData existe
                 if (!window.experimentData) {
-                    console.error('ERROR CRÍTICO: window.experimentData no está definido');
                     window.experimentData = {};
                 }
 
-                // MODIFICADO: Capturar datos previos antes de resetear
                 let previousResults = [];
                 const existingInputs = document.querySelectorAll('.response-input');
                 if (existingInputs.length > 0) {
                     existingInputs.forEach(input => {
                         const val = parseFloat(input.value);
-                        // Guardamos null si está vacío o no es número válido
                         previousResults.push((input.value === "" || isNaN(val)) ? null : val);
                     });
                 }
 
-                // Limpiar análisis anterior
                 DOM.analysisHistoryContainer.innerHTML = '';
                 if (window.allCharts.length > 0) {
                     window.allCharts.forEach(c => c.destroy());
@@ -1216,17 +1608,14 @@
                 DOM.analysisOutputSection.classList.add('hidden');
                 DOM.noAnalysisMsg.style.display = 'block';
 
-                // Reiniciar datos del experimento
                 resetExperimentData();
 
-                // Obtener datos del formulario
                 window.experimentData.name = document.getElementById('experiment-name').value;
                 window.experimentData.objective = document.getElementById('objective').value;
                 window.experimentData.responseVariable = document.getElementById('response-variable').value;
                 window.experimentData.snrType = document.querySelector('input[name="snr-type"]:checked').value;
                 window.experimentData.factors = [];
 
-                // Obtener factores
                 document.querySelectorAll('.factor-inputs').forEach(input => {
                     const name = input.querySelector('.factor-name').value;
                     const levelsStr = input.querySelector('.factor-levels').value;
@@ -1238,15 +1627,7 @@
                     }
                 });
 
-                console.log('Datos recopilados:', {
-                    name: window.experimentData.name,
-                    objective: window.experimentData.objective,
-                    responseVariable: window.experimentData.responseVariable,
-                    factors: window.experimentData.factors
-                });
-
                 if (!window.experimentData.name || !window.experimentData.objective || !window.experimentData.responseVariable || window.experimentData.factors.length === 0) {
-                    console.error('ERROR: Faltan datos obligatorios');
                     alert('Please fill in all experiment information and add at least one factor.');
                     return;
                 }
@@ -1267,16 +1648,12 @@
                     }
                 }
 
-                console.log('Array seleccionado:', arrayKey);
                 window.experimentData.selectedArray = TaguchiCalculator.orthogonalArrays[arrayKey];
-                console.log('selectedArray:', window.experimentData.selectedArray);
 
                 generateDesignTable();
 
-                // MODIFICADO: Restaurar datos si la longitud del array coincide
                 if (previousResults.length === window.experimentData.selectedArray.runs) {
                     const newInputs = document.querySelectorAll('.response-input');
-                    console.log('Inputs encontrados después de generar:', newInputs.length);
                     newInputs.forEach((input, index) => {
                         const val = previousResults[index];
                         if (val !== null) {
@@ -1287,23 +1664,16 @@
                 }
 
                 showNotification('Taguchi design generated successfully!');
-                console.log('=== GENERATE DESIGN COMPLETADO ===');
             }
 
-            // Agrega esta función después de generateDesign()
             function forceGenerateDesignWithParams(factorsArray, levelsArray) {
-                console.log('Forzando generación de diseño con:', factorsArray, levelsArray);
-
-                // Limpiar factores existentes
                 DOM.factorsContainer.innerHTML = '';
 
-                // Crear factores dinámicamente
                 factorsArray.forEach((factorName, index) => {
                     const levels = levelsArray[index] ? levelsArray[index] : 'Level1,Level2';
                     addFactorInput(factorName, levels);
                 });
 
-                // Rellenar campos básicos si están vacíos
                 if (!document.getElementById('experiment-name').value) {
                     document.getElementById('experiment-name').value = 'Auto-generated Experiment';
                 }
@@ -1314,12 +1684,8 @@
                     document.getElementById('response-variable').value = 'Response Variable';
                 }
 
-                // Seleccionar array automático
                 document.getElementById('array-select').value = '';
-
-                // Generar diseño
                 generateDesign();
-
                 return true;
             }
 
@@ -1329,7 +1695,6 @@
                     selectedArray: null, results: [], snrType: 'smaller', nominalTarget: null,
                     factorEffects: {}, anova: {}, predictedResult: null, optimalSettings: {}
                 };
-                console.log('resetExperimentData ejecutado:', window.experimentData);
             }
 
             function generateDesignTable() {
@@ -1355,8 +1720,6 @@
             }
 
             function runFullAnalysis() {
-                // MODIFICADO: Forzar la sincronización de los inputs del DOM al objeto experimentData
-                // Esto es crucial para móviles donde el evento 'change' podría no dispararse si el teclado sigue abierto
                 const currentInputs = document.querySelectorAll('.response-input');
                 if (currentInputs.length > 0) {
                     currentInputs.forEach((input, index) => {
@@ -1388,14 +1751,12 @@
                 window.calculationCount++;
                 window.experimentData = TaguchiCalculator.runAnalysis(window.experimentData, target);
 
-                // Cambiar a la pestaña de análisis
                 switchWizardTab('tab-analysis');
                 DOM.noAnalysisMsg.style.display = 'none';
                 DOM.analysisOutputSection.classList.remove('hidden');
 
                 createAndDisplayReportBlock(window.calculationCount);
 
-                // Renderizar fórmulas matemáticas en el nuevo contenido
                 renderMathInElement(document.getElementById(`analysis-run-${window.calculationCount}`));
 
                 document.getElementById(`analysis-run-${window.calculationCount}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1403,51 +1764,42 @@
                 showNotification('Analysis completed successfully!');
             }
 
-            // FUNCIONES DE ANÁLISIS COMPLETO - RESTAURADAS DEL ORIGINAL
             function createAndDisplayReportBlock(runId) {
                 const reportWrapper = document.createElement('div');
                 reportWrapper.id = `analysis-run-${runId}`;
                 reportWrapper.className = 'analysis-run-report';
                 reportWrapper.innerHTML = ` 
-                <div id="executive-summary-${runId}"></div> 
-                <hr style="margin: 2rem 0;"> 
-                <div class="effects-analysis"> 
-                    <h3><i class="fas fa-chart-bar"></i> Effects Analysis (Run #${runId})</h3> 
-                    <h4>Factor Influence (Pareto Chart)</h4> 
-                    <p>This chart sorts factors from most to least influential, helping you focus on what truly matters.</p> 
-                    <div style="position: relative; height:400px; margin: 2rem auto; max-width: 800px;"> 
-                        <canvas id="pareto-chart-${runId}"></canvas> 
-                    </div> 
-                    <h4>Main Effects Plots</h4> 
-                    <p>These plots show how each factor level affects the response. Look for steep lines, which indicate a strong effect.</p> 
-                    <div id="charts-parent-container-${runId}" class="charts-parent-container"></div> 
-                    <h4>Factor Effects Tables</h4> 
-                    <div id="factor-effects-content-${runId}"></div> 
-                    <h4>Analysis of Variance (ANOVA) <i class="fas fa-info-circle info-icon" title="ANOVA determines if a factor's effect is statistically significant or just random noise. Factors with 'Significance = Yes' have a proven impact."></i> </h4> 
-                    <p>This table provides statistical evidence for factor influence. Factors marked as significant have a real, measurable effect on the outcome.</p> 
-                    <div id="anova-table-container-${runId}"></div> 
-                </div> 
-                <hr style="margin: 2rem 0;"> 
-                <div id="snr-section-${runId}"> 
-                    <div class="snr-results"> 
-                        <h3><i class="fas fa-wave-square"></i> Signal-to-Noise Ratio Analysis</h3> 
-                        <div id="snr-results-content-${runId}"></div> 
-                        <div id="optimal-levels-${runId}" class="optimal-levels"></div> 
-                        <div class="interpretation" id="snr-interpretation-${runId}"> 
-                            <h4>Interpretation Guide:</h4> 
-                            <p>The S/N ratio helps find the most robust process settings (those least affected by noise). The optimal levels are always those that **maximize the S/N ratio**, regardless of whether you are minimizing, maximizing, or targeting a nominal value for your response.</p> 
-                        </div> 
-                    </div> 
-                </div> 
-                <hr style="margin: 2rem 0;">
-                <div class="export-section">
-                    <h3><i class="fas fa-file-export"></i> Export Complete Analysis</h3>
-                    <p>Download a comprehensive report of your Taguchi analysis including all data, calculations, and visualizations for offline use or sharing with your team.</p>
-                    <button onclick="exportToExcelTaguchi(${runId})" class="btn-export">
-                        <i class="fas fa-file-excel"></i> Export Full Analysis to Excel
-                    </button>
-                </div>
-            `;
+    <div id="executive-summary-${runId}"></div> 
+    <hr style="margin: 2rem 0;"> 
+    <div class="effects-analysis"> 
+        <h3><i class="fas fa-chart-bar"></i> Effects Analysis (Run #${runId})</h3> 
+        <h4>Factor Influence (Pareto Chart)</h4> 
+        <p>This chart sorts factors from most to least influential, helping you focus on what truly matters.</p> 
+        <div style="position: relative; height:400px; margin: 2rem auto; max-width: 800px;"> 
+            <canvas id="pareto-chart-${runId}"></canvas> 
+        </div> 
+        <h4>Main Effects Plots</h4> 
+        <p>These plots show how each factor level affects the response. Look for steep lines, which indicate a strong effect.</p> 
+        <div id="charts-parent-container-${runId}" class="charts-parent-container"></div> 
+        <h4>Factor Effects Tables</h4> 
+        <div id="factor-effects-content-${runId}"></div> 
+        <h4>Analysis of Variance (ANOVA) <i class="fas fa-info-circle info-icon" title="ANOVA determines if a factor's effect is statistically significant or just random noise. Factors with 'Significance = Yes' have a proven impact."></i> </h4> 
+        <p>This table provides statistical evidence for factor influence. Factors marked as significant have a real, measurable effect on the outcome.</p> 
+        <div id="anova-table-container-${runId}"></div> 
+    </div> 
+    <hr style="margin: 2rem 0;"> 
+    <div id="snr-section-${runId}"> 
+        <div class="snr-results"> 
+            <h3><i class="fas fa-wave-square"></i> Signal-to-Noise Ratio Analysis</h3> 
+            <div id="snr-results-content-${runId}"></div> 
+            <div id="optimal-levels-${runId}" class="optimal-levels"></div> 
+            <div class="interpretation" id="snr-interpretation-${runId}"> 
+                <h4>Interpretation Guide:</h4> 
+                <p>The S/N ratio helps find the most robust process settings (those least affected by noise). The optimal levels are always those that **maximize the S/N ratio**, regardless of whether you are minimizing, maximizing, or targeting a nominal value for your response.</p> 
+            </div> 
+        </div> 
+    </div> 
+`;
                 // Insertar al principio para ver el más reciente primero
                 DOM.analysisHistoryContainer.innerHTML = ''; // Limpiar anteriores si se quiere solo el último
                 DOM.analysisHistoryContainer.appendChild(reportWrapper);
@@ -1580,7 +1932,6 @@
                 return colors[Math.floor(Math.random() * colors.length)];
             }
 
-            // Función de exportación restaurada del original
             window.exportToExcelTaguchi = function (runId) {
                 if (!window.experimentData.predictedResult) {
                     alert("Please run at least one analysis before exporting.");
@@ -1589,7 +1940,6 @@
 
                 const wb = XLSX.utils.book_new();
 
-                // Summary Sheet
                 const summaryData = [
                     ['Taguchi Analysis Report (Last Run)'],
                     ['Calculation Date', new Date().toLocaleString()],
@@ -1606,7 +1956,6 @@
                 ];
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
 
-                // Design Data Sheet
                 const designData = [
                     ['Experiment Design & Data'],
                     ['Run', ...window.experimentData.factors.map(f => f.name), window.experimentData.responseVariable, `S/N Ratio (${getSnrTypeName(window.experimentData.snrType)})`],
@@ -1623,7 +1972,6 @@
                 ];
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(designData), 'Design Data');
 
-                // ANOVA Sheet
                 const anovaData = [
                     ['ANOVA Table'],
                     ['Source', 'SS', 'DF', 'MS', 'F-Value', 'Significant?'],
@@ -1644,28 +1992,22 @@
             }
 
             function loadExampleData() {
-                // MODIFICADO: Cambiar a la pestaña de Setup Experiment primero
                 switchWizardTab('tab-setup');
 
-                // Limpiar factores existentes
                 DOM.factorsContainer.innerHTML = '';
 
-                // Agregar factores de ejemplo
                 addFactorInput('Temperature', '100°C, 120°C');
                 addFactorInput('Pressure', '50 psi, 60 psi');
                 addFactorInput('Speed', 'Low, High');
                 addFactorInput('Material', 'Type A, Type B');
 
-                // Llenar otros campos
                 document.getElementById('experiment-name').value = 'Process Optimization Study';
                 document.getElementById('objective').value = 'Minimize defects in the production process while maintaining quality standards';
                 document.getElementById('response-variable').value = 'Defect rate (%)';
                 document.querySelector('input[name="snr-type"][value="smaller"]').checked = true;
 
-                // Generar diseño automáticamente
                 generateDesign();
 
-                // Rellenar datos de ejemplo después de un breve retraso
                 setTimeout(() => {
                     const inputs = document.querySelectorAll('.response-input');
                     const exampleData = [5.2, 4.8, 2.1, 2.5, 4.9, 5.1, 1.8, 2.0];
@@ -1673,7 +2015,6 @@
                     inputs.forEach((input, index) => {
                         const val = exampleData[index] !== undefined ? exampleData[index] : (Math.random() * 5).toFixed(1);
                         input.value = val;
-                        // Disparar evento change para que se guarde en experimentData
                         const event = new Event('change');
                         input.dispatchEvent(event);
                     });
@@ -1682,43 +2023,7 @@
                 }, 300);
             }
 
-            function resetForm() {
-                if (confirm('Are you sure you want to reset all data?')) {
-                    // Limpiar formulario
-                    document.getElementById('experiment-name').value = '';
-                    document.getElementById('objective').value = '';
-                    document.getElementById('response-variable').value = '';
-                    document.querySelector('input[name="snr-type"][value="smaller"]').checked = true;
-                    document.getElementById('nominal-target-group').classList.add('hidden');
-                    document.getElementById('nominal-target').value = '';
-
-                    // Limpiar factores
-                    DOM.factorsContainer.innerHTML = '';
-                    addFactorInput(); // Agregar uno vacío
-
-                    // Limpiar resultados
-                    DOM.experimentInfoDiv.innerHTML = '';
-                    DOM.orthogonalArrayDiv.innerHTML = '<p style="color: #7f8c8d; text-align: center; padding: 2rem;">No design generated yet.</p>';
-
-                    // Limpiar análisis
-                    DOM.analysisOutputSection.classList.add('hidden');
-                    DOM.noAnalysisMsg.style.display = 'block';
-                    DOM.analysisHistoryContainer.innerHTML = '';
-
-                    // Resetear datos
-                    resetExperimentData();
-                    window.allCharts = [];
-                    window.calculationCount = 0;
-
-                    // Volver a la primera pestaña
-                    switchWizardTab('tab-start');
-
-                    showNotification('All data reset successfully!');
-                }
-            }
-
             function showNotification(message) {
-                // Crear elemento de notificación
                 const notification = document.createElement('div');
                 notification.style.cssText = `
                     position: fixed;
@@ -1735,7 +2040,6 @@
                     font-weight: 600;
                 `;
 
-                // Animación CSS
                 const style = document.createElement('style');
                 style.textContent = `
                     @keyframes slideIn {
@@ -1752,7 +2056,6 @@
                 notification.textContent = message;
                 document.body.appendChild(notification);
 
-                // Remover después de 3 segundos
                 setTimeout(() => {
                     notification.style.animation = 'fadeOut 0.5s ease';
                     setTimeout(() => {
@@ -1761,48 +2064,24 @@
                 }, 3000);
             }
 
-            // ===== VERIFICACIÓN GLOBAL =====
-            console.log('Estado global antes de init:');
-            console.log('- window.experimentData:', window.experimentData);
-            console.log('- typeof addFactorInput:', typeof addFactorInput);
-            console.log('- typeof generateDesign:', typeof generateDesign);
-            console.log('- typeof runFullAnalysis:', typeof runFullAnalysis);
-
-            // Exponer funciones necesarias para QueryHandler
             window.addFactorInput = addFactorInput;
             window.generateDesign = generateDesign;
             window.runFullAnalysis = runFullAnalysis;
             window.forceGenerateDesignWithParams = forceGenerateDesignWithParams;
+            window.loadExampleData = loadExampleData;
 
-            // Inicializar la aplicación
             init();
 
-            // Inicializar QueryHandler después de que todo esté listo
             setTimeout(() => {
                 if (window.QueryHandler) {
                     window.QueryHandler.initialize();
                 }
-            }, 1000);
-
-            console.log('=== DIAGNÓSTICO ===');
-            console.log('TaguchiCalculator disponible:', typeof TaguchiCalculator);
-            console.log('TaguchiCalculator.orthogonalArrays:', TaguchiCalculator.orthogonalArrays);
-            console.log('Document readyState:', document.readyState);
-            console.log('Factores en DOM:', document.querySelectorAll('.factor-inputs').length);
-            console.log('Campo experiment-name:', document.getElementById('experiment-name').value);
-
-            // Verificar que el HTML está correctamente estructurado
-            setTimeout(() => {
-                console.log('Verificando estructura después de 1s...');
-                console.log('factors-container:', document.getElementById('factors-container'));
-                console.log('generate-design button:', document.getElementById('generate-design'));
             }, 1000);
         });
     </script>
 
     <script src="dexie.min.js"></script>
     <script src="db-sigma.js"></script>
-
 </body>
 
 </html>
