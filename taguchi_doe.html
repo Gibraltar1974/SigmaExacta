@@ -139,6 +139,17 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-load {
             background-color: #0d6efd;
             color: white;
@@ -815,6 +826,9 @@
             <p>Plan and analyze robust experiments using Orthogonal Arrays to optimize product and process quality.</p>
 
             <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
+                </button>
                 <button id="globalLoadBtn" class="btn-load">
                     <i class="fas fa-folder-open"></i> Load
                 </button>
@@ -1277,6 +1291,47 @@
                 noAnalysisMsg: document.getElementById('no-analysis-msg')
             };
 
+            function resetAllData() {
+                if (!confirm('Clear all data and start a new experiment? This cannot be undone.')) return;
+
+                // Limpiar campos del formulario
+                document.getElementById('experiment-name').value = '';
+                document.getElementById('objective').value = '';
+                document.getElementById('response-variable').value = '';
+                document.getElementById('array-select').value = '';
+                document.querySelector('input[name="snr-type"][value="smaller"]').checked = true;
+                document.getElementById('nominal-target').value = '';
+                document.getElementById('nominal-target-group').classList.add('hidden');
+
+                // Limpiar factores y agregar uno por defecto
+                DOM.factorsContainer.innerHTML = '';
+                addFactorInput();
+
+                // Limpiar diseño y datos
+                DOM.orthogonalArrayDiv.innerHTML = '';
+                DOM.experimentInfoDiv.innerHTML = '';
+
+                // Limpiar resultados de análisis
+                DOM.analysisHistoryContainer.innerHTML = '';
+                DOM.analysisOutputSection.classList.add('hidden');
+                DOM.noAnalysisMsg.style.display = 'block';
+
+                // Destruir gráficos existentes
+                if (window.allCharts && window.allCharts.length > 0) {
+                    window.allCharts.forEach(c => { try { c.destroy(); } catch (e) { } });
+                    window.allCharts = [];
+                }
+
+                // Resetear el estado de la aplicación
+                resetExperimentData();
+                window.calculationCount = 0;
+
+                // Regresar a la pestaña de inicio
+                switchWizardTab('tab-start');
+
+                showNotification('New experiment started. All data cleared.');
+            }
+
             function init() {
                 addFactorInput();
 
@@ -1284,6 +1339,9 @@
                 DOM.generateDesignBtn.addEventListener('click', generateDesign);
                 DOM.globalLoadExampleBtn.addEventListener('click', loadExampleData);
                 DOM.globalAnalyzeBtn.addEventListener('click', runFullAnalysis);
+
+                // Botón New
+                document.getElementById('globalNewBtn').addEventListener('click', resetAllData);
 
                 // Load button → opens load modal
                 DOM.globalLoadBtn.addEventListener('click', () => {
