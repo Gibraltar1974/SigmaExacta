@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
-    <title>Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional v11.0</title>
+    <title>Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional v11.1</title>
     <meta name="description"
         content="Professional Weibull analysis: L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, profile likelihood CIs, 2P &amp; 3P MLE, regression, exact/censored/interval data.">
     <meta name="keywords"
@@ -119,6 +119,16 @@
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-new {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-new:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
         }
 
         .btn-example {
@@ -964,12 +974,13 @@
                     <i class="fas fa-chart-area" style="color:white;"></i>
                 </span>
                 Weibull Analysis Tool
-                
+
             </h1>
             <p>Analyze Life Data and Predict Failure Rates to Improve Equipment Reliability.</p>
         </header>
 
         <div class="main-action-buttons">
+            <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
             <button id="globalLoadBtn" class="btn-load"><i class="fas fa-folder-open"></i> Load Excel</button>
             <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
             <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load
@@ -1094,7 +1105,7 @@
                                 newline separated)</span></label>
                         <textarea id="failureTimes" rows="3"
                             placeholder="e.g., 1050, 1180, 1250, 1320, 1400, 1480, 1580, 1700, 1850, 2000"
-                            required>1050, 1180, 1250, 1320, 1400, 1480, 1580, 1700, 1850, 2000</textarea>
+                            required></textarea>
 
                         <label for="suspensionTimes"><i class="fas fa-pause-circle"
                                 style="color:var(--warning-color);"></i> Suspension Times (optional): <span
@@ -1319,11 +1330,11 @@
                                 <td id="ksPvalueVal" style="font-weight:600;">—</td>
                             </tr>
                             <tr>
-                                <td style="color:#6c757d;padding:3px;">AD A²</td>
+                                <td style="color:#6c757d;padding:3px;">AD A²*</td>
                                 <td id="adStat" style="font-weight:600;">—</td>
                             </tr>
                             <tr>
-                                <td style="color:#6c757d;padding:3px;">AD p-value (analytical)</td>
+                                <td style="color:#6c757d;padding:3px;">AD significance</td>
                                 <td id="adPvalueVal" style="font-weight:600;">—</td>
                             </tr>
                         </table>
@@ -1378,7 +1389,7 @@
                         <div id="bootstrapIntervalWarning" class="warning-message" style="display:none;">
                             ⚠️ <strong>Bootstrap with interval‑censored data:</strong>
                             confidence intervals may be optimistic.
-                            For critical decisions, consider alternative methods.                  </div>
+                            For critical decisions, consider alternative methods. </div>
 
                         <div id="ciWarning" class="warning-message" style="display:none;"><i
                                 class="fas fa-exclamation-triangle"></i> Low failure count or heavy censoring: CIs may
@@ -1490,7 +1501,7 @@
     </main>
 
     <footer>
-        <div class="disclaimer-note">Weibull Analysis Tool v11.0 Professional | For engineering and educational use.
+        <div class="disclaimer-note">Weibull Analysis Tool v11.1 Professional | For engineering and educational use.
             Verify critical results with qualified commercial software. | <a href="https://sigmaexacta.com"
                 style="color:inherit;">sigmaexacta.com</a></div>
     </footer>
@@ -1499,41 +1510,41 @@
         (function () {
             "use strict";
 
-    /* ================================================================
-   CHANGELOG v11.0 (Weibull Professional)
-   v10.0 → v11.0:
-   BUG-AD  FIXED: ADstatistic formula corrected (coherente entre UI y
-                  Monte Carlo GoF). Monte Carlo AD p-values ahora válidos.
-   NEW     : Mixture Detection restaurado (test de Spearman sobre
-                  residuos del probability plot, desde v9.3).
-   NEW     : Bootstrap 3P completo con re-estimación de γ en cada
-                  remuestra mediante búsqueda local golden-section
-                  (refineGammaLocal). Propaga la incertidumbre de γ a
-                  todos los CIs. Activable desde el panel de opciones.
-   BUG-07  RESUELTO: Bootstrap 3P ya no fuerza γ fijo (modo completo).
-   NEW     : Panel dinámico "Bootstrap 3P completo" en la UI.
-   v10.0 (base):
-   BUG-01 FIXED: Input parser warns on invalid/zero values; EU multi-
-                 separator numbers handled with per-token heuristic.
-   BUG-02 FIXED: ADcorrect weights corrected: (2i+1)·logF + (2(n-1-i)+1)·log(1-Fn)
-   BUG-03 FIXED: Profile CI inner optimizer uses correct separate
-                 bounds for β [1e-4,50] and η [1e-4,1e9].
-   BUG-04 FIXED: Independent RNG streams for bootstrap and MC GoF,
-                 each with its own user-configurable seed.
-   BUG-05 FIXED: 3P grid scan uses maxIter=100 (fast scan), full MLE
-                 only for golden-section refinement and final fit.
-   BUG-06 FIXED: Median computed on sorted array.
-   BUG-08 FIXED: Regression 3P golden-section refinement restored.
-   BUG-09 FIXED: openExportModal/doExport fully implemented.
-   BUG-10: Bias-corrected CI documented as approximation.
-   NEW   : Multi-start L-BFGS-B (4 starts, same as v9.3 multi-start).
-   NEW   : Fisher Information Matrix CIs (from v9.3).
-   NEW   : LR Test 2P vs 3P (Self & Liang 1987, from v9.3).
-   NEW   : Failure mode classification + recommendations (from v9.3).
-   NEW   : Warranty KPI panel (from v9.3).
-   NEW   : Stale GoF traffic light cleared on each new analysis.
-   NEW   : Convergence warning displayed when L-BFGS-B does not converge.
-================================================================ */
+            /* ================================================================
+           CHANGELOG v11.0 (Weibull Professional)
+           v10.0 → v11.0:
+           BUG-AD  FIXED: ADstatistic formula corrected (coherente entre UI y
+                          Monte Carlo GoF). Monte Carlo AD p-values ahora válidos.
+           NEW     : Mixture Detection restaurado (test de Spearman sobre
+                          residuos del probability plot, desde v9.3).
+           NEW     : Bootstrap 3P completo con re-estimación de γ en cada
+                          remuestra mediante búsqueda local golden-section
+                          (refineGammaLocal). Propaga la incertidumbre de γ a
+                          todos los CIs. Activable desde el panel de opciones.
+           BUG-07  RESUELTO: Bootstrap 3P ya no fuerza γ fijo (modo completo).
+           NEW     : Panel dinámico "Bootstrap 3P completo" en la UI.
+           v10.0 (base):
+           BUG-01 FIXED: Input parser warns on invalid/zero values; EU multi-
+                         separator numbers handled with per-token heuristic.
+           BUG-02 FIXED: ADcorrect weights corrected: (2i+1)·logF + (2(n-1-i)+1)·log(1-Fn)
+           BUG-03 FIXED: Profile CI inner optimizer uses correct separate
+                         bounds for β [1e-4,50] and η [1e-4,1e9].
+           BUG-04 FIXED: Independent RNG streams for bootstrap and MC GoF,
+                         each with its own user-configurable seed.
+           BUG-05 FIXED: 3P grid scan uses maxIter=100 (fast scan), full MLE
+                         only for golden-section refinement and final fit.
+           BUG-06 FIXED: Median computed on sorted array.
+           BUG-08 FIXED: Regression 3P golden-section refinement restored.
+           BUG-09 FIXED: openExportModal/doExport fully implemented.
+           BUG-10: Bias-corrected CI documented as approximation.
+           NEW   : Multi-start L-BFGS-B (4 starts, same as v9.3 multi-start).
+           NEW   : Fisher Information Matrix CIs (from v9.3).
+           NEW   : LR Test 2P vs 3P (Self & Liang 1987, from v9.3).
+           NEW   : Failure mode classification + recommendations (from v9.3).
+           NEW   : Warranty KPI panel (from v9.3).
+           NEW   : Stale GoF traffic light cleared on each new analysis.
+           NEW   : Convergence warning displayed when L-BFGS-B does not converge.
+        ================================================================ */
 
             /* ========== SEEDABLE PRNG (Mulberry32) ========== */
             function mulberry32(seed) {
@@ -2233,16 +2244,16 @@
 
             /* ========== MONTE CARLO GOF (correct AD formula) ========== */
             // BUG-02 FIXED: correct weights (2i+1)·logF + (2(n-1-i)+1)·log(1-Fn)
+            // DEFECT-01 FIX: canonical AD formula — matches weibullMLE() display formula.
+            // Uses Fi[i] for BOTH log-F and log(1-F) terms (same index i).
+            // Previous version incorrectly cross-indexed Fi[i] with Fi[n-1-i].
             function ADstatistic(sortedData, beta, eta, gamma) {
                 const n = sortedData.length;
                 let A = 0;
                 for (let i = 0; i < n; i++) {
                     const F_i = weibullCDF(sortedData[i], eta, beta, gamma);
-                    const F_n_1_i = weibullCDF(sortedData[n - 1 - i], eta, beta, gamma);
-                    const Fc = Math.min(1 - 1e-10, Math.max(1e-10, F_i));
-                    const Fnc = Math.min(1 - 1e-10, Math.max(1e-10, F_n_1_i));
-                    // Corregido como en V10
-                    A += (2 * i + 1) * Math.log(Fc) + (2 * (n - 1 - i) + 1) * Math.log(1 - Fnc);
+                    const Fc = Math.min(1 - 1e-15, Math.max(1e-15, F_i));
+                    A += (2 * i + 1) * Math.log(Fc) + (2 * (n - i) - 1) * Math.log(1 - Fc);
                 }
                 return -n - A / n;
             }
@@ -2604,15 +2615,22 @@
                 if (method.includes('MLE') && nF >= 3) {
                     document.getElementById('ksStat').textContent = params.ksD.toFixed(5);
                     document.getElementById('ksPvalueVal').textContent = params.ksPvalue.toFixed(4);
-                    document.getElementById('adStat').textContent = params.adStat.toFixed(4);
-                    document.getElementById('adPvalueVal').textContent = params.adPvalue.toFixed(4);
-                    const adP = params.adPvalue;
-                    let gofColor, gofMsg;
-                    if (adP > 0.15) { gofColor = 'gof-green'; gofMsg = 'Good fit: Weibull model is consistent with the data.'; }
-                    else if (adP >= 0.05) { gofColor = 'gof-yellow'; gofMsg = 'Marginal fit: proceed with caution.'; }
-                    else { gofColor = 'gof-red'; gofMsg = 'Poor fit: data may not follow Weibull. Verify assumptions.'; }
+                    // DEFECT-02 FIX: Display A²* (corrected statistic) and compare against
+                    // Stephens (1974) Weibull-specific critical values instead of using
+                    // Marsaglia (2004) formula (which is for normality testing only).
+                    const ADstar = params.adStat * (1 + 0.2 / Math.sqrt(nF));
+                    document.getElementById('adStat').textContent = ADstar.toFixed(4);
+                    // Stephens (1974) Table 5 critical values for Weibull with estimated params:
+                    // p>0.25: A²*<0.474 | p≈0.10: A²*≈0.637 | p≈0.05: A²*≈0.757 | p≈0.01: A²*≈1.038
+                    let adSigLabel, gofColor, gofMsg;
+                    if (ADstar < 0.474) { adSigLabel = 'p > 0.25 (good fit)'; gofColor = 'gof-green'; gofMsg = 'Good fit: Weibull model is consistent with the data.'; }
+                    else if (ADstar < 0.637) { adSigLabel = '0.10 < p < 0.25'; gofColor = 'gof-green'; gofMsg = 'Acceptable fit: no significant departure from Weibull.'; }
+                    else if (ADstar < 0.757) { adSigLabel = '0.05 < p < 0.10'; gofColor = 'gof-yellow'; gofMsg = 'Marginal fit: proceed with caution.'; }
+                    else if (ADstar < 1.038) { adSigLabel = '0.01 < p < 0.05'; gofColor = 'gof-yellow'; gofMsg = 'Questionable fit: data shows departure from Weibull.'; }
+                    else { adSigLabel = 'p < 0.01 (poor fit)'; gofColor = 'gof-red'; gofMsg = 'Poor fit: data may not follow Weibull. Verify assumptions.'; }
+                    document.getElementById('adPvalueVal').textContent = adSigLabel;
                     const hasCensored = observations.some(o => o.type === 'right' || o.type === 'interval');
-                    document.getElementById('gofTrafficLight').innerHTML = `<span class="gof-traffic-light ${gofColor}"></span><strong>${gofMsg}</strong><br><small style="color:#6c757d;font-size:0.8em;"><i class="fas fa-info-circle"></i> KS/AD p-values are <em>approximate and anti-conservative</em> with estimated parameters (Stephens 1977). ${hasCensored ? '<strong>⚠️ Censored data:</strong> KS/AD computed on exact failures only — qualitative guide only. ' : ''}Use Monte Carlo GoF for a correct p-value.</small>`;
+                    document.getElementById('gofTrafficLight').innerHTML = `<span class="gof-traffic-light ${gofColor}"></span><strong>${gofMsg}</strong><br><small style="color:#6c757d;font-size:0.8em;"><i class="fas fa-info-circle"></i> AD A²* assessed via Stephens (1974) Weibull-specific critical values. KS p-value is approximate with estimated parameters (Stephens 1977). ${hasCensored ? '<strong>⚠️ Censored data:</strong> KS/AD computed on exact failures only — qualitative guide only. ' : ''}Use Monte Carlo GoF for a simulation-based p-value.</small>`;
                 } else {
                     document.getElementById('ksStat').textContent = nF < 3 ? 'N/A (n<3)' : 'N/A';
                     document.getElementById('ksPvalueVal').textContent = '—';
@@ -2873,6 +2891,66 @@
                 }).catch(() => { });
 
                 // Toolbar buttons
+                document.getElementById('globalNewBtn').addEventListener('click', () => {
+                    if (!confirm('Clear all data and start a new analysis?')) return;
+                    // Reset form fields
+                    document.getElementById('failureTimes').value = '';
+                    document.getElementById('suspensionTimes').value = '';
+                    document.getElementById('intervalData').value = '';
+                    document.getElementById('predictTime').value = '';
+                    document.getElementById('warrantyTarget').value = '';
+                    document.getElementById('use3param').checked = false;
+                    document.getElementById('calculationMethod').value = 'mle';
+                    document.getElementById('timeUnits').value = 'hours';
+                    document.getElementById('decimalFormat').value = 'us';
+                    document.getElementById('analysisType').value = 'benard';
+                    document.getElementById('confidenceLevel').value = '95';
+                    document.getElementById('useBootstrap').checked = false;
+                    document.getElementById('bootstrapN').value = '500';
+                    document.getElementById('bsSeed').value = '42';
+                    document.getElementById('useFullBoot3p').checked = false;
+                    document.getElementById('useMonteCarloGoF').checked = false;
+                    document.getElementById('mcSimulations').value = '500';
+                    document.getElementById('mcSeed').value = '99';
+                    document.getElementById('applyBiasCorrection').checked = true;
+                    document.getElementById('exampleBanner').style.display = 'none';
+                    // Reset result displays
+                    ['beta', 'eta', 'mttf', 'b10', 'b50', 'b90'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+                    ['betaCI', 'etaCI', 'betaFisherCI', 'etaFisherCI'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+                    ['rSquared', 'logLik', 'aic', 'bic', 'ksStat', 'ksPvalueVal', 'adStat', 'adPvalueVal'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+                    document.getElementById('betaCorrectedDisplay').textContent = '';
+                    document.getElementById('gofTrafficLight').innerHTML = '';
+                    document.getElementById('mcGoFResult').textContent = '';
+                    document.getElementById('descriptiveStats').innerHTML = '';
+                    document.getElementById('gammaRow').style.display = 'none';
+                    document.getElementById('gammaInterpretation').style.display = 'none';
+                    document.getElementById('failureModeIndicator').style.display = 'none';
+                    document.getElementById('failureModeRecommendation').style.display = 'none';
+                    document.getElementById('predictionResult').style.display = 'none';
+                    document.getElementById('warrantyKPI').style.display = 'none';
+                    document.getElementById('fallbackWarning').style.display = 'none';
+                    document.getElementById('mleConvergenceWarning').style.display = 'none';
+                    document.getElementById('mixtureWarning').style.display = 'none';
+                    document.getElementById('ciWarning').style.display = 'none';
+                    document.getElementById('fisherCISection').style.display = 'none';
+                    document.getElementById('bootstrapCISection').style.display = 'none';
+                    document.getElementById('lrTestSection').style.display = 'none';
+                    document.getElementById('boot3pPanel').style.display = 'none';
+                    document.getElementById('bootstrapProgressContainer').style.display = 'none';
+                    document.getElementById('mcProgressContainer').style.display = 'none';
+                    document.getElementById('methodDescription').innerHTML = '<strong>MLE (L-BFGS-B):</strong> Multi-start constrained quasi-Newton optimizer. Handles exact, right-censored and interval-censored data. Profile likelihood &amp; Fisher CIs.';
+                    // Reset history and state
+                    aggregatedResultsData = []; lastResult = null; calculationCounter = 1; exampleIndex = 0;
+                    document.getElementById('aggregatedResultsContainer').innerHTML = '<p id="historyEmptyMsg" style="color:#aaa;font-style:italic;text-align:center;padding:1rem 0;">No analyses saved yet.</p>';
+                    document.getElementById('historyCount').textContent = '0 saved';
+                    document.getElementById('clearHistoryBtn').disabled = true;
+                    document.getElementById('addBtn').disabled = true;
+                    // Reset charts
+                    if (weibullChart) { weibullChart.data.datasets = []; weibullChart.update(); }
+                    [pdfChart, cdfChart, hazardChart, reliabilityChart].forEach(ch => { if (ch) { ch.data.datasets[0].data = []; ch.update(); } });
+                    switchWizardTab('tab-tool');
+                    showToast('🆕 New analysis started.');
+                });
                 document.getElementById('globalLoadBtn').addEventListener('click', () => { document.getElementById('globalFileInput').value = ''; document.getElementById('globalFileInput').click(); });
                 document.getElementById('globalFileInput').addEventListener('change', e => { if (e.target.files.length) loadFromExcel(e.target.files[0]); });
                 document.getElementById('globalLoadExampleBtn').addEventListener('click', () => {
