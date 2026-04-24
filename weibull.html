@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
-    <title>Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional v11.1</title>
+    <title>Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional v11.2</title>
     <meta name="description"
         content="Professional Weibull analysis: L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, profile likelihood CIs, 2P &amp; 3P MLE, regression, exact/censored/interval data.">
     <meta name="keywords"
@@ -981,7 +981,9 @@
 
         <div class="main-action-buttons">
             <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
-            <button id="globalLoadBtn" class="btn-load"><i class="fas fa-folder-open"></i> Load Excel</button>
+            <button id="globalLoadBtn" class="btn-load"
+                title="Loads analysis parameters from the last row of an Excel file (.xlsx, .xls)"><i
+                    class="fas fa-folder-open"></i> Load Excel</button>
             <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
             <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load
                 Example</button>
@@ -1156,19 +1158,18 @@
                                     style="display:flex;gap:0.6rem;cursor:pointer;margin-bottom:0.3rem;align-items:flex-start;">
                                     <input type="checkbox" id="useFullBoot3p" style="margin-top:3px;">
                                     <span>
-                                        <strong style="color:#5849c2;">Bootstrap 3P completo</strong>
-                                        <span class="badge-3p" style="margin-left:4px;">γ re-estimado</span><br>
-                                        <small style="color:#6c757d;line-height:1.4;">Re-estima γ en cada remuestra
-                                            mediante búsqueda local (golden-section). Propaga la incertidumbre de γ a
-                                            todos los CIs.
-                                            Selecciona automáticamente B=200 para un rendimiento aceptable
-                                            (~15-30s).</small>
+                                        <strong style="color:#5849c2;">Full 3P Bootstrap</strong>
+                                        <span class="badge-3p" style="margin-left:4px;">γ re-estimated</span><br>
+                                        <small style="color:#6c757d;line-height:1.4;">Re‑estimates γ in each resample
+                                            via local search (golden‑section). Propagates γ uncertainty to all CIs.
+                                            Automatically selects B=200 for acceptable performance
+                                            (~15–30s).</small>
                                     </span>
                                 </label>
                                 <div id="boot3pWarning"
                                     style="display:none;margin-top:0.4rem;font-size:0.8rem;color:#b45309;background:#fef9c3;border-left:3px solid #f59e0b;padding:0.4rem 0.6rem;border-radius:3px;">
-                                    <i class="fas fa-clock"></i> Modo lento activo: cada remuestra re-estima γ. Tiempo
-                                    estimado: ~15-30s para B=200.
+                                    <i class="fas fa-clock"></i> Slow mode active: each resample re‑estimates γ.
+                                    Estimated time: ~15–30s for B=200.
                                 </div>
                             </div>
                             <div id="bootstrapProgressContainer" style="display:none;margin-top:0.5rem;">
@@ -1247,7 +1248,7 @@
                             <tr>
                                 <td style="padding:4px 2px;color:#6c757d;">Scale η</td>
                                 <td style="font-weight:700;font-size:1.1rem;"><span id="eta">—</span></td>
-                                <td></td>
+                                <td style="font-size:0.8rem;color:#6c757d;"><span id="etaCorrectedDisplay"></span></td>
                             </tr>
                             <tr id="gammaRow" style="display:none;">
                                 <td style="padding:4px 2px;color:#6c757d;">Location γ</td>
@@ -1501,7 +1502,7 @@
     </main>
 
     <footer>
-        <div class="disclaimer-note">Weibull Analysis Tool v11.1 Professional | For engineering and educational use.
+        <div class="disclaimer-note">Weibull Analysis Tool v11.2 Professional | For engineering and educational use.
             Verify critical results with qualified commercial software. | <a href="https://sigmaexacta.com"
                 style="color:inherit;">sigmaexacta.com</a></div>
     </footer>
@@ -1511,39 +1512,21 @@
             "use strict";
 
             /* ================================================================
-           CHANGELOG v11.0 (Weibull Professional)
-           v10.0 → v11.0:
-           BUG-AD  FIXED: ADstatistic formula corrected (coherente entre UI y
-                          Monte Carlo GoF). Monte Carlo AD p-values ahora válidos.
-           NEW     : Mixture Detection restaurado (test de Spearman sobre
-                          residuos del probability plot, desde v9.3).
-           NEW     : Bootstrap 3P completo con re-estimación de γ en cada
-                          remuestra mediante búsqueda local golden-section
-                          (refineGammaLocal). Propaga la incertidumbre de γ a
-                          todos los CIs. Activable desde el panel de opciones.
-           BUG-07  RESUELTO: Bootstrap 3P ya no fuerza γ fijo (modo completo).
-           NEW     : Panel dinámico "Bootstrap 3P completo" en la UI.
-           v10.0 (base):
-           BUG-01 FIXED: Input parser warns on invalid/zero values; EU multi-
-                         separator numbers handled with per-token heuristic.
-           BUG-02 FIXED: ADcorrect weights corrected: (2i+1)·logF + (2(n-1-i)+1)·log(1-Fn)
-           BUG-03 FIXED: Profile CI inner optimizer uses correct separate
-                         bounds for β [1e-4,50] and η [1e-4,1e9].
-           BUG-04 FIXED: Independent RNG streams for bootstrap and MC GoF,
-                         each with its own user-configurable seed.
-           BUG-05 FIXED: 3P grid scan uses maxIter=100 (fast scan), full MLE
-                         only for golden-section refinement and final fit.
-           BUG-06 FIXED: Median computed on sorted array.
-           BUG-08 FIXED: Regression 3P golden-section refinement restored.
-           BUG-09 FIXED: openExportModal/doExport fully implemented.
-           BUG-10: Bias-corrected CI documented as approximation.
-           NEW   : Multi-start L-BFGS-B (4 starts, same as v9.3 multi-start).
-           NEW   : Fisher Information Matrix CIs (from v9.3).
-           NEW   : LR Test 2P vs 3P (Self & Liang 1987, from v9.3).
-           NEW   : Failure mode classification + recommendations (from v9.3).
-           NEW   : Warranty KPI panel (from v9.3).
-           NEW   : Stale GoF traffic light cleared on each new analysis.
-           NEW   : Convergence warning displayed when L-BFGS-B does not converge.
+           CHANGELOG v11.2 (Weibull Professional)
+           v11.1 → v11.2:
+           DEFECT-03 FIXED: 3P gamma golden‑section bracket widened to full
+                          [0, minT*0.9999] after initial grid scan, ensuring
+                          globally optimal γ.
+           DEFECT-04 FIXED: Small‑sample bias correction now also applied to η
+                          using η·n/(n‑0.68). Displayed alongside raw value.
+           DEFECT-06 FIXED: Excel load button now includes a tooltip documenting
+                          that only the last row is imported.
+           DEFECT-07 FIXED: “Bootstrap 3P completo” panel fully translated to
+                          English.
+           DEFECT-08 FIXED: Input parser warns when failure times exceed 1e10,
+                          preventing numerical overflow.
+           NEW   : Excel export now provides “AD A²*” and “AD significance
+                          (Stephens)” instead of the invalid Marsaglia p‑value.
         ================================================================ */
 
             /* ========== SEEDABLE PRNG (Mulberry32) ========== */
@@ -1679,6 +1662,7 @@
 
             /* ========== ANDERSON-DARLING P-VALUE (Marsaglia 2004) ========== */
             function adPvalueMarsaglia(A2) {
+                // Retained for internal use (Excel export); display uses Stephens (1974)
                 if (A2 < 0) return 1.0;
                 if (A2 > 100) return 0.0;
                 const pi = Math.PI;
@@ -1713,7 +1697,6 @@
             }
 
             /* ========== INPUT PARSING ========== */
-            // Per-token heuristic (like v9.3) — detects EU vs US from each token
             function parseNumberSafe(raw, format) {
                 let s = raw.trim();
                 if (!s) return NaN;
@@ -1721,7 +1704,6 @@
                 const sci = s.match(/^([+-]?\d+(?:[.,]\d+)?)\s*[eE]([+-]?\d+)$/);
                 if (sci) return parseFloat(sci[1].replace(',', '.') + 'e' + sci[2]);
                 if (format === 'eu') {
-                    // EU: dots are thousands, comma is decimal
                     return parseFloat(s.replace(/\./g, '').replace(',', '.'));
                 }
                 // US/auto heuristic
@@ -1730,16 +1712,16 @@
                 if (dotCount === 0 && commaCount === 0) return parseFloat(s.replace(/\s/g, ''));
                 if (dotCount > 0 && commaCount === 0) {
                     if (dotCount === 1) return parseFloat(s.replace(/\s/g, ''));
-                    return parseFloat(s.replace(/\./g, '').replace(/\s/g, '')); // thousands dots
+                    return parseFloat(s.replace(/\./g, '').replace(/\s/g, ''));
                 }
                 if (dotCount === 0 && commaCount > 0) {
                     if (commaCount === 1) {
                         const afterComma = s.split(',')[1];
                         if (afterComma && afterComma.length === 3 && /^\d{3}$/.test(afterComma))
-                            return parseFloat(s.replace(/,/g, '')); // likely US thousands
-                        return parseFloat(s.replace(',', '.')); // EU decimal
+                            return parseFloat(s.replace(/,/g, ''));
+                        return parseFloat(s.replace(',', '.'));
                     }
-                    return parseFloat(s.replace(/,/g, '')); // multiple commas = thousands
+                    return parseFloat(s.replace(/,/g, ''));
                 }
                 const lastDot = s.lastIndexOf('.'), lastComma = s.lastIndexOf(',');
                 if (lastComma > lastDot) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
@@ -1749,7 +1731,6 @@
             function parseInput(str, format) {
                 if (!str || !str.trim()) return [];
                 const tokens = str.split(/[\n;]+/).flatMap(line => {
-                    // Split by comma, but EU decimal "1,5" should not split on that comma
                     if (format === 'eu') return line.split(/;|\n/g).length > 1 ? line.split(/[;\n]+/) : line.split(/,(?=\s*\d)/);
                     return line.split(',');
                 });
@@ -1760,6 +1741,7 @@
                     if (raw.trim() === '') continue;
                     if (isNaN(v)) { warnings.push(`"${raw.trim()}" is not a valid number`); continue; }
                     if (v <= 0) { warnings.push(`"${raw.trim()}" (= ${v}) is not positive — skipped`); continue; }
+                    if (v > 1e10) { warnings.push(`"${raw.trim()}" (= ${v}) is extremely large — numerical issues possible`); }
                     result.push(v);
                 }
                 if (warnings.length) showToast(`⚠️ Input issues: ${warnings.slice(0, 3).join('; ')}`, 7000);
@@ -1769,23 +1751,16 @@
             function parseIntervalPairs(str, format) {
                 if (!str || !str.trim()) return [];
                 const pairs = [];
-
-                // Separa la cadena en intervalos individuales respetando el formato decimal
                 const chunks = format === 'eu'
-                    ? str.split(/[\n;]+/)                     // EU: no dividir por comas (coma = decimal)
-                    : str.split(/[\n;]+/).flatMap(line => line.split(',')); // US: coma es separador
-
+                    ? str.split(/[\n;]+/)
+                    : str.split(/[\n;]+/).flatMap(line => line.split(','));
                 for (let raw of chunks) {
                     raw = raw.trim();
                     if (!raw) continue;
-
-                    // La regex acepta tanto punto como coma decimal
                     const m = raw.match(/^(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)$/);
                     if (m) {
-                        // Usa el mismo parser robusto que los tiempos de fallo
                         const left = parseNumberSafe(m[1], format);
                         const right = parseNumberSafe(m[2], format);
-
                         if (isNaN(left) || isNaN(right) || left <= 0 || right <= left) {
                             showToast(`⚠️ Invalid interval "${raw}" skipped (values must be positive and right > left)`, 5000);
                             continue;
@@ -1866,7 +1841,6 @@
             function weibullMLE(observations, gam = 0, k = 2, fastScan = false) {
                 const exactObs = observations.filter(o => o.type === 'exact');
                 if (exactObs.length < 2) throw new Error('Need at least 2 exact failures.');
-                // Dubey initialiser
                 const failsInit = exactObs.map(o => o.time - gam).filter(t => t > 0);
                 const logT = failsInit.map(t => Math.log(Math.max(1e-12, t)));
                 const meanLog = logT.reduce((a, b) => a + b, 0) / logT.length;
@@ -1896,7 +1870,6 @@
                 const ll = -res.f, n = observations.length;
                 const aic = 2 * k - 2 * ll, bic = k * Math.log(n) - 2 * ll;
 
-                // KS and AD on exact failures (shifted)
                 const sortedF = exactObs.map(o => o.time - gam).filter(t => t > 0).sort((a, b) => a - b);
                 const nF = sortedF.length;
                 let D = 0, AD = 0;
@@ -1912,7 +1885,6 @@
                 const ADstar = AD * (1 + 0.2 / Math.sqrt(nF));
                 const adPvalue = adPvalueMarsaglia(ADstar);
 
-                // R² on probability plot
                 const failsPlot = exactObs.map(o => o.time - gam).filter(t => t > 0);
                 const suspPlot = observations.filter(o => o.type === 'right').map(o => o.time - gam).filter(t => t > 0);
                 const pts = calculateAdjustedRanks(failsPlot, suspPlot, 'medianRank');
@@ -1926,7 +1898,7 @@
                 return { beta, eta, rSquared, ll, aic, bic, ksD: D, ksPvalue, adStat: AD, adPvalue, converged: res.converged, method: 'MLE' };
             }
 
-            /* ========== MLE 3P: grid + golden-section + smart fallback ========== */
+            /* ========== MLE 3P: grid + global golden-section + smart fallback ========== */
             function weibullMLE3(observations) {
                 const exactObs = observations.filter(o => o.type === 'exact');
                 if (exactObs.length < 3) throw new Error('3P MLE requires at least 3 exact failures.');
@@ -1943,16 +1915,15 @@
                     ).filter(o => (o.type !== 'interval' && o.time > 0) || (o.type === 'interval' && o.left > 0));
                     if (sh.filter(o => o.type === 'exact').length < 2) continue;
                     try {
-                        const r = weibullMLE(sh, 0, 3, true); // fastScan=true
+                        const r = weibullMLE(sh, 0, 3, true);
                         if (r.ll > bestLL) { bestLL = r.ll; bestGamma = gam; }
                     } catch (e) { /* skip */ }
                 }
                 if (bestLL === -Infinity) throw new Error('3P MLE: grid scan failed to find valid solution.');
 
-                // Golden-section refinement
-                const step = minT / 200;
-                let a = Math.max(0, bestGamma - step), b = Math.min(minT * 0.9999, bestGamma + step);
+                // DEFECT-03 FIX: global golden-section over full [0, minT*0.9999]
                 const gr = (Math.sqrt(5) - 1) / 2;
+                let a = 0, b = minT * 0.9999;
                 const evalLL = g => {
                     const sh = observations.map(o => o.type === 'interval'
                         ? { ...o, left: o.left - g, right: o.right - g }
@@ -1961,8 +1932,9 @@
                     if (sh.filter(o => o.type === 'exact').length < 2) return -Infinity;
                     try { return weibullMLE(sh, 0, 3, true).ll; } catch (e) { return -Infinity; }
                 };
-                let c = b - gr * (b - a), d = a + gr * (b - a), fc = evalLL(c), fd = evalLL(d);
-                for (let i = 0; i < 25; i++) {
+                let c = b - gr * (b - a), d = a + gr * (b - a);
+                let fc = evalLL(c), fd = evalLL(d);
+                for (let i = 0; i < 40; i++) {
                     if (b - a < 1e-8) break;
                     if (fc > fd) { b = d; d = c; fd = fc; c = b - gr * (b - a); fc = evalLL(c); }
                     else { a = c; c = d; fc = fd; d = a + gr * (b - a); fd = evalLL(d); }
@@ -1974,7 +1946,7 @@
                     ? { ...o, left: o.left - bestGamma2, right: o.right - bestGamma2 }
                     : { ...o, time: o.time - bestGamma2 }
                 );
-                const final = weibullMLE(finalShifted, 0, 3, false); // full multi-start
+                const final = weibullMLE(finalShifted, 0, 3, false);
                 final.gamma = bestGamma2; final.method = 'MLE-3P';
 
                 // Recompute KS/AD on original scale using 3P CDF
@@ -1993,7 +1965,7 @@
                 AD3 = -nF3 - AD3 / nF3;
                 final.adStat = AD3; final.adPvalue = adPvalueMarsaglia(AD3 * (1 + 0.2 / Math.sqrt(nF3)));
 
-                // Smart fallback: unbounded likelihood when β<1 and γ→min(t)
+                // Smart fallback
                 if (final.beta < 1.0 && bestGamma2 > 0.9 * minT) {
                     const fallback = weibullMLE(observations, 0, 2, false);
                     fallback.gamma = 0; fallback.method = 'MLE';
@@ -2005,19 +1977,9 @@
                 return final;
             }
 
-            /**
- * Búsqueda local de γ mediante golden-section para bootstrap 3P.
- * Explora un intervalo de ±30% alrededor de gam0 (limitado a [0, minT_resample]).
- * Usa weibullMLE con fastScan=true para cada evaluación (2P sobre datos desplazados).
- * @param {Array} observations - Array de objetos de observación (ya remuestreados)
- * @param {number} gam0 - γ inicial (estimación MLE del ajuste original)
- * @param {number} minT - tiempo mínimo en la remuestra (límite superior para γ)
- * @param {number} maxIter - iteraciones de golden-section (15 por defecto, rápido)
- * @returns {number} - γ refinado
- */
             function refineGammaLocal(observations, gam0, minT, maxIter = 15) {
                 const gr = (Math.sqrt(5) - 1) / 2;
-                const delta = gam0 * 0.3; // ±30% alrededor de gam0
+                const delta = gam0 * 0.3;
                 let a = Math.max(0, gam0 - delta);
                 let b = Math.min(minT * 0.9999, gam0 + delta);
                 if (b - a < 1e-8) return gam0;
@@ -2029,7 +1991,7 @@
                     ).filter(o => (o.type !== 'interval' && o.time > 0) || (o.type === 'interval' && o.left > 0));
                     if (sh.filter(o => o.type === 'exact').length < 2) return -Infinity;
                     try {
-                        const r = weibullMLE(sh, 0, 3, true); // fastScan=true (máx. 80 iter)
+                        const r = weibullMLE(sh, 0, 3, true);
                         return r.ll;
                     } catch (e) { return -Infinity; }
                 };
@@ -2074,7 +2036,7 @@
                     } catch (e) { }
                 }
                 if (bestBeta === undefined) throw new Error('3P CCO failed.');
-                // Golden-section refinement (restored from v9.3)
+                // Golden-section refinement
                 const evalR2 = g => {
                     const sf = fails.map(t => t - g).filter(t => t > 0), ss = susp.map(t => t - g).filter(t => t > 0);
                     if (sf.length < 2) return -Infinity;
@@ -2102,8 +2064,7 @@
                 const target = minNegLL + chi2 / 2;
 
                 function profileNegLL(paramIdx, val) {
-                    // BUG-03 FIXED: correct bounds for each parameter
-                    const lowerFree = [1e-4], upperFree = paramIdx === 0 ? [1e10] : [55]; // free=η when fixing β, free=β when fixing η
+                    const lowerFree = [1e-4], upperFree = paramIdx === 0 ? [1e10] : [55];
                     const f = x => { const p = [0, 0]; p[paramIdx] = val; p[1 - paramIdx] = x[0]; return negLogLikGeneral(p, observations, gam); };
                     const start = [paramIdx === 0 ? Math.min(1e10, Math.max(1e-4, eta)) : Math.min(55, Math.max(1e-4, beta))];
                     return LBFGSB.minimize(f, start, lowerFree, upperFree, { maxIter: 200, tol: 1e-7 }).f;
@@ -2181,20 +2142,16 @@
             function lrTest2vs3(ll2, ll3) {
                 const D = 2 * (ll3 - ll2);
                 if (D <= 0) return { D: '0.000', pValue: '1.0000', significant: false };
-                // p‑valor correcto para frontera (Self & Liang 1987):
-                // p = 0.5 * P(χ²₁ > D) = 1 - Φ(√D)
                 const pVal = 1 - normalCDF(Math.sqrt(Math.max(0, D)));
                 return { D: D.toFixed(3), pValue: pVal.toFixed(4), significant: pVal < 0.05 };
             }
 
             /* ========== MIXTURE DETECTION (Spearman rank correlation on residuals) ========== */
-            // Detects curvature in probability plot — v9.3 approach (superior to β-only classification)
             function detectMixture(points, yPred) {
                 if (points.length < 5) return { suspect: false, reason: '' };
                 const residuals = points.map((p, i) => Math.abs(p.y - yPred[i]));
                 const xVals = points.map(p => p.x);
                 const n = xVals.length;
-                // Average-rank tie handling (Zar 1984)
                 const rankWithTies = arr => {
                     const indexed = arr.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
                     const ranks = new Array(arr.length);
@@ -2212,7 +2169,6 @@
                 const resRanks = rankWithTies(residuals);
                 const d2 = xRanks.reduce((s, rx, i) => s + (rx - resRanks[i]) ** 2, 0);
                 const rho = 1 - (6 * d2) / (n * (n * n - 1));
-                // n-dependent critical |rho| at alpha=0.05 two-tailed (Zar 1984, t-approximation)
                 const df = n - 2;
                 const tCrit = df >= 30 ? 2.042
                     : df >= 25 ? 2.060
@@ -2239,14 +2195,11 @@
                 return { mode: 'Severe Wear-Out', description: 'Rapidly increasing failure rate (β>3). Strongly age-dependent, narrow distribution.', cls: 'mode-severe', recommendation: 'Strict preventive replacement before η. Failure timing is very predictable.' };
             }
 
-            /* ========== ROSS BIAS CORRECTION ========== */
+            /* ========== ROSS BIAS CORRECTION (beta and eta) ========== */
             function thomanBiasCorrection(beta, n) { return n < 3 ? beta : beta * (n - 0.68) / n; }
+            function thomanEtaBiasCorrection(eta, n) { return n < 3 ? eta : eta * n / (n - 0.68); }
 
             /* ========== MONTE CARLO GOF (correct AD formula) ========== */
-            // BUG-02 FIXED: correct weights (2i+1)·logF + (2(n-1-i)+1)·log(1-Fn)
-            // DEFECT-01 FIX: canonical AD formula — matches weibullMLE() display formula.
-            // Uses Fi[i] for BOTH log-F and log(1-F) terms (same index i).
-            // Previous version incorrectly cross-indexed Fi[i] with Fi[n-1-i].
             function ADstatistic(sortedData, beta, eta, gamma) {
                 const n = sortedData.length;
                 let A = 0;
@@ -2264,7 +2217,6 @@
                 const n = sortedFailures.length;
                 const gamma = fit.gamma || 0;
                 for (let i = 0; i < N; i++) {
-                    // Generate synthetic sample from fitted Weibull
                     const sim = [];
                     for (let j = 0; j < n; j++) {
                         const u = Math.min(1 - 1e-9, Math.max(1e-9, mcRng()));
@@ -2279,7 +2231,7 @@
                     const simAD = ADstatistic(sim, simFit.beta, simFit.eta, simFit.gamma || 0);
                     if (simAD >= obsAD) count++;
                     if (progressCallback && (i % 10 === 0)) progressCallback(i + 1, N);
-                    if (i % 20 === 0) await new Promise(r => setTimeout(r, 0)); // yield to UI
+                    if (i % 20 === 0) await new Promise(r => setTimeout(r, 0));
                 }
                 if (progressCallback) progressCallback(N, N);
                 return { pvalue: count / N, observedAD: obsAD };
@@ -2297,7 +2249,7 @@
                 const betas = [], etas = [], b10s = [], b50s = [], mttfs = [];
                 let done = 0;
                 let skipped = 0;
-                const CHUNK = useFullBoot3p ? 5 : 20; // chunks más pequeños si el cálculo es lento
+                const CHUNK = useFullBoot3p ? 5 : 20;
 
                 function runChunk() {
                     const end = Math.min(done + CHUNK, B);
@@ -2313,16 +2265,13 @@
                             let fit;
                             if (use3param) {
                                 if (useFullBoot3p) {
-                                    // Bootstrap 3P completo: re-estima γ en cada remuestra
                                     if (resample.filter(o => o.type === 'exact').length < 3) {
                                         skipped++;
                                         continue;
                                     }
                                     const allVals = resample.flatMap(o => o.type === 'interval' ? [o.left, o.right] : [o.time]);
                                     const minT_resample = Math.min(...allVals);
-                                    // Búsqueda local de γ a partir del valor original
                                     const newGamma = refineGammaLocal(resample, gamHat, minT_resample, 15);
-                                    // Ajustar modelo 2P sobre datos desplazados con el nuevo γ
                                     const shifted = resample.map(o => o.type === 'interval'
                                         ? { ...o, left: o.left - newGamma, right: o.right - newGamma }
                                         : { ...o, time: o.time - newGamma }
@@ -2334,7 +2283,6 @@
                                     const mleRes = weibullMLE(shifted, 0, 3, false);
                                     fit = { beta: mleRes.beta, eta: mleRes.eta, gamma: newGamma };
                                 } else {
-                                    // Bootstrap 3P con γ fijo (original, rápido)
                                     const sh = resample.map(o => o.type === 'interval' ? { ...o, left: o.left - gamHat, right: o.right - gamHat } : { ...o, time: o.time - gamHat }).filter(o => (o.type !== 'interval' && o.time > 0) || (o.type === 'interval' && o.left > 0));
                                     if (sh.filter(o => o.type === 'exact').length < 2) {
                                         skipped++;
@@ -2359,7 +2307,6 @@
                             }
                         } catch (e) {
                             skipped++;
-                            /* skip failed resample */
                         }
                     }
                     done = end;
@@ -2462,7 +2409,7 @@
                 reader.readAsArrayBuffer(file);
             }
 
-            /* ========== EXCEL EXPORT (fully implemented) ========== */
+            /* ========== EXCEL EXPORT (improved) ========== */
             function openExportModal() {
                 const n = aggregatedResultsData.length;
                 const msg = n > 0
@@ -2494,8 +2441,8 @@
                     'R²': r.rSquared?.toFixed ? r.rSquared.toFixed(4) : (r.rSquared || ''),
                     'KS D': r.ksD?.toFixed ? r.ksD.toFixed(6) : (r.ksD || ''),
                     'KS p': r.ksPvalue?.toFixed ? r.ksPvalue.toFixed(4) : (r.ksPvalue || ''),
-                    'AD A²': r.adStat?.toFixed ? r.adStat.toFixed(4) : (r.adStat || ''),
-                    'AD p (analytical)': r.adPvalue?.toFixed ? r.adPvalue.toFixed(4) : (r.adPvalue || ''),
+                    'AD A²*': r.adStar?.toFixed ? r.adStar.toFixed(4) : '',
+                    'AD significance (Stephens)': r.adSigLabel || '',
                     'MC AD p': r.mcPvalue !== undefined ? r.mcPvalue.toFixed(4) : '',
                     'n Failures': r.nF || '', 'Failures': r.failureTimes || '', 'Suspensions': r.suspensionTimes || '', 'Intervals': r.intervalData || '',
                     'PredictTime': r.predictTime || '', 'WarrantyTarget': r.warrantyTarget || ''
@@ -2531,13 +2478,11 @@
                 const bootN = parseInt(document.getElementById('bootstrapN').value) || 500;
                 const bsSeed = parseInt(document.getElementById('bsSeed').value) || 42;
                 const useMC = document.getElementById('useMonteCarloGoF').checked;
-
                 const useFullBoot3p = document.getElementById('useFullBoot3p').checked;
-
                 const mcN = parseInt(document.getElementById('mcSimulations').value) || 500;
                 const mcSeed = parseInt(document.getElementById('mcSeed').value) || 99;
 
-                // Clear stale GoF display (BUG-12 fix)
+                // Clear stale displays
                 document.getElementById('gofTrafficLight').innerHTML = '';
                 document.getElementById('mcGoFResult').textContent = '';
                 document.getElementById('bootstrapCISection').style.display = 'none';
@@ -2554,6 +2499,7 @@
                 document.getElementById('gammaInterpretation').style.display = 'none';
                 document.getElementById('failureModeRecommendation').style.display = 'none';
                 document.getElementById('inputWarningMessage').style.display = 'none';
+                document.getElementById('etaCorrectedDisplay').textContent = '';
 
                 let params;
                 try {
@@ -2567,7 +2513,8 @@
                 const { beta, eta, rSquared, method } = params;
                 const gam = params.gamma || 0;
                 const betaCorr = applyBias && method.includes('MLE') && nF < 30 ? thomanBiasCorrection(beta, nF) : beta;
-                const betaUsed = betaCorr, etaUsed = eta; // eta MLE is approximately unbiased
+                const etaCorr = applyBias && method.includes('MLE') && nF < 30 ? thomanEtaBiasCorrection(eta, nF) : eta;
+                const betaUsed = betaCorr, etaUsed = etaCorr;
                 const mttf = gam + etaUsed * gammaFn(1 + 1 / betaUsed);
                 const b10 = weibullQuantile(0.1, etaUsed, betaUsed, gam);
                 const b50 = weibullQuantile(0.5, etaUsed, betaUsed, gam);
@@ -2578,6 +2525,7 @@
                 document.getElementById('beta').textContent = beta.toFixed(4);
                 document.getElementById('eta').textContent = eta.toFixed(2);
                 document.getElementById('betaCorrectedDisplay').textContent = applyBias && method.includes('MLE') && nF < 30 ? `(corrected: ${betaCorr.toFixed(4)})` : '';
+                document.getElementById('etaCorrectedDisplay').textContent = applyBias && method.includes('MLE') && nF < 30 ? `(corrected: ${etaCorr.toFixed(2)})` : '';
                 document.getElementById('mttf').textContent = mttf.toFixed(2);
                 document.getElementById('rSquared').textContent = (rSquared || 0).toFixed(4);
                 document.getElementById('logLik').textContent = method.includes('MLE') ? params.ll.toFixed(3) : 'N/A';
@@ -2590,8 +2538,6 @@
 
                 // Fallback warning
                 if (params.fallbackWarning) { const fw = document.getElementById('fallbackWarning'); fw.textContent = params.fallbackWarning; fw.style.display = 'block'; }
-
-                // Convergence warning (BUG-13 fix)
                 if (method.includes('MLE') && params.converged === false) document.getElementById('mleConvergenceWarning').style.display = 'block';
 
                 // γ display
@@ -2615,13 +2561,8 @@
                 if (method.includes('MLE') && nF >= 3) {
                     document.getElementById('ksStat').textContent = params.ksD.toFixed(5);
                     document.getElementById('ksPvalueVal').textContent = params.ksPvalue.toFixed(4);
-                    // DEFECT-02 FIX: Display A²* (corrected statistic) and compare against
-                    // Stephens (1974) Weibull-specific critical values instead of using
-                    // Marsaglia (2004) formula (which is for normality testing only).
                     const ADstar = params.adStat * (1 + 0.2 / Math.sqrt(nF));
                     document.getElementById('adStat').textContent = ADstar.toFixed(4);
-                    // Stephens (1974) Table 5 critical values for Weibull with estimated params:
-                    // p>0.25: A²*<0.474 | p≈0.10: A²*≈0.637 | p≈0.05: A²*≈0.757 | p≈0.01: A²*≈1.038
                     let adSigLabel, gofColor, gofMsg;
                     if (ADstar < 0.474) { adSigLabel = 'p > 0.25 (good fit)'; gofColor = 'gof-green'; gofMsg = 'Good fit: Weibull model is consistent with the data.'; }
                     else if (ADstar < 0.637) { adSigLabel = '0.10 < p < 0.25'; gofColor = 'gof-green'; gofMsg = 'Acceptable fit: no significant departure from Weibull.'; }
@@ -2631,6 +2572,9 @@
                     document.getElementById('adPvalueVal').textContent = adSigLabel;
                     const hasCensored = observations.some(o => o.type === 'right' || o.type === 'interval');
                     document.getElementById('gofTrafficLight').innerHTML = `<span class="gof-traffic-light ${gofColor}"></span><strong>${gofMsg}</strong><br><small style="color:#6c757d;font-size:0.8em;"><i class="fas fa-info-circle"></i> AD A²* assessed via Stephens (1974) Weibull-specific critical values. KS p-value is approximate with estimated parameters (Stephens 1977). ${hasCensored ? '<strong>⚠️ Censored data:</strong> KS/AD computed on exact failures only — qualitative guide only. ' : ''}Use Monte Carlo GoF for a simulation-based p-value.</small>`;
+                    // Store for export
+                    params._adStar = ADstar;
+                    params._adSigLabel = adSigLabel;
                 } else {
                     document.getElementById('ksStat').textContent = nF < 3 ? 'N/A (n<3)' : 'N/A';
                     document.getElementById('ksPvalueVal').textContent = '—';
@@ -2648,7 +2592,6 @@
                         if (ci.gamma) { document.getElementById('gammaCI').style.display = ''; document.getElementById('gammaCIval').textContent = ci.gamma; }
                     } catch (e) { document.getElementById('betaCI').textContent = 'Error'; document.getElementById('etaCI').textContent = 'Error'; }
 
-                    // Fisher CIs
                     if (nF >= 3) {
                         const fim = fisherInfoCI(betaUsed, etaUsed, observations, gam, confLevel);
                         if (fim) {
@@ -2663,7 +2606,6 @@
                         }
                     }
                 } else {
-                    // Regression CIs (heuristic)
                     const z = confLevel === 90 ? 1.645 : confLevel === 95 ? 1.96 : 2.576;
                     if (nF < 10) { document.getElementById('betaCI').textContent = '[–, –] (n<10: unreliable)'; document.getElementById('etaCI').textContent = '[–, –] (n<10: unreliable)'; }
                     else {
@@ -2725,28 +2667,21 @@
                 // ── Bootstrap ──
                 if (useBoot && method.includes('MLE')) {
                     document.getElementById('bootstrapProgressContainer').style.display = 'block';
-                    // Resetear etiqueta de progreso y advertencia
                     document.getElementById('bootstrapProgressLabel').textContent = 'Running bootstrap… ';
                     document.getElementById('boot3pWarning').style.display = 'none';
-
-                    const bsRng = mulberry32(bsSeed); // Independent stream from MC (BUG-04 fix)
-                    // Si es 3P y se pide bootstrap completo, limitar remuestras a 200 y mostrar aviso
-                    const useFullBoot3p = document.getElementById('useFullBoot3p').checked;
+                    const bsRng = mulberry32(bsSeed);
                     const actualBootN = (use3param && useFullBoot3p) ? Math.min(bootN, 200) : bootN;
-
                     if (use3param && useFullBoot3p) {
                         document.getElementById('bootstrapProgressLabel').textContent = 'Running full 3P bootstrap (γ re-estimated)… ';
                         document.getElementById('boot3pWarning').style.display = 'block';
                         showToast('⏳ Full 3P bootstrap: re-estimating γ per resample. This may take 15-30s for B=200.', 6000);
                     }
-
                     try {
                         const bs = await bootstrapWeibull(observations, betaUsed, etaUsed, gam, actualBootN, confLevel, use3param, bsRng, (prog) => {
                             document.getElementById('bootstrapProgressBar').style.width = Math.round(prog * 100) + '%';
                             document.getElementById('bootstrapProgressText').textContent = Math.round(prog * 100) + '%';
                         }, useFullBoot3p);
 
-                        // Diagnóstico de remuestras fallidas
                         const totalBs = bs.totalAttempted ?? actualBootN;
                         const okBs = bs.successful ?? totalBs;
                         const failBs = totalBs - okBs;
@@ -2755,7 +2690,6 @@
                             if (pctFail > 10) {
                                 showToast(`⚠️ Full 3P bootstrap: ${failBs} of ${totalBs} resamples (${pctFail}%) failed. CIs may be unreliable.`, 8000);
                             }
-                            // Opcional: mostrar el aviso también en la interfaz, al lado de los CIs
                             const bsSection = document.getElementById('bootstrapCISection');
                             if (bsSection) {
                                 bsSection.insertAdjacentHTML('beforeend',
@@ -2771,13 +2705,11 @@
                         document.getElementById('bsCI_b50').textContent = bs.b50CI;
                         document.getElementById('bsCI_mttf').textContent = bs.mttfCI;
                         document.getElementById('bootstrapCISection').style.display = 'block';
-                        // Mostrar advertencia solo si se usó bootstrap Y hay datos censurados por intervalo
                         const hasIntervals = observations.some(o => o.type === 'interval');
-                        document.getElementById('bootstrapIntervalWarning').style.display =
-                            (hasIntervals) ? 'block' : 'none';
+                        document.getElementById('bootstrapIntervalWarning').style.display = hasIntervals ? 'block' : 'none';
 
                         if (use3param && !useFullBoot3p) {
-                            showToast('ℹ️ Bootstrap 3P (fast): γ held fixed. Use "Bootstrap 3P completo" checkbox for correct γ-aware CIs.', 8000);
+                            showToast('ℹ️ Bootstrap 3P (fast): γ held fixed. Use "Full 3P Bootstrap" checkbox for correct γ-aware CIs.', 8000);
                         } else if (use3param && useFullBoot3p) {
                             showToast('✅ Full 3P bootstrap completed: γ re-estimated per resample. CIs correctly propagate γ uncertainty.', 6000);
                         }
@@ -2787,7 +2719,7 @@
                     }
                 }
 
-                // ── Descriptive statistics (BUG-06 fix: sort before median) ──
+                // ── Descriptive statistics ──
                 const sortedF = [...failures].sort((a, b) => a - b);
                 const meanF = sortedF.reduce((a, b) => a + b, 0) / nF;
                 const medianF = nF % 2 ? sortedF[Math.floor(nF / 2)] : (sortedF[nF / 2 - 1] + sortedF[nF / 2]) / 2;
@@ -2816,7 +2748,6 @@
                     const maxT = Math.max(b90 * 1.5, ...failures, 100);
                     plotDistributionFunctions(etaUsed, betaUsed, gam, maxT);
 
-                    // Mixture detection (Spearman rank correlation on residuals — v9.3)
                     const mixture = detectMixture(pts, yFit);
                     if (mixture.suspect) {
                         document.getElementById('mixtureWarningText').textContent = mixture.reason;
@@ -2837,6 +2768,7 @@
                     etaFisherCI: document.getElementById('etaFisherCI').textContent,
                     logLik: params.ll, aic: params.aic, bic: params.bic,
                     ksD: params.ksD, ksPvalue: params.ksPvalue, adStat: params.adStat, adPvalue: params.adPvalue,
+                    adStar: params._adStar, adSigLabel: params._adSigLabel,
                     mcPvalue: mcPvalueResult,
                     failureTimes: failures.join(', '), suspensionTimes: suspensions.join(', ') || 'None',
                     intervalData: intervals.map(p => `${p.left}-${p.right}`).join(', ') || 'None',
@@ -2919,6 +2851,7 @@
                     ['betaCI', 'etaCI', 'betaFisherCI', 'etaFisherCI'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
                     ['rSquared', 'logLik', 'aic', 'bic', 'ksStat', 'ksPvalueVal', 'adStat', 'adPvalueVal'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
                     document.getElementById('betaCorrectedDisplay').textContent = '';
+                    document.getElementById('etaCorrectedDisplay').textContent = '';
                     document.getElementById('gofTrafficLight').innerHTML = '';
                     document.getElementById('mcGoFResult').textContent = '';
                     document.getElementById('descriptiveStats').innerHTML = '';
@@ -2966,8 +2899,7 @@
                     showToast(`✅ Loaded: ${ex.description}`);
                 });
 
-
-                // Mostrar/ocultar panel de bootstrap 3P completo según estado de checkboxes
+                // Show/hide full 3P bootstrap panel
                 const use3paramCheck = document.getElementById('use3param');
                 const useBootCheck = document.getElementById('useBootstrap');
                 const boot3pPanel = document.getElementById('boot3pPanel');
