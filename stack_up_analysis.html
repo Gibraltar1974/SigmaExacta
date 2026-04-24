@@ -102,6 +102,17 @@
             font-family: 'Nunito', sans-serif;
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-load {
             background-color: #0d6efd;
             color: white;
@@ -534,9 +545,13 @@
                     style="display: inline-flex; justify-content: center; align-items: center; width: 42px; height: 42px; background-color: #5856d6; border-radius: 8px; margin-right: 12px; vertical-align: middle;"><i
                         class="fas fa-ruler-combined" style="color: white; font-size: 22px;"></i></span>
                 Tolerance Stack-Up Analysis Calculator</h1>
-            <p>Perform 1D Tolerance Stack-up Analysis for Mechanical Assemblies using Arithmetic, Probabilistic, and Monte Carlo Methods.</p>
+            <p>Perform 1D Tolerance Stack-up Analysis for Mechanical Assemblies using Arithmetic, Probabilistic, and
+                Monte Carlo Methods.</p>
 
             <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
+                </button>
                 <button id="globalLoadBtn" class="btn-load">
                     <i class="fas fa-folder-open"></i> Load
                 </button>
@@ -1066,6 +1081,84 @@
             }, 3000);
         }
 
+        // ===== FUNCIÓN DE RESET (usada por el botón New y por loadStackupFromExcel) =====
+        function resetAllData() {
+            // 1. Limpiar el contenedor de dimensiones
+            const container = document.getElementById('dimensions-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No dimensions added yet</p>
+                        <p style="font-size: 0.9rem;">Click "Add Dimension" below to start building your tolerance stack-up analysis</p>
+                    </div>`;
+            }
+
+            // 2. Resetear el tamaño de muestra de Monte Carlo
+            const sampleSizeInput = document.getElementById('sampleSize');
+            if (sampleSizeInput) sampleSizeInput.value = '10000';
+
+            // 3. Limpiar todos los resultados mostrados
+            const resultIds = [
+                'arithmetic-nominal', 'arithmetic-tolerance', 'arithmetic-max', 'arithmetic-min',
+                'probabilistic-nominal', 'probabilistic-stddev', 'probabilistic-tolerance',
+                'probabilistic-max', 'probabilistic-min',
+                'montecarlo-nominal', 'montecarlo-stddev', 'montecarlo-tolerance',
+                'montecarlo-max', 'montecarlo-min'
+            ];
+            resultIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '-';
+            });
+
+            // 4. Ocultar resultados de Monte Carlo
+            const mcResults = document.getElementById('montecarlo-results');
+            if (mcResults) mcResults.style.display = '';
+
+            // 5. Resetear el gráfico de distribución (si existe)
+            const distCanvas = document.getElementById('distributionChart');
+            if (distCanvas) {
+                const chartInstance = Chart.getChart(distCanvas);
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+                const ctx = distCanvas.getContext('2d');
+                if (ctx) ctx.clearRect(0, 0, distCanvas.width, distCanvas.height);
+            }
+
+            // 6. Limpiar el canvas de visualización
+            const vectorCanvas = document.getElementById('vectorCanvas');
+            if (vectorCanvas) {
+                const ctx = vectorCanvas.getContext('2d');
+                if (ctx) ctx.clearRect(0, 0, vectorCanvas.width, vectorCanvas.height);
+            }
+
+            // 7. Limpiar el historial de resultados
+            const historyDiv = document.getElementById('results-history');
+            if (historyDiv) {
+                historyDiv.innerHTML = '';
+                historyDiv.style.display = 'none';
+            }
+
+            // 8. Cambiar a la pestaña de herramienta
+            switchWizardTab('tab-tool');
+
+            // 9. Asegurar que la subpestaña de input esté activa
+            document.querySelectorAll(".tabcontent").forEach(el => el.style.display = "none");
+            document.querySelectorAll(".tablinks").forEach(el => el.classList.remove("active"));
+            const inputTab = document.getElementById('input');
+            if (inputTab) {
+                inputTab.style.display = "block";
+            }
+            const inputTabLink = document.querySelector('.tablinks');
+            if (inputTabLink) inputTabLink.classList.add('active');
+
+            showStackupNotification('🆕 New analysis started. All data cleared.');
+        }
+
+        // Exponer como window.resetData para compatibilidad con stack_up_analysis.js
+        window.resetData = resetAllData;
+
         // ===== EXPORTACIÓN / IMPORTACIÓN EXCEL =====
         function getDimensionsData() {
             const container = document.getElementById('dimensions-container');
@@ -1277,6 +1370,12 @@
 
         // ===== EVENTOS DE BOTONES Y MODALES =====
         document.addEventListener('DOMContentLoaded', function () {
+            // Botón New
+            document.getElementById('globalNewBtn').addEventListener('click', function () {
+                if (!confirm('Clear all data and start a new analysis? This cannot be undone.')) return;
+                resetAllData();
+            });
+
             document.getElementById('globalLoadExampleBtn').addEventListener('click', function () {
                 if (typeof loadExampleData === 'function') loadExampleData();
                 switchWizardTab('tab-tool');
