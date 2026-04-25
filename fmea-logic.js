@@ -1,10 +1,12 @@
 // fmea-logic.js - AIAG-VDA 2019 Compliant (Action Priority fully updated)
+// Enhanced with full Excel export/import, locked mode, revision history, and inline editing
 
 let components = [];
 let contacts = [];
 let functions = [];
 let network = null;
 let analysisCounter = 0;
+let revisions = []; // { date, reviewer, analysisNumber }
 
 let contactCounter = 0;
 let primaryFunctionCounter = 0;
@@ -31,19 +33,195 @@ function initComponents() {
   document.getElementById('addComponentBtn').addEventListener('click', addComponent);
   document.getElementById('addContactBtn').addEventListener('click', addContact);
   document.getElementById('addFunctionBtn').addEventListener('click', addFunction);
-  document.getElementById('generateFMEABtn').addEventListener('click', generateFMEA);
+  document.getElementById('generateFMEABtn').addEventListener('click', promptRevisionAndRegenerate);
   document.getElementById('exportChartBtn').addEventListener('click', exportChart);
   document.getElementById('clearComponentsBtn').addEventListener('click', resetAll);
   document.getElementById('clearContactsBtn').addEventListener('click', () => { contacts = []; functions = []; contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
   document.getElementById('clearFunctionsBtn').addEventListener('click', () => { functions = []; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
   document.getElementById('fitViewBtn').addEventListener('click', () => { if (network) network.fit({ animation: true }); });
+
+  // --- LÓGICA DE BOTONES PRINCIPALES ---
+  document.getElementById('globalNewBtn').addEventListener('click', () => {
+    resetAll();
+    switchTab('tab-planning');
+  });
+
   document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
-  document.getElementById('globalResetBtn').addEventListener('click', resetAll);
+
+  document.getElementById('globalReviseBtn').addEventListener('click', () => {
+    // "Edit Input Data": bloquea la tabla (si existe) y va a Planning
+    const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
+    if (lastAnalysis) {
+      const table = lastAnalysis.querySelector('.fmea-table');
+      if (table && !table.classList.contains('locked')) {
+        table.classList.add('locked');
+      }
+    }
+    switchTab('tab-planning');
+  });
+
+  // LOAD MODAL
+  document.getElementById('globalLoadBtn').addEventListener('click', () => {
+    document.getElementById('loadFileLabel').textContent = 'No file selected';
+    document.getElementById('modalFileInput').value = '';
+    document.getElementById('loadModal').classList.add('show');
+  });
+  document.getElementById('loadCancelBtn').addEventListener('click', () => {
+    document.getElementById('loadModal').classList.remove('show');
+  });
+  document.getElementById('loadModal').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+  document.getElementById('modalFileInput').addEventListener('change', function () {
+    document.getElementById('loadFileLabel').textContent = this.files[0] ? this.files[0].name : 'No file selected';
+  });
+  document.getElementById('loadConfirmBtn').addEventListener('click', () => {
+    const file = document.getElementById('modalFileInput').files[0];
+    if (!file) { alert('Please select an Excel file first.'); return; }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        loadFromExcel(workbook);
+        document.getElementById('loadModal').classList.remove('show');
+        showNotification('FMEA loaded successfully from Excel! (Read-only mode)');
+      } catch (err) {
+        console.error('Error loading Excel file:', err);
+        alert('Error loading file: ' + err.message);
+      }
+    };
+    reader.onerror = () => alert('Error reading the file. Please try again.');
+    reader.readAsArrayBuffer(file);
+  });
+
+  // EXPORT MODAL
+  document.getElementById('globalExportBtn').addEventListener('click', () => {
+    if (!document.querySelector('#fmeaResultsContainer .analysis-instance')) {
+      alert('Please generate at least one FMEA analysis before exporting.');
+      return;
+    }
+    document.getElementById('exportModal').classList.add('show');
+  });
+  document.getElementById('exportCancelBtn').addEventListener('click', () => {
+    document.getElementById('exportModal').classList.remove('show');
+  });
+  document.getElementById('exportModal').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+  document.getElementById('exportConfirmBtn').addEventListener('click', () => {
+    document.getElementById('exportModal').classList.remove('show');
+    exportFullFMEA();
+  });
+
+  // REVISION MODAL – ahora regenera la tabla con los datos actuales
+  document.getElementById('revisionCancelBtn').addEventListener('click', () => {
+    document.getElementById('revisionModal').classList.remove('show');
+  });
+  document.getElementById('revisionModal').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+  document.getElementById('revisionConfirmBtn').addEventListener('click', () => {
+    const date = document.getElementById('revisionDate').value;
+    const reviewer = document.getElementById('revisionReviewer').value.trim();
+    if (!date || !reviewer) {
+      alert('Please enter both date and reviewer name.');
+      return;
+    }
+    document.getElementById('revisionModal').classList.remove('show');
+    // Guardar los modos de fallo actuales en el array functions antes de regenerar
+    saveCurrentFailureModesToFunctions();
+    // Registrar revisión
+    revisions.push({ date, reviewer, analysisNumber: analysisCounter + 1 });
+    // Generar tabla nueva (editable) con los datos de entrada y los modos de fallo preservados
+    generateFMEA({ locked: false });
+    document.getElementById('revisionDate').value = '';
+    document.getElementById('revisionReviewer').value = '';
+    switchTab('tab-results');
+  });
+
   document.getElementById('exportHeatmapExcelBtn')?.addEventListener('click', exportHeatmapToExcel);
   document.getElementById('exportHeatmapImageBtn')?.addEventListener('click', exportHeatmapToImage);
   document.getElementById('showCriteriaBtn')?.addEventListener('click', showCriteriaModal);
 
   updateAll();
+}
+
+function promptRevisionAndRegenerate() {
+  if (functions.length === 0) {
+    alert('Please define at least one function first.');
+    return;
+  }
+  document.getElementById('revisionModal').classList.add('show');
+}
+
+// Extrae los datos de la última tabla FMEA y los guarda en el array functions (failureModes de cada función)
+function saveCurrentFailureModesToFunctions() {
+  const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
+  if (!lastAnalysis) return;
+  const rows = lastAnalysis.querySelectorAll('.fmea-table tbody tr.fmea-data-row');
+  if (rows.length === 0) return;
+
+  // Reiniciar failureModes de todas las funciones
+  functions.forEach(f => { f.failureModes = []; });
+
+  rows.forEach(row => {
+    const funcCell = row.cells[0]?.textContent || '';
+    const funcLabel = funcCell.split(':')[0].trim();  // ej: "fp1"
+    const func = functions.find(f => f.label === funcLabel);
+    if (!func) return;
+
+    // Leer valores de la fila
+    const focusSelect = row.querySelector('.focus-element-select');
+    const focusElementId = focusSelect ? focusSelect.value : '';
+
+    const fm = {
+      mode: row.querySelector('td:nth-child(9) textarea')?.value || '',
+      effectsLocal: row.querySelector('td:nth-child(5) textarea')?.value || '',
+      effectsHigher: row.querySelector('td:nth-child(6) textarea')?.value || '',
+      effectsEnd: row.querySelector('td:nth-child(7) textarea')?.value || '',
+      severity: parseInt(row.querySelector('.severity-select')?.value) || 1,
+      causes: row.querySelector('td:nth-child(10) textarea')?.value || '',
+      preventionControls: row.querySelector('td:nth-child(11) textarea')?.value || '',
+      occurrence: parseInt(row.querySelector('.occurrence-select')?.value) || 1,
+      detectionControls: row.querySelector('td:nth-child(13) textarea')?.value || '',
+      detection: parseInt(row.querySelector('.detection-select')?.value) || 1,
+      actions: [],
+      focusElementId: focusElementId
+    };
+
+    // Acciones (si las hay)
+    const actionItems = row.querySelectorAll('.actions-cell .action-item');
+    actionItems.forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      const action = inputs[0]?.value || '';
+      const responsible = inputs[1]?.value || '';
+      const dueDate = inputs[2]?.value || '';
+      const status = item.querySelector('.action-status')?.value || 'Open';
+      const evidence = inputs[4]?.value || '';
+      fm.actions.push({ action, responsible, dueDate, status, evidence });
+    });
+
+    func.failureModes.push(fm);
+  });
+}
+
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed; top: 20px; right: 20px;
+    background-color: #2ecc71; color: white;
+    padding: 15px 20px; border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000; max-width: 300px; font-weight: 600;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.style.animation = 'fadeOut 0.5s ease';
+    setTimeout(() => document.body.removeChild(notification), 500);
+  }, 3000);
 }
 
 function showCriteriaModal() {
@@ -63,9 +241,9 @@ function autoGrowTextarea(element) {
   element.style.height = (element.scrollHeight) + "px";
 }
 
+// ----- DATA MANAGEMENT -----
 function loadExample() {
   resetAll();
-  // Components with hierarchy
   components = [
     { id: 1, name: 'Electric Vehicle System', level: 'system', parentId: null, external: false },
     { id: 2, name: 'Powertrain', level: 'subsystem', parentId: 1, external: false },
@@ -98,7 +276,6 @@ function loadExample() {
     { id: 4, name: 'Execute Commands', requirement: '<50ms response', isUnwanted: false, type: 'primary', label: 'fp3', contacts: [5, 7], failureModes: [] }
   ];
 
-  // Planning data
   document.getElementById('projectName').value = 'Electric Vehicle Powertrain FMEA';
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('fmeaDate').value = today;
@@ -114,7 +291,8 @@ function loadExample() {
 
   updateAll();
   setTimeout(() => {
-    switchTab('tab-planning');
+    generateFMEA({ locked: true });
+    switchTab('tab-results');
     document.querySelector('.tabs-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 }
@@ -123,8 +301,21 @@ function resetAll() {
   components = []; contacts = []; functions = [];
   contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0;
   analysisCounter = 0;
+  revisions = [];
   fmeaResultsContainer.innerHTML = '<div class="calculation-title">FMEA Results (AIAG-VDA Compliant)</div>';
+  document.getElementById('heatmapContainer').innerHTML = '<p>No FMEA data available. Generate an analysis first.</p>';
   if (network) { network.destroy(); network = null; }
+  document.getElementById('projectName').value = '';
+  document.getElementById('fmeaDate').value = '';
+  document.getElementById('fmeaTeam').value = '';
+  document.getElementById('fmeaTypeSelector').value = 'DFMEA';
+  document.getElementById('fmeaCustomer').value = '';
+  document.getElementById('fmeaDocNumber').value = '';
+  document.getElementById('fmeaRevision').value = '';
+  document.getElementById('fmeaEngResponsible').value = '';
+  document.getElementById('fmeaPlant').value = '';
+  document.getElementById('fmeaScope').value = '';
+  document.getElementById('fmeaPreviousRef').value = '';
   updateAll();
   networkLegend.innerHTML = '';
 }
@@ -182,11 +373,212 @@ function addFunction() {
   }
 }
 
+/* ====================== EDITABLES ====================== */
+function startEditComponent(itemDiv, comp) {
+  // Replace name display with input
+  const displaySpan = itemDiv.querySelector('.name-display');
+  const input = itemDiv.querySelector('.edit-name-input');
+  const editBtn = itemDiv.querySelector('.edit-btn');
+  const deleteBtn = itemDiv.querySelector('.delete-btn');
+  if (!displaySpan || !input) return;
+
+  displaySpan.style.display = 'none';
+  input.style.display = 'inline-block';
+  input.focus();
+  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.classList.add('save-btn');
+  editBtn.removeEventListener('click', editHandler);
+  editBtn.addEventListener('click', saveHandler);
+
+  function saveHandler(e) {
+    e.stopPropagation();
+    const newName = input.value.trim();
+    if (newName) {
+      comp.name = newName;
+      updateAll(); // re-render list
+    } else {
+      // revert
+      input.value = comp.name;
+      cancelEdit();
+    }
+  }
+
+  function cancelEdit() {
+    displaySpan.style.display = '';
+    input.style.display = 'none';
+    editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+    editBtn.classList.remove('save-btn');
+    editBtn.removeEventListener('click', saveHandler);
+    editBtn.addEventListener('click', editHandler);
+  }
+
+  function editHandler(e) {
+    e.stopPropagation();
+    startEditComponent(itemDiv, comp);
+  }
+
+  // On blur save (if not cancelled)
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      // If still in edit mode, save
+      if (input.style.display !== 'none') {
+        const newName = input.value.trim();
+        if (newName && newName !== comp.name) {
+          comp.name = newName;
+          updateAll();
+        } else {
+          cancelEdit();
+        }
+      }
+    }, 100);
+  });
+
+  // Enter key saves
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.blur();
+    }
+  });
+}
+
+function startEditContact(itemDiv, cont) {
+  const displaySpan = itemDiv.querySelector('.name-display');
+  const input = itemDiv.querySelector('.edit-name-input');
+  const typeSelect = itemDiv.querySelector('.edit-type-select');
+  const editBtn = itemDiv.querySelector('.edit-btn');
+  const deleteBtn = itemDiv.querySelector('.delete-btn');
+
+  displaySpan.style.display = 'none';
+  input.style.display = 'inline-block';
+  typeSelect.style.display = 'inline-block';
+  input.focus();
+  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.classList.add('save-btn');
+  editBtn.removeEventListener('click', editHandler);
+  editBtn.addEventListener('click', saveHandler);
+
+  function saveHandler(e) {
+    e.stopPropagation();
+    const newName = input.value.trim();
+    const newType = typeSelect.value;
+    if (newName) {
+      cont.name = newName;
+      cont.interactionType = newType;
+      updateAll();
+    } else {
+      cancelEdit();
+    }
+  }
+
+  function cancelEdit() {
+    displaySpan.style.display = '';
+    input.style.display = 'none';
+    typeSelect.style.display = 'none';
+    editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+    editBtn.classList.remove('save-btn');
+    editBtn.removeEventListener('click', saveHandler);
+    editBtn.addEventListener('click', editHandler);
+  }
+
+  function editHandler(e) {
+    e.stopPropagation();
+    startEditContact(itemDiv, cont);
+  }
+
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (input.style.display !== 'none') {
+        const newName = input.value.trim();
+        if (newName && newName !== cont.name) {
+          cont.name = newName;
+          updateAll();
+        } else {
+          cancelEdit();
+        }
+      }
+    }, 100);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.blur();
+    }
+  });
+}
+
+function startEditFunction(itemDiv, func) {
+  const displaySpan = itemDiv.querySelector('.func-display');
+  const editArea = itemDiv.querySelector('.func-edit-area');
+  const nameInput = itemDiv.querySelector('.edit-func-name');
+  const reqInput = itemDiv.querySelector('.edit-func-req');
+  const typeSelect = itemDiv.querySelector('.edit-func-type');
+  const unwantedCheck = itemDiv.querySelector('.edit-func-unwanted');
+  const editBtn = itemDiv.querySelector('.edit-btn');
+  const deleteBtn = itemDiv.querySelector('.delete-btn');
+
+  displaySpan.style.display = 'none';
+  editArea.style.display = 'block';
+  nameInput.focus();
+  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.classList.add('save-btn');
+  editBtn.removeEventListener('click', editHandler);
+  editBtn.addEventListener('click', saveHandler);
+
+  function saveHandler(e) {
+    e.stopPropagation();
+    const newName = nameInput.value.trim();
+    const newReq = reqInput.value.trim();
+    const newType = typeSelect.value;
+    const newUnwanted = unwantedCheck.checked;
+    if (newName) {
+      func.name = newName;
+      func.requirement = newReq;
+      func.type = newType;
+      func.isUnwanted = newUnwanted;
+      // Update label if type changed? keep original label
+      updateAll();
+    } else {
+      cancelEdit();
+    }
+  }
+
+  function cancelEdit() {
+    displaySpan.style.display = '';
+    editArea.style.display = 'none';
+    editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+    editBtn.classList.remove('save-btn');
+    editBtn.removeEventListener('click', saveHandler);
+    editBtn.addEventListener('click', editHandler);
+  }
+
+  function editHandler(e) {
+    e.stopPropagation();
+    startEditFunction(itemDiv, func);
+  }
+}
+
+/* ====================== FIN EDITABLES ====================== */
+
 function updateComponentsList() {
   componentsList.innerHTML = '';
   components.forEach(component => {
     const item = document.createElement('div'); item.className = 'item';
-    item.innerHTML = `<div class="item-name">${component.name} (${component.level})${component.external ? ' [External]' : ''}${component.parentId ? ' → parent: ' + (components.find(c => c.id === component.parentId)?.name || '?') : ''}</div><div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+    const parentName = component.parentId ? (components.find(c => c.id === component.parentId)?.name || '?') : '';
+    item.innerHTML = `
+      <div class="item-name">
+        <span class="name-display">${component.name} (${component.level})${component.external ? ' [External]' : ''}${component.parentId ? ' → parent: ' + parentName : ''}</span>
+        <input class="edit-name-input" style="display:none" value="${escapeHtml(component.name)}">
+        <div class="item-actions">
+          <button class="edit-btn" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+          <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>`;
+    item.querySelector('.edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startEditComponent(item, component);
+    });
     item.querySelector('.delete-btn').addEventListener('click', () => {
       contacts = contacts.filter(c => c.from !== component.id && c.to !== component.id);
       const contactIds = contacts.map(c => c.id);
@@ -207,7 +599,26 @@ function updateContactsList() {
     const to = components.find(c => c.id === contact.to);
     if (from && to) {
       const item = document.createElement('div'); item.className = 'item';
-      item.innerHTML = `<div class="item-name"><strong>${contact.name} (${contact.interactionType}):</strong> ${from.name} → ${to.name}</div><div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
+      item.innerHTML = `
+        <div class="item-name">
+          <span class="name-display"><strong>${contact.name}</strong> (${contact.interactionType}): ${from.name} → ${to.name}</span>
+          <input class="edit-name-input" style="display:none" value="${escapeHtml(contact.name)}">
+          <select class="edit-type-select" style="display:none">
+            <option value="Signal" ${contact.interactionType === 'Signal' ? 'selected' : ''}>Signal</option>
+            <option value="Force" ${contact.interactionType === 'Force' ? 'selected' : ''}>Force</option>
+            <option value="Energy" ${contact.interactionType === 'Energy' ? 'selected' : ''}>Energy</option>
+            <option value="Material" ${contact.interactionType === 'Material' ? 'selected' : ''}>Material</option>
+            <option value="Information" ${contact.interactionType === 'Information' ? 'selected' : ''}>Information</option>
+          </select>
+          <div class="item-actions">
+            <button class="edit-btn" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+            <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`;
+      item.querySelector('.edit-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        startEditContact(item, contact);
+      });
       item.querySelector('.delete-btn').addEventListener('click', () => {
         functions.forEach(f => { f.contacts = f.contacts.filter(id => id !== contact.id); });
         functions = functions.filter(f => f.contacts.length > 0);
@@ -226,8 +637,33 @@ function updateFunctionsList() {
     const item = document.createElement('div'); item.className = 'item function-item'; item.style.borderColor = getFunctionColor(func.id);
     const funcContacts = contacts.filter(c => func.contacts.includes(c.id));
     const contactNames = funcContacts.map(c => c.name).join(', ');
-    item.innerHTML = `<div class="item-name"><strong>${func.label}:</strong> ${func.name} (${func.type})${func.requirement ? '<br><small>Req: ' + escapeHtml(func.requirement) + '</small>' : ''}${func.isUnwanted ? '<br><small>⚠️ Unwanted function</small>' : ''}<br><small>Contacts: ${contactNames}</small></div><div class="item-actions"><button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button></div>`;
-    item.querySelector('.delete-btn').addEventListener('click', () => { functions = functions.filter(f => f.id !== func.id); updateAll(); });
+    item.innerHTML = `
+      <div class="item-name">
+        <div class="func-display">
+          <strong>${func.label}:</strong> ${func.name} (${func.type})${func.requirement ? '<br><small>Req: ' + escapeHtml(func.requirement) + '</small>' : ''}${func.isUnwanted ? '<br><small>⚠️ Unwanted function</small>' : ''}<br><small>Contacts: ${contactNames}</small>
+        </div>
+        <div class="func-edit-area" style="display:none">
+          <label>Name: <input type="text" class="edit-func-name" value="${escapeHtml(func.name)}" style="width:100%;"></label>
+          <label>Requirement: <input type="text" class="edit-func-req" value="${escapeHtml(func.requirement || '')}" style="width:100%;"></label>
+          <label>Type: <select class="edit-func-type">
+            <option value="primary" ${func.type === 'primary' ? 'selected' : ''}>Primary</option>
+            <option value="secondary" ${func.type === 'secondary' ? 'selected' : ''}>Secondary</option>
+          </select></label>
+          <label>Unwanted: <input type="checkbox" class="edit-func-unwanted" ${func.isUnwanted ? 'checked' : ''}></label>
+        </div>
+        <div class="item-actions">
+          <button class="edit-btn" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+          <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>`;
+    item.querySelector('.edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startEditFunction(item, func);
+    });
+    item.querySelector('.delete-btn').addEventListener('click', () => {
+      functions = functions.filter(f => f.id !== func.id);
+      updateAll();
+    });
     functionsList.appendChild(item);
   });
   document.getElementById('addFunctionBtn').disabled = contacts.length === 0;
@@ -264,7 +700,6 @@ function updateNetworkVisualization() {
   const container = document.getElementById('networkCanvas');
   if (network) network.destroy();
 
-  // Organize nodes by level for vertical layout
   const systems = components.filter(c => c.level === 'system' && !c.external);
   const subsystems = components.filter(c => c.level === 'subsystem' && !c.external);
   const componentsLevel = components.filter(c => c.level === 'component' && !c.external);
@@ -283,7 +718,6 @@ function updateNetworkVisualization() {
   componentsLevel.forEach((comp, i) => {
     nodesData.push({ ...comp, x: (i - (componentsLevel.length - 1) / 2) * xSpacing, y: levelY.component, fixed: false });
   });
-  // External components placed on sides
   externals.forEach((comp, i) => {
     nodesData.push({ ...comp, x: (i % 2 === 0 ? -300 : 300), y: -100 + i * 100, fixed: false });
   });
@@ -318,44 +752,13 @@ function updateNetworkVisualization() {
   networkLegend.innerHTML = legendHtml;
 }
 
-// ------------------------------------------------------------------
-// AIAG-VDA 2019 Action Priority – exact match after final validation
-// (Nueva lógica simplificada, mantenida del archivo original)
-// ------------------------------------------------------------------
 function getActionPriority(s, o, d) {
-  if (s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10)
-    throw new Error('S, O, D must be between 1 and 10');
-
+  if (s < 1 || s > 10 || o < 1 || o > 10 || d < 1 || d > 10) throw new Error('S, O, D must be between 1 and 10');
   if (s === 1 || o === 1) return 'L';
-
-  // S 9–10
-  if (s >= 9) {
-    if (o >= 6) return 'H';
-    if (o >= 4) return d === 1 ? 'M' : 'H';
-    if (d >= 7) return 'H';
-    if (d >= 5) return 'M';
-    return 'L';
-  }
-  // S 7–8
-  if (s >= 7) {
-    if (o >= 8) return 'H';
-    if (o >= 6) return d === 1 ? 'M' : 'H';
-    if (o >= 4) return d >= 7 ? 'H' : 'M';
-    if (d >= 5) return 'M';
-    return 'L';
-  }
-  // S 4–6
-  if (s >= 4) {
-    if (o >= 8) return d >= 7 ? 'H' : 'M';
-    if (o >= 6) return d >= 2 ? 'M' : 'L';
-    if (o >= 4) return d >= 7 ? 'M' : 'L';
-    return 'L';
-  }
-  // S 2–3
-  if (s >= 2) {
-    if (o >= 8) return d >= 5 ? 'M' : 'L';
-    return 'L';
-  }
+  if (s >= 9) { if (o >= 6) return 'H'; if (o >= 4) return d === 1 ? 'M' : 'H'; if (d >= 7) return 'H'; if (d >= 5) return 'M'; return 'L'; }
+  if (s >= 7) { if (o >= 8) return 'H'; if (o >= 6) return d === 1 ? 'M' : 'H'; if (o >= 4) return d >= 7 ? 'H' : 'M'; if (d >= 5) return 'M'; return 'L'; }
+  if (s >= 4) { if (o >= 8) return d >= 7 ? 'H' : 'M'; if (o >= 6) return d >= 2 ? 'M' : 'L'; if (o >= 4) return d >= 7 ? 'M' : 'L'; return 'L'; }
+  if (s >= 2) { if (o >= 8) return d >= 5 ? 'M' : 'L'; return 'L'; }
   return 'L';
 }
 
@@ -387,12 +790,12 @@ function createActionInput(container, actionObj = null) {
 
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
 
-function generateFMEA() {
+function generateFMEA(options = {}) {
+  const { locked = false, revisionInfo = null } = options;
   analysisCounter++;
   const now = new Date();
   const timestamp = `${now.toLocaleDateString('en-US')}, ${now.toLocaleTimeString('en-US', { hour12: true })}`;
 
-  // Gather planning metadata
   const projectName = document.getElementById('projectName')?.value || 'Not specified';
   const fmeaDate = document.getElementById('fmeaDate')?.value || now.toISOString().slice(0, 10);
   const fmeaTeam = document.getElementById('fmeaTeam')?.value || 'N/A';
@@ -407,20 +810,30 @@ function generateFMEA() {
 
   const analysisInstance = document.createElement('div');
   analysisInstance.className = 'analysis-instance';
+
+  if (revisions.length > 0) {
+    const revHistoryDiv = document.createElement('div');
+    revHistoryDiv.className = 'revision-history';
+    revHistoryDiv.innerHTML = `<strong>📋 Revision History</strong><ul>` +
+      revisions.map(r => `<li>Rev. by ${escapeHtml(r.reviewer)} on ${r.date} (Analysis #${r.analysisNumber})</li>`).join('') +
+      `</ul>`;
+    analysisInstance.appendChild(revHistoryDiv);
+  }
+
   const analysisNote = document.createElement('div');
   analysisNote.className = 'analysis-note';
   analysisNote.innerHTML = `<img src="sigma-exacta-icon.jpg" alt="Sigma Exacta Icon" style="width: 24px; height: 24px; border-radius: 50%;"><span><strong>Analysis #${analysisCounter}</strong> - ${timestamp} | ${fmeaType} | Doc: ${escapeHtml(docNumber)} Rev: ${escapeHtml(revision)} | Project: ${escapeHtml(projectName)} | Team: ${escapeHtml(fmeaTeam)}</span>`;
   analysisInstance.appendChild(analysisNote);
 
   const fmeaTable = document.createElement('table');
-  fmeaTable.className = 'fmea-table';
+  fmeaTable.className = 'fmea-table' + (locked ? ' locked' : '');
   fmeaTable.innerHTML = `<thead><tr>
     <th>Function</th><th>Requirement</th><th>Unwanted</th><th>Focus Element</th>
     <th>Local Effect</th><th>Higher Level Effect</th><th>End Customer Effect</th><th>S</th>
     <th>Failure Mode</th><th>Cause</th>
     <th>Prevention Controls</th><th>O</th><th>Detection Controls</th><th>D</th>
     <th>AP</th><th>RPN</th>
-    <th>Recommended Actions (Action / Responsible / Due / Status / Evidence)</th>
+    <th>Recommended Actions</th>
     <th>S2</th><th>O2</th><th>D2</th><th>AP2</th><th>RPN2</th>
     <th>Actions</th>
   </table></thead><tbody></tbody>`;
@@ -432,7 +845,6 @@ function generateFMEA() {
     detection: [{ value: 1, text: "1-Certain Detection" }, { value: 2, text: "2-Very High Chance" }, { value: 3, text: "3-High Chance" }, { value: 4, text: "4-Mod. High Chance" }, { value: 5, text: "5-Moderate Chance" }, { value: 6, text: "6-Low Chance" }, { value: 7, text: "7-Very Low Chance" }, { value: 8, text: "8-Remote Chance" }, { value: 9, text: "9-Very Remote Chance" }, { value: 10, text: "10-No Chance" }]
   };
 
-  // Helper to get focus element options (components with level component)
   const getFocusElementOptions = () => {
     const focusComponents = components.filter(c => c.level === 'component');
     let html = '<select class="focus-element-select">';
@@ -488,7 +900,6 @@ function generateFMEA() {
       <td><button class="delete-failure-mode" title="Delete"><i class="fas fa-trash"></i></button></td>
     `;
 
-    // Set focus element if exists
     if (data.focusElementId) {
       const focusSelect = row.querySelector('.focus-element-select');
       if (focusSelect) focusSelect.value = data.focusElementId;
@@ -541,10 +952,15 @@ function generateFMEA() {
     return row;
   };
 
+  // Generar filas a partir del array functions, usando failureModes pre-cargados
   functions.forEach(func => {
     if (func.failureModes && func.failureModes.length > 0) {
       func.failureModes.forEach(fm => addRow(func, fm));
-    } else { addRow(func, null); }
+    } else {
+      // Al menos una fila vacía por función
+      addRow(func, null);
+    }
+    // Botón para añadir más modos de fallo a esta función
     const addRowBtnRow = fmeaTableBody.insertRow();
     const addRowBtnCell = addRowBtnRow.insertCell();
     addRowBtnCell.colSpan = 23;
@@ -559,7 +975,6 @@ function generateFMEA() {
     addRowBtnCell.appendChild(addRowBtn);
   });
 
-  // Add AP filter bar
   const filterBar = document.createElement('div');
   filterBar.className = 'ap-filter-bar';
   filterBar.innerHTML = `
@@ -575,11 +990,11 @@ function generateFMEA() {
   analysisInstance.appendChild(filterBar);
   analysisInstance.appendChild(tableWrapper);
 
-  // Filter functionality
   const filterAll = filterBar.querySelector('.filter-ap-all');
   const filterH = filterBar.querySelector('.filter-ap-h');
   const filterM = filterBar.querySelector('.filter-ap-m');
   const filterL = filterBar.querySelector('.filter-ap-l');
+  let filterActive = 'ALL';
   const filterRows = () => {
     const rows = fmeaTableBody.querySelectorAll('tr.fmea-data-row');
     rows.forEach(row => {
@@ -593,7 +1008,6 @@ function generateFMEA() {
       }
     });
   };
-  let filterActive = 'ALL';
   filterAll.addEventListener('click', () => { filterActive = 'ALL'; filterRows(); });
   filterH.addEventListener('click', () => { filterActive = 'H'; filterRows(); });
   filterM.addEventListener('click', () => { filterActive = 'M'; filterRows(); });
@@ -603,7 +1017,7 @@ function generateFMEA() {
   exportButton.className = 'export-fmea-btn';
   exportButton.innerHTML = `<i class="fas fa-file-excel"></i> Export Analysis #${analysisCounter} to Excel`;
   exportButton.addEventListener('click', () => exportTableToExcel(fmeaTable, `FMEA_${fmeaType}_Analysis_${analysisCounter}_Sigma_Exacta.xlsx`, {
-    docNumber, revision, projectName, fmeaDate, fmeaTeam, fmeaType, fmeaCustomer, engResponsible, plant, scope, previousRef
+    docNumber, revision, projectName, fmeaDate, fmeaTeam, fmeaType, fmeaCustomer, engResponsible, plant, scope, previousRef, revisions
   }));
   analysisInstance.appendChild(exportButton);
 
@@ -613,40 +1027,184 @@ function generateFMEA() {
   refreshHeatmap();
 }
 
+function loadFromExcel(workbook) {
+  resetAll();
+
+  if (workbook.Sheets['Planning']) {
+    const planningSheet = XLSX.utils.sheet_to_json(workbook.Sheets['Planning'], { header: 1 });
+    for (const row of planningSheet) {
+      if (row[0] === 'Project Name') document.getElementById('projectName').value = row[1] || '';
+      if (row[0] === 'Date') document.getElementById('fmeaDate').value = row[1] || '';
+      if (row[0] === 'Team / Responsible') document.getElementById('fmeaTeam').value = row[1] || '';
+      if (row[0] === 'FMEA Type') document.getElementById('fmeaTypeSelector').value = row[1] || 'DFMEA';
+      if (row[0] === 'Customer / System') document.getElementById('fmeaCustomer').value = row[1] || '';
+      if (row[0] === 'Document Number') document.getElementById('fmeaDocNumber').value = row[1] || '';
+      if (row[0] === 'Revision') document.getElementById('fmeaRevision').value = row[1] || '';
+      if (row[0] === 'Engineering Responsible') document.getElementById('fmeaEngResponsible').value = row[1] || '';
+      if (row[0] === 'Plant / Location') document.getElementById('fmeaPlant').value = row[1] || '';
+      if (row[0] === 'Scope & Assumptions') document.getElementById('fmeaScope').value = row[1] || '';
+      if (row[0] === 'Previous FMEA Reference') document.getElementById('fmeaPreviousRef').value = row[1] || '';
+    }
+  }
+
+  if (workbook.Sheets['Components']) {
+    const compSheet = XLSX.utils.sheet_to_json(workbook.Sheets['Components'], { header: 1 });
+    for (let i = 1; i < compSheet.length; i++) {
+      const r = compSheet[i];
+      if (r[0]) {
+        components.push({
+          id: parseInt(r[0]),
+          name: r[1] || '',
+          level: r[2] || 'component',
+          parentId: r[3] ? parseInt(r[3]) : null,
+          external: r[4] === 'Yes'
+        });
+      }
+    }
+  }
+
+  if (workbook.Sheets['Contacts']) {
+    const contSheet = XLSX.utils.sheet_to_json(workbook.Sheets['Contacts'], { header: 1 });
+    for (let i = 1; i < contSheet.length; i++) {
+      const r = contSheet[i];
+      if (r[0]) {
+        contacts.push({
+          id: parseInt(r[0]),
+          from: parseInt(r[1]),
+          to: parseInt(r[2]),
+          name: r[3] || '',
+          interactionType: r[4] || 'Signal'
+        });
+      }
+    }
+    contactCounter = contacts.length;
+  }
+
+  if (workbook.Sheets['Functions']) {
+    const funcSheet = XLSX.utils.sheet_to_json(workbook.Sheets['Functions'], { header: 1 });
+    for (let i = 1; i < funcSheet.length; i++) {
+      const r = funcSheet[i];
+      if (r[0]) {
+        let failureModes = [];
+        try { failureModes = JSON.parse(r[7] || '[]'); } catch (e) { failureModes = []; }
+        const fType = r[4] || 'primary';
+        functions.push({
+          id: parseInt(r[0]),
+          name: r[1] || '',
+          requirement: r[2] || '',
+          isUnwanted: r[3] === 'Yes',
+          type: fType,
+          label: r[5] || '',
+          contacts: (r[6] || '').split(',').map(Number).filter(n => !isNaN(n)),
+          failureModes: failureModes
+        });
+        if (fType === 'primary') primaryFunctionCounter++;
+        else secondaryFunctionCounter++;
+      }
+    }
+  }
+
+  updateAll();
+  generateFMEA({ locked: true });
+  switchTab('tab-results');
+}
+
+function exportFullFMEA() {
+  const wb = XLSX.utils.book_new();
+
+  const planningData = [
+    ['FMEA Planning Data'],
+    ['Project Name', document.getElementById('projectName')?.value || ''],
+    ['Date', document.getElementById('fmeaDate')?.value || ''],
+    ['Team / Responsible', document.getElementById('fmeaTeam')?.value || ''],
+    ['FMEA Type', document.getElementById('fmeaTypeSelector')?.value || 'DFMEA'],
+    ['Customer / System', document.getElementById('fmeaCustomer')?.value || ''],
+    ['Document Number', document.getElementById('fmeaDocNumber')?.value || ''],
+    ['Revision', document.getElementById('fmeaRevision')?.value || ''],
+    ['Engineering Responsible', document.getElementById('fmeaEngResponsible')?.value || ''],
+    ['Plant / Location', document.getElementById('fmeaPlant')?.value || ''],
+    ['Scope & Assumptions', document.getElementById('fmeaScope')?.value || ''],
+    ['Previous FMEA Reference', document.getElementById('fmeaPreviousRef')?.value || '']
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(planningData), 'Planning');
+
+  const compData = [['ID', 'Name', 'Level', 'Parent ID', 'External']];
+  components.forEach(c => compData.push([c.id, c.name, c.level, c.parentId || '', c.external ? 'Yes' : 'No']));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(compData), 'Components');
+
+  const contData = [['ID', 'From', 'To', 'Name', 'Interaction Type']];
+  contacts.forEach(c => contData.push([c.id, c.from, c.to, c.name, c.interactionType]));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(contData), 'Contacts');
+
+  const funcData = [['ID', 'Name', 'Requirement', 'Is Unwanted', 'Type', 'Label', 'Contact IDs', 'Failure Modes (JSON)']];
+  functions.forEach(f => funcData.push([f.id, f.name, f.requirement || '', f.isUnwanted ? 'Yes' : 'No', f.type, f.label, f.contacts.join(','), JSON.stringify(f.failureModes || [])]));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(funcData), 'Functions');
+
+  const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
+  if (lastAnalysis) {
+    const fmeaTable = lastAnalysis.querySelector('.fmea-table');
+    if (fmeaTable) {
+      const exportData = [];
+      const headers = Array.from(fmeaTable.querySelectorAll('thead th')).map(th => th.textContent);
+      fmeaTable.querySelectorAll('tbody tr.fmea-data-row').forEach(row => {
+        const rowData = {};
+        const cells = row.querySelectorAll('td');
+        const getSelectText = (selectEl) => selectEl ? selectEl.options[selectEl.selectedIndex]?.text || '' : '';
+        headers.forEach((h, i) => {
+          if (i === 3) rowData[h] = cells[3]?.querySelector('select')?.options[cells[3].querySelector('select')?.selectedIndex]?.text || '';
+          else if ([4, 5, 6, 8, 9, 10, 12].includes(i)) rowData[h] = cells[i]?.querySelector('textarea')?.value || '';
+          else if ([7, 11, 13, 17, 18, 19].includes(i)) rowData[h] = getSelectText(cells[i]?.querySelector('select'));
+          else if (i === 16) {
+            rowData[h] = Array.from(cells[16]?.querySelectorAll('.action-item') || []).map(item => {
+              const inputs = item.querySelectorAll('input');
+              const status = item.querySelector('.action-status')?.value || '';
+              return `Action: ${inputs[0]?.value || ''} | Resp: ${inputs[1]?.value || ''} | Due: ${inputs[2]?.value || ''} | Status: ${status} | Evidence: ${inputs[4]?.value || ''}`;
+            }).join('; ');
+          } else {
+            rowData[h] = cells[i]?.textContent || '';
+          }
+        });
+        exportData.push(rowData);
+      });
+      if (exportData.length > 0) {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        XLSX.utils.book_append_sheet(wb, ws, 'FMEA_Results');
+      }
+    }
+  }
+
+  if (revisions.length > 0) {
+    const revData = [['Date', 'Reviewer', 'Analysis Number']];
+    revisions.forEach(r => revData.push([r.date, r.reviewer, r.analysisNumber]));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(revData), 'Revision_History');
+  }
+
+  const fileName = `FMEA_${document.getElementById('projectName')?.value || 'Export'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+  showNotification('FMEA exported successfully to Excel!');
+}
+
 function exportTableToExcel(tableElement, fileName, metadata) {
   const exportData = [];
   const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => th.textContent);
   tableElement.querySelectorAll('tbody tr.fmea-data-row').forEach(row => {
     const rowData = {};
     const cells = row.querySelectorAll('td');
-    const getSelectText = (selectEl) => selectEl.options[selectEl.selectedIndex].text;
-    rowData[headers[0]] = cells[0].textContent;
-    rowData[headers[1]] = cells[1].textContent;
-    rowData[headers[2]] = cells[2].textContent;
-    rowData[headers[3]] = cells[3].querySelector('select')?.options[cells[3].querySelector('select')?.selectedIndex]?.text || '';
-    rowData[headers[4]] = cells[4].querySelector('textarea').value;
-    rowData[headers[5]] = cells[5].querySelector('textarea').value;
-    rowData[headers[6]] = cells[6].querySelector('textarea').value;
-    rowData[headers[7]] = getSelectText(cells[7].querySelector('select'));
-    rowData[headers[8]] = cells[8].querySelector('textarea').value;
-    rowData[headers[9]] = cells[9].querySelector('textarea').value;
-    rowData[headers[10]] = cells[10].querySelector('textarea').value;
-    rowData[headers[11]] = getSelectText(cells[11].querySelector('select'));
-    rowData[headers[12]] = cells[12].querySelector('textarea').value;
-    rowData[headers[13]] = getSelectText(cells[13].querySelector('select'));
-    rowData[headers[14]] = cells[14].textContent;
-    rowData[headers[15]] = cells[15].textContent;
-    const actionsText = Array.from(cells[16].querySelectorAll('.action-item')).map(item => {
-      const inputs = item.querySelectorAll('input');
-      const status = item.querySelector('.action-status')?.value || '';
-      return `Action: ${inputs[0].value} | Responsible: ${inputs[1].value} | Due: ${inputs[2].value} | Status: ${status} | Evidence: ${inputs[4]?.value || ''}`;
-    }).join('; ');
-    rowData[headers[16]] = actionsText;
-    rowData[headers[17]] = getSelectText(cells[17].querySelector('select'));
-    rowData[headers[18]] = getSelectText(cells[18].querySelector('select'));
-    rowData[headers[19]] = getSelectText(cells[19].querySelector('select'));
-    rowData[headers[20]] = cells[20].textContent;
-    rowData[headers[21]] = cells[21].textContent;
+    const getSelectText = (selectEl) => selectEl ? selectEl.options[selectEl.selectedIndex]?.text || '' : '';
+    headers.forEach((h, i) => {
+      if (i === 3) rowData[h] = cells[3]?.querySelector('select')?.options[cells[3].querySelector('select')?.selectedIndex]?.text || '';
+      else if ([4, 5, 6, 8, 9, 10, 12].includes(i)) rowData[h] = cells[i]?.querySelector('textarea')?.value || '';
+      else if ([7, 11, 13, 17, 18, 19].includes(i)) rowData[h] = getSelectText(cells[i]?.querySelector('select'));
+      else if (i === 16) {
+        rowData[h] = Array.from(cells[16]?.querySelectorAll('.action-item') || []).map(item => {
+          const inputs = item.querySelectorAll('input');
+          const status = item.querySelector('.action-status')?.value || '';
+          return `Action: ${inputs[0]?.value || ''} | Resp: ${inputs[1]?.value || ''} | Due: ${inputs[2]?.value || ''} | Status: ${status} | Evidence: ${inputs[4]?.value || ''}`;
+        }).join('; ');
+      } else {
+        rowData[h] = cells[i]?.textContent || '';
+      }
+    });
     exportData.push(rowData);
   });
 
@@ -655,7 +1213,6 @@ function exportTableToExcel(tableElement, fileName, metadata) {
   ws['!cols'] = [{ wch: 20 }, { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 8 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 8 }, { wch: 25 }, { wch: 8 }, { wch: 5 }, { wch: 8 }, { wch: 50 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 5 }, { wch: 8 }];
   XLSX.utils.book_append_sheet(wb, ws, "FMEA Results");
 
-  // Add metadata sheet
   const metaSheet = XLSX.utils.aoa_to_sheet([
     ['FMEA Document Metadata'],
     ['Document Number', metadata.docNumber],
@@ -675,15 +1232,6 @@ function exportTableToExcel(tableElement, fileName, metadata) {
   ]);
   XLSX.utils.book_append_sheet(wb, metaSheet, "Metadata");
   XLSX.writeFile(wb, fileName);
-}
-
-function exportChart() {
-  const canvas = document.querySelector('#networkCanvas canvas');
-  if (canvas && network) {
-    const dataURL = canvas.toDataURL('image/jpeg', 1.0);
-    const link = document.createElement('a'); link.href = dataURL; link.download = 'fmea_structure_chart.jpg';
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-  } else alert('The chart is not available to be exported.');
 }
 
 function refreshHeatmap() {
@@ -709,12 +1257,11 @@ function refreshHeatmap() {
 
   const container = document.getElementById('heatmapContainer');
 
-  // Absolute color thresholds
   function getColorForCount(count) {
     if (count === 0) return '#eeeeee';
-    if (count <= 2) return '#f1c40f';     // Yellow
-    if (count <= 5) return '#e67e22';     // Orange
-    return '#e74c3c';                     // Red
+    if (count <= 2) return '#f1c40f';
+    if (count <= 5) return '#e67e22';
+    return '#e74c3c';
   }
 
   container.innerHTML = `
@@ -865,4 +1412,13 @@ function exportHeatmapToImage() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+function exportChart() {
+  const canvas = document.querySelector('#networkCanvas canvas');
+  if (canvas && network) {
+    const dataURL = canvas.toDataURL('image/jpeg', 1.0);
+    const link = document.createElement('a'); link.href = dataURL; link.download = 'fmea_structure_chart.jpg';
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  } else alert('The chart is not available to be exported.');
 }

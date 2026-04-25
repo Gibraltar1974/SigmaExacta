@@ -11,9 +11,11 @@
   <meta name="keywords"
     content="Open Source, Free Software, SigmaExacta, FMEA, Functional Analysis, AMDEC, Failure Mode Effects Analysis,RPN, Risk Priority Number, DFMEA, D-FEMA, PFMEA, P-FMEA, AIAG, VDA, AIAG-VDA, Action Priority, Action Priority (AP), RPN ">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js">
+  </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +25,6 @@
   <link rel="stylesheet" href="styles.css">
 
   <style>
-    /* Estilos específicos para la página de FMEA */
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #3498db;
@@ -94,7 +95,6 @@
       margin: 0 auto;
     }
 
-    /* --- BOTONES PRINCIPALES (AGREGADOS DESPUÉS DEL HEADER) --- */
     .main-action-buttons {
       display: flex;
       justify-content: center;
@@ -119,6 +119,28 @@
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
+    .main-action-buttons .btn-new {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .main-action-buttons .btn-new:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .main-action-buttons .btn-load {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .main-action-buttons .btn-load:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
     .main-action-buttons .btn-example {
       background-color: #2ecc71;
       color: white;
@@ -130,18 +152,110 @@
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     }
 
-    .main-action-buttons .btn-reset {
-      background-color: #c0392b;
+    .main-action-buttons .btn-revise {
+      background-color: #e67e22;
       color: white;
     }
 
-    .main-action-buttons .btn-reset:hover {
-      background-color: #a5281c;
+    .main-action-buttons .btn-revise:hover {
+      background-color: #cf6d17;
       transform: translateY(-2px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     }
 
-    /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (TABS) ===== */
+    .main-action-buttons .btn-export {
+      background-color: #6c5ce7;
+      color: white;
+    }
+
+    .main-action-buttons .btn-export:hover {
+      background-color: #5849c2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ===== MODAL STYLES ===== */
+    .taguchi-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .taguchi-modal.show {
+      display: flex;
+    }
+
+    .taguchi-modal-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 460px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .taguchi-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .taguchi-modal-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .taguchi-modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .taguchi-modal-footer button {
+      margin: 0;
+    }
+
+    .taguchi-modal-cancel {
+      background: none !important;
+      border: 1px solid #ccc !important;
+      color: #555 !important;
+    }
+
+    .taguchi-modal-cancel:hover {
+      background: #f5f5f5 !important;
+      transform: none !important;
+    }
+
+    .taguchi-modal-box label {
+      display: block;
+      margin-bottom: 0.6rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .taguchi-modal-box input[type="text"],
+    .taguchi-modal-box input[type="date"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* ===== TABS ===== */
     .tabs-nav {
       display: flex;
       background-color: #f1f5f9;
@@ -455,7 +569,7 @@
     #generateFMEABtn {
       padding: 0.8rem 2rem;
       font-size: 1.1em;
-      background-color: #27ae60;
+      background-color: #e67e22;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
@@ -548,6 +662,22 @@
       font-weight: 600;
     }
 
+    /* Modo no editable */
+    .fmea-table.locked textarea,
+    .fmea-table.locked select,
+    .fmea-table.locked .focus-element-select {
+      pointer-events: none;
+      background-color: #f5f5f5;
+      color: #666;
+      border-color: #e0e0e0;
+    }
+
+    .fmea-table.locked .delete-failure-mode,
+    .fmea-table.locked .add-action-btn,
+    .fmea-table.locked .add-failure-mode {
+      display: none;
+    }
+
     .ap-high {
       background-color: #ffcccc;
       font-weight: bold;
@@ -630,7 +760,30 @@
       border: 1px solid #ddd;
     }
 
-    /* ========== ESTILOS DEFINITIVOS PARA EL RISK HEATMAP ========== */
+    /* Revision history */
+    .revision-history {
+      background: #fffbe6;
+      border: 1px solid #f0e68c;
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .revision-history strong {
+      color: #8b7500;
+    }
+
+    .revision-history ul {
+      margin: 0.5rem 0 0 0;
+      padding-left: 1.5rem;
+    }
+
+    .revision-history li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Risk Heatmap */
     .risk-heatmap {
       display: flex;
       flex-direction: column;
@@ -737,7 +890,6 @@
       color: #555;
     }
 
-    /* Modal para criterios S/O/D */
     .modal {
       display: none;
       position: fixed;
@@ -790,22 +942,6 @@
 
     .close-modal:hover {
       color: black;
-    }
-
-    @media (max-width: 768px) {
-
-      .heatmap-title-x,
-      .heatmap-title-y {
-        font-size: 1rem;
-      }
-
-      .heatmap-main-row {
-        gap: 6px;
-      }
-
-      .heatmap-grid {
-        min-width: 600px;
-      }
     }
 
     footer {
@@ -873,6 +1009,17 @@
       margin: 0;
       padding: 5px 12px;
     }
+
+    .analysis-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #f0f4ff;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 
@@ -912,19 +1059,113 @@
         </div>
         <h1>Free Online FMEA (Failure Modes and Effects Analysis) for Problem Prevention</h1>
       </div>
-      <p class="header-subtitle">A powerful online tool for proactively identifying and mitigating potential failures in
+      <p class="header-subtitle">A powerful online tool for proactively identifying and mitigating potential
+        failures in
         <strong>Designs (DFMEA)</strong> and <strong>Processes (PFMEA)</strong>.
       </p>
 
       <div class="main-action-buttons">
+        <button id="globalNewBtn" class="btn-new">
+          <i class="fas fa-file"></i> New
+        </button>
+        <button id="globalLoadBtn" class="btn-load">
+          <i class="fas fa-folder-open"></i> Load
+        </button>
+        <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
         <button id="globalLoadExampleBtn" class="btn-example">
           <i class="fas fa-play-circle"></i> Load Example
         </button>
-        <button id="globalResetBtn" class="btn-reset">
-          <i class="fas fa-sync-alt"></i> Reset All
+        <button id="globalReviseBtn" class="btn-revise">
+          <i class="fas fa-pencil-alt"></i> Edit Input Data
         </button>
-      </div>
+        <button id="globalExportBtn" class="btn-export">
+          <i class="fas fa-file-excel"></i> Export
+        </button></div>
     </header>
+
+    <!-- Load Modal -->
+    <div id="loadModal" class="taguchi-modal">
+      <div class="taguchi-modal-box">
+        <div class="taguchi-modal-header">
+          <div class="taguchi-modal-icon" style="background:linear-gradient(135deg,#0d6efd,#339af0);">
+            <i class="fas fa-folder-open" style="color:white;"></i>
+          </div>
+          <div>
+            <div style="font-weight:800;">Load FMEA</div>
+            <div style="font-size:0.85rem;color:#888;">Import a previously exported Excel file</div>
+          </div>
+        </div>
+        <div
+          style="background:#f1f5f9;border-left:4px solid #0d6efd;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+          Select an <strong>.xlsx</strong> file exported from this tool to restore your FMEA data and results.
+        </div>
+        <label
+          style="display:flex;gap:0.6rem;padding:0.75rem;background:#f8f9fa;border-radius:6px;border:1.5px solid #dee2e6;margin-bottom:0.5rem;cursor:pointer;align-items:center;">
+          <i class="fas fa-file-excel" style="color:#0d6efd;font-size:1.2rem;"></i>
+          <span><strong>Choose Excel file</strong><br><small id="loadFileLabel">No file selected</small></span>
+          <input type="file" id="modalFileInput" accept=".xlsx,.xls" style="display:none;">
+        </label>
+        <div class="taguchi-modal-footer">
+          <button id="loadCancelBtn" class="taguchi-modal-cancel">Cancel</button>
+          <button id="loadConfirmBtn" style="background:linear-gradient(135deg,#0d6efd,#0b5ed7);color:white;"><i
+              class="fas fa-upload"></i> Load</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="taguchi-modal">
+      <div class="taguchi-modal-box">
+        <div class="taguchi-modal-header">
+          <div class="taguchi-modal-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+            <i class="fas fa-file-excel" style="color:white;"></i>
+          </div>
+          <div>
+            <div style="font-weight:800;">Export to Excel</div>
+            <div style="font-size:0.85rem;color:#888;">Download analysis results</div>
+          </div>
+        </div>
+        <div
+          style="background:#f1f5f9;border-left:4px solid #6c5ce7;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+          Download a comprehensive Excel report of your FMEA including planning data, structure, and all
+          analysis results.
+        </div>
+        <div class="taguchi-modal-footer">
+          <button id="exportCancelBtn" class="taguchi-modal-cancel">Cancel</button>
+          <button id="exportConfirmBtn" style="background:linear-gradient(135deg,#6c5ce7,#5849c2);color:white;"><i
+              class="fas fa-download"></i> Export</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision Modal -->
+    <div id="revisionModal" class="taguchi-modal">
+      <div class="taguchi-modal-box">
+        <div class="taguchi-modal-header">
+          <div class="taguchi-modal-icon" style="background:linear-gradient(135deg,#e67e22,#cf6d17);">
+            <i class="fas fa-edit" style="color:white;"></i>
+          </div>
+          <div>
+            <div style="font-weight:800;">Edit FMEA Table - Revision Info</div>
+            <div style="font-size:0.85rem;color:#888;">Enter revision details before editing</div>
+          </div>
+        </div>
+        <div
+          style="background:#fffbe6;border-left:4px solid #e67e22;padding:0.85rem;margin-bottom:1.25rem;font-size:0.9rem;border-radius:4px;">
+          Please enter the <strong>revision date</strong> and the <strong>name of the reviewer</strong>. This
+          information will be recorded for traceability.
+        </div>
+        <label for="revisionDate">Revision Date:</label>
+        <input type="date" id="revisionDate">
+        <label for="revisionReviewer">Reviewer Name:</label>
+        <input type="text" id="revisionReviewer" placeholder="Name of the reviewer">
+        <div class="taguchi-modal-footer">
+          <button id="revisionCancelBtn" class="taguchi-modal-cancel">Cancel</button>
+          <button id="revisionConfirmBtn" style="background:linear-gradient(135deg,#e67e22,#cf6d17);color:white;"><i
+              class="fas fa-check"></i> Confirm & Edit</button>
+        </div>
+      </div>
+    </div>
 
     <div class="tabs-container">
       <nav class="tabs-nav">
@@ -932,10 +1173,12 @@
           Info</button>
         <button class="tab-btn" onclick="switchTab('tab-planning')"><i class="fas fa-clipboard-list"></i> 1.
           Planning</button>
-        <button class="tab-btn" onclick="switchTab('tab-structure')"><i class="fas fa-cogs"></i> 2. Structure</button>
+        <button class="tab-btn" onclick="switchTab('tab-structure')"><i class="fas fa-cogs"></i> 2.
+          Structure</button>
         <button class="tab-btn" onclick="switchTab('tab-visualize')"><i class="fas fa-project-diagram"></i>
           Visualize</button>
-        <button class="tab-btn" onclick="switchTab('tab-results')"><i class="fas fa-table"></i> FMEA Results</button>
+        <button class="tab-btn" onclick="switchTab('tab-results')"><i class="fas fa-table"></i> FMEA
+          Results</button>
         <button class="tab-btn" onclick="switchTab('tab-heatmap')"><i class="fas fa-chart-line"></i> Risk
           Heatmap</button>
       </nav>
@@ -945,92 +1188,69 @@
         <div class="tab-content-wrapper">
           <div class="container">
             <h2><i class="fas fa-question-circle"></i> What is Failure Mode & Effects Analysis (FMEA)?</h2>
-            <p><strong>Failure Mode and Effects Analysis (FMEA)</strong> is a systematic, proactive method for
-              evaluating a process or design to identify where and how it might fail and to assess the relative impact
-              of different failures. The goal is to identify, prioritize, and eliminate or reduce potential failures,
-              starting with the highest-priority ones. This tool supports the modern <strong>AIAG & VDA 7-Step FMEA
+            <p><strong>Failure Mode and Effects Analysis (FMEA)</strong> is a systematic, proactive method
+              for
+              evaluating a process or design to identify where and how it might fail and to assess the
+              relative impact
+              of different failures. The goal is to identify, prioritize, and eliminate or reduce potential
+              failures,
+              starting with the highest-priority ones. This tool supports the modern <strong>AIAG & VDA
+                7-Step FMEA
                 process</strong>, focusing on the Structure, Function, and Failure Analysis steps.</p>
             <p>Key components of an FMEA include:</p>
             <ul>
-              <li><strong>Failure Modes:</strong> The specific ways in which a component, system, or process could fail
+              <li><strong>Failure Modes:</strong> The specific ways in which a component, system, or
+                process could fail
                 to meet the design intent.</li>
-              <li><strong>Effects of Failure:</strong> The consequences of a failure mode on the system, customer, or
+              <li><strong>Effects of Failure:</strong> The consequences of a failure mode on the system,
+                customer, or
                 downstream processes.</li>
-              <li><strong>Causes of Failure:</strong> The design or process weaknesses, errors, or conditions that could
+              <li><strong>Causes of Failure:</strong> The design or process weaknesses, errors, or
+                conditions that could
                 trigger the failure mode.</li>
-              <li><strong>Risk Priority Number (RPN):</strong> A numerical ranking of the risk associated with each
+              <li><strong>Risk Priority Number (RPN):</strong> A numerical ranking of the risk associated
+                with each
                 potential failure. It is calculated as:
                 <strong>RPN = Severity (S) × Occurrence (O) × Detection (D)</strong>
                 <ul>
                   <li><strong>Severity (S):</strong> The seriousness of the effect of the failure.</li>
-                  <li><strong>Occurrence (O):</strong> The likelihood that the cause of the failure will occur.</li>
-                  <li><strong>Detection (D):</strong> The ability of current controls to detect the cause or the failure
+                  <li><strong>Occurrence (O):</strong> The likelihood that the cause of the failure
+                    will occur.</li>
+                  <li><strong>Detection (D):</strong> The ability of current controls to detect the
+                    cause or the failure
                     mode before it reaches the customer.</li>
                 </ul>
               </li>
-              <li><strong>Action Priority (AP):</strong> A modern AIAG‑VDA approach that classifies risk as <strong
-                  style="color:#c0392b;">High (H)</strong>, <strong style="color:#e67e22;">Medium (M)</strong> or
-                <strong style="color:#27ae60;">Low (L)</strong> based on logical combinations of S, O and D. It avoids
-                the limitations of RPN (e.g., 10×8×1 = 80 vs 4×5×4 = 80) and focuses on the most critical risks first.
-                This tool calculates AP automatically for each failure mode and for the post‑action state (AP2).
+              <li><strong>Action Priority (AP):</strong> A modern AIAG‑VDA approach that classifies risk as
+                <strong style="color:#c0392b;">High (H)</strong>, <strong style="color:#e67e22;">Medium (M)</strong> or
+                <strong style="color:#27ae60;">Low (L)</strong> based on logical combinations of S, O
+                and D.
               </li>
             </ul>
           </div>
 
           <div class="container">
             <h2><i class="fas fa-history"></i> Brief History of FMEA and Modern Standards</h2>
-            <p>The FMEA methodology was first developed by the U.S. military in the late 1940s and documented in
-              military procedure <strong>MIL-P-1629</strong>. It was designed to evaluate the reliability and safety of
-              military equipment by identifying all possible failure modes and their effects on mission success.</p>
-            <p>Its value was quickly recognized by the aerospace industry. NASA extensively used FMEA during the
-              <strong>Apollo program</strong> in the 1960s to mitigate risks and enhance the safety of space missions.
-              In the 1970s, the automotive industry, led by Ford Motor Company, adopted FMEA to improve vehicle safety
-              and quality, popularizing its use in the commercial sector. Today, the standard for FMEA is often governed
-              by the <strong>AIAG & VDA FMEA Handbook</strong>, which promotes a <strong>7-Step approach</strong> for
-              systematic analysis and risk mitigation. This tool helps practitioners structure their analysis according
-              to these modern principles, including the latest <strong>Action Priority (AP)</strong> tables and
-              <strong>post‑action risk assessment</strong> (S2, O2, D2, RPN2, AP2).
-            </p>
+            <p>The FMEA methodology was first developed by the U.S. military in the late 1940s and
+              documented in
+              military procedure <strong>MIL-P-1629</strong>.</p>
+            <p>Today, the standard for FMEA is often governed by the <strong>AIAG & VDA FMEA
+                Handbook</strong>, which promotes a <strong>7-Step approach</strong> for systematic
+              analysis and risk mitigation.</p>
           </div>
 
           <div class="container">
             <h2><i class="fas fa-cogs"></i> How to Use This Tool: The 7-Step FMEA Approach (AIAG‑VDA)</h2>
             <ol>
-              <li><strong>Step 1 – Planning & Preparation:</strong> Fill in the "Planning" tab with project name, team,
-                date, FMEA type (DFMEA/PFMEA) and customer information. This sets the scope and context.</li>
-              <li><strong>Step 2 – Structure Analysis:</strong> In the "Structure" tab, add all components (parts or
-                process steps). Mark external elements (user, power source, etc.). Define contacts (interfaces) between
-                components using the "Contacts" panel.</li>
-              <li><strong>Step 3 – Function Analysis:</strong> In the "Functions" panel, describe what the system is
-                supposed to do (requirements). Assign each function to the specific contacts involved. The tool
-                automatically generates a <strong>structure chart (network diagram)</strong> in the "Visualize" tab to
-                support structure and function analysis (drag nodes to rearrange).</li>
-              <li><strong>Step 4 – Failure Analysis:</strong> Click <strong>"Generate FMEA Analysis"</strong>. A
-                complete
-                FMEA table will be created. For each function, add failure modes, effects, causes and current controls.
-              </li>
-              <li><strong>Step 5 – Risk Analysis:</strong> Assign Severity (S), Occurrence (O) and Detection (D) scores
-                (1‑10) using the dropdowns. The tool calculates:
-                <ul>
-                  <li><strong>RPN = S × O × D</strong> (color‑coded: red ≥150, orange ≥80).</li>
-                  <li><strong>Action Priority (AP)</strong> (High / Medium / Low) according to AIAG‑VDA tables.</li>
-                </ul>
-              </li>
-              <li><strong>Step 6 – Optimization (Post‑Action Risk):</strong> For high‑priority risks (AP = H or M),
-                define recommended actions in the "Recommended Actions" column. For each action you can specify the
-                action description, responsible person, and due date. Then, re‑evaluate the risk after implementing
-                those actions using the <strong>S2, O2, D2</strong> dropdowns. The tool automatically computes
-                <strong>RPN2</strong> and a new <strong>AP2</strong>, showing the expected risk reduction.
-              </li>
-              <li><strong>Step 7 – Results Documentation:</strong> Export any FMEA analysis to Excel using the
-                <strong>"Export Analysis #X to Excel"</strong> button. You can also visualize the risk distribution in
-                the <strong>Risk Heatmap</strong> tab (Severity vs Occurrence) and save the structure chart as JPG.
-              </li>
+              <li><strong>Step 1 – Planning & Preparation:</strong> Fill in the "Planning" tab.</li>
+              <li><strong>Step 2 – Structure Analysis:</strong> Add components and contacts.</li>
+              <li><strong>Step 3 – Function Analysis:</strong> Define functions assigned to contacts.</li>
+              <li><strong>Step 4 – Failure Analysis:</strong> The FMEA table is generated automatically
+                from your data.</li>
+              <li><strong>Step 5 – Risk Analysis:</strong> Assign S, O, D scores (1‑10).</li>
+              <li><strong>Step 6 – Optimization:</strong> Define actions and re-evaluate risks.</li>
+              <li><strong>Step 7 – Results Documentation:</strong> Export to Excel.</li>
             </ol>
-            <p><strong>💡 Tip:</strong> The tool allows you to generate multiple FMEA analyses (e.g., for different
-              design iterations or process changes). Each analysis is independent and includes its own set of failure
-              modes, actions, and post‑action risk scores. Use the <strong>"Load Example"</strong> button to see a
-              complete DFMEA example with pre‑filled components, contacts, functions and planning data.</p>
           </div>
         </div>
       </div>
@@ -1117,7 +1337,8 @@
                   <option value="">None (Top level)</option>
                 </select>
                 <label>
-                  <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;"> External
+                  <input type="checkbox" id="componentExternal" style="width: auto; margin-right: 5px;">
+                  External
                   Component
                 </label>
                 <button id="addComponentBtn"><i class="fas fa-plus"></i> Add Component</button>
@@ -1199,7 +1420,7 @@
       <div id="tab-results" class="tab-content">
         <div class="tab-content-wrapper">
           <div class="generate-fmea-btn-container">
-            <button id="generateFMEABtn"><i class="fas fa-file-alt"></i> Generate FMEA Analysis (Step 4-7)</button>
+            <button id="generateFMEABtn"><i class="fas fa-unlock-alt"></i> Revise FMEA Table</button>
             <button id="showCriteriaBtn" style="background-color:#6c5ce7;"><i class="fas fa-table-list"></i> 📊 Show
               S/O/D Criteria</button>
           </div>
@@ -1214,7 +1435,8 @@
         <div class="tab-content-wrapper">
           <div class="calculation-block">
             <div class="calculation-title">Risk Heatmap (Severity vs Occurrence)</div>
-            <p>Absolute heatmap based on the last FMEA analysis. Each cell shows the number of failure modes for that
+            <p>Absolute heatmap based on the last FMEA analysis. Each cell shows the number of failure
+              modes for that
               (S,O) pair. Color intensity: <span style="background:#f1c40f;">1-2</span> <span
                 style="background:#e67e22;">3-5</span> <span style="background:#e74c3c;">>5</span></p>
             <div id="heatmapContainer" class="risk-heatmap"></div>
@@ -1343,8 +1565,7 @@
           <tr>
             <td>1</td>
             <td>Extremely Unlikely</td>
-            <td>
-              <1 in 1M</td>
+            <td>&lt;1 in 1M</td>
           </tr>
         </tbody>
       </table>
@@ -1405,12 +1626,18 @@
   <footer>
     <div class="disclaimer-note">
       <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
-        educational purposes only. Some tools, like this one, are based on established methodologies (e.g., FMEA as
-        defined in MIL-P-1629 or the <strong>AIAG & VDA handbook</strong>), which may be the intellectual property of
-        their respective owners. The tools on this site are independent implementations and are not affiliated with,
-        sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy, we make
-        no warranty or guarantee regarding the results. All calculations and decisions based on the output of these
-        tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any damages or
+        educational purposes only. Some tools, like this one, are based on established methodologies (e.g., FMEA
+        as
+        defined in MIL-P-1629 or the <strong>AIAG & VDA handbook</strong>), which may be the intellectual
+        property of
+        their respective owners. The tools on this site are independent implementations and are not affiliated
+        with,
+        sponsored by, or endorsed by the original creators of these methodologies. While we strive for accuracy,
+        we make
+        no warranty or guarantee regarding the results. All calculations and decisions based on the output of
+        these
+        tools are the sole responsibility of the user. Sigma Exacta and its creators are not liable for any
+        damages or
         losses resulting from the use of this website.</p>
     </div>
   </footer>
