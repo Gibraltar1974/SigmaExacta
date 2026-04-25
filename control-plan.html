@@ -147,6 +147,28 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-example {
             background-color: var(--performance-color);
             color: white;
@@ -158,15 +180,153 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
-            background-color: var(--danger-color);
+        .main-action-buttons .btn-revise {
+            background-color: #6c5ce7;
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
-            background-color: #a5281c;
+        .main-action-buttons .btn-revise:hover {
+            background-color: #5849c2;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-export-main {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-export-main:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- Revise Modal --- */
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-modal-box h3 i {
+            color: #6c5ce7;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-field input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise:hover {
+            background: #f5f5f5;
+        }
+
+        .revise-modal-footer .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-confirm-revise:hover {
+            background: #5849c2;
+        }
+
+        /* Read-only mode banner */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 800px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
         }
 
         .content-block {
@@ -1108,6 +1268,37 @@
     <div id="header-placeholder"></div>
     <div id="header-container"></div>
 
+    <!-- Revise Modal -->
+    <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+            <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+            <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">Complete the revision
+                details below. They will be added to the Revision History and the document will be unlocked for editing.
+            </p>
+            <div class="revise-field">
+                <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                <input type="date" id="reviseDate">
+            </div>
+            <div class="revise-field">
+                <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseDesc" placeholder="e.g. Rev B — Updated weld spec per ECN-105">
+            </div>
+            <div class="revise-field">
+                <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseBy" placeholder="Name / Department">
+            </div>
+            <div class="revise-field">
+                <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseApproved" placeholder="Name / Title">
+            </div>
+            <div class="revise-modal-footer">
+                <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &amp;
+                    Enable Editing</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Validation Modal -->
     <div class="modal-overlay" id="validationModal">
         <div class="modal-box">
@@ -1133,17 +1324,27 @@
             <p>Ensuring Quality at Every Step of Your Process — APQP-aligned, PPAP-ready, IATF 16949 compliant</p>
 
             <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
+                </button>
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
                 <button id="globalLoadExampleBtn" class="btn-example">
                     <i class="fas fa-play-circle"></i> Load Example
                 </button>
-                <button id="saveDraftBtn" class="btn-success" onclick="saveToStorage()"
-                    style="background-color:#2980b9;">
-                    <i class="fas fa-save"></i> Save Draft
+                <button id="globalReviseBtn" class="btn-revise">
+                    <i class="fas fa-edit"></i> Revise
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
+                <button id="globalExportBtn" class="btn-export-main">
+                    <i class="fas fa-file-excel"></i> Export
                 </button>
             </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — this file was loaded for viewing only. Click
+                <strong>Revise</strong> to enable editing.
+            </div>
+            <input type="file" id="loadCpInput" accept=".xlsx,.xls" style="display:none;">
         </header>
 
         <div class="tabs-container">
@@ -1559,8 +1760,7 @@
                                 <tbody id="revHistoryBody"></tbody>
                             </table>
                         </div>
-                        <button class="btn-primary" style="font-size:0.85rem;padding:0.4rem 1rem;margin:0 0 0.5rem 0;"
-                            onclick="addRevHistoryRow()"><i class="fas fa-plus"></i> Add Revision</button>
+
                     </div>
 
                     <!-- TABLE -->
@@ -1572,7 +1772,8 @@
                                         <th style="min-width:65px;"><i class="fas fa-hashtag"></i> Op. No.</th>
                                         <th style="min-width:90px;"
                                             title="Process Flow Diagram step reference — IATF 16949 §8.3.4 traceability">
-                                            <i class="fas fa-sitemap"></i> PFD Ref.</th>
+                                            <i class="fas fa-sitemap"></i> PFD Ref.
+                                        </th>
                                         <th style="min-width:140px;"><i class="fas fa-cogs"></i> Process Name</th>
                                         <th style="min-width:120px;"><i class="fas fa-robot"></i> Machine / Device</th>
                                         <th style="min-width:70px;"><i class="fas fa-tag"></i> Char. No.</th>
@@ -1593,7 +1794,8 @@
                                         <th style="min-width:150px;"><i class="fas fa-search"></i> Eval. Technique</th>
                                         <th style="min-width:110px;"
                                             title="Gage or Fixture identifier number — AIAG CP §3.2 / IATF 16949 §7.1.5">
-                                            <i class="fas fa-ruler"></i> Gage / Fixture No.</th>
+                                            <i class="fas fa-ruler"></i> Gage / Fixture No.
+                                        </th>
                                         <th style="min-width:100px;"
                                             title="MSA study number and status — IATF 16949 §7.1.5.1"><i
                                                 class="fas fa-chart-bar"></i> MSA Ref.</th>
@@ -2194,7 +2396,7 @@
             const data = [];
 
             // Título con edición normativa vigente
-            data.push(['SIGMA EXACTA \u2014 AIAG Control Plan Reference Manual, 4th Edition (2024) | IATF 16949:2016 Compliant']);
+            data.push(['SIGMA EXACTA \u2014 AIAG Control Plan Reference Manual, 4th Edition (2024) | IATF 16949:2016 Compliant | Sigma Exacta Control Plan Export v2']);
             data.push(['Generated on: ' + new Date().toLocaleString()]);
             data.push([]);
 
@@ -2295,6 +2497,219 @@
         /* =========================================================
            INIT
         ========================================================= */
+        /* =========================================================
+           READ-ONLY MODE
+        ========================================================= */
+        let isReadOnly = false;
+
+        function setReadOnly(val) {
+            isReadOnly = val;
+            const banner = document.getElementById('readonlyBanner');
+            if (val) {
+                banner.classList.add('show');
+                // Disable all form inputs/selects/textareas inside the tool tab
+                document.querySelectorAll('#tab-tool input, #tab-tool textarea, #tab-tool select').forEach(el => {
+                    el.disabled = true;
+                });
+                document.querySelectorAll('#controlPlanTable .btn-danger').forEach(btn => btn.disabled = true);
+                document.getElementById('addRowBtn').disabled = true;
+                // Also disable header fields
+                document.querySelectorAll('.control-plan-header input, .control-plan-header select').forEach(el => {
+                    el.disabled = true;
+                });
+                document.querySelectorAll('input[name="planType"]').forEach(el => el.disabled = true);
+            } else {
+                banner.classList.remove('show');
+                document.querySelectorAll('#tab-tool input, #tab-tool textarea, #tab-tool select').forEach(el => {
+                    el.disabled = false;
+                });
+                document.querySelectorAll('#controlPlanTable .btn-danger').forEach(btn => btn.disabled = false);
+                document.getElementById('addRowBtn').disabled = false;
+                document.querySelectorAll('.control-plan-header input, .control-plan-header select').forEach(el => {
+                    el.disabled = false;
+                });
+                document.querySelectorAll('input[name="planType"]').forEach(el => el.disabled = false);
+            }
+        }
+
+        /* =========================================================
+           REVISE MODAL
+        ========================================================= */
+        function openReviseModal() {
+            // Pre-fill date with today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDate').value = today;
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseApproved').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            const approved = document.getElementById('reviseApproved').value.trim();
+            if (!date || !desc || !by || !approved) {
+                alert('Please fill in all revision fields.');
+                return;
+            }
+            // Add revision row to history
+            addRevHistoryRow({ date, desc, by, approved });
+            // Update revision date in header
+            document.getElementById('revisionDate').value = date;
+            // Enable editing
+            setReadOnly(false);
+            closeReviseModal();
+            switchWizardTab('tab-tool');
+            showNotification('Revision registered. Document is now editable.');
+        }
+
+        /* =========================================================
+           LOAD CP FROM EXCEL
+        ========================================================= */
+        function loadCpFromExcel(file, readOnly) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+                    // Reset
+                    tableBody.innerHTML = '';
+                    document.getElementById('revHistoryBody').innerHTML = '';
+                    ['controlPlanNumber', 'modelYear', 'fmeaReference', 'originalDate', 'revisionDate',
+                        'partNumber', 'partName', 'supplierPlant', 'supplierCode', 'customerPlant', 'contactPhone',
+                        'coreTeam', 'drawingNumber', 'engApprovalName', 'engApprovalDate', 'qualApprovalName',
+                        'qualApprovalDate', 'supplierApprovalName', 'supplierApprovalDate'].forEach(id => {
+                            const el = document.getElementById(id); if (el) el.value = '';
+                        });
+
+                    // Parse header rows
+                    let inRevHistory = false, inApprovals = false, inCPTable = false;
+                    let cpHeaders = null;
+                    const headerMap = {
+                        'Control Plan Number:': 'controlPlanNumber',
+                        'FMEA Reference Number:': 'fmeaReference',
+                        'Model Year(s) / Program(s):': 'modelYear',
+                        'Original Date:': 'originalDate',
+                        'Revision Date:': 'revisionDate',
+                        'Part Number / Change Level:': 'partNumber',
+                        'Part Name / Description:': 'partName',
+                        'Supplier / Plant:': 'supplierPlant',
+                        'Supplier Code:': 'supplierCode',
+                        'Customer Name / Plant:': 'customerPlant',
+                        'Contact / Phone:': 'contactPhone',
+                        'Core Team:': 'coreTeam',
+                        'Drawing Number / Level:': 'drawingNumber'
+                    };
+
+                    rows.forEach(row => {
+                        const c0 = String(row[0] || '').trim();
+                        const c1 = String(row[1] || '').trim();
+
+                        if (c0 === 'CONTROL PLAN HEADER') { inRevHistory = false; inCPTable = false; return; }
+                        if (c0 === 'REVISION HISTORY') { inRevHistory = true; inCPTable = false; return; }
+                        if (c0 === 'APPROVALS') { inRevHistory = false; inApprovals = true; inCPTable = false; return; }
+                        if (c0 === 'SPECIAL CHARACTERISTICS SUMMARY') { inRevHistory = false; inApprovals = false; return; }
+
+                        if (inRevHistory) {
+                            if (c0 === 'Rev. Date') return; // header row
+                            if (c0) addRevHistoryRow({ date: c0, desc: c1, by: String(row[2] || ''), approved: String(row[3] || '') });
+                            return;
+                        }
+
+                        if (inApprovals) {
+                            if (c0 === 'Engineering Approval (Customer):') {
+                                document.getElementById('engApprovalName').value = c1;
+                                document.getElementById('engApprovalDate').value = String(row[3] || '');
+                            } else if (c0 === 'Quality Approval (Customer):') {
+                                document.getElementById('qualApprovalName').value = c1;
+                                document.getElementById('qualApprovalDate').value = String(row[3] || '');
+                            } else if (c0 === 'Supplier / Plant Approval:') {
+                                document.getElementById('supplierApprovalName').value = c1;
+                                document.getElementById('supplierApprovalDate').value = String(row[3] || '');
+                            }
+                            return;
+                        }
+
+                        if (headerMap[c0]) {
+                            const el = document.getElementById(headerMap[c0]);
+                            if (el) el.value = c1;
+                            return;
+                        }
+
+                        if (c0 === 'Control Plan Type:') {
+                            const r = document.querySelector(`input[name="planType"][value="${c1}"]`);
+                            if (r) r.checked = true;
+                            return;
+                        }
+
+                        // Detect CP table header row by first cell "Op. No."
+                        if (!inCPTable && String(row[0] || '').trim() === 'Op. No.') {
+                            inCPTable = true;
+                            cpHeaders = row.map(h => String(h || '').trim());
+                            return;
+                        }
+
+                        if (inCPTable && row.some(v => v !== '')) {
+                            const g = i => String(row[i] || '').trim();
+                            createRow({
+                                opNo: g(0), pfdRef: g(1), processName: g(2), machine: g(3),
+                                charNo: g(4), charType: g(5), characteristic: g(6), specialChar: g(7),
+                                failureMode: g(8), ap: g(9) || 'L',
+                                spec: g(10), evaluation: g(11), gageNo: g(12), msaRef: g(13),
+                                sampleSize: g(14), sampleFreq: g(15), controlMethod: g(16),
+                                errorProofing: g(17), reactionPlan: g(18), wiRef: g(19),
+                                whereRecorded: g(20), responsible: g(21)
+                            });
+                        }
+                    });
+
+                    setReadOnly(readOnly);
+                    switchWizardTab('tab-tool');
+                    showNotification(readOnly ? 'File loaded in read-only mode.' : 'File loaded successfully.');
+                } catch (err) {
+                    console.error('Load error:', err);
+                    alert('Error reading the file. Make sure it was exported by this tool.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================= */
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px;
+                background-color: var(--performance-color); color: white;
+                padding: 15px 20px; border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000;
+                animation: slideIn 0.3s ease; max-width: 320px; font-weight: 600;
+                font-family: 'Nunito', sans-serif;
+            `;
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+            `;
+            document.head.appendChild(style);
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => { if (notification.parentNode) document.body.removeChild(notification); }, 500);
+            }, 3000);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             fetch('header.html')
                 .then(r => { if (!r.ok) throw new Error('header.html not found'); return r.text(); })
@@ -2334,9 +2749,34 @@
                         '<p style="color:red;text-align:center;">Error loading header. Ensure header.html exists.</p>';
                 });
 
-            document.getElementById('addRowBtn').addEventListener('click', () => createRow());
-            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
-            document.getElementById('globalResetBtn').addEventListener('click', resetPlan);
+            document.getElementById('addRowBtn').addEventListener('click', () => { if (!isReadOnly) createRow(); });
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', () => {
+                loadExample();
+                setReadOnly(true);
+            });
+            document.getElementById('globalNewBtn').addEventListener('click', () => {
+                if (confirm('Reset all fields and start a new Control Plan?')) {
+                    resetPlan();
+                    setReadOnly(false);
+                }
+            });
+            document.getElementById('globalLoadBtn').addEventListener('click', () => {
+                document.getElementById('loadCpInput').click();
+            });
+            document.getElementById('loadCpInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                loadCpFromExcel(file, true);
+                e.target.value = '';
+            });
+            document.getElementById('globalReviseBtn').addEventListener('click', () => {
+                if (!isReadOnly) {
+                    alert('The document is already editable.');
+                    return;
+                }
+                openReviseModal();
+            });
+            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
             document.getElementById('exportBtn').addEventListener('click', exportToExcel);
             document.getElementById('listResultsBtn').addEventListener('click', listResults);
 
