@@ -243,6 +243,28 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-example {
             background-color: var(--success-color);
             color: white;
@@ -254,15 +276,131 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
-            background-color: var(--danger-color);
+        .main-action-buttons .btn-revise {
+            background-color: #6c5ce7;
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
-            background-color: #a5281c;
+        .main-action-buttons .btn-revise:hover {
+            background-color: #5849c2;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-export-main {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-export-main:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Readonly banner */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 800px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
+        }
+
+        /* Revise Modal */
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         /* ===== ESTILOS GENERALES ===== */
@@ -721,19 +859,6 @@
             background-color: #d4ac0d;
         }
 
-        #generate-report-button {
-            width: 100%;
-            padding: 1rem;
-            font-size: clamp(1rem, 2.5vw, 1.2rem);
-            font-weight: bold;
-            margin-top: 1.25rem;
-            box-sizing: border-box;
-        }
-
-        #generate-report-button:hover {
-            background-color: #2980b9;
-        }
-
         /* ===== TAB NAVIGATION BUTTONS ===== */
         .tab-nav-buttons {
             display: flex;
@@ -952,6 +1077,10 @@
         .main-tool-logo[data-color='9'] {
             background-color: #7ed321;
         }
+
+        input[type="file"] {
+            display: none;
+        }
     </style>
 </head>
 
@@ -984,25 +1113,60 @@
         </nav>
     </noscript>
 
+    <!-- Revise Modal -->
+    <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+            <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+            <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">
+                Complete the revision details below. The document will be unlocked for editing.
+            </p>
+            <div class="revise-field">
+                <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                <input type="date" id="reviseDate">
+            </div>
+            <div class="revise-field">
+                <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseDesc" placeholder="e.g. Updated Plan phase based on new data">
+            </div>
+            <div class="revise-field">
+                <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseBy" placeholder="Name / Department">
+            </div>
+            <div class="revise-field">
+                <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseApproved" placeholder="Name / Title">
+            </div>
+            <div class="revise-modal-footer">
+                <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &amp;
+                    Enable Editing</button>
+            </div>
+        </div>
+    </div>
+
     <main class="main-content-wrapper">
         <header class="header">
             <h1>
                 <div class="main-tool-logo" data-color="9"><i class="fas fa-sync-alt"></i></div>
-                Free Online Plan-Do-Check-Act (PDCA) Cycle Tool (Deming Wheel)
+                Interactive Plan-Do-Check-Act (PDCA) Cycle Creator (Deming Wheel)
             </h1>
             <p class="header-subtitle">A structured four-phase model for continuous improvement and quality management.
             </p>
+            <!-- BOTONERA PRINCIPAL -->
+            <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
+                <button id="globalLoadBtn" class="btn-load"><i class="fas fa-folder-open"></i> Load</button>
+                <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load
+                    Example</button>
+                <button id="globalReviseBtn" class="btn-revise"><i class="fas fa-edit"></i> Revise</button>
+                <button id="globalExportBtn" class="btn-export-main"><i class="fas fa-file-excel"></i> Export</button>
+            </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — this file was loaded for viewing only. Click
+                <strong>Revise</strong> to enable editing.
+            </div>
+            <input type="file" id="loadPdcaInput" accept=".xlsx,.xls" style="display:none;">
         </header>
-
-        <!-- BOTONES PRINCIPALES (ESTILO KANO) -->
-        <div class="main-action-buttons">
-            <button id="globalLoadExampleBtn" class="btn-example">
-                <i class="fas fa-play-circle"></i> Load Example
-            </button>
-            <button id="globalResetBtn" class="btn-reset">
-                <i class="fas fa-sync-alt"></i> Reset All
-            </button>
-        </div>
 
         <!-- BARRA DE PESTAÑAS PRINCIPALES (3 TABS) -->
         <nav class="tabs-nav">
@@ -1022,14 +1186,8 @@
             <div class="content-block">
                 <h2><i class="fas fa-question-circle"></i> What is the PDCA Cycle?</h2>
                 <p>The <strong>PDCA Cycle</strong> (Plan‑Do‑Check‑Act), also known as the Deming Wheel or Shewhart
-                    Cycle, is
-                    a systematic, iterative four‑stage approach for continuous improvement in processes and products. It
-                    provides a simple but powerful framework for solving problems, managing change, and implementing
-                    quality
-                    control.</p>
-                <p>By repeatedly cycling through the four phases, organizations can refine their processes, identify
-                    root
-                    causes of problems, and create a culture of continuous learning and improvement.</p>
+                    Cycle, is a systematic, iterative four‑stage approach for continuous improvement in processes and
+                    products.</p>
                 <div class="pdca-wheel-container">
                     <div class="pdca-wheel">
                         <div class="pdca-quadrant quadrant-plan">
@@ -1058,38 +1216,23 @@
                     </div>
                 </div>
             </div>
-
             <div class="content-block">
                 <h2><i class="fas fa-history"></i> History &amp; Origin</h2>
-                <p>The concept was originally developed by American physicist and statistician <strong>Walter A.
-                        Shewhart</strong> in the 1920s, who is often called the "father of statistical quality control."
-                    Shewhart framed it as a three‑step process of specification, production, and inspection for
-                    scientific
-                    learning.</p>
-                <p>His mentee, <strong>Dr. W. Edwards Deming</strong>, modified and popularized the cycle in the 1950s,
-                    evolving it into the four‑step "Plan‑Do‑Check‑Act" model we know today. Deming strongly advocated
-                    for
-                    its use in Japan, where it became a cornerstone of the country's post‑war industrial and
-                    manufacturing
-                    success, known as "Kaizen" (continuous improvement).</p>
+                <p>The concept was originally developed by Walter A. Shewhart and later popularized by W. Edwards
+                    Deming.</p>
             </div>
-
             <div class="content-block">
                 <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
                 <div class="instructions-box">
                     <ul>
-                        <li><strong>Load Example:</strong> Click "Load Example" above to populate all tabs with sample
-                            data.</li>
-                        <li><strong>Follow the Steps:</strong> Work through each phase (Plan, Do, Check, Act) in the
-                            PDCA Tool tab to document your improvement project.</li>
-                        <li><strong>Generate Report:</strong> Click "Generate PDCA Report" on the Report tab to create a
-                            consolidated summary.</li>
-                        <li><strong>Export:</strong> Once the report is generated, you can export it to an Excel file
-                            for documentation or sharing.</li>
+                        <li><strong>New:</strong> Start a fresh PDCA cycle.</li>
+                        <li><strong>Load:</strong> Open a previously exported Excel file.</li>
+                        <li><strong>Load Example:</strong> Populate with sample data (read-only).</li>
+                        <li><strong>Revise:</strong> Register a new revision and unlock editing.</li>
+                        <li><strong>Export:</strong> Save current data to Excel.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="tab-nav-buttons">
                 <button class="btn-next-tab" onclick="switchTab('tab-pdca-tool')">Start PDCA Tool <i
                         class="fas fa-arrow-right"></i></button>
@@ -1098,71 +1241,45 @@
 
         <!-- PESTAÑA 2: PDCA TOOL (CON SUBTABS) -->
         <div id="tab-pdca-tool" class="tab-content">
-            <!-- NAVEGACIÓN DE SUBTABS -->
             <nav class="subtabs-nav">
-                <button class="subtab-btn active" onclick="switchSubTab('subtab-plan')">
-                    <i class="fas fa-clipboard-list"></i> <span>1. Plan</span>
-                </button>
-                <button class="subtab-btn" onclick="switchSubTab('subtab-do')">
-                    <i class="fas fa-cogs"></i> <span>2. Do</span>
-                </button>
-                <button class="subtab-btn" onclick="switchSubTab('subtab-check')">
-                    <i class="fas fa-chart-line"></i> <span>3. Check</span>
-                </button>
-                <button class="subtab-btn" onclick="switchSubTab('subtab-act')">
-                    <i class="fas fa-bullhorn"></i> <span>4. Act</span>
-                </button>
+                <button class="subtab-btn active" onclick="switchSubTab('subtab-plan')"><i
+                        class="fas fa-clipboard-list"></i> <span>1. Plan</span></button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-do')"><i class="fas fa-cogs"></i> <span>2.
+                        Do</span></button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-check')"><i class="fas fa-chart-line"></i>
+                    <span>3. Check</span></button>
+                <button class="subtab-btn" onclick="switchSubTab('subtab-act')"><i class="fas fa-bullhorn"></i> <span>4.
+                        Act</span></button>
             </nav>
 
-            <!-- SUBTAB 1: PLAN -->
             <div id="subtab-plan" class="subtab-content active">
                 <div class="content-block">
                     <h2><i class="fas fa-clipboard-list"></i> Phase 1: Plan</h2>
                     <div class="cycle-step">
                         <h3><i class="fas fa-clipboard-list"></i> Plan Phase</h3>
-                        <div class="form-group">
-                            <label for="plan-problem">Problem/Opportunity Statement:</label>
-                            <textarea id="plan-problem"
-                                placeholder="e.g., Customer support call times are too long, averaging 12 minutes."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-goal">Goal/Hypothesis (What do you expect to happen?):</label>
-                            <textarea id="plan-goal"
-                                placeholder="e.g., By implementing a new call script, we will reduce the average call time by 15% to 10 minutes or less within one month."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-actions">Action Plan (What steps will you take?):</label>
-                            <textarea id="plan-actions"
-                                placeholder="e.g., 1. Develop new script. 2. Train a pilot group of 5 agents. 3. Monitor their call times for 1 week."></textarea>
-                        </div>
+                        <div class="form-group"><label for="plan-problem">Problem/Opportunity
+                                Statement:</label><textarea id="plan-problem"></textarea></div>
+                        <div class="form-group"><label for="plan-goal">Goal/Hypothesis:</label><textarea
+                                id="plan-goal"></textarea></div>
+                        <div class="form-group"><label for="plan-actions">Action Plan:</label><textarea
+                                id="plan-actions"></textarea></div>
                     </div>
                 </div>
-
-                <div class="tab-nav-buttons">
-                    <button class="btn-next-tab" onclick="switchSubTab('subtab-do')">Next: Do Phase <i
-                            class="fas fa-arrow-right"></i></button>
-                </div>
+                <div class="tab-nav-buttons"><button class="btn-next-tab" onclick="switchSubTab('subtab-do')">Next: Do
+                        Phase <i class="fas fa-arrow-right"></i></button></div>
             </div>
 
-            <!-- SUBTAB 2: DO -->
             <div id="subtab-do" class="subtab-content">
                 <div class="content-block">
                     <h2><i class="fas fa-cogs"></i> Phase 2: Do</h2>
                     <div class="cycle-step">
                         <h3><i class="fas fa-cogs"></i> Do Phase</h3>
-                        <div class="form-group">
-                            <label for="do-execution">What was executed? (Record actions taken):</label>
-                            <textarea id="do-execution"
-                                placeholder="e.g., The new script was developed and deployed. Five agents from Team B were trained on the new script on Monday. They used the script for all calls from Tuesday to Friday."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="do-problems">What problems or unexpected observations occurred?:</label>
-                            <textarea id="do-problems"
-                                placeholder="e.g., Some veteran agents initially resisted the change, finding the script too rigid. One part of the script for 'billing issues' was found to be confusing for customers."></textarea>
-                        </div>
+                        <div class="form-group"><label for="do-execution">What was executed?</label><textarea
+                                id="do-execution"></textarea></div>
+                        <div class="form-group"><label for="do-problems">Problems or unexpected
+                                observations?</label><textarea id="do-problems"></textarea></div>
                     </div>
                 </div>
-
                 <div class="tab-nav-buttons">
                     <button class="btn-prev-tab" onclick="switchSubTab('subtab-plan')"><i class="fas fa-arrow-left"></i>
                         Back to Plan</button>
@@ -1171,25 +1288,17 @@
                 </div>
             </div>
 
-            <!-- SUBTAB 3: CHECK -->
             <div id="subtab-check" class="subtab-content">
                 <div class="content-block">
                     <h2><i class="fas fa-chart-line"></i> Phase 3: Check</h2>
                     <div class="cycle-step">
                         <h3><i class="fas fa-chart-line"></i> Check Phase</h3>
-                        <div class="form-group">
-                            <label for="check-data">Data &amp; Results (What did the metrics show?):</label>
-                            <textarea id="check-data"
-                                placeholder="e.g., Average call time for the pilot group was 9.5 minutes, an 18% reduction. Customer satisfaction scores for the pilot group remained stable (no change)."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="check-analysis">Analysis (Did the results match the hypothesis?):</label>
-                            <textarea id="check-analysis"
-                                placeholder="e.g., The results exceeded the goal. The script was effective in reducing call time without negatively impacting customer satisfaction. The confusing 'billing' section needs to be addressed."></textarea>
-                        </div>
+                        <div class="form-group"><label for="check-data">Data &amp; Results:</label><textarea
+                                id="check-data"></textarea></div>
+                        <div class="form-group"><label for="check-analysis">Analysis:</label><textarea
+                                id="check-analysis"></textarea></div>
                     </div>
                 </div>
-
                 <div class="tab-nav-buttons">
                     <button class="btn-prev-tab" onclick="switchSubTab('subtab-do')"><i class="fas fa-arrow-left"></i>
                         Back to Do</button>
@@ -1198,52 +1307,32 @@
                 </div>
             </div>
 
-            <!-- SUBTAB 4: ACT -->
             <div id="subtab-act" class="subtab-content">
                 <div class="content-block">
                     <h2><i class="fas fa-bullhorn"></i> Phase 4: Act</h2>
                     <div class="cycle-step">
                         <h3><i class="fas fa-bullhorn"></i> Act Phase</h3>
-                        <div class="form-group">
-                            <label for="act-conclusions">Conclusions &amp; Learnings:</label>
-                            <textarea id="act-conclusions"
-                                placeholder="e.g., The new script is a viable solution for reducing call times. Allowing for minor flexibility in the script could improve adoption among veteran agents."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="act-next">Next Steps (Standardize, Adjust, or begin a new cycle?):</label>
-                            <textarea id="act-next"
-                                placeholder="e.g., 1. Adjust the 'billing issues' part of the script based on feedback. 2. Standardize the revised script and roll it out to all support agents. 3. Start a new PDCA cycle to improve the first-call resolution rate."></textarea>
-                        </div>
+                        <div class="form-group"><label for="act-conclusions">Conclusions &amp;
+                                Learnings:</label><textarea id="act-conclusions"></textarea></div>
+                        <div class="form-group"><label for="act-next">Next Steps:</label><textarea
+                                id="act-next"></textarea></div>
                     </div>
                 </div>
-
                 <div class="tab-nav-buttons">
                     <button class="btn-prev-tab" onclick="switchSubTab('subtab-check')"><i
-                            class="fas fa-arrow-left"></i>
-                        Back to Check</button>
+                            class="fas fa-arrow-left"></i> Back to Check</button>
                     <button class="btn-next-tab" onclick="switchTab('tab-report')">Go to Report <i
                             class="fas fa-file-alt"></i></button>
                 </div>
             </div>
         </div>
 
-        <!-- PESTAÑA 3: REPORT -->
+        <!-- PESTAÑA 3: REPORT (sin botón manual, se refresca automáticamente) -->
         <div id="tab-report" class="tab-content">
             <div class="content-block">
-                <h2><i class="fas fa-file-alt"></i> Generate PDCA Report</h2>
-                <div style="text-align: center; padding: 30px; width: 100%; box-sizing: border-box;">
-                    <h3 style="color: var(--secondary-color); font-size: clamp(1.2rem, 3vw, 1.5rem);">Ready to Generate
-                        Report?</h3>
-                    <p style="margin-bottom: 20px;">This will gather all data from Plan, Do, Check, and Act phases.</p>
-                    <button id="generate-report-button" onclick="generateReport()"
-                        style="max-width: 400px; margin: 0 auto;">
-                        <i class="fas fa-file-alt"></i> Generate PDCA Report
-                    </button>
-                </div>
-
+                <h2><i class="fas fa-file-alt"></i> PDCA Report</h2>
                 <div id="results-container" class="hidden"></div>
             </div>
-
             <div class="tab-nav-buttons">
                 <button class="btn-prev-tab" onclick="switchTab('tab-pdca-tool')"><i class="fas fa-arrow-left"></i> Back
                     to PDCA Tool</button>
@@ -1251,228 +1340,136 @@
                     Start & Info</button>
             </div>
         </div>
-
     </main>
 
     <footer role="contentinfo">
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The PDCA Cycle was developed by Walter A. Shewhart and later popularized by
                 W. Edwards Deming. This tool is an independent implementation provided for educational and informational
-                purposes only. It is not affiliated with, sponsored by, or endorsed by the estates of Deming or
-                Shewhart, or their respective organizations. The effectiveness of the process depends on the user's
-                application. Sigma Exacta and its creators are not liable for any damages or losses resulting from its
-                use.</p>
+                purposes only.</p>
         </div>
     </footer>
 
     <script>
         // ===== VARIABLES GLOBALES =====
         let cycleData = {};
+        let isReadOnly = false;
+        const LS_KEY = 'sigma_pdca_v1';
 
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function switchTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos principales
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el seleccionado
             document.getElementById(tabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Actualizar textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                autoResizeTextarea(textarea);
-            });
+            // Refrescar automáticamente el informe al entrar en la pestaña Report
+            if (tabId === 'tab-report') {
+                refreshReport();
+            }
+
+            document.querySelectorAll('textarea').forEach(autoResizeTextarea);
         }
 
         function switchSubTab(subTabId) {
-            // Quitar clase active de todos los botones y contenidos de subtabs
             document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.subtab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el seleccionado
             document.getElementById(subTabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchSubTab('${subTabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Scroll al top suavemente
-            const subtabContainer = document.querySelector('.subtab-content.active');
-            if (subtabContainer) {
-                subtabContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            // Actualizar textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                autoResizeTextarea(textarea);
-            });
+            document.querySelectorAll('textarea').forEach(autoResizeTextarea);
         }
-
-        // ===== FUNCIONES DE INICIALIZACIÓN =====
-        function initializePage() {
-            const navToggle = document.getElementById('nav-toggle');
-            const navMenu = document.getElementById('nav-menu');
-            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('show-menu');
-                    const icon = navToggle.querySelector('i');
-                    icon.classList.toggle('fa-bars');
-                    icon.classList.toggle('fa-times');
-
-                    if (!navMenu.classList.contains('show-menu')) {
-                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
-                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
-                    }
-                });
-            }
-
-            if (toolsDropdownToggle && toolsDropdownMenu && toolsDropdownContainer) {
-                toolsDropdownToggle.addEventListener('click', (event) => {
-                    if (window.innerWidth <= 992) {
-                        event.preventDefault();
-                        toolsDropdownMenu.classList.toggle('show-submenu');
-                        toolsDropdownContainer.classList.toggle('active');
-                    }
-                });
-            }
-
-            // Auto-resize textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                textarea.addEventListener('input', function () { autoResizeTextarea(this); });
-                autoResizeTextarea(textarea);
-            });
-
-            // Botones globales
-            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
-            document.getElementById('globalResetBtn').addEventListener('click', resetTool);
-        }
-
-        // Cargar el header y luego inicializar la página
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                setTimeout(initializePage, 10);
-            })
-            .catch(error => {
-                console.error('Error loading header:', error);
-            });
 
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
-        // ===== FUNCIONES DE LA HERRAMIENTA =====
-        function resetTool() {
-            if (cycleData && Object.keys(cycleData).length > 0) {
-                if (!confirm("Are you sure you want to reset all data? This will clear all entered information.")) {
-                    return;
-                }
+        // ===== READ-ONLY =====
+        function setReadOnly(val) {
+            isReadOnly = val;
+            const banner = document.getElementById('readonlyBanner');
+            if (val) {
+                banner.classList.add('show');
+                document.querySelectorAll('#tab-pdca-tool textarea').forEach(el => el.disabled = true);
+            } else {
+                banner.classList.remove('show');
+                document.querySelectorAll('#tab-pdca-tool textarea').forEach(el => el.disabled = false);
             }
+        }
 
+        // ===== REVISE MODAL =====
+        function openReviseModal() {
+            document.getElementById('reviseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseApproved').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            const approved = document.getElementById('reviseApproved').value.trim();
+            if (!date || !desc || !by || !approved) {
+                alert('Please fill in all revision fields.');
+                return;
+            }
+            // Guardar revisión en localStorage
+            try {
+                const existing = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+                if (!existing.revisions) existing.revisions = [];
+                existing.revisions.push({ date, desc, by, approved });
+                localStorage.setItem(LS_KEY, JSON.stringify(existing));
+            } catch (e) { }
+            setReadOnly(false);
+            closeReviseModal();
+            showNotification('Revision registered. Document is now editable.');
+        }
+
+        // ===== RESET =====
+        function resetTool(silent = false) {
+            if (!silent && Object.keys(cycleData).length > 0) {
+                if (!confirm("Are you sure you want to reset all data?")) return;
+            }
             cycleData = {};
-            document.querySelectorAll('textarea').forEach(el => {
-                el.value = '';
-                autoResizeTextarea(el);
-            });
+            document.querySelectorAll('textarea').forEach(el => { el.value = ''; autoResizeTextarea(el); });
             document.getElementById('results-container').classList.add('hidden');
             document.getElementById('results-container').innerHTML = '';
-
-            // Ir a la pestaña inicial
+            setReadOnly(false);
+            localStorage.removeItem(LS_KEY);
             switchTab('tab-start');
-
-            // Mostrar notificación
-            showNotification("All data has been reset successfully!");
+            if (!silent) showNotification("All data has been reset.");
         }
 
+        // ===== LOAD EXAMPLE =====
         function loadExample() {
-            if (cycleData && Object.keys(cycleData).length > 0) {
-                if (!confirm("Loading example data will replace your current work. Do you want to continue?")) {
-                    return;
-                }
-            }
-
-            // Reset primero
-            resetTool();
-
-            // Llenar con datos de ejemplo
-            document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes, which leads to lower customer satisfaction and higher costs.";
-            document.getElementById('plan-goal').value = "By implementing a new streamlined call script and providing targeted training, we will reduce the average call handling time by 15% (to 10.2 minutes or less) within one month, without decreasing the customer satisfaction score.";
-            document.getElementById('plan-actions').value = "1. Analyze top 5 call reasons to create a streamlined script (Week 1).\n2. Select a pilot group of 5 agents for training (Week 2).\n3. Train the pilot group on the new script (Week 2).\n4. Monitor the pilot group's call times and CSAT scores for two weeks (Weeks 3-4).";
-            document.getElementById('do-execution').value = "The script was developed and deployed. Five agents from Team B were trained on Monday of Week 3. They used the script for all their calls for the following two weeks. Call data was automatically logged by the CRM.";
-            document.getElementById('do-problems').value = "Initial feedback from the pilot agents was that the script felt too rigid for complex, multi-issue calls. We allowed for minor deviations after the first week based on their feedback.";
-            document.getElementById('check-data').value = "Results after two weeks:\n- Average call time for the pilot group was 9.5 minutes (an 18.75% reduction).\n- Average call time for the control group (rest of the team) was 11.8 minutes.\n- Customer Satisfaction (CSAT) scores for the pilot group increased by 2%.";
-            document.getElementById('check-analysis').value = "The hypothesis was confirmed: the new script significantly reduced call times. The slight increase in CSAT suggests the script did not harm the customer experience and may have improved it due to faster resolution.";
-            document.getElementById('act-conclusions').value = "The streamlined script is an effective method for reducing call handling time. The key learning is that while a script provides structure, a small degree of flexibility is necessary for experienced agents to handle complex cases effectively.";
-            document.getElementById('act-next').value = "1. (Standardize) Roll out the revised, slightly more flexible script to all customer support agents, with mandatory training.\n2. (Adjust) Update the standard operating procedure (SOP) to reflect the new process.\n3. (New Cycle) Begin a new PDCA cycle to tackle the 'first-call resolution rate', which was identified as the next key improvement area during analysis.";
-
-            // Actualizar textareas
-            document.querySelectorAll('textarea').forEach(textarea => autoResizeTextarea(textarea));
-
-            // Ir a la pestaña PDCA Tool
+            resetTool(true);
+            document.getElementById('plan-problem').value = "Customer support call times are too long, averaging 12 minutes.";
+            document.getElementById('plan-goal').value = "Reduce average call time by 15% within one month.";
+            document.getElementById('plan-actions').value = "1. Analyze top call reasons.\n2. Create streamlined script.\n3. Train pilot group.\n4. Monitor results.";
+            document.getElementById('do-execution').value = "Script deployed and pilot group trained. Data collected for two weeks.";
+            document.getElementById('do-problems').value = "Initial resistance from veteran agents; script too rigid for complex calls.";
+            document.getElementById('check-data').value = "Average call time dropped to 9.5 min (18% reduction). CSAT improved 2%.";
+            document.getElementById('check-analysis').value = "Hypothesis confirmed; script effective without harming customer experience.";
+            document.getElementById('act-conclusions').value = "Script is effective; some flexibility needed for experienced agents.";
+            document.getElementById('act-next').value = "1. Standardize revised script.\n2. Roll out to all agents.\n3. Start new PDCA for first-call resolution.";
+            document.querySelectorAll('textarea').forEach(autoResizeTextarea);
+            setReadOnly(true);
             switchTab('tab-pdca-tool');
-
-            // Mostrar notificación
-            showNotification("Example data loaded successfully! You can now explore the PDCA phases.");
+            showNotification("Example loaded in read-only mode.");
         }
 
-        function showNotification(message) {
-            // Crear elemento de notificación
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: var(--success-color);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                max-width: 300px;
-                font-weight: 600;
-            `;
-
-            // Animación CSS
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes fadeOut {
-                    from { opacity: 1; }
-                    to { opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            // Remover después de 3 segundos
-            setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.5s ease';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 500);
-            }, 3000);
-        }
-
-        function generateReport() {
+        // ===== REFRESCAR INFORME AUTOMÁTICAMENTE =====
+        function refreshReport() {
+            // Leer valores actuales de todos los campos
             cycleData = {
                 plan: {
                     problem: document.getElementById('plan-problem').value,
@@ -1492,134 +1489,201 @@
                     next: document.getElementById('act-next').value
                 }
             };
-
-            if (!cycleData.plan.problem && !cycleData.plan.goal) {
-                alert('Please fill in at least the "Plan" phase to generate a report.');
-                return;
-            }
-
-            displayResults();
-
-            // Ir a la pestaña de reporte
-            switchTab('tab-report');
+            displayResults();  // construir tabla
         }
 
         function displayResults() {
             const resultsDiv = document.getElementById('results-container');
-
-            function escapeHTML(str) {
-                return str ? str.replace(/[&<>"']/g, function (m) {
-                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-                }) : 'N/A';
-            }
-
-            let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>`;
-
-            html += `<table class="pdca-summary-table">
-            <thead>
-                <tr>
-                    <th>Phase</th>
-                    <th>Category</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="phase-row">
-                    <td rowspan="3"><strong>1. PLAN</strong><br><i class="fas fa-clipboard-list"></i></td>
-                    <td>Problem/Opportunity</td>
-                    <td>${escapeHTML(cycleData.plan.problem)}</td>
-                </tr>
-                <tr>
-                    <td>Goal/Hypothesis</td>
-                    <td>${escapeHTML(cycleData.plan.goal)}</td>
-                </tr>
-                <tr>
-                    <td>Action Plan</td>
-                    <td>${escapeHTML(cycleData.plan.actions)}</td>
-                </tr>
-
-                <tr class="phase-row" style="background-color: #ffe6cc; border-bottom: 3px solid #e67e22;">
-                    <td rowspan="2"><strong>2. DO</strong><br><i class="fas fa-cogs"></i></td>
-                    <td>Execution Record</td>
-                    <td>${escapeHTML(cycleData.do.execution)}</td>
-                </tr>
-                <tr>
-                    <td>Problems/Observations</td>
-                    <td>${escapeHTML(cycleData.do.problems)}</td>
-                </tr>
-                
-                <tr class="phase-row" style="background-color: #eafbe7; border-bottom: 3px solid #2ecc71;">
-                    <td rowspan="2"><strong>3. CHECK</strong><br><i class="fas fa-chart-line"></i></td>
-                    <td>Data & Results</td>
-                    <td>${escapeHTML(cycleData.check.data)}</td>
-                </tr>
-                <tr>
-                    <td>Analysis</td>
-                    <td>${escapeHTML(cycleData.check.analysis)}</td>
-                </tr>
-
-                <tr class="phase-row" style="background-color: #f7e6ff; border-bottom: 3px solid #9b59b6;">
-                    <td rowspan="2"><strong>4. ACT</strong><br><i class="fas fa-bullhorn"></i></td>
-                    <td>Conclusions/Learnings</td>
-                    <td>${escapeHTML(cycleData.act.conclusions)}</td>
-                </tr>
-                <tr>
-                    <td>Next Steps</td>
-                    <td>${escapeHTML(cycleData.act.next)}</td>
-                </tr>
-            </tbody>
-        </table>`;
-
-            html += `<div class="results-actions">
-                    <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
-                 </div>`;
-
+            const escapeHTML = str => str ? str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) : 'N/A';
+            let html = `<h3><i class="fas fa-check-circle"></i> PDCA Cycle Report Summary</h3>
+                <table class="pdca-summary-table">
+                <thead><tr><th>Phase</th><th>Category</th><th>Details</th></tr></thead><tbody>
+                <tr class="phase-row"><td rowspan="3"><strong>1. PLAN</strong></td><td>Problem</td><td>${escapeHTML(cycleData.plan.problem)}</td></tr>
+                <tr><td>Goal</td><td>${escapeHTML(cycleData.plan.goal)}</td></tr>
+                <tr><td>Action Plan</td><td>${escapeHTML(cycleData.plan.actions)}</td></tr>
+                <tr class="phase-row" style="background:#ffe6cc;border-bottom:3px solid #e67e22;"><td rowspan="2"><strong>2. DO</strong></td><td>Execution</td><td>${escapeHTML(cycleData.do.execution)}</td></tr>
+                <tr><td>Problems</td><td>${escapeHTML(cycleData.do.problems)}</td></tr>
+                <tr class="phase-row" style="background:#eafbe7;border-bottom:3px solid #2ecc71;"><td rowspan="2"><strong>3. CHECK</strong></td><td>Data & Results</td><td>${escapeHTML(cycleData.check.data)}</td></tr>
+                <tr><td>Analysis</td><td>${escapeHTML(cycleData.check.analysis)}</td></tr>
+                <tr class="phase-row" style="background:#f7e6ff;border-bottom:3px solid #9b59b6;"><td rowspan="2"><strong>4. ACT</strong></td><td>Conclusions</td><td>${escapeHTML(cycleData.act.conclusions)}</td></tr>
+                <tr><td>Next Steps</td><td>${escapeHTML(cycleData.act.next)}</td></tr>
+                </tbody></table>`;
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // ===== EXPORT TO EXCEL (desde los campos actuales, no necesita cycleData) =====
         function exportToExcel() {
-            if (Object.keys(cycleData).length === 0) {
-                alert("No data to export. Please generate a report first.");
-                return;
-            }
+            const data = [
+                ['PDCA Cycle Report - Sigma Exacta'],
+                ['Generated on:', new Date().toLocaleString()],
+                [],
+                ['Phase', 'Category', 'Details'],
+                ['PLAN', 'Problem/Opportunity', document.getElementById('plan-problem').value],
+                ['', 'Goal/Hypothesis', document.getElementById('plan-goal').value],
+                ['', 'Action Plan', document.getElementById('plan-actions').value],
+                [],
+                ['DO', 'Execution Record', document.getElementById('do-execution').value],
+                ['', 'Problems/Observations', document.getElementById('do-problems').value],
+                [],
+                ['CHECK', 'Data & Results', document.getElementById('check-data').value],
+                ['', 'Analysis', document.getElementById('check-analysis').value],
+                [],
+                ['ACT', 'Conclusions', document.getElementById('act-conclusions').value],
+                ['', 'Next Steps', document.getElementById('act-next').value],
+            ];
+
+            // Agregar historial de revisiones si existe
+            try {
+                const stored = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+                if (stored.revisions && stored.revisions.length > 0) {
+                    data.push([]);
+                    data.push(['REVISION HISTORY']);
+                    data.push(['Date', 'Description', 'Changed By', 'Approved By']);
+                    stored.revisions.forEach(r => data.push([r.date, r.desc, r.by, r.approved]));
+                }
+            } catch (e) { }
 
             const wb = XLSX.utils.book_new();
-            const ws_data = [];
-            ws_data.push(["PDCA Cycle Report"]);
-            ws_data.push(["Company: Sigma Exacta"]);
-            ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
-            ws_data.push([]);
-
-            ws_data.push(["Phase", "Category", "Details"]);
-            ws_data.push(["PLAN", "Problem/Opportunity", cycleData.plan.problem]);
-            ws_data.push(["", "Goal/Hypothesis", cycleData.plan.goal]);
-            ws_data.push(["", "Action Plan", cycleData.plan.actions]);
-            ws_data.push([]);
-            ws_data.push(["DO", "Execution Record", cycleData.do.execution]);
-            ws_data.push(["", "Problems/Observations", cycleData.do.problems]);
-            ws_data.push([]);
-            ws_data.push(["CHECK", "Data & Results", cycleData.check.data]);
-            ws_data.push(["", "Analysis", cycleData.check.analysis]);
-            ws_data.push([]);
-            ws_data.push(["ACT", "Conclusions", cycleData.act.conclusions]);
-            ws_data.push(["", "Next Steps", cycleData.act.next]);
-
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [{ wch: 15 }, { wch: 25 }, { wch: 80 }];
-            XLSX.utils.book_append_sheet(wb, ws, "PDCA Report");
-
-            const dateStr = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(wb, `PDCA_Report_Sigma_Exacta_${dateStr}.xlsx`);
-
-            showNotification("Report exported to Excel successfully!");
+            XLSX.utils.book_append_sheet(wb, ws, 'PDCA Report');
+            XLSX.writeFile(wb, `PDCA_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showNotification('Exported to Excel successfully!');
         }
+
+        // ===== LOAD FROM EXCEL =====
+        function loadFromExcel(file, readOnly = true) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+                    // Reset
+                    document.querySelectorAll('textarea').forEach(el => { el.value = ''; autoResizeTextarea(el); });
+                    const fieldMap = {
+                        'Problem/Opportunity': 'plan-problem',
+                        'Goal/Hypothesis': 'plan-goal',
+                        'Action Plan': 'plan-actions',
+                        'Execution Record': 'do-execution',
+                        'Problems/Observations': 'do-problems',
+                        'Data & Results': 'check-data',
+                        'Analysis': 'check-analysis',
+                        'Conclusions': 'act-conclusions',
+                        'Next Steps': 'act-next'
+                    };
+
+                    rows.forEach(row => {
+                        const category = String(row[1] || '').trim();
+                        const detail = String(row[2] || '').trim();
+                        if (fieldMap[category] && detail) {
+                            document.getElementById(fieldMap[category]).value = detail;
+                        }
+                    });
+
+                    document.querySelectorAll('textarea').forEach(autoResizeTextarea);
+                    setReadOnly(readOnly);
+                    switchTab('tab-pdca-tool');
+                    showNotification(readOnly ? 'File loaded in read-only mode.' : 'File loaded successfully.');
+                } catch (err) {
+                    console.error(err);
+                    alert('Error reading file. Please use a file exported by this tool.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function showNotification(msg) {
+            const n = document.createElement('div');
+            n.style.cssText = 'position:fixed;top:20px;right:20px;background:#27ae60;color:#fff;padding:15px 20px;border-radius:5px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:10000;animation:slideIn .3s ease;max-width:320px;font-weight:600;';
+            document.head.appendChild(document.createElement('style')).textContent = '@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes fadeOut{from{opacity:1}to{opacity:0}}';
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => { n.style.animation = 'fadeOut .5s ease'; setTimeout(() => n.remove(), 500); }, 3000);
+        }
+
+        // ===== PERSISTENCIA LOCALSTORAGE =====
+        function saveToStorage() {
+            const state = {
+                planProblem: document.getElementById('plan-problem').value,
+                planGoal: document.getElementById('plan-goal').value,
+                planActions: document.getElementById('plan-actions').value,
+                doExecution: document.getElementById('do-execution').value,
+                doProblems: document.getElementById('do-problems').value,
+                checkData: document.getElementById('check-data').value,
+                checkAnalysis: document.getElementById('check-analysis').value,
+                actConclusions: document.getElementById('act-conclusions').value,
+                actNext: document.getElementById('act-next').value,
+                readOnly: isReadOnly,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem(LS_KEY, JSON.stringify(state));
+        }
+
+        function loadFromStorage() {
+            const raw = localStorage.getItem(LS_KEY);
+            if (!raw) return false;
+            try {
+                const state = JSON.parse(raw);
+                document.getElementById('plan-problem').value = state.planProblem || '';
+                document.getElementById('plan-goal').value = state.planGoal || '';
+                document.getElementById('plan-actions').value = state.planActions || '';
+                document.getElementById('do-execution').value = state.doExecution || '';
+                document.getElementById('do-problems').value = state.doProblems || '';
+                document.getElementById('check-data').value = state.checkData || '';
+                document.getElementById('check-analysis').value = state.checkAnalysis || '';
+                document.getElementById('act-conclusions').value = state.actConclusions || '';
+                document.getElementById('act-next').value = state.actNext || '';
+                setReadOnly(!!state.readOnly);
+                document.querySelectorAll('textarea').forEach(autoResizeTextarea);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('header.html')
+                .then(r => r.text())
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                    const navToggle = document.getElementById('nav-toggle');
+                    const navMenu = document.getElementById('nav-menu');
+                    if (navToggle) navToggle.addEventListener('click', () => navMenu.classList.toggle('show-menu'));
+                }).catch(() => { });
+
+            document.querySelectorAll('textarea').forEach(ta => {
+                ta.addEventListener('input', function () { autoResizeTextarea(this); });
+                autoResizeTextarea(ta);
+            });
+
+            // Botones globales
+            document.getElementById('globalNewBtn').addEventListener('click', () => resetTool());
+            document.getElementById('globalLoadBtn').addEventListener('click', () => document.getElementById('loadPdcaInput').click());
+            document.getElementById('loadPdcaInput').addEventListener('change', function (e) {
+                if (e.target.files[0]) loadFromExcel(e.target.files[0], true);
+                e.target.value = '';
+            });
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
+            document.getElementById('globalReviseBtn').addEventListener('click', () => {
+                if (!isReadOnly) { alert('Document is already editable.'); return; }
+                openReviseModal();
+            });
+            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
+
+            // Cargar estado previo o iniciar vacío
+            if (!loadFromStorage()) {
+                // nada guardado
+            }
+
+            // Auto-save cada 60 segundos
+            setInterval(saveToStorage, 60000);
+        });
     </script>
-
-    <script src="dexie.min.js"></script>
-    <script src="db-sigma.js"></script>
-
 </body>
 
 </html>
