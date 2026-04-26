@@ -39,7 +39,7 @@
         },
         {
           "@type": "Question", "name": "How do you use this 8D tool?",
-          "acceptedAnswer": { "@type": "Answer", "text": "To use the tool, you systematically fill out the form for each of the 8 Disciplines, starting with team information (D1) and ending with team recognition (D8). You can load an example to see how it works. Once complete, click 'Generate Report Summary' to see the results, which you can then print or export as a detailed Excel file." }
+          "acceptedAnswer": { "@type": "Answer", "text": "To use the tool, you systematically fill out the form for each of the 8 Disciplines, starting with team information (D1) and ending with team recognition (D8). You can load an example to see how it works. Once complete, simply visit the Report tab to see the summary, which you can then print or export to Excel." }
         }
       ]
     }
@@ -52,7 +52,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* (Estilos completos igual que en versiones anteriores, sin cambios relevantes) */
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #3498db;
@@ -118,6 +117,7 @@
       max-width: 700px;
     }
 
+    /* Nueva barra de acciones principal */
     .main-action-buttons {
       display: flex;
       justify-content: center;
@@ -141,28 +141,171 @@
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .main-action-buttons .btn-example {
+    .btn-new {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-new:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-load {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .btn-load:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-example {
       background-color: var(--performance-color);
       color: white;
     }
 
-    .main-action-buttons .btn-example:hover {
+    .btn-example:hover {
       background-color: #27ad60;
       transform: translateY(-2px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     }
 
-    .main-action-buttons .btn-reset {
-      background-color: var(--danger-color);
+    .btn-revise {
+      background-color: #6c5ce7;
       color: white;
     }
 
-    .main-action-buttons .btn-reset:hover {
-      background-color: #a5281c;
+    .btn-revise:hover {
+      background-color: #5849c2;
       transform: translateY(-2px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     }
 
+    .btn-export-main {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-export-main:hover {
+      background-color: #1a252f;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Banner de solo lectura */
+    .readonly-banner {
+      display: none;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-left: 4px solid #ffc107;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem auto 0;
+      max-width: 800px;
+      font-size: 0.9rem;
+      color: #856404;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .readonly-banner.show {
+      display: block;
+    }
+
+    /* Modal de revisión */
+    .revise-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .revise-modal.open {
+      display: flex;
+    }
+
+    .revise-modal-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .revise-modal-box h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #6c5ce7;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .revise-field {
+      margin-bottom: 1rem;
+    }
+
+    .revise-field label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .revise-field input {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    .revise-modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .btn-cancel-revise {
+      background: none;
+      border: 1px solid #ccc;
+      color: #555;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .btn-confirm-revise {
+      background: #6c5ce7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.4rem;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    /* Resto de estilos (tabs, formularios, etc.) */
     .tabs-nav {
       display: flex;
       background-color: #f1f5f9;
@@ -370,6 +513,8 @@
       display: flex;
       gap: 0.6rem;
       flex-wrap: wrap;
+      display: none;
+      /* Se oculta por completo ya que los botones fueron eliminados */
     }
 
     #results {
@@ -379,7 +524,8 @@
       width: 100%;
       box-shadow: var(--professional-shadow);
       box-sizing: border-box;
-      display: none;
+      display: block;
+      /* Siempre visible en la pestaña Report */
     }
 
     #results p {
@@ -654,6 +800,36 @@
       background-color: #f8d7da;
       border-left: 4px solid #dc3545;
     }
+
+    /* Estilos para la tabla de historial de revisiones */
+    #revHistoryTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 0.5rem 0;
+    }
+
+    #revHistoryTable th {
+      background: var(--primary-color);
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    #revHistoryTable td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.3rem 0.5rem;
+    }
+
+    #revHistoryTable input {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.35rem 0.5rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 
@@ -667,14 +843,56 @@
         <h1>
           <div
             style="display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 8px; background-color: #f5a623; color: white; font-size: 1.5rem; margin-right: 0.5rem;">
-            <i class="fas fa-clipboard-list"></i></div> Free Online 8D Problem Solving Tool
+            <i class="fas fa-clipboard-list"></i>
+          </div> Free Online 8D Problem Solving Tool
         </h1>
         <p class="header-subtitle">A structured methodology for Problem Solving Analysis in 8 Disciplines.</p>
+        <!-- Nueva barra de acciones -->
         <div class="main-action-buttons">
+          <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
+          <button id="globalLoadBtn" class="btn-load"><i class="fas fa-folder-open"></i> Load</button>
           <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load Example</button>
-          <button id="globalResetBtn" class="btn-reset"><i class="fas fa-sync-alt"></i> Reset All</button>
+          <button id="globalReviseBtn" class="btn-revise"><i class="fas fa-edit"></i> Revise</button>
+          <button id="globalExportBtn" class="btn-export-main"><i class="fas fa-file-excel"></i> Export</button>
         </div>
+        <!-- Banner de solo lectura -->
+        <div class="readonly-banner" id="readonlyBanner">
+          <i class="fas fa-lock"></i> Read-only mode — this file was loaded for viewing only. Click
+          <strong>Revise</strong> to enable editing.
+        </div>
+        <!-- Input oculto para cargar archivo -->
+        <input type="file" id="load8dInput" accept=".xlsx,.xls" style="display:none;">
       </header>
+
+      <!-- Modal de revisión -->
+      <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+          <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+          <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">Complete the revision
+            details below. They will be added to the Revision History and the document will be unlocked for editing.</p>
+          <div class="revise-field">
+            <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+            <input type="date" id="reviseDate">
+          </div>
+          <div class="revise-field">
+            <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+            <input type="text" id="reviseDesc" placeholder="e.g. Rev B — Updated root cause analysis">
+          </div>
+          <div class="revise-field">
+            <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+            <input type="text" id="reviseBy" placeholder="Name / Department">
+          </div>
+          <div class="revise-field">
+            <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+            <input type="text" id="reviseApproved" placeholder="Name / Title">
+          </div>
+          <div class="revise-modal-footer">
+            <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+            <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &amp;
+              Enable Editing</button>
+          </div>
+        </div>
+      </div>
 
       <nav class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('tab-start')"><i class="fas fa-info-circle"></i> Start &
@@ -683,7 +901,7 @@
         <button class="tab-btn" onclick="switchTab('tab-report')"><i class="fas fa-file-alt"></i> Report</button>
       </nav>
 
-      <!-- PESTAÑA START & INFO (TEXTO ORIGINAL COMPLETO) -->
+      <!-- PESTAÑA START & INFO -->
       <div id="tab-start" class="tab-content active">
         <div class="calculation-block">
           <h2><i class="fas fa-question-circle"></i> What is the 8D Methodology?</h2>
@@ -736,15 +954,15 @@
               problems from recurring in the future.</li>
             <li><strong>Recognize the Team (D8):</strong> Document how the team's effort was recognized and the lessons
               learned to share the knowledge.</li>
-            <li><strong>Generate and Export the Report:</strong> Click "Generate Report Summary" to see a summary. You
-              can then print it or export a complete, detailed report to Excel for your documentation.</li>
+            <li><strong>Generate and Export the Report:</strong> Simply go to the "Report" tab — your summary is always
+              visible and can be exported to Excel using the <strong>Export</strong> button at the top.</li>
           </ol>
         </div>
         <div class="tab-nav-buttons"><button class="btn-next-tab" onclick="switchTab('tab-form')">Next: 8D Form <i
               class="fas fa-arrow-right"></i></button></div>
       </div>
 
-      <!-- PESTAÑA 8D FORM (CON TODAS LAS MEJORAS) -->
+      <!-- PESTAÑA 8D FORM (completa, con todas las disciplinas) -->
       <div id="tab-form" class="tab-content">
         <div class="calculation-block">
           <div class="calculation-title">8D Problem Solving Form</div>
@@ -796,13 +1014,29 @@
                   <option value="Medium (Performance/Scrap >5%)">Medium (Performance/Scrap >5%)</option>
                   <option value="Low (Minor/Cosmetic)">Low (Minor/Cosmetic)</option>
                 </select>
-                <div class="field-note">Criteria: Safety, regulatory, line stoppage, scrap rate.</div>
                 <label for="d0InitialData"><i class="fas fa-database"></i> Initial Data Collected:</label>
                 <textarea id="d0InitialData" required rows="1"></textarea>
                 <label for="d0Objectives"><i class="fas fa-bullseye"></i> Objectives of the 8D:</label>
                 <textarea id="d0Objectives" required rows="1"></textarea>
                 <label for="evidenceD0"><i class="fas fa-paperclip"></i> Evidence / Attachments (URLs):</label>
                 <input type="text" id="evidenceD0" placeholder="Link to photos, data, etc." />
+
+                <!-- Historial de revisiones -->
+                <div style="margin-top:1.5rem; border-top:1px solid #ccc; padding-top:1rem;">
+                  <h3 style="font-size:1rem; margin-top:0;"><i class="fas fa-history"></i> Revision History</h3>
+                  <table id="revHistoryTable">
+                    <thead>
+                      <tr>
+                        <th>Rev. Date</th>
+                        <th>Description of Change</th>
+                        <th>Changed By</th>
+                        <th>Approved By</th>
+                        <th style="text-align:center; width:48px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="revHistoryBody"></tbody>
+                  </table>
+                </div>
               </div>
               <div class="sub-tab-nav-buttons">
                 <div></div><button class="btn-next-sub-tab" onclick="switchSubTab('sub-tab-d1')">Next: D1: Team <i
@@ -1067,18 +1301,13 @@
             onclick="switchTab('tab-report')">Next: Report <i class="fas fa-arrow-right"></i></button></div>
       </div>
 
-      <!-- PESTAÑA REPORT -->
+      <!-- PESTAÑA REPORT (sin botones de generación ni exportación/impresión) -->
       <div id="tab-report" class="tab-content">
         <div class="calculation-block">
           <div class="calculation-title">8D Report Summary</div>
-          <div style="text-align: center; margin: 2rem 0;"><button type="button" id="generateReportBtn"
-              style="background-color: var(--primary-color); color: white; padding: 12px 24px; font-size: 1.1rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1);"><i
-                class="fas fa-cogs"></i> Generate Report Summary</button></div>
-          <div id="results" style="display: none;">
+          <!-- Resumen se genera automáticamente al entrar en esta pestaña -->
+          <div id="results" style="display:block;">
             <div id="reportSummary"></div>
-            <div class="results-actions-group"><button type="button" id="exportBtn" class="btn-export"><i
-                  class="fas fa-file-excel"></i> Export Full Report to Excel</button><button type="button"
-                id="printBtn"><i class="fas fa-print"></i> Print Summary</button></div>
           </div>
         </div>
         <div id="printable-report" style="display: none;"></div>
@@ -1089,6 +1318,7 @@
       </div>
     </div>
   </main>
+
   <footer>
     <div class="content-container">
       <div class="disclaimer-note">...</div>
@@ -1096,19 +1326,42 @@
   </footer>
 
   <script>
-    fetch('header.html').then(r => r.text()).then(d => { document.getElementById('header-container').innerHTML = d; initializeMenu(); });
-    function switchTab(id) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`button[onclick="switchTab('${id}')"]`)?.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function switchSubTab(id) { document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`button[onclick="switchSubTab('${id}')"]`)?.classList.add('active'); window.scrollTo({ top: document.querySelector('.sub-tabs-nav').offsetTop - 20, behavior: 'smooth' }); }
+    // ============= MENÚ =============
+    fetch('header.html').then(r => r.text()).then(d => {
+      document.getElementById('header-container').innerHTML = d;
+      initializeMenu();
+    });
+
+    function switchTab(id) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`button[onclick="switchTab('${id}')"]`)?.classList.add('active');
+      // Si es la pestaña de Report, generar automáticamente el resumen
+      if (id === 'tab-report') {
+        generateReportSummary();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchSubTab(id) {
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`button[onclick="switchSubTab('${id}')"]`)?.classList.add('active');
+      window.scrollTo({ top: document.querySelector('.sub-tabs-nav').offsetTop - 20, behavior: 'smooth' });
+    }
+
     function initializeMenu() { /* ... */ }
 
-    // Función para calcular días transcurridos y mostrar SLA
+    // ============= SLA =============
     function calculateDays(startDateStr) {
       if (!startDateStr || !startDateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return null;
       const start = new Date(startDateStr);
       const today = new Date(); today.setHours(0, 0, 0, 0);
-      const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-      return diff;
+      return Math.floor((today - start) / (1000 * 60 * 60 * 24));
     }
+
     function updateSLAStatus() {
       const startDate = document.getElementById('date')?.value;
       const d3Date = document.getElementById('containmentDate')?.value;
@@ -1123,112 +1376,314 @@
         el.className = cls;
       }
       const startDays = calculateDays(startDate);
-      displaySLA('slaStatusD1', startDays, 0, `Team formed`);
+      displaySLA('slaStatusD1', startDays, 0, 'Team formed');
       const d3Days = calculateDays(d3Date);
-      if (d3Days !== null) displaySLA('slaStatusD3', d3Days, 1, `Containment implemented`);
+      if (d3Days !== null) displaySLA('slaStatusD3', d3Days, 1, 'Containment implemented');
       const closureDays = calculateDays(closure);
-      if (closureDays !== null) displaySLA('slaStatusClosure', closureDays, 60, `8D closure`);
+      if (closureDays !== null) displaySLA('slaStatusClosure', closureDays, 60, '8D closure');
     }
 
+    // ============= READ‑ONLY =============
+    let isReadOnly = false;
+
+    function setReadOnly(val) {
+      isReadOnly = val;
+      const banner = document.getElementById('readonlyBanner');
+      if (val) {
+        banner.classList.add('show');
+        document.querySelectorAll('#eightDForm input, #eightDForm textarea, #eightDForm select').forEach(el => el.disabled = true);
+      } else {
+        banner.classList.remove('show');
+        document.querySelectorAll('#eightDForm input, #eightDForm textarea, #eightDForm select').forEach(el => el.disabled = false);
+      }
+    }
+
+    // ============= REVISION HISTORY =============
+    function addRevHistoryRow(data = {}) {
+      const tbody = document.getElementById('revHistoryBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="date" value="${data.date || ''}" style="width:100%;border:1px solid #ddd;padding:0.35rem"></td>
+        <td><input type="text" value="${data.desc || ''}" placeholder="Description" style="width:100%;border:1px solid #ddd;padding:0.35rem"></td>
+        <td><input type="text" value="${data.by || ''}" placeholder="Name" style="width:100%;border:1px solid #ddd;padding:0.35rem"></td>
+        <td><input type="text" value="${data.approved || ''}" placeholder="Name" style="width:100%;border:1px solid #ddd;padding:0.35rem"></td>
+        <td style="text-align:center;"><button class="btn-danger" style="padding:4px 8px;margin:0;" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function openReviseModal() {
+      document.getElementById('reviseDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('reviseDesc').value = '';
+      document.getElementById('reviseBy').value = '';
+      document.getElementById('reviseApproved').value = '';
+      document.getElementById('reviseModal').classList.add('open');
+    }
+
+    function closeReviseModal() {
+      document.getElementById('reviseModal').classList.remove('open');
+    }
+
+    function confirmRevise() {
+      const date = document.getElementById('reviseDate').value;
+      const desc = document.getElementById('reviseDesc').value.trim();
+      const by = document.getElementById('reviseBy').value.trim();
+      const approved = document.getElementById('reviseApproved').value.trim();
+      if (!date || !desc || !by || !approved) {
+        alert('Please fill in all revision fields.');
+        return;
+      }
+      addRevHistoryRow({ date, desc, by, approved });
+      setReadOnly(false);
+      closeReviseModal();
+      showNotification('Revision registered. Document is now editable.');
+    }
+
+    // ============= DATA PERSISTENCE & EXPORT/IMPORT =============
+    const LS_KEY = 'sigma_8d_v2';
+
+    function getFormData() {
+      const ids = [
+        'reportId', 'era', 'custNotifyDate', 'custNotifyMethod', 'custNotifyContact', 'd0ProblemAwareness', 'd0Urgency', 'd0InitialData', 'd0Objectives', 'evidenceD0',
+        'partNumber', 'scarNumber', 'teamLeader', 'championSponsor', 'teamMembers', 'date', 'evidenceD1',
+        'problemStatement', 'issueDescription', 'location', 'timing', 'magnitude', 'who', 'issueDescriptionNot', 'locationNot', 'timingNot', 'magnitudeNot', 'whoNot', 'evidenceD2',
+        'containmentScope', 'containmentActions', 'containmentRisk', 'suspectQty', 'inspectedQty', 'defectiveFound', 'suspectDisposition', 'containmentDate', 'containmentResponsible', 'containmentVerification', 'evidenceD3',
+        'ishikawa', 'occurrence5Whys', 'escape5Whys', 'rootCauseVerification', 'systemicCause', 'rootCause', 'evidenceD4',
+        'correctiveActions', 'pilotTrial', 'pcaSelectionRationale', 'correctiveResponsible', 'correctiveDeadline', 'correctiveVerification', 'evidenceD5',
+        'validationWindow', 'effectivenessData', 'containmentRemovalDate', 'customerApproval', 'verificationDate', 'verifiedBy', 'evidenceD6',
+        'preventiveActions', 'wiUpdated', 'trainingCompleted', 'errorProofing', 'horizontalDeployment', 'pfmeaUpdated', 'controlPlanUpdated', 'docReference', 'preventiveResponsible', 'preventiveDeadline', 'preventiveVerification', 'evidenceD7',
+        'teamRecognition', 'lessonsLearned', 'knowledgeSharing', 'closureDate', 'championSignoff', 'evidenceD8'
+      ];
+      const data = {};
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = (el.type === 'checkbox') ? el.checked : el.value;
+      });
+      return data;
+    }
+
+    function setFormData(data) {
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') el.checked = data[id];
+          else el.value = data[id] || '';
+          if (el.tagName === 'TEXTAREA') { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+        }
+      });
+    }
+
+    function saveToStorage() {
+      const state = {
+        form: getFormData(),
+        revHistory: []
+      };
+      document.querySelectorAll('#revHistoryBody tr').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        if (inputs.length >= 4) {
+          state.revHistory.push({ date: inputs[0].value, desc: inputs[1].value, by: inputs[2].value, approved: inputs[3].value });
+        }
+      });
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    function loadFromStorage() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        const state = JSON.parse(raw);
+        if (state.form) setFormData(state.form);
+        if (state.revHistory) {
+          document.getElementById('revHistoryBody').innerHTML = '';
+          state.revHistory.forEach(r => addRevHistoryRow(r));
+        }
+        return true;
+      } catch (e) { console.warn('Load failed:', e); return false; }
+    }
+
+    // ============= LOAD EXAMPLE =============
     function loadExample() {
+      setReadOnly(true);
       const today = new Date().toLocaleDateString('en-CA');
-      // D0
-      document.getElementById('reportId').value = '8D-2026-001 Rev.A'; document.getElementById('era').value = 'Immediate shipment hold and customer notification. 100% sort of finished goods.'; document.getElementById('custNotifyDate').value = today; document.getElementById('custNotifyMethod').value = 'Email & Phone'; document.getElementById('custNotifyContact').value = 'Jane Smith (Customer SQE)'; document.getElementById('d0ProblemAwareness').value = 'High defect rate detected in final testing of Model X circuit boards. Customer complaints increasing.'; document.getElementById('d0Urgency').value = 'High (Safety/Regulatory/Stop Ship)'; document.getElementById('d0InitialData').value = '12% defect rate in last 1000 units, affecting lot #X2305 onwards.'; document.getElementById('d0Objectives').value = '1. Identify root cause of short circuits.\n2. Implement containment.\n3. Develop PCA.\n4. Prevent recurrence.'; document.getElementById('evidenceD0').value = 'http://link.to/initial-data';
-      // D1
-      document.getElementById('partNumber').value = 'Model X PCB Assy, P/N 12345-ABC'; document.getElementById('scarNumber').value = 'SCAR-2026-042'; document.getElementById('teamLeader').value = 'John Doe (Quality Mgr)'; document.getElementById('championSponsor').value = 'Dr. Emily Chen (VP Quality)'; document.getElementById('teamMembers').value = 'Jane Smith (QE), Mike Johnson (Process Eng), Sarah Williams (Test)'; document.getElementById('date').value = today; document.getElementById('evidenceD1').value = 'http://link.to/team-charter';
-      // D2
-      document.getElementById('problemStatement').value = 'High defect rate in Model X circuit boards during final testing'; document.getElementById('issueDescription').value = 'Approx 12% fail final electrical test due to short circuits in power section'; document.getElementById('location').value = 'Line 3 Final Test'; document.getElementById('timing').value = 'Lot #X2305 onward'; document.getElementById('magnitude').value = '12% (120/1000)'; document.getElementById('who').value = 'Shift A & B'; document.getElementById('issueDescriptionNot').value = 'Open circuits, visual defects'; document.getElementById('locationNot').value = 'Lines 1,2,4'; document.getElementById('timingNot').value = 'Before lot #X2305'; document.getElementById('magnitudeNot').value = 'Model Y boards'; document.getElementById('whoNot').value = 'Shift C'; document.getElementById('evidenceD2').value = 'http://link.to/pareto';
-      // D3
-      document.getElementById('containmentScope').value = 'All lots at plant, warehouse, transit.'; document.getElementById('containmentActions').value = '100% inspection, quarantine.'; document.getElementById('containmentRisk').value = 'No bottleneck.'; document.getElementById('suspectQty').value = '1200'; document.getElementById('inspectedQty').value = '1200'; document.getElementById('defectiveFound').value = '120'; document.getElementById('suspectDisposition').value = 'Sort and rework; scrap bridges.'; document.getElementById('containmentDate').value = today; document.getElementById('containmentResponsible').value = 'Maria Garcia'; document.getElementById('containmentVerification').value = '0 defects shipped after sort.'; document.getElementById('evidenceD3').value = 'http://link.to/sort-records';
-      // D4
-      document.getElementById('ishikawa').value = 'Man: training; Machine: AOI; Method: stencil change; Material: paste.'; document.getElementById('occurrence5Whys').value = '1. Short circuits... 5. Unvalidated stencil change.'; document.getElementById('escape5Whys').value = '1. AOI missed... 5. No validation procedure.'; document.getElementById('rootCauseVerification').value = 'Turn on/off test confirmed stencil.'; document.getElementById('systemicCause').value = 'Weak change control.'; document.getElementById('rootCause').value = 'Unvalidated stencil (occurrence) + Inadequate AOI change control (escape).'; document.getElementById('evidenceD4').value = 'http://link.to/doe-report';
-      // D5
-      document.getElementById('correctiveActions').value = 'Revert stencil; implement ECC procedure.'; document.getElementById('pilotTrial').value = 'Pilot on 500 units: 0 defects.'; document.getElementById('pcaSelectionRationale').value = 'Decision matrix: revert best.'; document.getElementById('correctiveResponsible').value = 'David Wilson'; document.getElementById('correctiveDeadline').value = new Date(new Date().setDate(new Date().getDate() + 15)).toLocaleDateString('en-CA'); document.getElementById('correctiveVerification').value = 'Monitor 30 days; Cpk study.'; document.getElementById('evidenceD5').value = 'http://link.to/pilot-data';
-      // D6
-      document.getElementById('validationWindow').value = '3 shifts 0 defects, >5000 units.'; document.getElementById('effectivenessData').value = 'Defect rate 0.5%; Cpk 1.67.'; document.getElementById('containmentRemovalDate').value = today; document.getElementById('customerApproval').value = 'J. Smith (SQE) on ' + today; document.getElementById('verificationDate').value = new Date(new Date().setDate(new Date().getDate() + 20)).toLocaleDateString('en-CA'); document.getElementById('verifiedBy').value = 'Emma Thompson'; document.getElementById('evidenceD6').value = 'http://link.to/spc-charts';
-      // D7
-      document.getElementById('preventiveActions').value = 'ECC procedure rolled out; solder paste volume check.'; document.getElementById('wiUpdated').checked = true; document.getElementById('trainingCompleted').checked = true; document.getElementById('errorProofing').checked = false; document.getElementById('horizontalDeployment').checked = true; document.getElementById('pfmeaUpdated').value = 'Yes'; document.getElementById('controlPlanUpdated').value = 'Yes'; document.getElementById('docReference').value = 'PFMEA #SMT-2025-04, CP #CP-MODELX-08'; document.getElementById('preventiveResponsible').value = 'Carlos Rodriguez'; document.getElementById('preventiveDeadline').value = new Date(new Date().setDate(new Date().getDate() + 60)).toLocaleDateString('en-CA'); document.getElementById('preventiveVerification').value = 'Monthly audits.'; document.getElementById('evidenceD7').value = 'http://link.to/updated-docs';
-      // D8
-      document.getElementById('teamRecognition').value = 'Quality Champion award.'; document.getElementById('lessonsLearned').value = 'Validate all changes.'; document.getElementById('knowledgeSharing').value = 'Case study shared.'; document.getElementById('closureDate').value = today; document.getElementById('championSignoff').value = 'Dr. Emily Chen / ' + today; document.getElementById('evidenceD8').value = 'http://link.to/award';
-      // Update SLA
+      const data = {
+        reportId: '8D-2026-001 Rev.A', era: 'Immediate shipment hold and customer notification. 100% sort of finished goods.', custNotifyDate: today, custNotifyMethod: 'Email & Phone', custNotifyContact: 'Jane Smith (Customer SQE)',
+        d0ProblemAwareness: 'High defect rate detected in final testing of Model X circuit boards. Customer complaints increasing.', d0Urgency: 'High (Safety/Regulatory/Stop Ship)', d0InitialData: '12% defect rate in last 1000 units, affecting lot #X2305 onwards.', d0Objectives: '1. Identify root cause of short circuits.\n2. Implement containment.\n3. Develop PCA.\n4. Prevent recurrence.', evidenceD0: 'http://link.to/initial-data',
+        partNumber: 'Model X PCB Assy, P/N 12345-ABC', scarNumber: 'SCAR-2026-042', teamLeader: 'John Doe (Quality Mgr)', championSponsor: 'Dr. Emily Chen (VP Quality)', teamMembers: 'Jane Smith (QE), Mike Johnson (Process Eng), Sarah Williams (Test)', date: today, evidenceD1: 'http://link.to/team-charter',
+        problemStatement: 'High defect rate in Model X circuit boards during final testing', issueDescription: 'Approx 12% fail final electrical test due to short circuits in power section', location: 'Line 3 Final Test', timing: 'Lot #X2305 onward', magnitude: '12% (120/1000)', who: 'Shift A & B',
+        issueDescriptionNot: 'Open circuits, visual defects', locationNot: 'Lines 1,2,4', timingNot: 'Before lot #X2305', magnitudeNot: 'Model Y boards', whoNot: 'Shift C', evidenceD2: 'http://link.to/pareto',
+        containmentScope: 'All lots at plant, warehouse, transit.', containmentActions: '100% inspection, quarantine.', containmentRisk: 'No bottleneck.', suspectQty: '1200', inspectedQty: '1200', defectiveFound: '120', suspectDisposition: 'Sort and rework; scrap bridges.', containmentDate: today, containmentResponsible: 'Maria Garcia', containmentVerification: '0 defects shipped after sort.', evidenceD3: 'http://link.to/sort-records',
+        ishikawa: 'Man: training; Machine: AOI; Method: stencil change; Material: paste.', occurrence5Whys: '1. Short circuits... 5. Unvalidated stencil change.', escape5Whys: '1. AOI missed... 5. No validation procedure.', rootCauseVerification: 'Turn on/off test confirmed stencil.', systemicCause: 'Weak change control.', rootCause: 'Unvalidated stencil (occurrence) + Inadequate AOI change control (escape).', evidenceD4: 'http://link.to/doe-report',
+        correctiveActions: 'Revert stencil; implement ECC procedure.', pilotTrial: 'Pilot on 500 units: 0 defects.', pcaSelectionRationale: 'Decision matrix: revert best.', correctiveResponsible: 'David Wilson', correctiveDeadline: new Date(new Date().setDate(new Date().getDate() + 15)).toLocaleDateString('en-CA'), correctiveVerification: 'Monitor 30 days; Cpk study.', evidenceD5: 'http://link.to/pilot-data',
+        validationWindow: '3 shifts 0 defects, >5000 units.', effectivenessData: 'Defect rate 0.5%; Cpk 1.67.', containmentRemovalDate: today, customerApproval: 'J. Smith (SQE) on ' + today, verificationDate: new Date(new Date().setDate(new Date().getDate() + 20)).toLocaleDateString('en-CA'), verifiedBy: 'Emma Thompson', evidenceD6: 'http://link.to/spc-charts',
+        preventiveActions: 'ECC procedure rolled out; solder paste volume check.', wiUpdated: true, trainingCompleted: true, errorProofing: false, horizontalDeployment: true, pfmeaUpdated: 'Yes', controlPlanUpdated: 'Yes', docReference: 'PFMEA #SMT-2025-04, CP #CP-MODELX-08', preventiveResponsible: 'Carlos Rodriguez', preventiveDeadline: new Date(new Date().setDate(new Date().getDate() + 60)).toLocaleDateString('en-CA'), preventiveVerification: 'Monthly audits.', evidenceD7: 'http://link.to/updated-docs',
+        teamRecognition: 'Quality Champion award.', lessonsLearned: 'Validate all changes.', knowledgeSharing: 'Case study shared.', closureDate: today, championSignoff: 'Dr. Emily Chen / ' + today, evidenceD8: 'http://link.to/award'
+      };
+      setFormData(data);
       updateSLAStatus();
-      document.querySelectorAll('textarea').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; });
+      document.getElementById('revHistoryBody').innerHTML = '';
+      addRevHistoryRow({ date: '2024-05-10', desc: 'Initial release', by: 'J. Doe', approved: 'E. Chen' });
       switchTab('tab-form'); switchSubTab('sub-tab-d0');
-      showNotification("Example loaded with full IATF compliance.");
+      showNotification("Example loaded in read-only mode. Use 'Revise' to edit.");
     }
 
-    function resetTool() { if (confirm('Reset all data?')) { document.getElementById('eightDForm').reset(); document.querySelectorAll('textarea').forEach(t => t.style.height = 'auto'); document.getElementById('results').style.display = 'none'; switchTab('tab-form'); switchSubTab('sub-tab-d0'); updateSLAStatus(); showNotification('Reset done'); } }
-    function showNotification(msg) { /* igual que antes */ }
+    // ============= EXPORT (desde botón global) =============
+    function exportToExcel() {
+      const d = getFormData();
+      const chk = v => v ? 'Yes' : 'No';
+      // Construcción del Excel (igual que antes, adaptada)
+      const excelData = [
+        ['Discipline', 'Item', 'Details'],
+        ['D0', '', ''], ['', 'Report ID', d.reportId], ['', 'ERA', d.era], ['', 'Cust Notify', `${d.custNotifyDate} ${d.custNotifyMethod} ${d.custNotifyContact}`], ['', 'Problem', d.d0ProblemAwareness], ['', 'Urgency', d.d0Urgency], ['', 'Initial Data', d.d0InitialData], ['', 'Objectives', d.d0Objectives], ['', 'Evidence', d.evidenceD0],
+        ['D1', '', ''], ['', 'Part Number', d.partNumber], ['', 'SCAR', d.scarNumber], ['', 'Leader', d.teamLeader], ['', 'Champion', d.championSponsor], ['', 'Members', d.teamMembers], ['', 'Date', d.date], ['', 'Evidence', d.evidenceD1],
+        ['D2', '', ''], ['', 'Statement', d.problemStatement], ['', 'IS What', d.issueDescription], ['', 'IS Where', d.location], ['', 'IS When', d.timing], ['', 'IS Magnitude', d.magnitude], ['', 'IS Who', d.who], ['', 'IS NOT What', d.issueDescriptionNot], ['', 'IS NOT Where', d.locationNot], ['', 'IS NOT When', d.timingNot], ['', 'IS NOT Magnitude', d.magnitudeNot], ['', 'IS NOT Who', d.whoNot], ['', 'Evidence', d.evidenceD2],
+        ['D3', '', ''], ['', 'Scope', d.containmentScope], ['', 'Actions', d.containmentActions], ['', 'Risk', d.containmentRisk], ['', 'Suspect Qty', d.suspectQty], ['', 'Inspected Qty', d.inspectedQty], ['', 'Defective', d.defectiveFound], ['', 'Disposition', d.suspectDisposition], ['', 'Date', d.containmentDate], ['', 'Resp', d.containmentResponsible], ['', 'Verification', d.containmentVerification], ['', 'Evidence', d.evidenceD3],
+        ['D4', '', ''], ['', 'Ishikawa', d.ishikawa], ['', 'Occurrence 5W', d.occurrence5Whys], ['', 'Escape 5W', d.escape5Whys], ['', 'Verification', d.rootCauseVerification], ['', 'Systemic', d.systemicCause], ['', 'Summary', d.rootCause], ['', 'Evidence', d.evidenceD4],
+        ['D5', '', ''], ['', 'PCA', d.correctiveActions], ['', 'Pilot', d.pilotTrial], ['', 'Rationale', d.pcaSelectionRationale], ['', 'Resp', d.correctiveResponsible], ['', 'Deadline', d.correctiveDeadline], ['', 'Verif', d.correctiveVerification], ['', 'Evidence', d.evidenceD5],
+        ['D6', '', ''], ['', 'Criteria', d.validationWindow], ['', 'Data', d.effectivenessData], ['', 'Containment Removed', d.containmentRemovalDate], ['', 'Cust Approval', d.customerApproval], ['', 'Date Verified', d.verificationDate], ['', 'By', d.verifiedBy], ['', 'Evidence', d.evidenceD6],
+        ['D7', '', ''], ['', 'Actions', d.preventiveActions], ['', 'WI Updated', chk(d.wiUpdated)], ['', 'Training', chk(d.trainingCompleted)], ['', 'Error-Proofing', chk(d.errorProofing)], ['', 'Horizontal', chk(d.horizontalDeployment)], ['', 'PFMEA', d.pfmeaUpdated], ['', 'CP', d.controlPlanUpdated], ['', 'Ref', d.docReference], ['', 'Resp', d.preventiveResponsible], ['', 'Deadline', d.preventiveDeadline], ['', 'Verif', d.preventiveVerification], ['', 'Evidence', d.evidenceD7],
+        ['D8', '', ''], ['', 'Recognition', d.teamRecognition], ['', 'Lessons', d.lessonsLearned], ['', 'Sharing', d.knowledgeSharing], ['', 'Closure Date', d.closureDate], ['', 'Sign-off', d.championSignoff], ['', 'Evidence', d.evidenceD8]
+      ];
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      ws['!cols'] = [{ wch: 30 }, { wch: 30 }, { wch: 80 }];
+      XLSX.utils.book_append_sheet(wb, ws, "8D Report");
+      XLSX.writeFile(wb, "8D_Report_IATF_Enhanced.xlsx");
+      showNotification('Report exported to Excel.');
+    }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      // Auto-grow y SLA updates
-      document.querySelectorAll('textarea').forEach(t => { t.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; }); if (t.value) t.style.height = t.scrollHeight + 'px'; });
+    // ============= GENERATE REPORT (sincrónico) =============
+    function generateReportSummary() {
+      const d = getFormData();
+      const nl2br = s => (s || '').replace(/\n/g, '<br>');
+      const chk = v => v ? 'Yes' : 'No';
+      const html = `
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-clipboard-check"></i> D0: Plan</div><p><strong>Report ID:</strong> ${d.reportId}</p><p><strong>ERA:</strong> ${nl2br(d.era)}</p><p><strong>Customer Notified:</strong> ${d.custNotifyDate} via ${d.custNotifyMethod} (${d.custNotifyContact})</p><p><strong>Problem Awareness:</strong> ${nl2br(d.d0ProblemAwareness)}</p><p><strong>Urgency:</strong> ${d.d0Urgency}</p><p><strong>Initial Data:</strong> ${nl2br(d.d0InitialData)}</p><p><strong>Objectives:</strong> ${nl2br(d.d0Objectives)}</p><p><strong>Evidence:</strong> ${d.evidenceD0 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-users"></i> D1: Team</div><p><strong>Part Number:</strong> ${d.partNumber} | <strong>SCAR#:</strong> ${d.scarNumber}</p><p><strong>Leader:</strong> ${d.teamLeader}</p><p><strong>Champion:</strong> ${d.championSponsor}</p><p><strong>Members:</strong> ${nl2br(d.teamMembers)}</p><p><strong>Date:</strong> ${d.date}</p><p><strong>Evidence:</strong> ${d.evidenceD1 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D2: Problem</div><p><strong>Statement:</strong> ${nl2br(d.problemStatement)}</p><div style="display:flex;"><div><strong>IS:</strong> What:${nl2br(d.issueDescription)} Where:${nl2br(d.location)} When:${nl2br(d.timing)} Magnitude:${nl2br(d.magnitude)} Who:${nl2br(d.who)}</div><div><strong>IS NOT:</strong> What:${nl2br(d.issueDescriptionNot)} Where:${nl2br(d.locationNot)} When:${nl2br(d.timingNot)} Magnitude:${nl2br(d.magnitudeNot)} Who:${nl2br(d.whoNot)}</div></div><p><strong>Evidence:</strong> ${d.evidenceD2 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-shield-alt"></i> D3: Containment</div><p><strong>Scope:</strong> ${nl2br(d.containmentScope)}</p><p><strong>Actions:</strong> ${nl2br(d.containmentActions)}</p><p><strong>Risk:</strong> ${nl2br(d.containmentRisk)}</p><p><strong>Quantities:</strong> Suspect: ${d.suspectQty || 'N/A'}, Inspected: ${d.inspectedQty || 'N/A'}, Defective: ${d.defectiveFound || 'N/A'}</p><p><strong>Disposition:</strong> ${nl2br(d.suspectDisposition)}</p><p><strong>Date:</strong> ${d.containmentDate} | <strong>Resp:</strong> ${d.containmentResponsible}</p><p><strong>Verification:</strong> ${nl2br(d.containmentVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD3 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-search"></i> D4: Root Cause</div><p><strong>Ishikawa Factors:</strong> ${nl2br(d.ishikawa || 'N/A')}</p><p><strong>Occurrence 5W:</strong> ${nl2br(d.occurrence5Whys)}</p><p><strong>Escape 5W:</strong> ${nl2br(d.escape5Whys)}</p><p><strong>Verification:</strong> ${nl2br(d.rootCauseVerification)}</p><p><strong>Systemic:</strong> ${nl2br(d.systemicCause)}</p><p><strong>Summary:</strong> ${nl2br(d.rootCause)}</p><p><strong>Evidence:</strong> ${d.evidenceD4 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-wrench"></i> D5: Corrective</div><p><strong>PCA:</strong> ${nl2br(d.correctiveActions)}</p><p><strong>Pilot:</strong> ${nl2br(d.pilotTrial)}</p><p><strong>Rationale:</strong> ${nl2br(d.pcaSelectionRationale)}</p><p><strong>Resp:</strong> ${d.correctiveResponsible} | <strong>Deadline:</strong> ${d.correctiveDeadline}</p><p><strong>Verif:</strong> ${nl2br(d.correctiveVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD5 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-check-circle"></i> D6: Verification</div><p><strong>Criteria:</strong> ${nl2br(d.validationWindow)}</p><p><strong>Data:</strong> ${nl2br(d.effectivenessData)}</p><p><strong>Containment Removed:</strong> ${d.containmentRemovalDate}</p><p><strong>Cust Approval:</strong> ${d.customerApproval}</p><p><strong>Date Verified:</strong> ${d.verificationDate} | <strong>By:</strong> ${d.verifiedBy}</p><p><strong>Evidence:</strong> ${d.evidenceD6 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-cogs"></i> D7: Preventive</div><p><strong>Actions:</strong> ${nl2br(d.preventiveActions)}</p><p>WI: ${chk(d.wiUpdated)} | Training: ${chk(d.trainingCompleted)} | Error-Proof: ${chk(d.errorProofing)} | Horizontal: ${chk(d.horizontalDeployment)}</p><p>PFMEA: ${d.pfmeaUpdated} | CP: ${d.controlPlanUpdated} | Ref: ${d.docReference}</p><p><strong>Resp:</strong> ${d.preventiveResponsible} | <strong>Deadline:</strong> ${d.preventiveDeadline}</p><p><strong>Verif:</strong> ${nl2br(d.preventiveVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD7 || 'N/A'}</p></div>
+        <div class="discipline-section"><div class="discipline-title"><i class="fas fa-trophy"></i> D8: Recognize</div><p><strong>Recognition:</strong> ${nl2br(d.teamRecognition)}</p><p><strong>Lessons:</strong> ${nl2br(d.lessonsLearned)}</p><p><strong>Sharing:</strong> ${nl2br(d.knowledgeSharing)}</p><p><strong>Closure Date:</strong> ${d.closureDate} | <strong>Sign-off:</strong> ${d.championSignoff}</p><p><strong>Evidence:</strong> ${d.evidenceD8 || 'N/A'}</p></div>
+      `;
+      document.getElementById('reportSummary').innerHTML = html;
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('printable-report').innerHTML = `<h1>8D Report - Sigma Exacta</h1>${html}`;
+    }
+
+    // ============= NOTIFICACIÓN =============
+    function showNotification(msg) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:20px;right:20px;background:#2ecc71;color:#fff;padding:15px 20px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:10000;font-weight:600;animation:slideIn 0.3s ease';
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => { div.style.animation = 'fadeOut 0.5s ease'; setTimeout(() => div.remove(), 500); }, 3000);
+    }
+
+    // ============= LOAD FROM EXCEL =============
+    function loadFromExcel(file) {
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const wb = XLSX.read(data, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+          // Mapeo simple: esperamos columnas Discipline, Item, Details
+          const formData = {};
+          rows.forEach(row => {
+            if (row[1] && row[2] !== undefined) {
+              // Mapear nombres de items a IDs
+              const map = {
+                'Report ID': 'reportId', 'ERA': 'era', 'Problem': 'd0ProblemAwareness', 'Urgency': 'd0Urgency', 'Initial Data': 'd0InitialData', 'Objectives': 'd0Objectives',
+                'Part Number': 'partNumber', 'SCAR': 'scarNumber', 'Leader': 'teamLeader', 'Champion': 'championSponsor', 'Members': 'teamMembers', 'Date': 'date',
+                'Statement': 'problemStatement', 'IS What': 'issueDescription', 'IS Where': 'location', 'IS When': 'timing', 'IS Magnitude': 'magnitude', 'IS Who': 'who',
+                'IS NOT What': 'issueDescriptionNot', 'IS NOT Where': 'locationNot', 'IS NOT When': 'timingNot', 'IS NOT Magnitude': 'magnitudeNot', 'IS NOT Who': 'whoNot',
+                'Scope': 'containmentScope', 'Actions': 'containmentActions', 'Risk': 'containmentRisk', 'Suspect Qty': 'suspectQty', 'Inspected Qty': 'inspectedQty', 'Defective': 'defectiveFound', 'Disposition': 'suspectDisposition', 'Containment Date': 'containmentDate', 'Resp': 'containmentResponsible', 'Verification': 'containmentVerification',
+                'Ishikawa': 'ishikawa', 'Occurrence 5W': 'occurrence5Whys', 'Escape 5W': 'escape5Whys', 'Root Cause Verification': 'rootCauseVerification', 'Systemic': 'systemicCause', 'Summary': 'rootCause',
+                'PCA': 'correctiveActions', 'Pilot': 'pilotTrial', 'Rationale': 'pcaSelectionRationale', 'Corrective Resp': 'correctiveResponsible', 'Deadline': 'correctiveDeadline', 'Corrective Verif': 'correctiveVerification',
+                'Criteria': 'validationWindow', 'Data': 'effectivenessData', 'Containment Removed': 'containmentRemovalDate', 'Cust Approval': 'customerApproval', 'Date Verified': 'verificationDate', 'By': 'verifiedBy',
+                'Preventive Actions': 'preventiveActions', 'WI Updated': 'wiUpdated', 'Training': 'trainingCompleted', 'Error-Proofing': 'errorProofing', 'Horizontal': 'horizontalDeployment', 'PFMEA': 'pfmeaUpdated', 'CP': 'controlPlanUpdated', 'Ref': 'docReference', 'Preventive Resp': 'preventiveResponsible', 'Preventive Deadline': 'preventiveDeadline', 'Preventive Verif': 'preventiveVerification',
+                'Recognition': 'teamRecognition', 'Lessons': 'lessonsLearned', 'Sharing': 'knowledgeSharing', 'Closure Date': 'closureDate', 'Sign-off': 'championSignoff'
+              };
+              const id = map[row[1]] || row[1];
+              if (id && document.getElementById(id)) {
+                if (id === 'wiUpdated' || id === 'trainingCompleted' || id === 'errorProofing' || id === 'horizontalDeployment') {
+                  document.getElementById(id).checked = row[2].toLowerCase() === 'yes';
+                } else {
+                  document.getElementById(id).value = row[2];
+                }
+              }
+            }
+          });
+          setReadOnly(true);
+          showNotification('8D report loaded in read-only mode.');
+        } catch (e) { console.error(e); alert('Error loading file.'); }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ============= INICIALIZACIÓN =============
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto‑grow de textareas
+      document.querySelectorAll('textarea').forEach(t => {
+        t.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; });
+        if (t.value) t.style.height = t.scrollHeight + 'px';
+      });
+
+      // SLA updates
       document.getElementById('date')?.addEventListener('change', updateSLAStatus);
       document.getElementById('containmentDate')?.addEventListener('change', updateSLAStatus);
       document.getElementById('closureDate')?.addEventListener('change', updateSLAStatus);
 
-      const genBtn = document.getElementById('generateReportBtn');
-      const expBtn = document.getElementById('exportBtn');
-      const prtBtn = document.getElementById('printBtn');
-      const resultsDiv = document.getElementById('results');
-      const summaryDiv = document.getElementById('reportSummary');
-      const printableDiv = document.getElementById('printable-report');
-
-      function getReportData() {
-        const ids = [
-          'reportId', 'era', 'custNotifyDate', 'custNotifyMethod', 'custNotifyContact', 'd0ProblemAwareness', 'd0Urgency', 'd0InitialData', 'd0Objectives', 'evidenceD0',
-          'partNumber', 'scarNumber', 'teamLeader', 'championSponsor', 'teamMembers', 'date', 'evidenceD1',
-          'problemStatement', 'issueDescription', 'location', 'timing', 'magnitude', 'who', 'issueDescriptionNot', 'locationNot', 'timingNot', 'magnitudeNot', 'whoNot', 'evidenceD2',
-          'containmentScope', 'containmentActions', 'containmentRisk', 'suspectQty', 'inspectedQty', 'defectiveFound', 'suspectDisposition', 'containmentDate', 'containmentResponsible', 'containmentVerification', 'evidenceD3',
-          'ishikawa', 'occurrence5Whys', 'escape5Whys', 'rootCauseVerification', 'systemicCause', 'rootCause', 'evidenceD4',
-          'correctiveActions', 'pilotTrial', 'pcaSelectionRationale', 'correctiveResponsible', 'correctiveDeadline', 'correctiveVerification', 'evidenceD5',
-          'validationWindow', 'effectivenessData', 'containmentRemovalDate', 'customerApproval', 'verificationDate', 'verifiedBy', 'evidenceD6',
-          'preventiveActions', 'wiUpdated', 'trainingCompleted', 'errorProofing', 'horizontalDeployment', 'pfmeaUpdated', 'controlPlanUpdated', 'docReference', 'preventiveResponsible', 'preventiveDeadline', 'preventiveVerification', 'evidenceD7',
-          'teamRecognition', 'lessonsLearned', 'knowledgeSharing', 'closureDate', 'championSignoff', 'evidenceD8'
-        ];
-        const data = {}; ids.forEach(id => { const el = document.getElementById(id); if (el) data[id] = (el.type === 'checkbox') ? el.checked : el.value; });
-        return data;
-      }
-
-      function generateReportSummary() {
-        if (!document.getElementById('eightDForm').checkValidity()) { document.getElementById('eightDForm').reportValidity(); return; }
-        const d = getReportData(); const nl2br = s => s.replace(/\n/g, '<br>'); const chk = v => v ? 'Yes' : 'No';
-        let html = `
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-clipboard-check"></i> D0: Plan</div><p><strong>Report ID:</strong> ${d.reportId}</p><p><strong>ERA:</strong> ${nl2br(d.era)}</p><p><strong>Customer Notified:</strong> ${d.custNotifyDate} via ${d.custNotifyMethod} (${d.custNotifyContact})</p><p><strong>Problem Awareness:</strong> ${nl2br(d.d0ProblemAwareness)}</p><p><strong>Urgency:</strong> ${d.d0Urgency}</p><p><strong>Initial Data:</strong> ${nl2br(d.d0InitialData)}</p><p><strong>Objectives:</strong> ${nl2br(d.d0Objectives)}</p><p><strong>Evidence:</strong> ${d.evidenceD0 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-users"></i> D1: Team</div><p><strong>Part Number:</strong> ${d.partNumber} | <strong>SCAR#:</strong> ${d.scarNumber}</p><p><strong>Leader:</strong> ${d.teamLeader}</p><p><strong>Champion:</strong> ${d.championSponsor}</p><p><strong>Members:</strong> ${nl2br(d.teamMembers)}</p><p><strong>Date:</strong> ${d.date}</p><p><strong>Evidence:</strong> ${d.evidenceD1 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-exclamation-triangle"></i> D2: Problem</div><p><strong>Statement:</strong> ${nl2br(d.problemStatement)}</p><div style="display:flex;"><div><strong>IS:</strong> What:${nl2br(d.issueDescription)} Where:${nl2br(d.location)} When:${nl2br(d.timing)} Magnitude:${nl2br(d.magnitude)} Who:${nl2br(d.who)}</div><div><strong>IS NOT:</strong> What:${nl2br(d.issueDescriptionNot)} Where:${nl2br(d.locationNot)} When:${nl2br(d.timingNot)} Magnitude:${nl2br(d.magnitudeNot)} Who:${nl2br(d.whoNot)}</div></div><p><strong>Evidence:</strong> ${d.evidenceD2 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-shield-alt"></i> D3: Containment</div><p><strong>Scope:</strong> ${nl2br(d.containmentScope)}</p><p><strong>Actions:</strong> ${nl2br(d.containmentActions)}</p><p><strong>Risk:</strong> ${nl2br(d.containmentRisk)}</p><p><strong>Quantities:</strong> Suspect: ${d.suspectQty || 'N/A'}, Inspected: ${d.inspectedQty || 'N/A'}, Defective: ${d.defectiveFound || 'N/A'}</p><p><strong>Disposition:</strong> ${nl2br(d.suspectDisposition)}</p><p><strong>Date:</strong> ${d.containmentDate} | <strong>Resp:</strong> ${d.containmentResponsible}</p><p><strong>Verification:</strong> ${nl2br(d.containmentVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD3 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-search"></i> D4: Root Cause</div><p><strong>Ishikawa Factors:</strong> ${nl2br(d.ishikawa || 'N/A')}</p><p><strong>Occurrence 5W:</strong> ${nl2br(d.occurrence5Whys)}</p><p><strong>Escape 5W:</strong> ${nl2br(d.escape5Whys)}</p><p><strong>Verification:</strong> ${nl2br(d.rootCauseVerification)}</p><p><strong>Systemic:</strong> ${nl2br(d.systemicCause)}</p><p><strong>Summary:</strong> ${nl2br(d.rootCause)}</p><p><strong>Evidence:</strong> ${d.evidenceD4 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-wrench"></i> D5: Corrective</div><p><strong>PCA:</strong> ${nl2br(d.correctiveActions)}</p><p><strong>Pilot:</strong> ${nl2br(d.pilotTrial)}</p><p><strong>Rationale:</strong> ${nl2br(d.pcaSelectionRationale)}</p><p><strong>Resp:</strong> ${d.correctiveResponsible} | <strong>Deadline:</strong> ${d.correctiveDeadline}</p><p><strong>Verif:</strong> ${nl2br(d.correctiveVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD5 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-check-circle"></i> D6: Verification</div><p><strong>Criteria:</strong> ${nl2br(d.validationWindow)}</p><p><strong>Data:</strong> ${nl2br(d.effectivenessData)}</p><p><strong>Containment Removed:</strong> ${d.containmentRemovalDate}</p><p><strong>Cust Approval:</strong> ${d.customerApproval}</p><p><strong>Date Verified:</strong> ${d.verificationDate} | <strong>By:</strong> ${d.verifiedBy}</p><p><strong>Evidence:</strong> ${d.evidenceD6 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-cogs"></i> D7: Preventive</div><p><strong>Actions:</strong> ${nl2br(d.preventiveActions)}</p><p>WI: ${chk(d.wiUpdated)} | Training: ${chk(d.trainingCompleted)} | Error-Proof: ${chk(d.errorProofing)} | Horizontal: ${chk(d.horizontalDeployment)}</p><p>PFMEA: ${d.pfmeaUpdated} | CP: ${d.controlPlanUpdated} | Ref: ${d.docReference}</p><p><strong>Resp:</strong> ${d.preventiveResponsible} | <strong>Deadline:</strong> ${d.preventiveDeadline}</p><p><strong>Verif:</strong> ${nl2br(d.preventiveVerification)}</p><p><strong>Evidence:</strong> ${d.evidenceD7 || 'N/A'}</p></div>
-          <div class="discipline-section"><div class="discipline-title"><i class="fas fa-trophy"></i> D8: Recognize</div><p><strong>Recognition:</strong> ${nl2br(d.teamRecognition)}</p><p><strong>Lessons:</strong> ${nl2br(d.lessonsLearned)}</p><p><strong>Sharing:</strong> ${nl2br(d.knowledgeSharing)}</p><p><strong>Closure Date:</strong> ${d.closureDate} | <strong>Sign-off:</strong> ${d.championSignoff}</p><p><strong>Evidence:</strong> ${d.evidenceD8 || 'N/A'}</p></div>
-        `;
-        summaryDiv.innerHTML = html; resultsDiv.style.display = 'block'; resultsDiv.scrollIntoView({ behavior: 'smooth' }); printableDiv.innerHTML = `<h1>8D Report - Sigma Exacta</h1>${html}`; showNotification('Report generated.');
-      }
-      genBtn.addEventListener('click', generateReportSummary);
-      prtBtn.addEventListener('click', () => { if (!document.getElementById('eightDForm').checkValidity()) { document.getElementById('eightDForm').reportValidity(); return; } generateReportSummary(); window.print(); });
-      expBtn.addEventListener('click', () => {
-        if (!document.getElementById('eightDForm').checkValidity()) { document.getElementById('eightDForm').reportValidity(); return; }
-        const d = getReportData(); const chk = v => v ? 'Yes' : 'No';
-        const dataMap = [
-          { d: "D0", items: [["Report ID", d.reportId], ["ERA", d.era], ["Cust Notify", `${d.custNotifyDate} ${d.custNotifyMethod} ${d.custNotifyContact}`], ["Problem", d.d0ProblemAwareness], ["Urgency", d.d0Urgency], ["Initial Data", d.d0InitialData], ["Objectives", d.d0Objectives], ["Evidence", d.evidenceD0]] },
-          { d: "D1", items: [["Part Number", d.partNumber], ["SCAR", d.scarNumber], ["Leader", d.teamLeader], ["Champion", d.championSponsor], ["Members", d.teamMembers], ["Date", d.date], ["Evidence", d.evidenceD1]] },
-          { d: "D2", items: [["Statement", d.problemStatement], ["IS What", d.issueDescription], ["IS Where", d.location], ["IS When", d.timing], ["IS Magnitude", d.magnitude], ["IS Who", d.who], ["IS NOT What", d.issueDescriptionNot], ["IS NOT Where", d.locationNot], ["IS NOT When", d.timingNot], ["IS NOT Magnitude", d.magnitudeNot], ["IS NOT Who", d.whoNot], ["Evidence", d.evidenceD2]] },
-          { d: "D3", items: [["Scope", d.containmentScope], ["Actions", d.containmentActions], ["Risk", d.containmentRisk], ["Suspect Qty", d.suspectQty], ["Inspected Qty", d.inspectedQty], ["Defective", d.defectiveFound], ["Disposition", d.suspectDisposition], ["Date", d.containmentDate], ["Resp", d.containmentResponsible], ["Verification", d.containmentVerification], ["Evidence", d.evidenceD3]] },
-          { d: "D4", items: [["Ishikawa", d.ishikawa], ["Occurrence 5W", d.occurrence5Whys], ["Escape 5W", d.escape5Whys], ["Verification", d.rootCauseVerification], ["Systemic", d.systemicCause], ["Summary", d.rootCause], ["Evidence", d.evidenceD4]] },
-          { d: "D5", items: [["PCA", d.correctiveActions], ["Pilot", d.pilotTrial], ["Rationale", d.pcaSelectionRationale], ["Resp", d.correctiveResponsible], ["Deadline", d.correctiveDeadline], ["Verif", d.correctiveVerification], ["Evidence", d.evidenceD5]] },
-          { d: "D6", items: [["Criteria", d.validationWindow], ["Data", d.effectivenessData], ["Containment Removed", d.containmentRemovalDate], ["Cust Approval", d.customerApproval], ["Date Verified", d.verificationDate], ["By", d.verifiedBy], ["Evidence", d.evidenceD6]] },
-          { d: "D7", items: [["Actions", d.preventiveActions], ["WI Updated", chk(d.wiUpdated)], ["Training", chk(d.trainingCompleted)], ["Error-Proofing", chk(d.errorProofing)], ["Horizontal", chk(d.horizontalDeployment)], ["PFMEA", d.pfmeaUpdated], ["CP", d.controlPlanUpdated], ["Ref", d.docReference], ["Resp", d.preventiveResponsible], ["Deadline", d.preventiveDeadline], ["Verif", d.preventiveVerification], ["Evidence", d.evidenceD7]] },
-          { d: "D8", items: [["Recognition", d.teamRecognition], ["Lessons", d.lessonsLearned], ["Sharing", d.knowledgeSharing], ["Closure Date", d.closureDate], ["Sign-off", d.championSignoff], ["Evidence", d.evidenceD8]] }
-        ];
-        const excelData = [["Discipline", "Item", "Details"]]; dataMap.forEach(s => { excelData.push([s.d, "", ""]); s.items.forEach(i => excelData.push(["", i[0], i[1]])); excelData.push([]); });
-        const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{ wch: 30 }, { wch: 30 }, { wch: 80 }]; XLSX.utils.book_append_sheet(wb, ws, "8D Report"); XLSX.writeFile(wb, "8D_Report_IATF_Enhanced.xlsx");
-        showNotification('Excel exported.');
+      // Botones globales
+      document.getElementById('globalNewBtn').addEventListener('click', () => {
+        if (confirm('Reset all data and start a new 8D report?')) {
+          setReadOnly(false);
+          document.getElementById('eightDForm').reset();
+          document.getElementById('revHistoryBody').innerHTML = '';
+          document.querySelectorAll('textarea').forEach(t => t.style.height = 'auto');
+          document.getElementById('reportSummary').innerHTML = '';
+          localStorage.removeItem(LS_KEY);
+          switchTab('tab-form'); switchSubTab('sub-tab-d0');
+          showNotification('New 8D report started.');
+        }
       });
+
+      document.getElementById('globalLoadBtn').addEventListener('click', () => {
+        document.getElementById('load8dInput').click();
+      });
+
+      document.getElementById('load8dInput').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        loadFromExcel(file);
+        e.target.value = '';
+      });
+
       document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
-      document.getElementById('globalResetBtn').addEventListener('click', resetTool);
-      updateSLAStatus();
+
+      document.getElementById('globalReviseBtn').addEventListener('click', () => {
+        if (!isReadOnly) { alert('Document is already editable.'); return; }
+        openReviseModal();
+      });
+
+      document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
+
+      // Al iniciar, cargar localStorage o empezar vacío (no cargar ejemplo)
+      const restored = loadFromStorage();
+      if (restored) {
+        setReadOnly(false); // Si había datos, se cargan editables
+      } else {
+        // Sin datos previos: formulario vacío y editable
+        setReadOnly(false);
+      }
+      // Generar reporte inicial (vacío) para que no dé error al cambiar a pestaña Report
+      generateReportSummary();
+
+      // Auto‑save cada 60s
+      setInterval(saveToStorage, 60000);
     });
   </script>
   <script src="dexie.min.js"></script>
