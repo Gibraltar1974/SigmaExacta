@@ -4,28 +4,55 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cause and Effect (Ishikawa) Diagram Generator | Sigma Exacta</title>
+    <title>Free Online Ishikawa Diagram Maker | Fishbone Cause & Effect Generator | Sigma Exacta</title>
     <meta name="description"
-        content="Free online Ishikawa (Fishbone) Diagram generator. A powerful tool for root cause analysis, helping teams brainstorm, categorize, and visualize potential causes of a problem. Ideal for quality improvement, problem-solving, and process analysis.">
+        content="Create free Ishikawa (fishbone) diagrams online with JointJS — automatic rendering, revision control, Excel/JPG export, and AIAG-aligned version history. Perfect for root cause analysis, problem solving, and quality improvement.">
     <meta name="keywords"
-        content="Free software, Open source, ishikawa diagram, fishbone diagram, cause and effect diagram, root cause analysis, 6m, quality improvement tool, problem solving, process analysis, online generator, free ishikawa diagram, free fishbone diagram">
+        content="free ishikawa diagram maker, online fishbone diagram generator, cause and effect diagram tool, root cause analysis software, JointJS fishbone, quality improvement tool, problem solving diagram, version controlled ishikawa, Excel export, JPG export, AIAG revision management">
 
     <link rel="canonical" href="https://sigmaexacta.com/ishikawa" />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@joint/core@4.2.4/dist/joint.min.css">
+    <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="stylesheet" href="styles.css">
 
-    <style>
-        /* --- ESTILOS DEL HEADER IDÉNTICOS A INDEX.HTML --- */
-        /* El CSS del Header ha sido eliminado. Se cargará desde header.html */
+    <!-- Schema.org structured data for better search visibility -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Free Online Ishikawa Diagram Generator",
+      "url": "https://sigmaexacta.com/ishikawa",
+      "description": "Free web-based fishbone (Ishikawa) diagram creator with JointJS automatic layout. Supports root cause analysis, 6M categories, version control, Excel/JPG export, and AIAG alignment.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Sigma Exacta"
+      },
+      "keywords": "ishikawa diagram, fishbone diagram, cause and effect, root cause analysis, quality tool, JointJS, AIAG, IATF 16949",
+      "featureList": [
+        "Automatic JointJS diagram rendering",
+        "6M cause categories (Manpower, Methods, Machines, Materials, Environment, Measurement)",
+        "Sub-cause and sub-sub-cause hierarchy",
+        "Revision history with AIAG/IATF 16949 alignment",
+        "Export to Excel (.xlsx) and JPG",
+        "Version control and read-only mode"
+      ]
+    }
+    </script>
 
+    <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -34,39 +61,47 @@
             --dark-color: #2c3e50;
             --success-color: #27ae60;
             --warning-color: #f39c12;
-            --cause-text-color: #333;
-            font-size: 16px;
-
-            /* Category colors */
-            --manpower-color: #3498db;
-            --methods-color: #2ecc71;
-            --machines-color: #e74c3c;
-            --materials-color: #f39c12;
-            --environment-color: #9b59b6;
-            --measurement-color: #1abc9c;
-
-            /* New colors for buttons matching kano.html */
             --performance-color: #2ecc71;
             --danger-color: #c0392b;
-            --cs-plus-color: #27ae60;
-            --cs-minus-color: #e74c3c;
+            --special-char-color: #9b59b6;
+            --responsible-color: #1abc9c;
+            font-size: 16px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: #f5f7fa;
             font-family: 'Nunito', sans-serif;
             margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+
+        img,
+        canvas {
+            max-width: 100%;
+            height: auto;
         }
 
         .main-content-wrapper {
-            padding: 1.25rem;
             margin: 0 auto;
-            max-width: 1400px;
+            padding: 1.25rem;
+            max-width: 1600px;
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* HEADER CORREGIDO - Estilo similar a kano.html */
+        /* HEADER */
         .main-header {
             text-align: center;
             padding: 1rem 1.25rem;
@@ -86,6 +121,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .tool-logo {
@@ -101,6 +137,18 @@
             background-color: #0076a8;
         }
 
+        .std-badge {
+            display: inline-block;
+            background: #0076a8;
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+            vertical-align: middle;
+        }
+
         .main-header p {
             color: #7f8c8d;
             font-weight: 400;
@@ -109,7 +157,7 @@
             margin: 0 auto;
         }
 
-        /* --- BOTONES PRINCIPALES SOBRE LAS TABS - Igual que kano.html --- */
+        /* --- BUTTON BAR (matching control-plan.html) --- */
         .main-action-buttons {
             display: flex;
             justify-content: center;
@@ -131,31 +179,192 @@
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            font-family: 'Nunito', sans-serif;
         }
 
-        .main-action-buttons .btn-example {
+        .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-example {
             background-color: var(--performance-color);
             color: white;
         }
 
-        .main-action-buttons .btn-example:hover {
+        .btn-example:hover {
             background-color: #27ad60;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
-            background-color: var(--danger-color);
+        .btn-revise {
+            background-color: #6c5ce7;
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
-            background-color: #a5281c;
+        .btn-revise:hover {
+            background-color: #5849c2;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        /* ===== ESTILOS DEL SISTEMA DE PESTAÑAS (WIZARD) ===== */
+        .btn-export-main {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-export-main:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- Read-only banner --- */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 800px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
+        }
+
+        /* --- Revise Modal --- */
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-modal-box h3 i {
+            color: #6c5ce7;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-field input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .btn-cancel-revise:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .btn-confirm-revise:hover {
+            background: #5849c2;
+        }
+
+        /* --- Tabs --- */
         .tabs-nav {
             display: flex;
             background-color: #f1f5f9;
@@ -165,7 +374,6 @@
             margin-bottom: 0;
             margin-top: 0.5rem;
             scrollbar-width: none;
-            -ms-overflow-style: none;
             width: 100%;
         }
 
@@ -184,12 +392,11 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.3s;
             border-bottom: 3px solid transparent;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem;
             flex: 1;
             justify-content: center;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
         }
 
         .tab-btn:hover {
@@ -203,38 +410,28 @@
             border-bottom-color: var(--secondary-color);
             border-radius: 8px 8px 0 0;
             margin-bottom: -2px;
-            border-left: 1px solid #e1e5e9;
-            border-right: 1px solid #e1e5e9;
-            border-top: 1px solid #e1e5e9;
+            border: 1px solid #e1e5e9;
+            border-bottom: 3px solid var(--secondary-color);
         }
 
-        /* CONTENEDOR PRINCIPAL DE TABS - FONDO BLANCO */
         .tabs-container {
             background: #fff;
             border: 1px solid #e1e5e9;
             border-top: none;
             border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            position: relative;
             margin-bottom: 2rem;
             box-sizing: border-box;
         }
 
-        /* PESTAÑAS - Todas con el mismo ancho */
         .wizard-tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
             width: 100%;
-            box-sizing: border-box;
-            max-width: 100%;
         }
 
         .wizard-tab-content.active {
             display: block;
-            width: 100%;
         }
 
         @keyframes fadeIn {
@@ -249,12 +446,10 @@
             }
         }
 
-        /* CONTENIDO DE TODAS LAS TABS - Mismo padding */
         .tab-content-wrapper {
             padding: 2rem;
             width: 100%;
             box-sizing: border-box;
-            max-width: 100%;
         }
 
         .tab-nav-buttons {
@@ -263,8 +458,6 @@
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 1px solid #eee;
-            width: 100%;
-            box-sizing: border-box;
         }
 
         .btn-next-tab {
@@ -279,12 +472,10 @@
             cursor: pointer;
             font-weight: 600;
             font-family: 'Nunito', sans-serif;
-            transition: background-color 0.3s, transform 0.2s;
         }
 
         .btn-next-tab:hover {
             background-color: #2980b9;
-            transform: translateY(-2px);
         }
 
         .btn-next-tab.btn-prev {
@@ -303,7 +494,7 @@
             background-color: #229954;
         }
 
-        /* === SUB TABS STYLES === */
+        /* --- Sub Tabs --- */
         .sub-tabs-nav {
             display: flex;
             background-color: #f1f5f9;
@@ -312,7 +503,6 @@
             border-bottom: 2px solid var(--secondary-color);
             margin-bottom: 0;
             scrollbar-width: none;
-            -ms-overflow-style: none;
         }
 
         .sub-tabs-nav::-webkit-scrollbar {
@@ -330,8 +520,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
             font-family: 'Nunito', sans-serif;
             font-size: 0.9rem;
         }
@@ -370,7 +558,7 @@
             display: block;
         }
 
-        /* Content blocks styling */
+        /* --- Content Blocks --- */
         .content-block {
             max-width: 100%;
             margin: 0 auto 1.5rem;
@@ -391,14 +579,8 @@
             font-weight: 800;
         }
 
-        .content-block h2 .fas {
+        .content-block h2 i {
             margin-right: 0.75rem;
-        }
-
-        .content-block ol,
-        .content-block ul {
-            padding-left: 1.25rem;
-            line-height: 1.8;
         }
 
         .calculation-block {
@@ -416,20 +598,13 @@
             font-size: 1.2em;
             margin-bottom: 1rem;
             color: var(--primary-color);
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.6rem;
         }
 
-        label,
-        label.category-label {
+        label {
             display: block;
             margin-bottom: 0.6rem;
             color: var(--primary-color);
             font-weight: 600;
-        }
-
-        label.category-label {
-            font-size: 1.1em;
         }
 
         .instruction-text {
@@ -439,7 +614,8 @@
             font-style: italic;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="date"] {
             width: 100%;
             padding: 0.6rem;
             border: 1px solid #ddd;
@@ -450,15 +626,13 @@
             font-family: 'Nunito', sans-serif;
         }
 
-        input[type="text"]:focus,
-        button:focus-visible {
+        input:focus {
             outline: none;
             border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
         }
 
         button {
-            background-color: var(--secondary-color);
             color: white;
             padding: 0.7rem 1.25rem;
             border: none;
@@ -475,107 +649,44 @@
         }
 
         button:hover {
-            background-color: #2980b9;
+            opacity: 0.9;
         }
 
         button:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
-        .button-group {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+        .btn-primary {
+            background-color: var(--secondary-color);
         }
 
-        button.success {
+        .success {
             background-color: var(--success-color);
-        }
-
-        button.success:hover {
-            background-color: #219d55;
-        }
-
-        button.warning {
-            background-color: var(--warning-color);
-        }
-
-        button.warning:hover {
-            background-color: #da8c10;
         }
 
         .danger {
             background-color: var(--accent-color);
         }
 
-        .danger:hover {
-            background-color: #c0392b;
-        }
-
-        .diagram-controls {
-            max-width: 100%;
-            margin: 0 auto 1rem;
-            text-align: right;
-            display: flex;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
-        #ishikawaDiagramContainer {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 300px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-            min-height: 600px;
-        }
-
-        /* CORRECCIÓN 1: Leyenda en una sola línea */
-        .diagram-key {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-top: 1px solid #e0e0e0;
-            border-radius: 0 0 8px 8px;
-            box-sizing: border-box;
-            overflow-x: auto;
-        }
-
-        .diagram-key ul {
-            list-style: none;
+        .action-button {
             padding: 0;
-            margin: 0;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            font-size: 1rem;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
             display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            gap: 0.6rem 1.25rem;
-            white-space: nowrap;
-        }
-
-        .diagram-key ul li {
-            color: #555;
-            font-size: 0.8rem;
-            display: flex;
+            justify-content: center;
             align-items: center;
+            gap: 0;
+            margin: 0 3px;
         }
 
-        .diagram-key ul li i {
-            margin-right: 6px;
-        }
-
-        .diagram-key ul li strong {
-            color: var(--dark-color);
-        }
-
-        /* FIN CORRECCIÓN 1 */
+        /* --- Category inputs --- */
         .category-section {
             margin-bottom: 1.5rem;
             border-top: 1px solid #eee;
@@ -621,116 +732,139 @@
             margin-bottom: 0.5rem;
         }
 
-        .action-button {
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            min-width: 30px;
-            font-size: 1rem;
-            line-height: 30px;
-            text-align: center;
-            border-radius: 50%;
+        /* --- Diagram container --- */
+        #ishikawaDiagramContainer {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: var(--diagram-height, 85vh);
+            min-height: 400px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+        }
+
+        #jointjs-paper {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            cursor: grab;
+        }
+
+        #jointjs-paper.panning {
+            cursor: grabbing;
+        }
+
+        /* Float controls panel (zoom + height) */
+        .diagram-float-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .diagram-float-controls button {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            margin: 0;
+            border-radius: 6px;
+            background: #fff;
+            color: #2c3e50;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            display: flex;
             align-items: center;
-            gap: 0;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .add-sub-cause-btn {
-            margin-left: 0.6rem;
+        .diagram-float-controls button:hover {
+            background: #e8f0fe;
         }
 
-        .add-sub-sub-cause-btn {
-            margin-left: 0.6rem;
+        .diagram-float-controls .ctrl-divider {
+            height: 1px;
+            background: #ccc;
+            margin: 2px 0;
         }
 
-        .add-cause-btn {
-            margin-top: 0.6rem;
+        .diagram-key {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-top: 1px solid #e0e0e0;
+            border-radius: 0 0 8px 8px;
+            overflow-x: auto;
+            z-index: 2;
+            flex-shrink: 0;
         }
 
-        footer {
-            padding: 2rem 1.25rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
+        .diagram-key ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            gap: 0.6rem 1.25rem;
+            white-space: nowrap;
         }
 
-        .disclaimer-note {
-            margin-top: 2rem;
-            padding: 0 1rem;
+        .diagram-key ul li {
+            color: #555;
             font-size: 0.8rem;
-            color: #777;
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-            line-height: 1.6;
+            display: flex;
+            align-items: center;
         }
 
-        /* New styles for SVG diagram */
-        #ishikawaSvgContainer {
+        .diagram-key ul li i {
+            margin-right: 6px;
+        }
+
+        /* --- Revision history table --- */
+        #revHistoryTable {
             width: 100%;
-            height: 100%;
-            min-height: 600px;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-bottom: 0.5rem;
         }
 
-        .draggable {
-            cursor: move;
-            user-select: none;
+        #revHistoryTable th {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            min-width: 110px;
+            background: var(--primary-color);
+            color: #fff;
         }
 
-        .draggable:hover {
-            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+        #revHistoryTable td {
+            padding: 0.3rem 0.5rem;
+            border-bottom: 1px solid #ddd;
         }
 
-        .category-bone {
-            stroke-width: 2;
-        }
-
-        .cause-line {
-            stroke-width: 1.5;
-        }
-
-        .subcause-line {
-            stroke-width: 1;
-        }
-
-        .cause-text,
-        .subcause-text,
-        .subsubcause-text {
+        #revHistoryTable input {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.35rem 0.5rem;
             font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
         }
 
-        .main-category-text {
-            font-family: 'Nunito', sans-serif;
-            font-weight: bold;
-            text-anchor: middle;
-            font-size: 14px;
+        /* --- JointJS overrides --- */
+        .joint-paper {
+            background: transparent !important;
         }
 
-        .cause-text {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .subcause-text {
-            font-size: 11px;
-        }
-
-        .problem-box {
-            fill: var(--accent-color);
-        }
-
-        .problem-text {
-            fill: white;
-            font-family: 'Nunito', sans-serif;
-            font-weight: bold;
-            text-anchor: middle;
-            font-size: 14px;
-        }
-
-        /* Ajuste para pantallas móviles */
+        /* Mobile */
         @media (max-width: 768px) {
             .main-content-wrapper {
                 padding: 0.75rem;
@@ -750,23 +884,9 @@
                 font-size: 0.8rem;
             }
 
-            .content-block,
-            .calculation-block {
-                padding: 1rem;
-            }
-
             #ishikawaDiagramContainer {
-                min-height: 500px;
-            }
-
-            /* CORRECCIÓN 2: Mejor visualización en móvil */
-            .diagram-key ul {
-                justify-content: flex-start;
-                padding: 0 5px;
-            }
-
-            .diagram-key ul li {
-                font-size: 0.7rem;
+                height: 70vh;
+                min-height: 400px;
             }
 
             .main-action-buttons {
@@ -781,20 +901,6 @@
         }
 
         @media (max-width: 480px) {
-            .tab-content-wrapper {
-                padding: 0.75rem;
-            }
-
-            .tab-btn {
-                padding: 0.6rem 0.3rem;
-                font-size: 0.8rem;
-            }
-
-            .sub-tab-btn {
-                padding: 0.5rem 0.3rem;
-                font-size: 0.7rem;
-            }
-
             .main-action-buttons {
                 flex-direction: column;
                 align-items: stretch;
@@ -805,256 +911,249 @@
                 width: 100%;
                 justify-content: center;
             }
-
-            .sub-tabs-container {
-                min-height: 300px;
-            }
         }
     </style>
 </head>
 
 <body>
-
+    <div id="header-placeholder"></div>
     <div id="header-container"></div>
 
-    <noscript>
-        <nav>
-            <a href="/">Home</a> |
-            <a href="/8d">8D Tool</a> |
-            <a href="/taguchi_doe">Taguchi DOE</a> |
-            <a href="/swot">SWOT Analysis</a> |
-            <a href="/balancedcard">Balanced Scorecard</a> |
-            <a href="/qfd">QFD</a> |
-            <a href="/apqp-ppap">APQP/PPAP</a> |
-            <a href="/ishikawa">Ishikawa</a> |
-            <a href="/fmea">FMEA</a> |
-            <a href="/vave">VAVE</a> |
-            <a href="/eisenhower">Eisenhower Matrix</a> |
-            <a href="/triz">TRIZ</a> |
-            <a href="/weibull">Weibull</a> |
-            <a href="/stack_up_analysis">Tolerance Stack-Up</a> |
-            <a href="/pdca">PDCA</a> |
-            <a href="/design_thinking">Design Thinking</a> |
-            <a href="/pugh">Pugh Matrix</a> |
-            <a href="/cpk_calculator">CpK Calculator</a> |
-            <a href="/control-plan">Control Plan</a>
-        </nav>
-    </noscript>
+    <!-- Revise Modal -->
+    <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+            <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+            <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">
+                Complete the revision details below. They will be added to the Revision History and the document will be
+                unlocked for editing.
+            </p>
+            <div class="revise-field">
+                <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                <input type="date" id="reviseDate">
+            </div>
+            <div class="revise-field">
+                <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseDesc" placeholder="e.g. Rev B — Updated root cause analysis">
+            </div>
+            <div class="revise-field">
+                <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseBy" placeholder="Name / Department">
+            </div>
+            <div class="revise-field">
+                <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseApproved" placeholder="Name / Title">
+            </div>
+            <div class="revise-modal-footer">
+                <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &amp;
+                    Enable Editing</button>
+            </div>
+        </div>
+    </div>
 
     <main class="main-content-wrapper">
         <header class="main-header">
             <h1>
-                <div class="tool-logo" title="Ishikawa Diagram">
-                    <i class="fas fa-fish"></i>
+                <div class="tool-logo" role="img" aria-label="Fishbone diagram tool icon">
+                    <i class="fas fa-fish" aria-hidden="true"></i>
                 </div>
-                Free Online Fishbone Cause and Effect (Ishikawa) Diagram
+                Free Online Fishbone (Ishikawa) Diagram Creator
+                <span class="std-badge">JointJS | Version Controlled | AIAG</span>
             </h1>
-            <p class="header-subtitle">A Visual Tool for Root Cause Analysis</p>
+            <p>Generate professional Ishikawa (cause and effect) diagrams for root cause analysis. This <strong>free
+                    online fishbone diagram tool</strong> uses JointJS for automatic layout, supports <strong>6M
+                    categories, sub-causes, revision history, Excel/JPG export</strong>, and aligns with AIAG &amp; IATF
+                16949 quality standards.</p>
 
             <div class="main-action-buttons">
-                <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-play-circle"></i> Load Next Example
-                </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
-                </button>
+                <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
+                <button id="globalLoadBtn" class="btn-load"><i class="fas fa-folder-open"></i> Load</button>
+                <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load
+                    Example</button>
+                <button id="globalReviseBtn" class="btn-revise"><i class="fas fa-edit"></i> Revise</button>
+                <button id="globalExportBtn" class="btn-export-main"><i class="fas fa-file-excel"></i> Export</button>
             </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — this file was loaded for viewing only. Click
+                <strong>Revise</strong> to enable editing.
+            </div>
+            <input type="file" id="loadCpInput" accept=".xlsx,.xls" style="display:none;">
         </header>
 
         <div class="tabs-container">
             <nav class="tabs-nav">
-                <button class="tab-btn active" data-tab="tab-theory">
-                    <i class="fas fa-book"></i> Theory & Info
-                </button>
-                <button class="tab-btn" data-tab="tab-input">
-                    <i class="fas fa-edit"></i> Data Input
-                </button>
-                <button class="tab-btn" data-tab="tab-diagram">
-                    <i class="fas fa-project-diagram"></i> Diagram
-                </button>
+                <button class="tab-btn active" data-tab="tab-theory"><i class="fas fa-book"></i> Theory &amp;
+                    Info</button>
+                <button class="tab-btn" data-tab="tab-input"><i class="fas fa-edit"></i> Data Input</button>
+                <button class="tab-btn" data-tab="tab-diagram"><i class="fas fa-project-diagram"></i> Diagram</button>
             </nav>
 
+            <!-- ========== TAB: THEORY ========== -->
             <div id="tab-theory" class="wizard-tab-content active">
                 <div class="tab-content-wrapper">
                     <div class="content-block">
-                        <h2><i class="fas fa-question-circle"></i> What is a Cause and Effect Diagram?</h2>
-                        <p>The <strong>Cause and Effect Diagram</strong>, also known as a <strong>Fishbone
-                                Diagram</strong> or
-                            <strong>Ishikawa Diagram</strong>, is a visual tool used to explore and categorize the
-                            potential causes
-                            of a specific problem. Its main purpose is to structure a brainstorming session, helping
-                            teams to think
-                            through all possible reasons for an issue in a systematic way rather than jumping to
-                            conclusions.
-                        </p>
-                        <p>The diagram resembles a fish skeleton, which is where it gets its nickname:</p>
+                        <h2><i class="fas fa-question-circle"></i> What Is a Fishbone (Ishikawa) Diagram and When Should
+                            You Use It?</h2>
+                        <p><strong>Answer:</strong> A fishbone diagram, also called an Ishikawa or cause-and-effect
+                            diagram, is a visual brainstorming tool used to identify, explore, and display the possible
+                            causes of a specific problem or effect. Its main purpose is to structure a brainstorming
+                            session, helping teams think through all possible reasons for an issue in a systematic way
+                            rather than jumping to conclusions.</p>
                         <ul>
-                            <li>The <strong>"head"</strong> of the fish represents the problem or effect, which is
-                                written on the
-                                right side.</li>
+                            <li>The <strong>"head"</strong> of the fish represents the problem or effect.</li>
                             <li>The <strong>"spine"</strong> is a horizontal line pointing to the head.</li>
-                            <li>The <strong>"bones"</strong> are diagonal lines branching off the spine, representing
-                                major
-                                categories of potential causes. This tool traditionally uses the <strong>6Ms</strong> as
-                                categories,
-                                which are a great starting point for any manufacturing or service process.</li>
+                            <li>The <strong>"bones"</strong> represent major categories of potential causes (the 6Ms).
+                            </li>
                         </ul>
                     </div>
-
                     <div class="content-block">
-                        <h2><i class="fas fa-history"></i> Brief History of the Ishikawa Diagram</h2>
+                        <h2><i class="fas fa-history"></i> Who Invented the Ishikawa Diagram? History &amp; Origins</h2>
                         <p>The diagram was created by <strong>Dr. Kaoru Ishikawa</strong>, a Japanese quality control
-                            expert, in the
-                            1960s. As a pioneer in quality management, Dr. Ishikawa wanted to create simple, accessible
-                            tools that
-                            workers at all levels of an organization could use to improve processes. He believed that
-                            quality
-                            improvement was a continuous, company-wide effort, not just the responsibility of managers
-                            and
-                            engineers.</p>
-                        <p>The Ishikawa Diagram became one of the <strong>Seven Basic Tools of Quality</strong>. Its
-                            simplicity and
-                            visual nature made it extremely popular in post-war Japan's manufacturing industries and it
-                            quickly
-                            spread globally as a fundamental tool for problem-solving, root cause analysis, and quality
-                            improvement
-                            initiatives.</p>
+                            expert, in the 1960s. It became one of the <strong>Seven Basic Tools of Quality</strong> and
+                            spread globally as a fundamental tool for problem-solving and root cause analysis.</p>
                     </div>
-
                     <div class="content-block">
-                        <h2><i class="fas fa-cogs"></i> How to Use This Tool</h2>
+                        <h2><i class="fas fa-cogs"></i> How to Make an Ishikawa Diagram in 5 Steps</h2>
                         <ol>
-                            <li><strong>Define the Problem:</strong> Clearly and concisely write the problem you are
-                                investigating
-                                in the "Problem Statement" field. This becomes the "head" of the fishbone.</li>
-                            <li><strong>Add Causes:</strong> For each of the 6M categories, click the "➕ Add Cause"
-                                button to create
-                                a field for a main cause.</li>
-                            <li><strong>Add Sub-Causes:</strong> Within each main cause, click the `+` button to add
-                                specific
-                                sub-cause fields for more detail.</li>
-                            <li><strong>Add Sub-Sub-Causes:</strong> Within each sub-cause, click the `+` button to add
-                                even more
-                                detailed sub-sub-cause fields.</li>
-                            <li><strong>Generate Diagram:</strong> Click "Generate Diagram". The tool will create a
-                                visual fishbone
-                                diagram based on your input.</li>
-                            <li><strong>Use Helper Buttons:</strong> Click "Load Next Example" to see a pre-filled
-                                diagram
-                                for guidance,
-                                or "Reset Data" to clear all fields and start fresh.</li>
-                            <li><strong>Export Your Work:</strong> Once your diagram is complete, you can export it as a
-                                JPG image
-                                for presentations or as an Excel file for documentation.</li>
+                            <li><strong>Define the Problem Statement:</strong> Write the problem in the "Problem
+                                Statement" field. This becomes the fish head.</li>
+                            <li><strong>Add the 6M Cause Categories:</strong> For each category (Manpower, Methods,
+                                Machines, Materials, Environment, Measurement), add main causes.</li>
+                            <li><strong>Brainstorm Sub-Causes:</strong> Click the `+` button next to each cause to add
+                                more granular sub-causes and sub-sub-causes.</li>
+                            <li><strong>Review and Prioritize:</strong> The diagram auto-updates, allowing you to
+                                analyze the most probable root causes.</li>
+                            <li><strong>Export and Share:</strong> Export to Excel for documentation or JPG for
+                                presentations, with full revision control stored.</li>
                         </ol>
                     </div>
-
-                    <div class="tab-nav-buttons">
+                    <div class="tab-nav-buttons" style="justify-content:flex-end;">
                         <button class="btn-next-tab" id="go-to-input-btn">Go to Data Input <i
                                 class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
+            <!-- ========== TAB: DATA INPUT ========== -->
             <div id="tab-input" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
+                    <!-- Revision History section -->
+                    <div class="content-block control-plan-header" style="margin-bottom:1.5rem;">
+                        <h2><i class="fas fa-history"></i> Revision History — AIAG / IATF 16949 Compliant Version
+                            Control</h2>
+                        <p style="color:#666;font-size:0.9rem;">IATF 16949 §7.5.3.1 — required for all revisions</p>
+                        <div style="overflow-x:auto;">
+                            <table id="revHistoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rev. Date</th>
+                                        <th>Description of Change</th>
+                                        <th>Changed By</th>
+                                        <th>Approved By</th>
+                                        <th style="width:48px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="revHistoryBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Sub-tabs for categories -->
                     <nav class="sub-tabs-nav">
-                        <button class="sub-tab-btn active" data-subtab="subtab-problem">
-                            <i class="fas fa-bug"></i> Problem Statement
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-manpower">
-                            <i class="fas fa-users"></i> Manpower
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-methods">
-                            <i class="fas fa-cogs"></i> Methods
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-machines">
-                            <i class="fas fa-robot"></i> Machines
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-materials">
-                            <i class="fas fa-boxes"></i> Materials
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-environment">
-                            <i class="fas fa-tree"></i> Environment
-                        </button>
-                        <button class="sub-tab-btn" data-subtab="subtab-measurement">
-                            <i class="fas fa-chart-line"></i> Measurement
-                        </button>
+                        <button class="sub-tab-btn active" data-subtab="subtab-problem"><i class="fas fa-bug"></i>
+                            Problem</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-manpower"><i class="fas fa-users"></i>
+                            Manpower</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-methods"><i class="fas fa-cogs"></i>
+                            Methods</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-machines"><i class="fas fa-robot"></i>
+                            Machines</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-materials"><i class="fas fa-boxes"></i>
+                            Materials</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-environment"><i class="fas fa-tree"></i>
+                            Environment</button>
+                        <button class="sub-tab-btn" data-subtab="subtab-measurement"><i class="fas fa-chart-line"></i>
+                            Measurement</button>
                     </nav>
 
                     <div class="sub-tabs-container">
                         <div id="subtab-problem" class="sub-tab-content active">
                             <div class="calculation-block">
-                                <div class="calculation-title">Define Your Problem</div>
-                                <form id="ishikawaForm">
-                                    <label for="problem"><i class="fas fa-bug"></i> <strong>Problem
-                                            Statement:</strong></label>
-                                    <input type="text" id="problem" placeholder="Example: High customer complaint rate"
-                                        required />
-                                    <p class="instruction-text">Enter the main problem or effect you want to analyze.
-                                        This will appear at the "head" of the fishbone diagram.</p>
-                                    <!-- Botones eliminados aquí -->
-                                </form>
+                                <h3 class="calculation-title">Define Your Problem</h3>
+                                <label for="problem"><i class="fas fa-bug"></i> <strong>Problem
+                                        Statement:</strong></label>
+                                <input type="text" id="problem" placeholder="Example: High customer complaint rate"
+                                    required />
+                                <p class="instruction-text">Enter the main problem or effect you want to analyze. This
+                                    will appear at the "head" of the fishbone diagram.</p>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="tab-nav-buttons">
                         <button class="btn-next-tab btn-prev" id="back-to-theory-btn"><i class="fas fa-arrow-left"></i>
                             Back to Theory</button>
-                        <button class="btn-next-tab btn-success" id="go-to-diagram-btn" disabled>Go to Diagram <i
+                        <button class="btn-next-tab" id="go-to-diagram-btn">Go to Diagram <i
                                 class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
+            <!-- ========== TAB: DIAGRAM ========== -->
             <div id="tab-diagram" class="wizard-tab-content">
                 <div class="tab-content-wrapper">
                     <div class="content-block">
-                        <div class="diagram-controls">
-                            <button type="button" id="generateDiagramBtn"><i class="fas fa-project-diagram"></i>
-                                Generate Diagram</button>
-                            <button id="exportJpgBtn" class="success" title="Export as JPG image"><i
-                                    class="fas fa-file-image"></i>
-                                Export as JPG</button>
-                            <button id="exportBtn" class="success" title="Export data to Excel"><i
-                                    class="fas fa-file-excel"></i> Export
-                                to Excel</button>
+                        <h2
+                            style="margin-top:0; border-bottom: 2px solid var(--secondary-color); padding-bottom:0.6rem;">
+                            <i class="fas fa-project-diagram"></i> Interactive Fishbone Diagram — Live Preview
+                        </h2>
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <span style="font-size:0.82rem; color:#666; font-weight:600;">Vertical Spacing:</span>
+                                <button id="spreadDownBtn" title="Reduce vertical spacing"
+                                    style="background:#f0f4fa;color:#2c3e50;border:1px solid #ccc;border-radius:6px;width:30px;height:30px;padding:0;margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;"><i
+                                        class="fas fa-compress-alt"></i></button>
+                                <button id="spreadUpBtn" title="Increase vertical spacing"
+                                    style="background:#f0f4fa;color:#2c3e50;border:1px solid #ccc;border-radius:6px;width:30px;height:30px;padding:0;margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;"><i
+                                        class="fas fa-expand-alt"></i></button>
+                            </div>
+                            <div class="diagram-controls">
+                                <button id="exportBtn" class="success"><i class="fas fa-file-excel"></i> Export to
+                                    Excel</button>
+                                <button id="exportJpgBtn" class="btn-primary"><i class="fas fa-file-image"></i> Export
+                                    as JPG</button>
+                            </div>
                         </div>
-
-                        <div id="ishikawaDiagramContainer">
-                            <svg id="ishikawaSvgContainer" width="100%" height="100%"></svg>
+                        <div id="ishikawaDiagramContainer" role="img"
+                            aria-label="Interactive fishbone cause and effect diagram preview powered by JointJS">
+                            <div id="jointjs-paper"></div>
+                            <div class="diagram-float-controls">
+                                <button id="zoomInBtn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                                <button id="zoomFitBtn" title="Fit to Screen"><i
+                                        class="fas fa-expand-arrows-alt"></i></button>
+                                <button id="zoomOutBtn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                            </div>
                             <div class="diagram-key">
                                 <ul>
-                                    <li><i class="fas fa-users" style="color: var(--manpower-color);"></i>
-                                        <strong>Manpower:</strong> People
+                                    <li><i class="fas fa-users" style="color:#3498db;"></i> <strong>Manpower</strong>
                                     </li>
-                                    <li><i class="fas fa-cogs" style="color: var(--methods-color);"></i>
-                                        <strong>Methods:</strong>
-                                        Processes
+                                    <li><i class="fas fa-cogs" style="color:#2ecc71;"></i> <strong>Methods</strong></li>
+                                    <li><i class="fas fa-robot" style="color:#e74c3c;"></i> <strong>Machines</strong>
                                     </li>
-                                    <li><i class="fas fa-robot" style="color: var(--machines-color);"></i>
-                                        <strong>Machines:</strong> Equipment
+                                    <li><i class="fas fa-boxes" style="color:#f39c12;"></i> <strong>Materials</strong>
                                     </li>
-                                    <li><i class="fas fa-boxes" style="color: var(--materials-color);"></i>
-                                        <strong>Materials:</strong> Components
+                                    <li><i class="fas fa-tree" style="color:#9b59b6;"></i> <strong>Environment</strong>
                                     </li>
-                                    <li><i class="fas fa-tree" style="color: var(--environment-color);"></i>
-                                        <strong>Environment:</strong> External Factors
-                                    </li>
-                                    <li><i class="fas fa-chart-line" style="color: var(--measurement-color);"></i>
-                                        <strong>Measurement:</strong> Data
+                                    <li><i class="fas fa-chart-line" style="color:#1abc9c;"></i>
+                                        <strong>Measurement</strong>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
                         <div class="tab-nav-buttons">
                             <button class="btn-next-tab btn-prev" id="back-to-input-btn"><i
                                     class="fas fa-arrow-left"></i> Back to Data Input</button>
-                            <button class="btn-next-tab" id="back-to-theory-btn-2">Back to Theory <i
-                                    class="fas fa-book"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1062,736 +1161,653 @@
         </div>
     </main>
     <footer>
-        <div class="disclaimer-note">
+        <div class="disclaimer-note"
+            style="margin-top:2rem;padding:0 1rem;font-size:0.8rem;color:#777;max-width:1400px;margin-left:auto;margin-right:auto;text-align:left;line-height:1.6;">
             <p><strong>Disclaimer:</strong> The tools and information provided on Sigma Exacta are for informational and
                 educational purposes only. This tool is an independent implementation inspired by the Cause and Effect
                 Diagram developed by Dr. Kaoru Ishikawa and is not affiliated with any official quality organizations.
-                While we strive for accuracy, we make no warranty or guarantee regarding the results obtained from this
-                tool. All decisions based on the output are the sole responsibility of the user. Sigma Exacta and its
-                creators are not liable for any damages or losses resulting from its use.</p>
+                Diagram rendering powered by JointJS (MPL-2.0).</p>
+            <p><strong>Explore our free Ishikawa diagram tool</strong> — trusted for root cause analysis in
+                manufacturing, healthcare, and software industries. <a href="https://sigmaexacta.com/ishikawa">Start
+                    creating your fishbone diagram now</a>.</p>
         </div>
     </footer>
 
+    <!-- JointJS Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@joint/core@4.2.4/dist/joint.min.js"></script>
+
     <script>
         // ============================================
-        // FUNCIONES GLOBALES PARA EL SISTEMA DE TABS
+        // GLOBAL STATE
         // ============================================
+        const LS_KEY = 'sigma_ishikawa_v2';
+        let isReadOnly = false;
+        let currentExampleIndex = 0;
+        const exampleTypes = ['manufacturing', 'healthcare', 'software'];
+        let jointGraph = null;
+        let jointPaper = null;
+        let scheduledRender = null;
 
-        // Función para cambiar entre tabs
-        function switchWizardTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos de wizard
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
+        // ============================================
+        // CATEGORY DATA
+        // ============================================
+        const categoryData = [
+            { key: 'manpower', name: 'Manpower', icon: 'fa-users', color: '#3498db' },
+            { key: 'methods', name: 'Methods', icon: 'fa-cogs', color: '#2ecc71' },
+            { key: 'machines', name: 'Machines', icon: 'fa-robot', color: '#e74c3c' },
+            { key: 'materials', name: 'Materials', icon: 'fa-boxes', color: '#f39c12' },
+            { key: 'environment', name: 'Environment', icon: 'fa-tree', color: '#9b59b6' },
+            { key: 'measurement', name: 'Measurement', icon: 'fa-chart-line', color: '#1abc9c' },
+        ];
 
-            // Activar el contenido seleccionado
-            document.getElementById(tabId).classList.add('active');
+        // ============================================
+        // JOINTJS FISHBONE IMPLEMENTATION
+        // (Adapted from official JointJS fishbone demo)
+        // ============================================
+        const sin45 = Math.sin(Math.PI / 4);
+        const fontFamily = 'Nunito, sans-serif';
 
-            // Activar botón correspondiente
-            const activeBtn = document.querySelector(`button[data-tab="${tabId}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
+        function measureTextSize(text, fontSize) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return { width: 0, height: 0 };
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            const lines = text.split('\n');
+            const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
+            const lineHeight = lines.length * (fontSize * 1.2);
+            return { width: maxWidth, height: lineHeight };
+        }
 
-            // Scroll al top suavemente
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function createHeadNode(name) {
+            const textSize = measureTextSize(name, 26);
+            const textMargin = 44;
+            return new joint.shapes.standard.Path({
+                z: -1,
+                size: {
+                    width: textSize.width * 1.25 + 2 * textMargin,
+                    height: Math.max(textSize.height + 2 * textMargin, 210)
+                },
+                attrs: {
+                    root: { highlighterSelector: 'bodyGroup' },
+                    body: {
+                        d: `M 0 0 A calc(w) calc(h/2) 1 1 1 0 calc(h) A calc(w/4) calc(h/2) 1 1 0 0 0 Z`,
+                        fill: '#333',
+                        strokeWidth: 3,
+                        strokeLinejoin: 'round',
+                    },
+                    label: {
+                        fontSize: 26,
+                        fontFamily,
+                        fill: '#fff',
+                        text: name,
+                        x: 'calc(5 * w / 8)',
+                    }
+                }
+            });
+        }
+
+        function createTailNode(name) {
+            const textSize = measureTextSize(name, 22);
+            const textMargin = 40;
+            return new joint.shapes.standard.Path({
+                size: {
+                    width: textSize.width + 2 * textMargin,
+                    height: Math.max(textSize.height + 2 * textMargin, 170)
+                },
+                attrs: {
+                    root: { highlighterSelector: 'bodyGroup' },
+                    body: {
+                        d: 'M 0 0 A calc(w) calc(h/2) 1 1 1 0 calc(h) L 20 calc(h/2) Z',
+                        fill: '#333',
+                        strokeWidth: 3,
+                    },
+                    label: {
+                        fontSize: 22,
+                        fontFamily,
+                        fill: '#fff',
+                        text: name,
+                    }
+                }
+            });
+        }
+
+        function createCauseNode(name, catColor) {
+            const fontSize = 18;
+            const textSize = measureTextSize(name, fontSize);
+            const textMargin = 22;
+            return new joint.shapes.standard.Ellipse({
+                size: {
+                    width: textSize.width + 2 * textMargin,
+                    height: textSize.height + 2 * textMargin
+                },
+                attrs: {
+                    root: { highlighterSelector: 'root' },
+                    body: { strokeWidth: 3, fill: '#fff', stroke: catColor },
+                    label: { fontSize, fontFamily, text: name, fill: '#333' },
+                }
+            });
+        }
+
+        function createEffectNode(name) {
+            const fontSize = 15;
+            const textSize = measureTextSize(name, fontSize);
+            const textMargin = 12;
+            return new joint.shapes.standard.Rectangle({
+                size: {
+                    width: textSize.width + 2 * textMargin,
+                    height: textSize.height + 2 * textMargin
+                },
+                attrs: {
+                    root: { highlighterSelector: 'root' },
+                    body: { rx: 5, ry: 5, stroke: '#333', fill: '#fff' },
+                    label: { fontSize, fontFamily, text: name, fill: '#555' },
+                }
+            });
+        }
+
+        function createSubCauseNode(name, level, direction) {
+            const fontSize = level % 2 === 1 ? 13 : 14;
+            const textSize = measureTextSize(name, fontSize);
+            const textMargin = 9;
+            return new joint.shapes.standard.Rectangle({
+                size: {
+                    width: textSize.width + 2 * textMargin,
+                    height: textSize.height + 2 * textMargin
+                },
+                attrs: {
+                    root: { highlighterSelector: 'label' },
+                    body: { stroke: 'none', fill: 'none' },
+                    label: {
+                        fontSize,
+                        fontFamily,
+                        text: name,
+                        paintOrder: 'stroke',
+                        stroke: '#fff',
+                        fill: '#444',
+                    }
+                }
+            });
+        }
+
+        function createNode(name, level, catColor, direction) {
+            let node;
+            switch (level) {
+                case 0: node = createHeadNode(name); break;
+                case 1: node = createTailNode(name); break;
+                case 2: node = createCauseNode(name, catColor); break;
+                case 3: node = createEffectNode(name); break;
+                default: node = createSubCauseNode(name, level, direction); break;
+            }
+            node.attr('root', { cursor: 'pointer' });
+            node.set('compact', level >= 2);
+            node.set('level', level);
+            node.set('direction', direction || null);
+            return node;
+        }
+
+        function generateFishboneCells(data) {
+            const elements = [];
+            const links = [];
+
+            function iterate(obj, pathArray, direction, catColor) {
+                const { name = '', children = [] } = obj;
+                const level = pathArray.length / 2;
+                const node = createNode(name, level, catColor, direction);
+                const id = 'node' + pathArray.map(item => typeof item === 'string' ? '-' : item).join('');
+                node.set({ id, level, path: pathArray, direction });
+                elements.push(node);
+                if (!children || children.length === 0) return node;
+
+                let topCount = 0;
+                let bottomCount = 0;
+                children.forEach(childObj => {
+                    if (childObj.direction === 'top') topCount++;
+                    else if (childObj.direction === 'bottom') bottomCount++;
+                });
+
+                children.forEach((childObj, index) => {
+                    let nextDirection;
+                    if (level === 1) {
+                        nextDirection = childObj.direction || ((topCount <= bottomCount) ? 'top' : 'bottom');
+                    } else {
+                        nextDirection = direction;
+                    }
+                    if (!childObj.direction) {
+                        if (nextDirection === 'top') topCount++;
+                        else bottomCount++;
+                    }
+                    const childCatColor = (level === 1 && childObj.color) ? childObj.color : catColor;
+                    const childNode = iterate(childObj, pathArray.concat(['children', index]), nextDirection, childCatColor);
+                    childNode.set('order', index);
+                    links.push(new joint.shapes.standard.Link({
+                        z: -1,
+                        id: `${node.id}_${childNode.id}`,
+                        source: { id: node.id },
+                        target: { id: childNode.id },
+                        attrs: {
+                            root: { pointerEvents: 'none' },
+                            line: {
+                                targetMarker: null,
+                                strokeWidth: Math.max(1, 12 - level * 3),
+                                strokeLinecap: 'square',
+                                stroke: catColor || '#333',
+                            }
+                        }
+                    }));
+                });
+                return node;
+            }
+
+            iterate(data, [], null, '#333');
+            return [...elements, ...links];
+        }
+
+        // Layout algorithm adapted from official JointJS fishbone demo
+        function getChildren(graph, node) {
+            const neighbors = graph.getNeighbors(node, { outbound: true });
+            return neighbors.sort((a, b) => (a.get('order') || 0) - (b.get('order') || 0));
+        }
+
+        function layoutFishbone(graph, x, y, options = {}) {
+            const { vsGap = 10, vcGap = 12, hsGap = 5, hcGap = 2 } = options;
+
+            function measureNode(node, children, horizontal, level, last) {
+                if (children.length === 0) {
+                    return { ...node.size() };
+                }
+                children.forEach((child, index) => {
+                    child.set('layoutSize', measureNode(child, getChildren(graph, child), !horizontal, level + 1, index === children.length - 1));
+                });
+                const sizes = children.map(c => c.get('layoutSize'));
+                let totalWidth = 0;
+                let totalHeight = 0;
+                const { width: nodeWidth, height: nodeHeight } = node.size();
+                if (horizontal) {
+                    let h = sizes.reduce((acc, s) => acc + s.height, 0) + (sizes.length - 1) * vsGap;
+                    let linkOverlap = 0;
+                    if (!last || level <= 1) {
+                        const a = h + 2 * vcGap;
+                        const b = sin45 * a;
+                        linkOverlap = Math.max(b - nodeWidth / 2, 0);
+                    }
+                    node.set('linkOverlap', linkOverlap);
+                    let dy = 0;
+                    const rightWidth = children.reduce((acc, child) => {
+                        const size = child.get('layoutSize');
+                        let overflow = nodeWidth / 2 - hcGap;
+                        if (child.get('compact')) {
+                            overflow += sin45 * (dy + size.height - child.size().height / 2);
+                        } else {
+                            overflow += sin45 * dy;
+                        }
+                        dy += size.height;
+                        child.set('layoutTailOverflow', overflow);
+                        dy += vsGap;
+                        return Math.max(acc, size.width - Math.max(overflow, 0) + hcGap, 0);
+                    }, 0);
+                    totalWidth = linkOverlap + nodeWidth + rightWidth;
+                    totalHeight = nodeHeight + h + vcGap;
+                } else {
+                    let nGap = 0;
+                    totalWidth = nodeWidth + nGap + hcGap + sizes.reduce((acc, s) => acc + s.width, 0) + hsGap * (sizes.length - 1);
+                    totalHeight = nodeHeight / 2 + vcGap + Math.max(...sizes.map(s => s.height));
+                }
+                return { width: totalWidth, height: totalHeight };
+            }
+
+            function positionHorizontalChildren(children, node, x, y, level, top) {
+                let tx = node.size().width + hcGap;
+                children.forEach(child => {
+                    const size = child.get('layoutSize');
+                    const linkOverlap = child.get('linkOverlap') || 0;
+                    tx += size.width;
+                    const cx = x + tx - child.size().width - linkOverlap;
+                    tx += hsGap;
+                    const cy = top
+                        ? y - size.height - vcGap + node.size().height / 2
+                        : y + size.height - child.size().height + node.size().height / 2 + vcGap;
+                    positionNode(child, getChildren(graph, child), false, cx, cy, level + 1, top);
+                    const childAnchorPoint = top ? child.getBBox().bottomMiddle() : child.getBBox().topMiddle();
+                    let diagonalShift = sin45 * (childAnchorPoint.y - node.getCenter().y);
+                    if (top) diagonalShift = -diagonalShift;
+                    const vertex = {
+                        x: child.position().x + child.size().width / 2 + diagonalShift,
+                        y: y + node.size().height / 2
+                    };
+                    const [link] = graph.getConnectedLinks(child, { inbound: true });
+                    if (link) {
+                        link.vertices([vertex]);
+                        link.prop('target/anchor', { name: top ? 'bottom' : 'top', args: { useModelGeometry: true } });
+                    }
+                });
+            }
+
+            function positionVerticalChildren(children, node, x, y, level, top) {
+                let ty = vcGap;
+                children.forEach(child => {
+                    const size = child.get('layoutSize');
+                    ty += size.height;
+                    const cx = x - size.width + (child.get('layoutTailOverflow') || 0);
+                    const cy = top ? y + ty + node.size().height - child.size().height : y - ty;
+                    ty += vsGap;
+                    positionNode(child, getChildren(graph, child), true, cx, cy, level + 1, top);
+                    const nodeAnchorPoint = top ? node.getBBox().bottomMiddle() : node.getBBox().topMiddle();
+                    let diagonalShift = sin45 * (nodeAnchorPoint.y - child.getCenter().y);
+                    if (top) diagonalShift = -diagonalShift;
+                    const vertex = {
+                        x: x + node.size().width / 2 + diagonalShift,
+                        y: child.position().y + child.size().height / 2
+                    };
+                    const [link] = graph.getConnectedLinks(child, { inbound: true });
+                    if (link) {
+                        link.vertices([vertex]);
+                        link.prop('source/anchor', { name: top ? 'bottom' : 'top', args: { useModelGeometry: true } });
+                    }
+                });
+            }
+
+            function positionNode(node, children, horizontal, x, y, level, top) {
+                node.position(x, y);
+                if (horizontal) {
+                    positionHorizontalChildren(children, node, x, y, level, top);
+                } else {
+                    positionVerticalChildren(children, node, x, y, level, top);
+                }
+            }
+
+            const [head] = graph.getSources();
+            const [tail] = graph.getNeighbors(head, { outbound: true });
+            if (!tail) return;
+            const tailChildren = getChildren(graph, tail);
+            const topChildren = tailChildren.filter(c => c.get('direction') === 'top');
+            const bottomChildren = tailChildren.filter(c => c.get('direction') !== 'top');
+
+            const sizeTop = measureNode(tail, topChildren, false, 0, true);
+            const sizeBottom = measureNode(tail, bottomChildren, false, 0, true);
+            const size = {
+                width: Math.max(sizeTop.width, sizeBottom.width),
+                height: sizeTop.height + sizeBottom.height
+            };
+
+            const { height: headHeight } = head.size();
+            const { height: tailHeight } = tail.size();
+            const xt = x;
+            const yt = y - tailHeight / 2;
+            tail.position(xt, yt);
+
+            positionHorizontalChildren(bottomChildren, tail, xt, yt, 0, false);
+            positionHorizontalChildren(topChildren, tail, xt, yt, 0, true);
+
+            head.position(x + size.width, y - headHeight / 2);
+        }
+
+        // Vertical spread of the fishbone diagram (controls vsGap and vcGap)
+        let diagramSpread = 1.0;
+
+        function renderFishboneDiagram(problem, categories) {
+            if (!jointGraph || !jointPaper) return;
+
+            // Build data structure
+            const children = categoryData.map(cat => ({
+                name: cat.name,
+                direction: null,
+                color: cat.color,
+                children: (categories[cat.key] || []).map(cause => ({
+                    name: cause.text,
+                    direction: null,
+                    children: (cause.subCauses || []).map(subCause => ({
+                        name: subCause.text,
+                        direction: null,
+                        children: (subCause.subSubCauses || []).map(ssc => ({
+                            name: ssc,
+                            children: [],
+                        })),
+                    })),
+                })),
+            }));
+
+            const data = {
+                name: problem || '?',
+                direction: null,
+                children: [{
+                    name: '',
+                    direction: null,
+                    children: children,
+                }],
+            };
+
+            const cells = generateFishboneCells(data);
+            jointGraph.resetCells(cells);
+            layoutFishbone(jointGraph, 50, 350, {
+                vsGap: Math.round(10 * diagramSpread),
+                vcGap: Math.round(12 * diagramSpread),
+                hsGap: 5,
+                hcGap: 2
+            });
+            requestAnimationFrame(() => requestAnimationFrame(fitDiagram));
+        }
+
+        // Current diagram height in vh units (kept for CSS var, not used by buttons)
+        let diagramHeightVh = 85;
+
+        function applyDiagramHeight() {
+            const container = document.getElementById('ishikawaDiagramContainer');
+            container.style.height = diagramHeightVh + 'vh';
+            const label = document.getElementById('heightLabel');
+            if (label) label.textContent = diagramHeightVh + 'vh';
+            // Wait for browser reflow, then sync paper size and refit
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (jointPaper) {
+                        const paperEl = document.getElementById('jointjs-paper');
+                        jointPaper.setDimensions(paperEl.clientWidth, paperEl.clientHeight);
+                        if (jointGraph && jointGraph.getCells().length > 0) {
+                            fitDiagram();
+                        }
+                    }
+                });
+            });
+        }
+
+        function fitDiagram() {
+            if (!jointPaper || !jointGraph) return;
+            const paperEl = document.getElementById('jointjs-paper');
+            const w = paperEl.clientWidth;
+            const h = paperEl.clientHeight;
+            if (!w || !h) return;
+            jointPaper.setDimensions(w, h);
+            jointPaper.translate(0, 0);
+            jointPaper.scale(1, 1);
+
+            // Get content bounding box
+            const bbox = jointGraph.getBBox();
+            if (!bbox) return;
+
+            // Calculate scale to fit with padding
+            const padding = 50;
+            const scaleX = (w - padding * 2) / bbox.width;
+            const scaleY = (h - padding * 2) / bbox.height;
+            const scale = Math.min(scaleX, scaleY, 1.2);
+
+            // Center content in paper
+            const scaledW = bbox.width * scale;
+            const scaledH = bbox.height * scale;
+            const tx = (w - scaledW) / 2 - bbox.x * scale;
+            const ty = (h - scaledH) / 2 - bbox.y * scale;
+
+            jointPaper.scale(scale, scale);
+            jointPaper.translate(tx, ty);
+        }
+
+        function zoomToCenter(newScale) {
+            const paperEl = document.getElementById('jointjs-paper');
+            const cx = paperEl.clientWidth / 2;
+            const cy = paperEl.clientHeight / 2;
+            const currentScale = jointPaper.scale().sx;
+            const t = jointPaper.translate();
+            const newTx = cx - (cx - t.tx) * (newScale / currentScale);
+            const newTy = cy - (cy - t.ty) * (newScale / currentScale);
+            jointPaper.scale(newScale, newScale);
+            jointPaper.translate(newTx, newTy);
+        }
+
+        function initJointJS() {
+            const paperEl = document.getElementById('jointjs-paper');
+            if (!paperEl) return;
+            paperEl.innerHTML = '';
+
+            jointGraph = new joint.dia.Graph({}, { cellNamespace: joint.shapes });
+            jointPaper = new joint.dia.Paper({
+                el: paperEl,
+                model: jointGraph,
+                width: paperEl.clientWidth || 1200,
+                height: paperEl.clientHeight || 700,
+                cellViewNamespace: joint.shapes,
+                gridSize: 10,
+                interactive: false,
+                background: { color: 'transparent' },
+            });
+
+            // ---- PAN ----
+            let isPanning = false;
+            let panStart = { x: 0, y: 0 };
+            let panOrigin = { x: 0, y: 0 };
+
+            paperEl.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isPanning = true;
+                panStart = { x: e.clientX, y: e.clientY };
+                const t = jointPaper.translate();
+                panOrigin = { x: t.tx, y: t.ty };
+                paperEl.classList.add('panning');
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                jointPaper.translate(panOrigin.x + e.clientX - panStart.x, panOrigin.y + e.clientY - panStart.y);
+            });
+            window.addEventListener('mouseup', () => {
+                if (isPanning) { isPanning = false; paperEl.classList.remove('panning'); }
+            });
+
+            // ---- ZOOM wheel ----
+            paperEl.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+                const cur = jointPaper.scale();
+                const ns = Math.min(Math.max(cur.sx * factor, 0.1), 5);
+                const rect = paperEl.getBoundingClientRect();
+                const ox = e.clientX - rect.left;
+                const oy = e.clientY - rect.top;
+                const t = jointPaper.translate();
+                jointPaper.scale(ns, ns);
+                jointPaper.translate(ox - (ox - t.tx) * (ns / cur.sx), oy - (oy - t.ty) * (ns / cur.sx));
+            }, { passive: false });
+
+            // ---- Zoom buttons ----
+            document.getElementById('zoomInBtn')?.addEventListener('click', () => zoomToCenter(Math.min(jointPaper.scale().sx * 1.25, 5)));
+            document.getElementById('zoomOutBtn')?.addEventListener('click', () => zoomToCenter(Math.max(jointPaper.scale().sx / 1.25, 0.1)));
+            document.getElementById('zoomFitBtn')?.addEventListener('click', fitDiagram);
+
+            // ---- Resize observer ----
+            const ro = new ResizeObserver(() => {
+                if (jointPaper && jointGraph && jointGraph.getCells().length > 0) {
+                    layoutFishbone(jointGraph, 50, 350, {
+                        vsGap: Math.round(10 * diagramSpread),
+                        vcGap: Math.round(12 * diagramSpread),
+                        hsGap: 5, hcGap: 2
+                    });
+                    requestAnimationFrame(() => requestAnimationFrame(fitDiagram));
+                }
+            });
+            ro.observe(paperEl);
+        }
+
+        function scheduleDiagramRender() {
+            if (scheduledRender) clearTimeout(scheduledRender);
+            scheduledRender = setTimeout(() => {
+                const problem = document.getElementById('problem')?.value?.trim();
+                if (problem) {
+                    const categories = collectDataFromDOM();
+                    renderFishboneDiagram(problem, categories);
+                }
+                scheduledRender = null;
+            }, 200);
         }
 
         // ============================================
-        // FUNCIONES PARA SUB-PESTAÑAS
+        // UI & DATA MANAGEMENT
         // ============================================
-
         function initializeSubTabs() {
-            // Crear contenido para cada sub-pestaña de categoría
             categoryData.forEach(cat => {
                 const subtabId = `subtab-${cat.key}`;
-                const subtabContent = document.createElement('div');
-                subtabContent.id = subtabId;
-                subtabContent.className = 'sub-tab-content';
-
-                subtabContent.innerHTML = `
-                    <div class="calculation-block">
-                        <div class="calculation-title" style="color: ${cat.color};">
-                            <i class="fas ${cat.icon}"></i> ${cat.name} Category
+                let subtabContent = document.getElementById(subtabId);
+                if (!subtabContent) {
+                    subtabContent = document.createElement('div');
+                    subtabContent.id = subtabId;
+                    subtabContent.className = 'sub-tab-content';
+                    subtabContent.innerHTML = `
+                        <div class="calculation-block">
+                            <h3 class="calculation-title" style="color: ${cat.color};">
+                                <i class="fas ${cat.icon}"></i> ${cat.name} Root Causes — 6M Ishikawa Category
+                            </h3>
+                            <p class="instruction-text">Add causes related to ${cat.name.toLowerCase()}.</p>
+                            <div id="${cat.key}-causes" class="category-causes-container"></div>
+                            <button type="button" class="add-cause-btn success" data-category="${cat.key}" style="margin-top:1rem;">
+                                <i class="fas fa-plus"></i> Add ${cat.name} Cause
+                            </button>
                         </div>
-                        <p class="instruction-text">Add causes related to ${cat.name.toLowerCase()} (people, skills, training, staffing, etc.)</p>
-                        <div id="${cat.key}-causes" class="category-causes-container"></div>
-                        <button type="button" class="add-cause-btn success" data-category="${cat.key}" style="margin-top: 1rem;">
-                            <i class="fas fa-plus"></i> Add ${cat.name} Cause
-                        </button>
-                    </div>
-                `;
-
-                document.querySelector('.sub-tabs-container').appendChild(subtabContent);
+                    `;
+                    document.querySelector('.sub-tabs-container').appendChild(subtabContent);
+                }
             });
+        }
 
-            // Event listeners para sub-pestañas
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const subtabId = this.getAttribute('data-subtab');
-                    switchSubTab(subtabId);
-                });
-            });
+        function switchWizardTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.wizard-tab-content').forEach(c => c.classList.remove('active'));
+            const tab = document.getElementById(tabId);
+            if (tab) tab.classList.add('active');
+            const activeBtn = document.querySelector(`button[data-tab="${tabId}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize JointJS when diagram tab is first opened
+            if (tabId === 'tab-diagram' && !jointGraph) {
+                setTimeout(initJointJS, 100);
+                setTimeout(scheduleDiagramRender, 300);
+            }
         }
 
         function switchSubTab(subtabId) {
-            // Quitar clase active de todos los botones y contenidos de sub-pestañas
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el contenido seleccionado
-            const activeSubTab = document.getElementById(subtabId);
-            if (activeSubTab) {
-                activeSubTab.classList.add('active');
-            }
-
-            // Activar botón correspondiente
+            document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+            const subtab = document.getElementById(subtabId);
+            if (subtab) subtab.classList.add('active');
             const activeBtn = document.querySelector(`button[data-subtab="${subtabId}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
-        }
-
-        // Función para ir a Diagram
-        function goToDiagram() {
-            // Primero, generamos el diagrama si no está generado
-            generateIshikawa();
-            // Luego cambiamos a la pestaña del diagrama
-            switchWizardTab('tab-diagram');
-        }
-
-        // Función para validar datos de entrada
-        function validateDataInput() {
-            const problem = document.getElementById("problem").value.trim();
-            const goToDiagramBtn = document.getElementById('go-to-diagram-btn');
-            if (goToDiagramBtn) {
-                if (problem) {
-                    goToDiagramBtn.disabled = false;
-                } else {
-                    goToDiagramBtn.disabled = true;
-                }
-            }
-        }
-
-        // ============================================
-        // VARIABLES GLOBALES DE ISHIKAWA
-        // ============================================
-
-        const categoryData = [
-            { key: 'manpower', name: 'Manpower', icon: 'fa-users', color: 'var(--manpower-color)' },
-            { key: 'methods', name: 'Methods', icon: 'fa-cogs', color: 'var(--methods-color)' },
-            { key: 'machines', name: 'Machines', icon: 'fa-robot', color: 'var(--machines-color)' },
-            { key: 'materials', name: 'Materials', icon: 'fa-boxes', color: 'var(--materials-color)' },
-            { key: 'environment', name: 'Environment', icon: 'fa-tree', color: 'var(--environment-color)' },
-            { key: 'measurement', name: 'Measurement', icon: 'fa-chart-line', color: 'var(--measurement-color)' },
-        ];
-
-        let currentData = { problem: '', categories: {} };
-        const placeholderProblemText = 'Enter problem here';
-        const diagramNodes = new Map();
-
-        // Variables para control de ejemplos
-        let currentExampleIndex = 0;
-        const exampleTypes = ['manufacturing', 'healthcare', 'software'];
-
-        // ============================================
-        // INICIALIZACIÓN CUANDO EL DOM ESTÁ LISTO
-        // ============================================
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Cargar el header dinámicamente
-            loadHeader();
-
-            // Inicializar la interfaz
-            createCategoryUI();
-            initializeSubTabs();
-            resetData(true);
-
-            // Event listeners para navegación de tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-                    switchWizardTab(tabId);
-                });
-            });
-
-            // Event listeners para botones de navegación
-            document.getElementById('go-to-input-btn').addEventListener('click', function () {
-                switchWizardTab('tab-input');
-            });
-
-            document.getElementById('back-to-theory-btn').addEventListener('click', function () {
-                switchWizardTab('tab-theory');
-            });
-
-            document.getElementById('back-to-theory-btn-2').addEventListener('click', function () {
-                switchWizardTab('tab-theory');
-            });
-
-            document.getElementById('back-to-input-btn').addEventListener('click', function () {
-                switchWizardTab('tab-input');
-            });
-
-            document.getElementById('go-to-diagram-btn').addEventListener('click', goToDiagram);
-
-            // Event listeners para los botones principales (nuevos botones globales)
-            document.getElementById("globalLoadExampleBtn").addEventListener("click", function () {
-                // Cargar el siguiente ejemplo en la secuencia
-                loadExample(exampleTypes[currentExampleIndex]);
-                currentExampleIndex = (currentExampleIndex + 1) % exampleTypes.length;
-            });
-
-            document.getElementById("globalResetBtn").addEventListener("click", () => {
-                resetData(true);
-                // Mostrar notificación como en kano.html
-                showNotification("All data has been reset");
-            });
-
-            // Event listeners para los botones originales (mantener compatibilidad)
-            // NOTA: Los botones originales han sido eliminados del HTML, así que estas líneas ya no son necesarias
-            // document.getElementById("exampleBtn").addEventListener("click", function () {
-            //     loadExample('manufacturing');
-            // });
-            // document.getElementById("resetBtn").addEventListener("click", () => resetData(true));
-
-            document.getElementById("generateDiagramBtn").addEventListener("click", generateIshikawa);
-            document.getElementById("exportBtn").addEventListener("click", exportToExcel);
-            document.getElementById("exportJpgBtn").addEventListener("click", exportToJpg);
-
-            // Event listener para el problema
-            document.getElementById("problem").addEventListener("input", function () {
-                const problem = this.value.trim();
-                if (problem) {
-                    const categories = collectDataFromDOM();
-                    drawIshikawa(problem, categories);
-                }
-                validateDataInput();
-            });
-
-            // Event listener para el contenedor de sub-tabs (categorías)
-            document.querySelector('.sub-tabs-container').addEventListener('click', function (e) {
-                const target = e.target.closest('button');
-                if (!target) return;
-                if (target.classList.contains('add-cause-btn')) {
-                    addCauseBlock(target.dataset.category);
-                }
-                if (target.classList.contains('remove-cause-btn')) {
-                    target.closest('.cause-block').remove();
-                    updateDiagram();
-                }
-                if (target.classList.contains('add-sub-cause-btn')) {
-                    addSubCauseInput(target);
-                }
-                if (target.classList.contains('remove-sub-cause-btn')) {
-                    target.closest('.sub-cause-item').remove();
-                    updateDiagram();
-                }
-                if (target.classList.contains('add-sub-sub-cause-btn')) {
-                    addSubSubCauseInput(target);
-                }
-                if (target.classList.contains('remove-sub-sub-cause-btn')) {
-                    target.closest('.sub-sub-cause-item').remove();
-                    updateDiagram();
-                }
-            });
-
-            // Event listener para inputs de causas en sub-tabs
-            document.querySelector('.sub-tabs-container').addEventListener('input', function (e) {
-                if (e.target.classList.contains('cause-input') ||
-                    e.target.classList.contains('sub-cause-input') ||
-                    e.target.classList.contains('sub-sub-cause-input')) {
-                    const problem = document.getElementById("problem").value.trim();
-                    if (problem) {
-                        const categories = collectDataFromDOM();
-                        drawIshikawa(problem, categories);
-                    }
-                }
-            });
-
-            // Redibujar al redimensionar
-            window.addEventListener('resize', () => {
-                if (currentData.problem && currentData.problem !== placeholderProblemText) {
-                    drawIshikawa(currentData.problem, currentData.categories);
-                }
-            });
-        });
-
-        // ============================================
-        // FUNCIONES DEL HEADER
-        // ============================================
-
-        function initializeHeaderMenu() {
-            const navToggle = document.getElementById('nav-toggle');
-            const navMenu = document.getElementById('nav-menu');
-            const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
-            const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
-            const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
-            if (navToggle) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('show-menu');
-                    const icon = navToggle.querySelector('i');
-                    icon.classList.toggle('fa-bars');
-                    icon.classList.toggle('fa-times');
-
-                    if (!navMenu.classList.contains('show-menu')) {
-                        if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
-                        if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
-                    }
-                });
-            }
-
-            if (toolsDropdownToggle) {
-                toolsDropdownToggle.addEventListener('click', (event) => {
-                    if (window.innerWidth <= 992) {
-                        event.preventDefault();
-                        if (toolsDropdownMenu) toolsDropdownMenu.classList.toggle('show-submenu');
-                        if (toolsDropdownContainer) toolsDropdownContainer.classList.toggle('active');
-                    }
-                });
-            }
-
-            // Clicks fuera del menu (para móvil)
-            document.addEventListener('click', (event) => {
-                if (!navMenu || !navToggle) return;
-                const isClickInsideNav = (navMenu && navMenu.contains(event.target)) || (navToggle && navToggle.contains(event.target));
-                if (!isClickInsideNav && navMenu && navMenu.classList.contains('show-menu')) {
-                    navMenu.classList.remove('show-menu');
-                    const icon = navToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                    if (toolsDropdownMenu) toolsDropdownMenu.classList.remove('show-submenu');
-                    if (toolsDropdownContainer) toolsDropdownContainer.classList.remove('active');
-                }
-            });
-        }
-
-        function loadHeader() {
-            fetch('header.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    initializeHeaderMenu();
-                })
-                .catch(error => {
-                    console.error('Error loading header:', error);
-                    document.getElementById('header-container').innerHTML = '<p style="color:red; text-align:center;">Error loading header.</p>';
-                });
-        }
-
-        // ============================================
-        // FUNCIONES DEL DIAGRAMA ISHIKAWA
-        // ============================================
-
-        function createSVGElement(tag, attributes) {
-            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-            for (const key in attributes) {
-                el.setAttribute(key, attributes[key]);
-            }
-            return el;
-        }
-
-        function wrapText(textElement, text, maxWidth) {
-            textElement.innerHTML = '';
-            const words = text.split(/\s+/);
-            let line = '';
-            const x = textElement.getAttribute('x');
-            const y = textElement.getAttribute('y');
-
-            let tspan = createSVGElement('tspan', { x: x, dy: '0em' });
-            textElement.appendChild(tspan);
-
-            words.forEach(word => {
-                const testLine = line ? `${line} ${word}` : word;
-                tspan.textContent = testLine;
-                if (tspan.getComputedTextLength() > maxWidth) {
-                    tspan.textContent = line;
-                    line = word;
-                    tspan = createSVGElement('tspan', { x: x, dy: '1.2em' });
-                    tspan.textContent = line;
-                    textElement.appendChild(tspan);
-                } else {
-                    line = testLine;
-                }
-            });
-
-            const textHeight = textElement.getBBox().height;
-            const initialY = parseFloat(y);
-            const verticalCenterOffset = initialY - (textElement.getBBox().y + textHeight / 2);
-            textElement.setAttribute('transform', `translate(0, ${verticalCenterOffset})`);
-        }
-
-        function adjustBranchCollisions(elements, isTopBranch) {
-            if (elements.length < 2) return;
-
-            const MARGIN = 5;
-
-            const sortedElements = elements
-                .map(el => ({ el, bbox: el.getBBox() }))
-                .sort((a, b) => {
-                    return isTopBranch ? a.bbox.y - b.bbox.y : b.bbox.y - a.bbox.y;
-                });
-
-            for (let i = 0; i < sortedElements.length - 1; i++) {
-                const el1 = sortedElements[i].el;
-                const rect1 = el1.getBBox();
-
-                const el2 = sortedElements[i + 1].el;
-                let rect2 = el2.getBBox();
-
-                let overlap;
-                if (isTopBranch) {
-                    overlap = (rect1.y + rect1.height + MARGIN) - rect2.y;
-                } else {
-                    overlap = (rect2.y + rect2.height + MARGIN) - rect1.y;
-                }
-
-                if (overlap > 0) {
-                    const node2 = diagramNodes.get(el2);
-                    if (!node2) continue;
-
-                    const dy = isTopBranch ? overlap : -overlap;
-                    const newY = parseFloat(el2.getAttribute('y')) + dy;
-
-                    el2.setAttribute('y', newY);
-                    node2.initialPos.y = newY;
-
-                    if (node2.line) {
-                        node2.line.setAttribute('y2', newY);
-                    }
-
-                    sortedElements[i + 1].bbox = el2.getBBox();
-                }
-            }
-        }
-
-        function drawIshikawa(problem, categories) {
-            const svg = document.getElementById('ishikawaSvgContainer');
-            svg.innerHTML = '';
-            diagramNodes.clear();
-
-            const { width, height } = svg.getBoundingClientRect();
-
-            const isMobile = window.innerWidth <= 768;
-            const margin = isMobile
-                ? { top: 30, right: 120, bottom: 60, left: 30 }
-                : { top: 40, right: 200, bottom: 80, left: 50 };
-
-            const diagramWidth = width - margin.left - margin.right;
-            const diagramHeight = height - margin.top - margin.bottom;
-
-            const spineY = margin.top + diagramHeight / 2;
-            const spineStartX = margin.left;
-            const spineEndX = margin.left + diagramWidth;
-
-            const diagramGroup = createSVGElement('g', { id: 'diagram-group' });
-            svg.appendChild(diagramGroup);
-
-            // Logo
-            diagramGroup.appendChild(createSVGElement('image', {
-                href: 'sigma-exacta-icon.jpg',
-                x: 10, y: 10, width: 40, height: 40, opacity: 0.7
-            }));
-
-            // Nota de instrucción
-            const noteText = createSVGElement('text', {
-                x: 55, y: 30, fill: '#888',
-                'font-size': isMobile ? '10px' : '12px',
-                'font-style': 'italic',
-                'dominant-baseline': 'middle'
-            });
-            noteText.textContent = 'Drag & drop text to adjust the diagram';
-            diagramGroup.appendChild(noteText);
-
-            // Dibujar la espina principal
-            diagramGroup.appendChild(createSVGElement('line', {
-                x1: spineStartX, y1: spineY, x2: spineEndX, y2: spineY,
-                stroke: '#333', 'stroke-width': 3
-            }));
-
-            // Flecha al final de la espina
-            diagramGroup.appendChild(createSVGElement('polygon', {
-                points: `${spineEndX},${spineY} ${spineEndX - 15},${spineY - 7} ${spineEndX - 15},${spineY + 7}`,
-                fill: '#333'
-            }));
-
-            // Caja del problema
-            const problemBoxWidth = isMobile ? 140 : 180;
-            const problemBoxHeight = isMobile ? 50 : 60;
-
-            diagramGroup.appendChild(createSVGElement('rect', {
-                x: spineEndX + 5, y: spineY - problemBoxHeight / 2,
-                width: problemBoxWidth, height: problemBoxHeight,
-                class: 'problem-box',
-                rx: 8,
-                stroke: '#333',
-                'stroke-width': 1
-            }));
-
-            const problemText = createSVGElement('text', {
-                x: spineEndX + 5 + problemBoxWidth / 2,
-                y: spineY,
-                class: 'problem-text',
-                'font-size': isMobile ? '12px' : '14px'
-            });
-            diagramGroup.appendChild(problemText);
-            wrapText(problemText, problem, problemBoxWidth - 10);
-
-            const topCategories = categoryData.slice(0, 3);
-            const bottomCategories = categoryData.slice(3, 6);
-
-            const drawCategoryBranch = (cat, index, isTop) => {
-                const boneAngle = isTop ? -45 : 45;
-                const boneAngleRad = boneAngle * Math.PI / 180;
-
-                const boneLength = isMobile
-                    ? Math.min(diagramWidth / 4, diagramHeight / 2.5)
-                    : Math.min(diagramWidth / 3.5, diagramHeight / 2.2);
-
-                const boneStartX = spineStartX + (diagramWidth / (topCategories.length + 1)) * (index + 1);
-                const boneEndX = boneStartX + boneLength * Math.cos(boneAngleRad);
-                const boneEndY = spineY + boneLength * Math.sin(boneAngleRad);
-
-                const bone = createSVGElement('line', {
-                    x1: boneStartX, y1: spineY, x2: boneEndX, y2: boneEndY,
-                    stroke: cat.color, class: 'category-bone'
-                });
-                diagramGroup.appendChild(bone);
-
-                const textYOffset = isTop ? -20 : 20;
-                const catText = createSVGElement('text', {
-                    x: boneEndX, y: boneEndY + textYOffset,
-                    fill: cat.color,
-                    class: 'main-category-text draggable',
-                    'font-size': isMobile ? '12px' : '14px'
-                });
-                catText.textContent = cat.name;
-                diagramGroup.appendChild(catText);
-
-                diagramNodes.set(catText, {
-                    line: bone,
-                    children: [],
-                    initialPos: { x: boneEndX, y: boneEndY + textYOffset },
-                    parent: null,
-                    fraction: 0
-                });
-                makeDraggable(catText);
-
-                const causes = categories[cat.key] || [];
-                const causeElementsInBranch = [];
-
-                causes.forEach((cause, causeIdx) => {
-                    const fraction = (causeIdx + 1) / (causes.length + 1);
-                    const causeStartX = boneStartX + (boneEndX - boneStartX) * fraction;
-                    const causeStartY = spineY + (boneEndY - spineY) * fraction;
-
-                    const causeBranchLength = isMobile ? 50 : 70;
-                    const causeBranchEndX = causeStartX + (isTop ? causeBranchLength : -causeBranchLength);
-                    const causeBranchEndY = causeStartY;
-
-                    const causeLine = createSVGElement('line', {
-                        x1: causeStartX, y1: causeStartY, x2: causeBranchEndX, y2: causeBranchEndY,
-                        stroke: cat.color, class: 'cause-line'
-                    });
-                    diagramGroup.appendChild(causeLine);
-
-                    const causeText = createSVGElement('text', {
-                        x: causeBranchEndX + (isTop ? 8 : -8),
-                        y: causeBranchEndY,
-                        fill: '#333',
-                        'text-anchor': isTop ? 'start' : 'end',
-                        'dominant-baseline': 'middle',
-                        class: 'cause-text draggable',
-                        'font-size': isMobile ? '10px' : '12px'
-                    });
-                    causeText.textContent = cause.text;
-                    diagramGroup.appendChild(causeText);
-
-                    diagramNodes.set(causeText, {
-                        line: causeLine,
-                        children: [],
-                        initialPos: { x: causeBranchEndX + (isTop ? 8 : -8), y: causeBranchEndY },
-                        parent: catText,
-                        fraction: fraction
-                    });
-                    diagramNodes.get(catText).children.push(causeText);
-                    makeDraggable(causeText);
-
-                    causeElementsInBranch.push(causeText);
-                    const subCauseElementsInBranch = [];
-
-                    const subCauses = cause.subCauses || [];
-                    subCauses.forEach((subCause, subCauseIdx) => {
-                        const subFraction = (subCauseIdx + 1) / (subCauses.length + 1);
-                        const subCauseStartX = causeStartX + (causeBranchEndX - causeStartX) * subFraction;
-                        const subCauseStartY = causeStartY;
-
-                        const isAlternating = subCauseIdx % 2 !== 0;
-                        const currentAngle = isAlternating ? (-boneAngle) : (boneAngle);
-                        const subCauseBranchAngleRad = currentAngle * Math.PI / 180;
-
-                        const subCauseBranchLength = isMobile ? 40 : 60;
-
-                        const directionalLength = isTop ? subCauseBranchLength : -subCauseBranchLength;
-                        const subCauseBranchEndX = subCauseStartX + directionalLength * Math.cos(subCauseBranchAngleRad);
-                        const subCauseBranchEndY = subCauseStartY + directionalLength * Math.sin(subCauseBranchAngleRad);
-
-                        const subCauseLine = createSVGElement('line', {
-                            x1: subCauseStartX, y1: subCauseStartY, x2: subCauseBranchEndX, y2: subCauseBranchEndY,
-                            stroke: cat.color, class: 'subcause-line'
-                        });
-                        diagramGroup.appendChild(subCauseLine);
-
-                        const textAnchor = isTop ? 'start' : 'end';
-                        const textXOffset = isTop ? 8 : -8;
-
-                        const subCauseText = createSVGElement('text', {
-                            x: subCauseBranchEndX + textXOffset,
-                            y: subCauseBranchEndY,
-                            fill: '#555',
-                            'text-anchor': textAnchor,
-                            'dominant-baseline': 'middle',
-                            class: 'subcause-text draggable',
-                            'font-size': isMobile ? '9px' : '11px'
-                        });
-                        subCauseText.textContent = subCause.text;
-                        diagramGroup.appendChild(subCauseText);
-
-                        diagramNodes.set(subCauseText, {
-                            line: subCauseLine,
-                            children: [],
-                            initialPos: { x: parseFloat(subCauseText.getAttribute('x')), y: parseFloat(subCauseText.getAttribute('y')) },
-                            parent: causeText,
-                            fraction: subFraction
-                        });
-                        diagramNodes.get(causeText).children.push(subCauseText);
-                        makeDraggable(subCauseText);
-
-                        subCauseElementsInBranch.push(subCauseText);
-                    });
-
-                    adjustBranchCollisions(subCauseElementsInBranch, isTop);
-                });
-
-                adjustBranchCollisions(causeElementsInBranch, isTop);
-            };
-
-            topCategories.forEach((cat, i) => drawCategoryBranch(cat, i, true));
-            bottomCategories.forEach((cat, i) => drawCategoryBranch(cat, i, false));
-        }
-
-        function makeDraggable(element) {
-            let isDragging = false;
-            let initialMousePos = { x: 0, y: 0 };
-
-            element.addEventListener('mousedown', startDrag);
-
-            function startDrag(e) {
-                e.preventDefault();
-                isDragging = true;
-                const CTM = element.ownerSVGElement.getScreenCTM();
-                initialMousePos = { x: (e.clientX - CTM.e) / CTM.a, y: (e.clientY - CTM.f) / CTM.d };
-
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', endDrag);
-            }
-
-            function drag(e) {
-                if (!isDragging) return;
-                const CTM = element.ownerSVGElement.getScreenCTM();
-                const currentMousePos = { x: (e.clientX - CTM.e) / CTM.a, y: (e.clientY - CTM.f) / CTM.d };
-                const dx = currentMousePos.x - initialMousePos.x;
-                const dy = currentMousePos.y - initialMousePos.y;
-                updateTreePosition(element, dx, dy);
-            }
-
-            function endDrag() {
-                if (!isDragging) return;
-                isDragging = false;
-                for (const [el, node] of diagramNodes.entries()) {
-                    node.initialPos.x = parseFloat(el.getAttribute('x'));
-                    node.initialPos.y = parseFloat(el.getAttribute('y'));
-                }
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('mouseup', endDrag);
-            }
-        }
-
-        function updateTreePosition(element, dx, dy) {
-            const node = diagramNodes.get(element);
-            if (!node) return;
-
-            const newX = node.initialPos.x + dx;
-            const newY = node.initialPos.y + dy;
-            element.setAttribute('x', newX);
-            element.setAttribute('y', newY);
-
-            const { line } = node;
-            if (line) {
-                const textAnchor = element.getAttribute('text-anchor');
-                let xOffset = 0;
-
-                if (textAnchor === 'start') xOffset = -5;
-                if (textAnchor === 'end') xOffset = 5;
-
-                line.setAttribute('x2', newX + xOffset);
-                line.setAttribute('y2', newY);
-            }
-
-            node.children.forEach(childElement => {
-                const childNode = diagramNodes.get(childElement);
-                if (line && childNode) {
-                    const lineX1 = parseFloat(line.getAttribute('x1'));
-                    const lineY1 = parseFloat(line.getAttribute('y1'));
-                    const lineX2 = parseFloat(line.getAttribute('x2'));
-                    const lineY2 = parseFloat(line.getAttribute('y2'));
-
-                    const newChildStartX = lineX1 + (lineX2 - lineX1) * childNode.fraction;
-                    const newChildStartY = lineY1 + (lineY2 - lineY1) * childNode.fraction;
-
-                    childNode.line.setAttribute('x1', newChildStartX);
-                    childNode.line.setAttribute('y1', newChildStartY);
-                }
-                updateTreePosition(childElement, dx, dy);
-            });
-        }
-
-        // ===================================================================================
-        // UI AND DATA HANDLING LOGIC
-        // ===================================================================================
-
-        function createCategoryUI() {
-            // Esta función ya no necesita crear la UI completa porque las sub-pestañas lo harán
-            // Solo inicializa las categorías en currentData
-            categoryData.forEach(cat => {
-                currentData.categories[cat.key] = [];
-            });
+            if (activeBtn) activeBtn.classList.add('active');
         }
 
         function addCauseBlock(categoryKey, causeText = '', subCauses = []) {
+            if (isReadOnly) return;
             const container = document.getElementById(`${categoryKey}-causes`);
             if (!container) return;
 
             const causeBlock = document.createElement('div');
             causeBlock.className = 'cause-block';
 
-            const subCausesHTML = subCauses.map((subCause, index) => {
-                const subSubCausesHTML = (subCause.subSubCauses || []).map(subSubCause => `
+            const subCausesHTML = subCauses.map(subCause => {
+                const subSubCausesHTML = (subCause.subSubCauses || []).map(ssc => `
                     <div class="sub-sub-cause-item">
-                        <input type="text" class="sub-sub-cause-input" placeholder="Sub-sub-cause..." value="${subSubCause}">
-                        <button type="button" class="action-button danger remove-sub-sub-cause-btn" title="Remove sub-sub-cause">-</button>
+                        <input type="text" class="sub-sub-cause-input" placeholder="Sub-sub-cause..." value="${escapeHtml(ssc)}">
+                        <button type="button" class="action-button danger remove-sub-sub-cause-btn">-</button>
                     </div>
                 `).join('');
-
                 return `
                     <div class="sub-cause-item">
-                        <input type="text" class="sub-cause-input" placeholder="Sub-cause..." value="${subCause.text}">
-                        <button type="button" class="action-button danger remove-sub-cause-btn" title="Remove sub-cause">-</button>
-                        <button type="button" class="add-sub-sub-cause-btn success action-button" title="Add sub-sub-cause">+</button>
+                        <input type="text" class="sub-cause-input" placeholder="Sub-cause..." value="${escapeHtml(subCause.text || '')}">
+                        <button type="button" class="action-button danger remove-sub-cause-btn">-</button>
+                        <button type="button" class="add-sub-sub-cause-btn success action-button">+</button>
                         <div class="sub-sub-causes-container">${subSubCausesHTML}</div>
                     </div>
                 `;
@@ -1799,76 +1815,50 @@
 
             causeBlock.innerHTML = `
                 <div class="cause-input-wrapper">
-                    <input type="text" class="cause-input" placeholder="Main cause..." value="${causeText}">
-                    <button type="button" class="action-button danger remove-cause-btn" title="Remove cause and sub-causes">X</button>
+                    <input type="text" class="cause-input" placeholder="Main cause..." value="${escapeHtml(causeText)}">
+                    <button type="button" class="action-button danger remove-cause-btn">X</button>
                 </div>
                 <div class="sub-causes-container">${subCausesHTML}</div>
-                <button type="button" class="add-sub-cause-btn success action-button" title="Add sub-cause">+</button>
+                <button type="button" class="add-sub-cause-btn success action-button">+</button>
             `;
             container.appendChild(causeBlock);
+            scheduleDiagramRender();
+        }
 
-            // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR CAUSA
-            setTimeout(() => {
-                const problem = document.getElementById("problem").value.trim();
-                if (problem) {
-                    const categories = collectDataFromDOM();
-                    drawIshikawa(problem, categories);
-                    validateDataInput();
-                }
-            }, 10);
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
         }
 
         function addSubCauseInput(button) {
+            if (isReadOnly) return;
             const container = button.previousElementSibling;
-            const subCauseItem = document.createElement('div');
-            subCauseItem.className = 'sub-cause-item';
-            subCauseItem.innerHTML = `
+            const item = document.createElement('div');
+            item.className = 'sub-cause-item';
+            item.innerHTML = `
                 <input type="text" class="sub-cause-input" placeholder="Sub-cause...">
-                <button type="button" class="action-button danger remove-sub-cause-btn" title="Remove sub-cause">-</button>
-                <button type="button" class="add-sub-sub-cause-btn success action-button" title="Add sub-sub-cause">+</button>
+                <button type="button" class="action-button danger remove-sub-cause-btn">-</button>
+                <button type="button" class="add-sub-sub-cause-btn success action-button">+</button>
                 <div class="sub-sub-causes-container"></div>
             `;
-            container.appendChild(subCauseItem);
-            subCauseItem.querySelector('input').focus();
-
-            // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR SUB-CAUSA
-            setTimeout(() => {
-                const problem = document.getElementById("problem").value.trim();
-                if (problem) {
-                    const categories = collectDataFromDOM();
-                    drawIshikawa(problem, categories);
-                }
-            }, 10);
+            container.appendChild(item);
+            item.querySelector('input').focus();
+            scheduleDiagramRender();
         }
 
         function addSubSubCauseInput(button) {
+            if (isReadOnly) return;
             const container = button.nextElementSibling;
-            const subSubCauseItem = document.createElement('div');
-            subSubCauseItem.className = 'sub-sub-cause-item';
-            subSubCauseItem.innerHTML = `
+            const item = document.createElement('div');
+            item.className = 'sub-sub-cause-item';
+            item.innerHTML = `
                 <input type="text" class="sub-sub-cause-input" placeholder="Sub-sub-cause...">
-                <button type="button" class="action-button danger remove-sub-sub-cause-btn" title="Remove sub-sub-cause">-</button>
+                <button type="button" class="action-button danger remove-sub-sub-cause-btn">-</button>
             `;
-            container.appendChild(subSubCauseItem);
-            subSubCauseItem.querySelector('input').focus();
-
-            // ACTUALIZAR DIAGRAMA DESPUÉS DE AGREGAR SUB-SUB-CAUSA
-            setTimeout(() => {
-                const problem = document.getElementById("problem").value.trim();
-                if (problem) {
-                    const categories = collectDataFromDOM();
-                    drawIshikawa(problem, categories);
-                }
-            }, 10);
-        }
-
-        function updateDiagram() {
-            const problem = document.getElementById("problem").value.trim();
-            if (problem) {
-                const categories = collectDataFromDOM();
-                drawIshikawa(problem, categories);
-                validateDataInput();
-            }
+            container.appendChild(item);
+            item.querySelector('input').focus();
+            scheduleDiagramRender();
         }
 
         function collectDataFromDOM() {
@@ -1877,481 +1867,636 @@
                 categories[cat.key] = [];
                 const container = document.getElementById(`${cat.key}-causes`);
                 if (!container) return;
-
-                const causeBlocks = container.querySelectorAll('.cause-block');
-                causeBlocks.forEach(block => {
-                    const causeText = block.querySelector('.cause-input').value.trim();
+                container.querySelectorAll('.cause-block').forEach(block => {
+                    const causeInput = block.querySelector('.cause-input');
+                    const causeText = causeInput ? causeInput.value.trim() : '';
                     if (causeText) {
                         const subCauses = [];
-                        const subCauseItems = block.querySelectorAll('.sub-cause-item');
-                        subCauseItems.forEach(subCauseItem => {
-                            const subCauseText = subCauseItem.querySelector('.sub-cause-input').value.trim();
+                        block.querySelectorAll('.sub-cause-item').forEach(subItem => {
+                            const subInput = subItem.querySelector('.sub-cause-input');
+                            const subCauseText = subInput ? subInput.value.trim() : '';
                             if (subCauseText) {
-                                const subSubCauses = Array.from(subCauseItem.querySelectorAll('.sub-sub-cause-input'))
-                                    .map(input => input.value.trim())
-                                    .filter(Boolean);
-                                subCauses.push({ text: subCauseText, subSubCauses: subSubCauses });
+                                const subSubCauses = [];
+                                subItem.querySelectorAll('.sub-sub-cause-input').forEach(sscInput => {
+                                    const val = sscInput.value.trim();
+                                    if (val) subSubCauses.push(val);
+                                });
+                                subCauses.push({ text: subCauseText, subSubCauses });
                             }
                         });
-                        categories[cat.key].push({ text: causeText, subCauses: subCauses });
+                        categories[cat.key].push({ text: causeText, subCauses });
                     }
                 });
             });
             return categories;
         }
 
-        function generateIshikawa() {
-            const problem = document.getElementById("problem").value.trim();
-            if (!problem) {
-                alert("⚠️ Please enter a problem statement.");
+        // ============================================
+        // REVISION HISTORY
+        // ============================================
+        function addRevHistoryRow(data = {}) {
+            const tbody = document.getElementById('revHistoryBody');
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #ddd';
+            tr.innerHTML = `
+                <td><input type="date" value="${data.date || ''}" style="width:100%;border:1px solid #ddd;border-radius:4px;padding:0.35rem 0.5rem;font-family:'Nunito',sans-serif;font-size:0.85rem;"></td>
+                <td><input type="text" value="${escapeHtml(data.desc || '')}" placeholder="e.g. Initial release" style="width:100%;border:1px solid #ddd;border-radius:4px;padding:0.35rem 0.5rem;font-family:'Nunito',sans-serif;font-size:0.85rem;"></td>
+                <td><input type="text" value="${escapeHtml(data.by || '')}" placeholder="Name / Dept." style="width:100%;border:1px solid #ddd;border-radius:4px;padding:0.35rem 0.5rem;font-family:'Nunito',sans-serif;font-size:0.85rem;"></td>
+                <td><input type="text" value="${escapeHtml(data.approved || '')}" placeholder="Name / Title" style="width:100%;border:1px solid #ddd;border-radius:4px;padding:0.35rem 0.5rem;font-family:'Nunito',sans-serif;font-size:0.85rem;"></td>
+                <td style="text-align:center;"><button class="action-button danger" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function openReviseModal() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDate').value = today;
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseApproved').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            const approved = document.getElementById('reviseApproved').value.trim();
+            if (!date || !desc || !by || !approved) {
+                alert('Please fill in all revision fields.');
                 return;
             }
-            const categories = collectDataFromDOM();
-            currentData = { problem, categories };
-            setTimeout(() => drawIshikawa(problem, categories), 10);
+            addRevHistoryRow({ date, desc, by, approved });
+            setReadOnly(false);
+            closeReviseModal();
+            switchWizardTab('tab-input');
+            showNotification('Revision registered. Document is now editable.');
         }
 
-        // Función para mostrar notificaciones (igual que en kano.html)
-        function showNotification(message) {
-            // Crear elemento de notificación
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: var(--performance-color);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                max-width: 300px;
-                font-weight: 600;
-            `;
-
-            // Animación CSS
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes fadeOut {
-                    from { opacity: 1; }
-                    to { opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            // Remover después de 3 segundos
-            setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.5s ease';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                    document.head.removeChild(style);
-                }, 500);
-            }, 3000);
-        }
-
-        function loadExample(type = 'manufacturing') {
-            if (currentData.problem && currentData.problem !== placeholderProblemText) {
-                if (!confirm("Loading example data will replace your current analysis. Continue?")) {
-                    return;
-                }
+        function setReadOnly(val) {
+            isReadOnly = val;
+            const banner = document.getElementById('readonlyBanner');
+            if (val) {
+                banner.classList.add('show');
+                document.querySelectorAll('#tab-input input, #tab-input textarea').forEach(el => el.disabled = true);
+                document.querySelectorAll('.add-cause-btn, .add-sub-cause-btn, .add-sub-sub-cause-btn, .remove-cause-btn, .remove-sub-cause-btn, .remove-sub-sub-cause-btn').forEach(btn => btn.disabled = true);
+            } else {
+                banner.classList.remove('show');
+                document.querySelectorAll('#tab-input input, #tab-input textarea').forEach(el => el.disabled = false);
+                document.querySelectorAll('.add-cause-btn, .add-sub-cause-btn, .add-sub-sub-cause-btn, .remove-cause-btn, .remove-sub-cause-btn, .remove-sub-sub-cause-btn').forEach(btn => btn.disabled = false);
             }
+        }
 
-            resetData(false);
+        // ============================================
+        // PERSISTENCE
+        // ============================================
+        function saveToStorage() {
+            try {
+                const problem = document.getElementById('problem').value;
+                const categories = collectDataFromDOM();
+                const revHistory = [];
+                document.querySelectorAll('#revHistoryBody tr').forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 4) {
+                        revHistory.push({
+                            date: inputs[0].value,
+                            desc: inputs[1].value,
+                            by: inputs[2].value,
+                            approved: inputs[3].value,
+                        });
+                    }
+                });
+                localStorage.setItem(LS_KEY, JSON.stringify({ problem, categories, revHistory, savedAt: new Date().toISOString() }));
+            } catch (e) { /* ignore */ }
+        }
+
+        function loadFromStorage() {
+            try {
+                const raw = localStorage.getItem(LS_KEY);
+                if (!raw) return false;
+                const state = JSON.parse(raw);
+                if (state.problem) document.getElementById('problem').value = state.problem;
+                if (state.revHistory) {
+                    document.getElementById('revHistoryBody').innerHTML = '';
+                    state.revHistory.forEach(r => addRevHistoryRow(r));
+                }
+                if (state.categories) {
+                    categoryData.forEach(cat => {
+                        const container = document.getElementById(`${cat.key}-causes`);
+                        if (container) container.innerHTML = '';
+                        (state.categories[cat.key] || []).forEach(cause => {
+                            addCauseBlock(cat.key, cause.text, cause.subCauses || []);
+                        });
+                    });
+                }
+                return true;
+            } catch (e) { return false; }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem(LS_KEY);
+        }
+
+        // ============================================
+        // EXAMPLES
+        // ============================================
+        function loadExample(type) {
+            if (isReadOnly) {
+                if (!confirm('Document is read-only. Use Revise to enable editing first. Continue?')) return;
+            }
+            const problemEl = document.getElementById('problem');
+            if (problemEl.value.trim() && !confirm('Loading example will replace current data. Continue?')) return;
 
             const examples = {
                 manufacturing: {
-                    problem: "Engine Overheating in Automotive Assembly Line",
+                    problem: 'Engine Overheating in Automotive Assembly Line',
                     manpower: [
-                        {
-                            text: "Insufficient training",
-                            subCauses: [
-                                { text: "New hires not trained on proper procedures" },
-                                { text: "No refresher courses for experienced staff" }
-                            ]
-                        },
-                        {
-                            text: "High turnover rate",
-                            subCauses: [{ text: "Loss of experienced staff affects quality" }]
-                        }
+                        { text: 'Insufficient training', subCauses: [{ text: 'New hires not trained on proper procedures' }, { text: 'No refresher courses' }] },
+                        { text: 'High turnover rate', subCauses: [{ text: 'Loss of experienced staff' }] },
                     ],
                     methods: [
-                        {
-                            text: "Incorrect assembly sequence",
-                            subCauses: [{ text: "Wrong torque sequence applied" }]
-                        },
-                        {
-                            text: "Improper coolant filling",
-                            subCauses: [
-                                { text: "Air pockets in cooling system" },
-                                { text: "Wrong coolant mixture ratio" }
-                            ]
-                        }
+                        { text: 'Incorrect assembly sequence', subCauses: [{ text: 'Wrong torque sequence' }] },
+                        { text: 'Improper coolant filling', subCauses: [{ text: 'Air pockets in system' }, { text: 'Wrong mixture ratio' }] },
                     ],
                     machines: [
-                        {
-                            text: "Faulty torque wrenches",
-                            subCauses: [{ text: "No calibration records available" }]
-                        },
-                        {
-                            text: "Coolant station malfunction",
-                            subCauses: [{ text: "Inconsistent pressure readings" }]
-                        }
+                        { text: 'Faulty torque wrenches', subCauses: [{ text: 'No calibration records' }] },
+                        { text: 'Coolant station malfunction', subCauses: [{ text: 'Inconsistent pressure' }] },
                     ],
                     materials: [
-                        {
-                            text: "Low quality gaskets",
-                            subCauses: [{ text: "Supplier quality issues" }]
-                        },
-                        {
-                            text: "Contaminated coolant",
-                            subCauses: [{ text: "Storage contamination during transport" }]
-                        }
+                        { text: 'Low quality gaskets', subCauses: [{ text: 'Supplier quality issues' }] },
+                        { text: 'Contaminated coolant', subCauses: [{ text: 'Storage contamination' }] },
                     ],
                     environment: [
-                        {
-                            text: "High humidity in assembly area",
-                            subCauses: [{ text: "Affects sensor calibration accuracy" }]
-                        },
-                        {
-                            text: "Temperature fluctuations",
-                            subCauses: []
-                        }
+                        { text: 'High humidity', subCauses: [{ text: 'Affects sensor calibration' }] },
                     ],
                     measurement: [
-                        {
-                            text: "Inaccurate pressure testing",
-                            subCauses: [{ text: "Faulty pressure gauges" }]
-                        },
-                        {
-                            text: "Incorrect torque verification",
-                            subCauses: []
-                        }
-                    ]
+                        { text: 'Inaccurate pressure testing', subCauses: [{ text: 'Faulty gauges' }] },
+                    ],
                 },
                 healthcare: {
-                    problem: "High Patient Wait Times in Emergency Department",
+                    problem: 'High Patient Wait Times in Emergency Department',
                     manpower: [
-                        {
-                            text: "Understaffed during peak hours",
-                            subCauses: [
-                                { text: "Insufficient nurses on evening shift" },
-                                { text: "No backup for sick calls" }
-                            ]
-                        },
-                        {
-                            text: "Inefficient triage process",
-                            subCauses: [{ text: "Poor prioritization of urgent cases" }]
-                        }
+                        { text: 'Understaffed during peak hours', subCauses: [{ text: 'Insufficient nurses on evening shift' }] },
+                        { text: 'Inefficient triage', subCauses: [{ text: 'Poor prioritization of urgent cases' }] },
                     ],
                     methods: [
-                        {
-                            text: "Inefficient patient flow",
-                            subCauses: [{ text: "Multiple handoffs between departments" }]
-                        },
-                        {
-                            text: "Outdated admission procedures",
-                            subCauses: [
-                                { text: "Paper-based forms slow processing" },
-                                { text: "Duplicate data entry required" }
-                            ]
-                        }
+                        { text: 'Inefficient patient flow', subCauses: [{ text: 'Multiple handoffs between departments' }] },
+                        { text: 'Outdated admission procedures', subCauses: [{ text: 'Paper-based forms slow processing' }] },
                     ],
                     machines: [
-                        {
-                            text: "Slow computer systems",
-                            subCauses: [{ text: "Outdated hardware affects performance" }]
-                        },
-                        {
-                            text: "Insufficient diagnostic equipment",
-                            subCauses: [{ text: "Only one working ultrasound machine" }]
-                        }
+                        { text: 'Slow computer systems', subCauses: [{ text: 'Outdated hardware' }] },
+                        { text: 'Insufficient diagnostic equipment', subCauses: [{ text: 'Only one working ultrasound machine' }] },
                     ],
                     materials: [
-                        {
-                            text: "Shortage of medical supplies",
-                            subCauses: [{ text: "Inconsistent inventory management" }]
-                        },
-                        {
-                            text: "Poor quality disposable items",
-                            subCauses: [{ text: "Low-cost supplier issues" }]
-                        }
+                        { text: 'Shortage of medical supplies', subCauses: [{ text: 'Inconsistent inventory management' }] },
                     ],
                     environment: [
-                        {
-                            text: "Overcrowded waiting area",
-                            subCauses: [{ text: "Limited physical space" }]
-                        },
-                        {
-                            text: "Poor signage and wayfinding",
-                            subCauses: []
-                        }
+                        { text: 'Overcrowded waiting area', subCauses: [{ text: 'Limited physical space' }] },
                     ],
                     measurement: [
-                        {
-                            text: "Inaccurate wait time tracking",
-                            subCauses: [{ text: "Manual tracking leads to errors" }]
-                        },
-                        {
-                            text: "No real-time patient monitoring",
-                            subCauses: []
-                        }
-                    ]
+                        { text: 'Inaccurate wait time tracking', subCauses: [{ text: 'Manual tracking leads to errors' }] },
+                    ],
                 },
                 software: {
-                    problem: "Frequent Production Bugs in Software Releases",
+                    problem: 'Frequent Production Bugs in Software Releases',
                     manpower: [
-                        {
-                            text: "Lack of code review process",
-                            subCauses: [
-                                { text: "No peer review before merging" },
-                                { text: "Junior developers unsupervised" }
-                            ]
-                        },
-                        {
-                            text: "Insufficient testing knowledge",
-                            subCauses: [{ text: "Developers not trained in testing best practices" }]
-                        }
+                        { text: 'Lack of code review process', subCauses: [{ text: 'No peer review before merging' }] },
                     ],
                     methods: [
-                        {
-                            text: "Inadequate testing procedures",
-                            subCauses: [{ text: "No automated regression tests" }]
-                        },
-                        {
-                            text: "Poor deployment process",
-                            subCauses: [
-                                { text: "Manual deployment steps error-prone" },
-                                { text: "No rollback procedure" }
-                            ]
-                        }
+                        { text: 'Inadequate testing procedures', subCauses: [{ text: 'No automated regression tests' }] },
+                        { text: 'Poor deployment process', subCauses: [{ text: 'Manual deployment error-prone' }] },
                     ],
                     machines: [
-                        {
-                            text: "Insufficient testing servers",
-                            subCauses: [{ text: "Limited staging environment" }]
-                        },
-                        {
-                            text: "Slow build systems",
-                            subCauses: [{ text: "Outdated CI/CD infrastructure" }]
-                        }
+                        { text: 'Insufficient testing servers', subCauses: [{ text: 'Limited staging environment' }] },
                     ],
                     materials: [
-                        {
-                            text: "Outdated libraries and dependencies",
-                            subCauses: [{ text: "Security vulnerabilities in old versions" }]
-                        },
-                        {
-                            text: "Poor documentation",
-                            subCauses: [{ text: "API documentation incomplete" }]
-                        }
+                        { text: 'Outdated libraries', subCauses: [{ text: 'Security vulnerabilities' }] },
                     ],
                     environment: [
-                        {
-                            text: "High-pressure release deadlines",
-                            subCauses: [{ text: "Rushed testing cycles" }]
-                        },
-                        {
-                            text: "Distributed team communication issues",
-                            subCauses: []
-                        }
+                        { text: 'High-pressure release deadlines', subCauses: [{ text: 'Rushed testing cycles' }] },
                     ],
                     measurement: [
-                        {
-                            text: "No code coverage metrics",
-                            subCauses: [{ text: "Can't measure test effectiveness" }]
-                        },
-                        {
-                            text: "Inadequate bug tracking",
-                            subCauses: []
-                        }
-                    ]
+                        { text: 'No code coverage metrics', subCauses: [{ text: 'Cannot measure test effectiveness' }] },
+                    ],
                 }
             };
 
             const example = examples[type];
-            if (example) {
-                // Establecer problema
-                document.getElementById("problem").value = example.problem;
+            if (!example) return;
 
-                // Cargar datos para cada categoría
-                categoryData.forEach(cat => {
-                    const categoryKey = cat.key;
-                    const causes = example[categoryKey] || [];
-
-                    // Limpiar contenedor de la categoría
-                    const container = document.getElementById(`${categoryKey}-causes`);
-                    if (container) {
-                        container.innerHTML = '';
-                    }
-
-                    // Añadir causas
-                    causes.forEach(cause => {
-                        addCauseBlock(categoryKey, cause.text, cause.subCauses || []);
-                    });
-                });
-
-                // Generar diagrama
-                generateIshikawa();
-                validateDataInput();
-
-                // Mostrar notificación
-                showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} example loaded successfully!`);
-
-                // CAMBIO: Ir a input en lugar de diagrama
-                switchWizardTab('tab-input');
-                switchSubTab('subtab-problem');
-
-                setTimeout(() => {
-                    const problemInput = document.getElementById("problem");
-                    if (problemInput) {
-                        problemInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        problemInput.focus();
-                    }
-                }, 100);
-            }
-        }
-
-        function resetData(redraw = true) {
-            document.getElementById("problem").value = "";
-
-            // Limpiar todas las categorías
+            // Clear all categories
             categoryData.forEach(cat => {
                 const container = document.getElementById(`${cat.key}-causes`);
-                if (container) {
-                    container.innerHTML = '';
-                }
-                currentData.categories[cat.key] = [];
+                if (container) container.innerHTML = '';
             });
 
-            currentData.problem = placeholderProblemText;
-            if (redraw) {
-                setTimeout(() => {
-                    if (currentData.problem !== placeholderProblemText) {
-                        drawIshikawa(currentData.problem, currentData.categories);
-                    } else {
-                        const svg = document.getElementById('ishikawaSvgContainer');
-                        svg.innerHTML = '';
-                    }
-                }, 10);
-            }
-            validateDataInput();
+            problemEl.value = example.problem;
+            categoryData.forEach(cat => {
+                const causes = example[cat.key] || [];
+                causes.forEach(cause => addCauseBlock(cat.key, cause.text, cause.subCauses || []));
+            });
+
+            scheduleDiagramRender();
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} example loaded!`);
+            switchWizardTab('tab-input');
+            switchSubTab('subtab-problem');
+            setTimeout(() => problemEl.focus(), 200);
         }
 
+        // ============================================
+        // EXPORT
+        // ============================================
         function exportToExcel() {
-            if (!currentData.problem || currentData.problem === placeholderProblemText) {
-                alert('⚠️ Please generate a diagram with a problem statement before exporting.');
-                return;
-            }
-            const excelData = [['Problem Statement:', currentData.problem], [], ['Category', 'Cause', 'Sub-Cause', 'Sub-Sub-Cause']];
-            categoryData.forEach(catInfo => {
-                const causes = currentData.categories[catInfo.key] || [];
+            const problem = document.getElementById('problem').value.trim();
+            if (!problem) { alert('Please enter a problem statement.'); return; }
+            const categories = collectDataFromDOM();
+
+            const data = [['Problem Statement:', problem], [], ['Category', 'Cause', 'Sub-Cause', 'Sub-Sub-Cause']];
+            categoryData.forEach(cat => {
+                const causes = categories[cat.key] || [];
                 if (causes.length > 0) {
-                    let isFirstCauseOfCategory = true;
-                    causes.forEach(cause => {
-                        const categoryCell = isFirstCauseOfCategory ? catInfo.name : '';
+                    causes.forEach((cause, ci) => {
+                        const catLabel = ci === 0 ? cat.name : '';
                         if (cause.subCauses && cause.subCauses.length > 0) {
-                            cause.subCauses.forEach((subCause, i) => {
-                                if (subCause.subSubCauses && subCause.subSubCauses.length > 0) {
-                                    subCause.subSubCauses.forEach((subSubCause, j) => {
-                                        if (j === 0) {
-                                            if (i === 0) {
-                                                excelData.push([categoryCell, cause.text, subCause.text, subSubCause]);
-                                            } else {
-                                                excelData.push(['', '', subCause.text, subSubCause]);
-                                            }
+                            cause.subCauses.forEach((sc, si) => {
+                                if (sc.subSubCauses && sc.subSubCauses.length > 0) {
+                                    sc.subSubCauses.forEach((ssc, ssi) => {
+                                        if (si === 0 && ssi === 0) {
+                                            data.push([catLabel, cause.text, sc.text, ssc]);
+                                        } else if (ssi === 0) {
+                                            data.push(['', '', sc.text, ssc]);
                                         } else {
-                                            excelData.push(['', '', '', subSubCause]);
+                                            data.push(['', '', '', ssc]);
                                         }
                                     });
                                 } else {
-                                    if (i === 0) {
-                                        excelData.push([categoryCell, cause.text, subCause.text, '']);
-                                    } else {
-                                        excelData.push(['', '', subCause.text, '']);
-                                    }
+                                    if (si === 0) data.push([catLabel, cause.text, sc.text, '']);
+                                    else data.push(['', '', sc.text, '']);
                                 }
                             });
                         } else {
-                            excelData.push([categoryCell, cause.text, '', '']);
+                            data.push([catLabel, cause.text, '', '']);
                         }
-                        isFirstCauseOfCategory = false;
                     });
                 } else {
-                    excelData.push([catInfo.name, '', '', '']);
+                    data.push([cat.name, '', '', '']);
                 }
-                excelData.push([]);
+                data.push([]);
             });
+
+            // Add revision history
+            const revRows = [];
+            document.querySelectorAll('#revHistoryBody tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs.length >= 4) revRows.push([inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value]);
+            });
+            if (revRows.length > 0) {
+                data.push(['REVISION HISTORY']);
+                data.push(['Rev. Date', 'Description', 'Changed By', 'Approved By']);
+                revRows.forEach(r => data.push(r));
+            }
+
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [{ wch: 20 }, { wch: 35 }, { wch: 35 }, { wch: 35 }];
             XLSX.utils.book_append_sheet(wb, ws, 'Ishikawa Data');
             XLSX.writeFile(wb, 'Ishikawa_Diagram_Data_Sigma_Exacta.xlsx');
         }
 
         function exportToJpg() {
-            if (!currentData.problem || currentData.problem === placeholderProblemText) {
-                alert('⚠️ Please generate a diagram before exporting.');
-                return;
-            }
+            const container = document.getElementById('ishikawaDiagramContainer');
+            const originalBtn = document.getElementById('exportJpgBtn');
+            const originalText = originalBtn.innerHTML;
+            originalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            originalBtn.disabled = true;
 
-            const diagramContainer = document.getElementById('ishikawaDiagramContainer');
+            html2canvas(container, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false })
+                .then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'Ishikawa_Diagram_Sigma_Exacta.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    originalBtn.innerHTML = originalText;
+                    originalBtn.disabled = false;
+                })
+                .catch(err => {
+                    console.error('Export error:', err);
+                    alert('Error generating JPG. Please try again.');
+                    originalBtn.innerHTML = originalText;
+                    originalBtn.disabled = false;
+                });
+        }
 
-            // Mostrar mensaje de procesamiento
-            const originalText = document.getElementById('exportJpgBtn').innerHTML;
-            document.getElementById('exportJpgBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            document.getElementById('exportJpgBtn').disabled = true;
+        // ============================================
+        // LOAD FROM EXCEL
+        // ============================================
+        function loadFromExcel(file, readOnly) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
-            // Configuración para html2canvas
-            const options = {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                logging: false,
-                onclone: function (clonedDoc) {
-                    const clonedSvg = clonedDoc.getElementById('ishikawaSvgContainer');
-                    if (clonedSvg) {
-                        clonedSvg.style.width = '100%';
-                        clonedSvg.style.height = '100%';
-                    }
+                    document.getElementById('problem').value = '';
+                    document.getElementById('revHistoryBody').innerHTML = '';
+                    categoryData.forEach(cat => {
+                        const container = document.getElementById(`${cat.key}-causes`);
+                        if (container) container.innerHTML = '';
+                    });
+
+                    let inRevHistory = false;
+                    let currentCategory = null;
+                    const catMap = {};
+                    categoryData.forEach(c => { catMap[c.name] = c.key; });
+
+                    rows.forEach(row => {
+                        const c0 = String(row[0] || '').trim();
+                        if (c0 === 'Problem Statement:') {
+                            document.getElementById('problem').value = String(row[1] || '').trim();
+                            return;
+                        }
+                        if (c0 === 'REVISION HISTORY') { inRevHistory = true; return; }
+                        if (inRevHistory) {
+                            if (c0 === 'Rev. Date') return;
+                            if (c0) addRevHistoryRow({ date: c0, desc: String(row[1] || ''), by: String(row[2] || ''), approved: String(row[3] || '') });
+                            return;
+                        }
+                        if (c0 === 'Category' && row[1] === 'Cause') return;
+                        if (c0 && catMap[c0]) {
+                            currentCategory = catMap[c0];
+                            const causeText = String(row[1] || '').trim();
+                            const subCauseText = String(row[2] || '').trim();
+                            const subSubCauseText = String(row[3] || '').trim();
+                            if (causeText) {
+                                const container = document.getElementById(`${currentCategory}-causes`);
+                                if (container) {
+                                    const existingBlocks = container.querySelectorAll('.cause-block');
+                                    const lastBlock = existingBlocks[existingBlocks.length - 1];
+                                    const lastCauseInput = lastBlock ? lastBlock.querySelector('.cause-input') : null;
+                                    const lastCauseText = lastCauseInput ? lastCauseInput.value.trim() : '';
+
+                                    if (lastCauseText === causeText && subCauseText) {
+                                        // Add sub-cause to existing cause
+                                        const subContainer = lastBlock.querySelector('.sub-causes-container');
+                                        if (subContainer) {
+                                            const item = document.createElement('div');
+                                            item.className = 'sub-cause-item';
+                                            item.innerHTML = `
+                                                <input type="text" class="sub-cause-input" value="${escapeHtml(subCauseText)}">
+                                                <button type="button" class="action-button danger remove-sub-cause-btn">-</button>
+                                                <button type="button" class="add-sub-sub-cause-btn success action-button">+</button>
+                                                <div class="sub-sub-causes-container"></div>
+                                            `;
+                                            subContainer.appendChild(item);
+                                            if (subSubCauseText) {
+                                                const sscContainer = item.querySelector('.sub-sub-causes-container');
+                                                const sscItem = document.createElement('div');
+                                                sscItem.className = 'sub-sub-cause-item';
+                                                sscItem.innerHTML = `
+                                                    <input type="text" class="sub-sub-cause-input" value="${escapeHtml(subSubCauseText)}">
+                                                    <button type="button" class="action-button danger remove-sub-sub-cause-btn">-</button>
+                                                `;
+                                                sscContainer.appendChild(sscItem);
+                                            }
+                                        }
+                                    } else {
+                                        // New cause
+                                        const subCauses = subCauseText ? [{ text: subCauseText, subSubCauses: subSubCauseText ? [subSubCauseText] : [] }] : [];
+                                        addCauseBlock(currentCategory, causeText, subCauses);
+                                    }
+                                }
+                            }
+                        } else if (!c0 && currentCategory && row[1] && !row[0]) {
+                            const subCauseText = String(row[2] || '').trim();
+                            const subSubCauseText = String(row[3] || '').trim();
+                            if (subCauseText) {
+                                const container = document.getElementById(`${currentCategory}-causes`);
+                                const blocks = container ? container.querySelectorAll('.cause-block') : [];
+                                const lastBlock = blocks[blocks.length - 1];
+                                if (lastBlock) {
+                                    const subContainer = lastBlock.querySelector('.sub-causes-container');
+                                    const item = document.createElement('div');
+                                    item.className = 'sub-cause-item';
+                                    item.innerHTML = `
+                                        <input type="text" class="sub-cause-input" value="${escapeHtml(subCauseText)}">
+                                        <button type="button" class="action-button danger remove-sub-cause-btn">-</button>
+                                        <button type="button" class="add-sub-sub-cause-btn success action-button">+</button>
+                                        <div class="sub-sub-causes-container"></div>
+                                    `;
+                                    subContainer.appendChild(item);
+                                    if (subSubCauseText) {
+                                        const sscContainer = item.querySelector('.sub-sub-causes-container');
+                                        const sscItem = document.createElement('div');
+                                        sscItem.className = 'sub-sub-cause-item';
+                                        sscItem.innerHTML = `
+                                            <input type="text" class="sub-sub-cause-input" value="${escapeHtml(subSubCauseText)}">
+                                            <button type="button" class="action-button danger remove-sub-sub-cause-btn">-</button>
+                                        `;
+                                        sscContainer.appendChild(sscItem);
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    setReadOnly(readOnly);
+                    scheduleDiagramRender();
+                    switchWizardTab('tab-input');
+                    showNotification(readOnly ? 'File loaded in read-only mode.' : 'File loaded successfully.');
+                } catch (err) {
+                    console.error('Load error:', err);
+                    alert('Error reading file.');
                 }
             };
-
-            html2canvas(diagramContainer, options).then(canvas => {
-                const jpgData = canvas.toDataURL('image/jpeg', 0.95);
-
-                const link = document.createElement('a');
-                link.download = 'Ishikawa_Diagram_Sigma_Exacta.jpg';
-                link.href = jpgData;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // Restaurar botón
-                document.getElementById('exportJpgBtn').innerHTML = originalText;
-                document.getElementById('exportJpgBtn').disabled = false;
-            }).catch(error => {
-                console.error('Error generating JPG:', error);
-                alert('Error generating JPG image. Please try again.');
-
-                // Restaurar botón
-                document.getElementById('exportJpgBtn').innerHTML = originalText;
-                document.getElementById('exportJpgBtn').disabled = false;
-            });
+            reader.readAsArrayBuffer(file);
         }
+
+        function resetData() {
+            if (isReadOnly) {
+                if (!confirm('Document is read-only. Use Revise to enable editing.')) return;
+            }
+            document.getElementById('problem').value = '';
+            categoryData.forEach(cat => {
+                const container = document.getElementById(`${cat.key}-causes`);
+                if (container) container.innerHTML = '';
+            });
+            if (jointGraph) {
+                jointGraph.resetCells();
+                jointPaper.scale(1, 1);
+                jointPaper.translate(0, 0);
+            }
+            clearStorage();
+            scheduleDiagramRender();
+            showNotification('All data has been reset.');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position:fixed;top:20px;right:20px;background:var(--performance-color);color:#fff;
+                padding:15px 20px;border-radius:5px;box-shadow:0 4px 12px rgba(0,0,0,0.15);
+                z-index:10000;animation:slideIn 0.3s ease;max-width:320px;font-weight:600;
+                font-family:'Nunito',sans-serif;
+            `;
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+                @keyframes fadeOut { from{opacity:1} to{opacity:0} }
+            `;
+            document.head.appendChild(style);
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) notification.remove();
+                    style.remove();
+                }, 500);
+            }, 3000);
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load header
+            fetch('header.html')
+                .then(r => { if (!r.ok) throw new Error('header.html not found'); return r.text(); })
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                    const navToggle = document.getElementById('nav-toggle');
+                    const navMenu = document.getElementById('nav-menu');
+                    if (navToggle) {
+                        navToggle.addEventListener('click', () => {
+                            navMenu.classList.toggle('show-menu');
+                            const icon = navToggle.querySelector('i');
+                            if (icon) {
+                                icon.classList.toggle('fa-bars');
+                                icon.classList.toggle('fa-times');
+                            }
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Header load error:', err);
+                    document.getElementById('header-placeholder').innerHTML = '<p style="color:red;text-align:center;">Error loading header.</p>';
+                });
+
+            // Initialize sub-tabs
+            initializeSubTabs();
+
+            // Load saved data or start fresh
+            const restored = loadFromStorage();
+            if (!restored) {
+                // Create one empty cause per category
+                categoryData.forEach(cat => addCauseBlock(cat.key));
+            }
+
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    switchWizardTab(this.getAttribute('data-tab'));
+                });
+            });
+
+            document.getElementById('go-to-input-btn')?.addEventListener('click', () => switchWizardTab('tab-input'));
+            document.getElementById('back-to-theory-btn')?.addEventListener('click', () => switchWizardTab('tab-theory'));
+            document.getElementById('go-to-diagram-btn')?.addEventListener('click', () => switchWizardTab('tab-diagram'));
+            document.getElementById('back-to-input-btn')?.addEventListener('click', () => switchWizardTab('tab-input'));
+
+            // Sub-tab navigation
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    switchSubTab(this.getAttribute('data-subtab'));
+                });
+            });
+
+            // Problem input change
+            document.getElementById('problem').addEventListener('input', scheduleDiagramRender);
+
+            // Category container events
+            document.querySelector('.sub-tabs-container').addEventListener('click', function (e) {
+                const target = e.target.closest('button');
+                if (!target || isReadOnly) return;
+                if (target.classList.contains('add-cause-btn')) {
+                    addCauseBlock(target.dataset.category);
+                } else if (target.classList.contains('remove-cause-btn')) {
+                    target.closest('.cause-block').remove();
+                    scheduleDiagramRender();
+                } else if (target.classList.contains('add-sub-cause-btn')) {
+                    addSubCauseInput(target);
+                } else if (target.classList.contains('remove-sub-cause-btn')) {
+                    target.closest('.sub-cause-item').remove();
+                    scheduleDiagramRender();
+                } else if (target.classList.contains('add-sub-sub-cause-btn')) {
+                    addSubSubCauseInput(target);
+                } else if (target.classList.contains('remove-sub-sub-cause-btn')) {
+                    target.closest('.sub-sub-cause-item').remove();
+                    scheduleDiagramRender();
+                }
+            });
+
+            // Input changes in category containers
+            document.querySelector('.sub-tabs-container').addEventListener('input', function (e) {
+                if (e.target.classList.contains('cause-input') ||
+                    e.target.classList.contains('sub-cause-input') ||
+                    e.target.classList.contains('sub-sub-cause-input')) {
+                    scheduleDiagramRender();
+                }
+            });
+
+            // Button bar events
+            document.getElementById('globalNewBtn').addEventListener('click', resetData);
+            document.getElementById('globalLoadBtn').addEventListener('click', () => {
+                document.getElementById('loadCpInput').click();
+            });
+            document.getElementById('loadCpInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                loadFromExcel(file, true);
+                e.target.value = '';
+            });
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', () => {
+                loadExample(exampleTypes[currentExampleIndex]);
+                currentExampleIndex = (currentExampleIndex + 1) % exampleTypes.length;
+            });
+            document.getElementById('globalReviseBtn').addEventListener('click', () => {
+                if (!isReadOnly) {
+                    alert('The document is already editable.');
+                    return;
+                }
+                openReviseModal();
+            });
+            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
+
+            // Diagram tab buttons
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+            document.getElementById('exportJpgBtn').addEventListener('click', exportToJpg);
+
+            // Proportion/spread controls
+            document.getElementById('spreadUpBtn').addEventListener('click', () => {
+                diagramSpread = Math.min(diagramSpread + 0.25, 4.0);
+                scheduleDiagramRender();
+            });
+            document.getElementById('spreadDownBtn').addEventListener('click', () => {
+                diagramSpread = Math.max(diagramSpread - 0.25, 0.25);
+                scheduleDiagramRender();
+            });
+
+            // Auto-save every 60 seconds
+            setInterval(saveToStorage, 60000);
+
+            // Save on page unload
+            window.addEventListener('beforeunload', saveToStorage);
+        });
     </script>
-
-    <script src="dexie.min.js"></script>
-    <script src="db-sigma.js"></script>
-
 </body>
 
 </html>

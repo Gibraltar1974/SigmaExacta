@@ -4,12 +4,45 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="canonical" href="https://sigmaexacta.com/weibull" />
     <title>Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional v11.2</title>
     <meta name="description"
         content="Professional Weibull analysis: L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, profile likelihood CIs, 2P &amp; 3P MLE, regression, exact/censored/interval data.">
     <meta name="keywords"
         content="Weibull distribution, 3-parameter Weibull, reliability analysis, MLE, L-BFGS-B, Monte Carlo, Anderson-Darling, bootstrap, censored data, B-lives, MTTF">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="SigmaExacta">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sigmaexacta.com/weibull">
+    <meta property="og:title" content="Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional">
+    <meta property="og:description"
+        content="Professional Weibull analysis tool: L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, and 2P &amp; 3P MLE.">
+    <meta property="og:image" content="https://sigmaexacta.com/sigma-exacta-icon.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Weibull Analysis Tool (2 &amp; 3 Parameter) | Professional">
+    <meta name="twitter:description"
+        content="Professional Weibull analysis tool: L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, and 2P &amp; 3P MLE.">
+    <meta name="twitter:image" content="https://sigmaexacta.com/sigma-exacta-icon.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Weibull Analysis Tool Professional v11.2",
+      "url": "https://sigmaexacta.com/weibull",
+      "description": "Analyze Life Data and Predict Failure Rates to Improve Equipment Reliability. Features L-BFGS-B optimizer, Monte Carlo GoF, bootstrap, profile likelihood CIs, 2P & 3P MLE.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "provider": {
+        "@type": "Organization",
+        "name": "SigmaExacta",
+        "url": "https://sigmaexacta.com"
+      }
+    }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -276,9 +309,13 @@
             width: 100%;
         }
 
+        /* CAMBIO SEO: Ahora pueden ser asignadas a elementos H2/H3 */
+        h2.calculation-title,
+        h3.calculation-title,
         .calculation-title {
             font-weight: 800;
             font-size: 1.2em;
+            margin-top: 0;
             margin-bottom: 1rem;
             color: var(--primary-color);
             border-bottom: 1px solid #eee;
@@ -602,40 +639,34 @@
         }
 
         /* ========== MESSAGES ========== */
-        .warning-message {
-            background: #fef3cd;
-            border-left: 4px solid #f39c12;
+        .warning-message,
+        .info-message,
+        .success-message,
+        .error-message {
             padding: 0.75rem;
             margin: 0.75rem 0;
             border-radius: 4px;
             font-size: 0.9rem;
+        }
+
+        .warning-message {
+            background: #fef3cd;
+            border-left: 4px solid #f39c12;
         }
 
         .info-message {
             background: #d1ecf1;
             border-left: 4px solid #17a2b8;
-            padding: 0.75rem;
-            margin: 0.75rem 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
         }
 
         .success-message {
             background: #d4edda;
             border-left: 4px solid var(--success-color);
-            padding: 0.75rem;
-            margin: 0.75rem 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
         }
 
         .error-message {
             background: #f8d7da;
             border-left: 4px solid var(--accent-color);
-            padding: 0.75rem;
-            margin: 0.75rem 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
         }
 
         /* ========== RESULT CARDS ========== */
@@ -936,13 +967,12 @@
     </noscript>
     <div id="toastMessage"></div>
 
-    <!-- Export Modal -->
     <div id="exportModal">
         <div style="background:#fff;border-radius:12px;padding:2rem;max-width:460px;width:90%;">
             <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
                 <div
                     style="width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:flex;align-items:center;justify-content:center;">
-                    <i class="fas fa-file-excel" style="color:white;"></i>
+                    <i class="fas fa-file-excel" style="color:white;" aria-hidden="true"></i>
                 </div>
                 <div>
                     <div style="font-weight:800;">Export to Excel</div>
@@ -961,7 +991,7 @@
             <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
                 <button id="exportCancelBtn" style="background:none;border:1px solid #ccc;color:#555;">Cancel</button>
                 <button id="exportConfirmBtn" style="background:linear-gradient(135deg,#6c5ce7,#5849c2);color:white;"><i
-                        class="fas fa-download"></i> Export</button>
+                        class="fas fa-download" aria-hidden="true"></i> Export</button>
             </div>
         </div>
     </div>
@@ -971,40 +1001,45 @@
             <h1>
                 <span
                     style="display:inline-flex;justify-content:center;align-items:center;width:42px;height:42px;background:#ff2d55;border-radius:8px;margin-right:12px;vertical-align:middle;">
-                    <i class="fas fa-chart-area" style="color:white;"></i>
+                    <i class="fas fa-chart-area" style="color:white;" aria-hidden="true"></i>
                 </span>
-                Weibull Analysis Tool
-
+                Weibull Analysis Tool – <strong>2 & 3 Parameter Reliability</strong>
             </h1>
             <p>Analyze Life Data and Predict Failure Rates to Improve Equipment Reliability.</p>
         </header>
 
         <div class="main-action-buttons">
-            <button id="globalNewBtn" class="btn-new"><i class="fas fa-file"></i> New</button>
+            <button id="globalNewBtn" class="btn-new" aria-label="New Analysis"><i class="fas fa-file"
+                    aria-hidden="true"></i> New</button>
             <button id="globalLoadBtn" class="btn-load"
                 title="Loads analysis parameters from the last row of an Excel file (.xlsx, .xls)"><i
-                    class="fas fa-folder-open"></i> Load Excel</button>
+                    class="fas fa-folder-open" aria-hidden="true"></i> Load Excel</button>
             <input type="file" id="globalFileInput" accept=".xlsx,.xls" style="display:none;">
-            <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle"></i> Load
-                Example</button>
-            <button id="globalAnalyzeBtn" class="btn-analyze"><i class="fas fa-calculator"></i> Analyze</button>
-            <button id="globalSaveBtn" class="btn-save"><i class="fas fa-file-excel"></i> Save As</button>
+            <button id="globalLoadExampleBtn" class="btn-example"><i class="fas fa-play-circle" aria-hidden="true"></i>
+                Load Example</button>
+            <button id="globalAnalyzeBtn" class="btn-analyze"><i class="fas fa-calculator" aria-hidden="true"></i>
+                Analyze</button>
+            <button id="globalSaveBtn" class="btn-save"><i class="fas fa-file-excel" aria-hidden="true"></i> Save
+                As</button>
         </div>
 
-        <nav class="tabs-nav">
-            <button class="tab-btn" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"></i> Theory</button>
-            <button class="tab-btn active" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"></i>
-                Calculator</button>
-            <button class="tab-btn" onclick="switchWizardTab('tab-results')"><i class="fas fa-chart-line"></i>
-                Results</button>
-            <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"></i>
-                Formulas</button>
+        <nav class="tabs-nav" aria-label="Tool sections">
+            <button class="tab-btn" onclick="switchWizardTab('tab-theory')"><i class="fas fa-book"
+                    aria-hidden="true"></i> Theory</button>
+            <button class="tab-btn active" onclick="switchWizardTab('tab-tool')"><i class="fas fa-calculator"
+                    aria-hidden="true"></i> Calculator</button>
+            <button class="tab-btn" onclick="switchWizardTab('tab-results')"><i class="fas fa-chart-line"
+                    aria-hidden="true"></i> Results</button>
+            <button class="tab-btn" onclick="switchWizardTab('tab-formulas')"><i class="fas fa-square-root-alt"
+                    aria-hidden="true"></i> Formulas</button>
         </nav>
 
-        <!-- ==================== THEORY TAB ==================== -->
+        <!-- ================= THEORY TAB ================= -->
         <div id="tab-theory" class="wizard-tab-content">
+            <h2 class="calculation-title"><i class="fas fa-book"></i> Weibull Analysis Theory</h2>
             <div class="container">
-                <h2><i class="fas fa-info-circle"></i> What is Weibull Analysis?</h2>
+                <h3><i class="fas fa-info-circle" aria-hidden="true"></i> What is Weibull Analysis? – Reliability
+                    Engineering</h3>
                 <p>The <strong>Weibull distribution</strong> is the cornerstone of modern reliability engineering. Its
                     flexibility to model decreasing, constant, and increasing failure rates through the shape parameter
                     β makes it applicable to virtually any failure mechanism.</p>
@@ -1013,7 +1048,7 @@
                     time.</p>
             </div>
             <div class="container">
-                <h2><i class="fas fa-cogs"></i> Methods Available</h2>
+                <h3><i class="fas fa-cogs" aria-hidden="true"></i> Available Methods: MLE, Regression & GoF</h3>
                 <ul style="padding-left:1.5rem;margin-top:0.5rem;">
                     <li style="margin-bottom:0.5rem;"><strong>MLE (L-BFGS-B):</strong> Maximum Likelihood with
                         multi-start L-BFGS-B optimizer. Handles exact, right-censored, and interval-censored data.
@@ -1027,14 +1062,15 @@
                 </ul>
             </div>
             <div style="margin-top:1rem;"><button class="btn-next-tab" onclick="switchWizardTab('tab-tool')">Go to
-                    Calculator <i class="fas fa-arrow-right"></i></button></div>
+                    Calculator <i class="fas fa-arrow-right" aria-hidden="true"></i></button></div>
         </div>
 
-        <!-- ==================== CALCULATOR TAB ==================== -->
+        <!-- ================= CALCULATOR TAB ================= -->
         <div id="tab-tool" class="wizard-tab-content active">
+            <h2 class="calculation-title"><i class="fas fa-calculator"></i> Weibull Calculator</h2>
             <div class="calculator-section">
                 <div class="calculation-block">
-                    <div class="calculation-title">Weibull Analysis Calculator</div>
+                    <h3 class="calculation-title">Weibull Analysis Calculator</h3>
                     <div id="exampleBanner"
                         style="display:none;background:#d4edda;border-left:4px solid #2ecc71;padding:0.5rem 0.75rem;border-radius:4px;margin-bottom:1rem;font-size:0.9rem;">
                     </div>
@@ -1043,7 +1079,8 @@
                         <label class="toggle-switch"><input type="checkbox" id="use3param"><span
                                 class="toggle-slider"></span></label>
                         <div>
-                            <div class="toggle-label"><i class="fas fa-cube" style="color:var(--purple-color);"></i>
+                            <div class="toggle-label"><i class="fas fa-cube" style="color:var(--purple-color);"
+                                    aria-hidden="true"></i>
                                 3-Parameter Weibull <span class="badge-3p">γ ENABLED</span></div>
                             <div class="toggle-desc">Adds location parameter γ (guaranteed failure-free period). Smart
                                 fallback to 2P if likelihood is unbounded (β&lt;1, γ→min(t)).</div>
@@ -1051,7 +1088,8 @@
                     </div>
 
                     <div class="method-selector">
-                        <label for="calculationMethod"><i class="fas fa-cogs"></i> Calculation Method:</label>
+                        <label for="calculationMethod"><i class="fas fa-cogs" aria-hidden="true"></i> Calculation
+                            Method:</label>
                         <select id="calculationMethod">
                             <option value="mle">Maximum Likelihood (MLE) — L-BFGS-B, Recommended</option>
                             <option value="linear-regression">Linear Regression (Classic)</option>
@@ -1066,7 +1104,8 @@
                     <form id="weibullForm">
                         <div class="input-group-row">
                             <div class="input-group">
-                                <label for="timeUnits"><i class="fas fa-clock"></i> Time Units:</label>
+                                <label for="timeUnits"><i class="fas fa-clock" aria-hidden="true"></i> Time
+                                    Units:</label>
                                 <select id="timeUnits">
                                     <option value="hours">Hours</option>
                                     <option value="days">Days</option>
@@ -1078,14 +1117,15 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="decimalFormat"><i class="fas fa-globe"></i> Decimal Format:</label>
+                                <label for="decimalFormat"><i class="fas fa-globe" aria-hidden="true"></i> Decimal
+                                    Format:</label>
                                 <select id="decimalFormat">
                                     <option value="us" selected>1,234.56 (US/UK)</option>
                                     <option value="eu">1.234,56 (EU)</option>
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="analysisType"><i class="fas fa-list-ol"></i> Rank Method
+                                <label for="analysisType"><i class="fas fa-list-ol" aria-hidden="true"></i> Rank Method
                                     (Regression):</label>
                                 <select id="analysisType">
                                     <option value="benard" selected>Benard's Approx.</option>
@@ -1093,7 +1133,8 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="confidenceLevel"><i class="fas fa-percentage"></i> Confidence Level:</label>
+                                <label for="confidenceLevel"><i class="fas fa-percentage" aria-hidden="true"></i>
+                                    Confidence Level:</label>
                                 <select id="confidenceLevel">
                                     <option value="90">90%</option>
                                     <option value="95" selected>95%</option>
@@ -1102,37 +1143,40 @@
                             </div>
                         </div>
 
-                        <label for="failureTimes"><i class="fas fa-times-circle" style="color:var(--accent-color);"></i>
+                        <label for="failureTimes"><i class="fas fa-times-circle" style="color:var(--accent-color);"
+                                aria-hidden="true"></i>
                             Failure Times: <span style="font-weight:400;font-size:0.85rem;">(comma, semicolon, or
                                 newline separated)</span></label>
                         <textarea id="failureTimes" rows="3"
                             placeholder="e.g., 1050, 1180, 1250, 1320, 1400, 1480, 1580, 1700, 1850, 2000"
                             required></textarea>
 
-                        <label for="suspensionTimes"><i class="fas fa-pause-circle"
-                                style="color:var(--warning-color);"></i> Suspension Times (optional): <span
+                        <label for="suspensionTimes"><i class="fas fa-pause-circle" style="color:var(--warning-color);"
+                                aria-hidden="true"></i> Suspension Times (optional): <span
                                 style="font-weight:400;font-size:0.85rem;">(right-censored)</span></label>
                         <textarea id="suspensionTimes" rows="2" placeholder="e.g., 3000, 4000"></textarea>
 
-                        <label for="intervalData"><i class="fas fa-arrows-alt-h" style="color:var(--purple-color);"></i>
+                        <label for="intervalData"><i class="fas fa-arrows-alt-h" style="color:var(--purple-color);"
+                                aria-hidden="true"></i>
                             Interval-Censored Data (optional): <span style="font-weight:400;font-size:0.85rem;">(format:
                                 100-150, 200-300)</span></label>
                         <textarea id="intervalData" rows="2" placeholder="e.g., 100-150, 250-350"></textarea>
 
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                             <div>
-                                <label for="predictTime"><i class="fas fa-crosshairs"></i> Predict Failure Probability
+                                <label for="predictTime"><i class="fas fa-crosshairs" aria-hidden="true"></i> Predict
+                                    Failure Probability
                                     at Time:</label>
                                 <input type="number" id="predictTime" step="any" placeholder="Optional">
                             </div>
                             <div>
-                                <label for="warrantyTarget"><i class="fas fa-shield-alt"></i> Warranty Target
+                                <label for="warrantyTarget"><i class="fas fa-shield-alt" aria-hidden="true"></i>
+                                    Warranty Target
                                     Time:</label>
                                 <input type="number" id="warrantyTarget" step="any" placeholder="Optional">
                             </div>
                         </div>
 
-                        <!-- Bootstrap options -->
                         <div
                             style="margin:0.75rem 0;padding:0.85rem;background:#f0fdf4;border-radius:8px;border:1.5px solid #86efac;">
                             <label style="display:flex;gap:0.6rem;cursor:pointer;margin-bottom:0;">
@@ -1151,7 +1195,6 @@
                                 <input type="number" id="bsSeed" value="42" step="1" min="1"
                                     style="width:80px;margin:0;">
                             </div>
-                            <!-- 3P full bootstrap option (only relevant when 3P is active) -->
                             <div id="boot3pPanel"
                                 style="display:none;margin-top:0.75rem;padding:0.7rem;background:#f8f6ff;border-radius:6px;border:1px solid #c4b5fd;">
                                 <label
@@ -1168,7 +1211,8 @@
                                 </label>
                                 <div id="boot3pWarning"
                                     style="display:none;margin-top:0.4rem;font-size:0.8rem;color:#b45309;background:#fef9c3;border-left:3px solid #f59e0b;padding:0.4rem 0.6rem;border-radius:3px;">
-                                    <i class="fas fa-clock"></i> Slow mode active: each resample re‑estimates γ.
+                                    <i class="fas fa-clock" aria-hidden="true"></i> Slow mode active: each resample
+                                    re‑estimates γ.
                                     Estimated time: ~15–30s for B=200.
                                 </div>
                             </div>
@@ -1182,7 +1226,6 @@
                             </div>
                         </div>
 
-                        <!-- Monte Carlo GoF -->
                         <div
                             style="margin:0.75rem 0;padding:0.85rem;background:#eef2ff;border-radius:8px;border:1.5px solid #a29bfe;">
                             <label style="display:flex;gap:0.6rem;cursor:pointer;margin-bottom:0;">
@@ -1214,27 +1257,31 @@
 
                         <button type="submit"
                             style="width:100%;padding:0.9rem;font-size:1.1rem;background:var(--primary-color);margin-top:0.5rem;">
-                            <i class="fas fa-calculator"></i> Run Analysis
+                            <i class="fas fa-calculator" aria-hidden="true"></i> Run Analysis
                         </button>
                     </form>
                 </div>
-                <p class="info-message"><i class="fas fa-info-circle"></i> You can also click <strong>Analyze</strong>
-                    in the top toolbar from any tab.</p>
+                <p class="info-message"><i class="fas fa-info-circle" aria-hidden="true"></i> You can also click
+                    <strong>Analyze</strong>
+                    in the top toolbar from any tab.
+                </p>
             </div>
         </div>
 
-        <!-- ==================== RESULTS TAB ==================== -->
+        <!-- ================= RESULTS TAB ================= -->
         <div id="tab-results" class="wizard-tab-content">
+            <h2 class="calculation-title"><i class="fas fa-chart-line"></i> Weibull Fit Results & Reliability Metrics
+            </h2>
             <div id="fallbackWarning" class="warning-message" style="display:none;"></div>
             <div id="mleConvergenceWarning" class="warning-message" style="display:none;"><i
-                    class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> L-BFGS-B did not fully converge.
+                    class="fas fa-exclamation-triangle" aria-hidden="true"></i> <strong>Warning:</strong> L-BFGS-B did
+                not fully converge.
                 Results may be suboptimal. Try more iterations or different data scaling.</div>
 
             <div class="results-main-container">
-                <!-- LEFT COLUMN -->
                 <div class="left-column">
                     <div class="calculation-block" id="results">
-                        <div class="calculation-title">Weibull Parameters</div>
+                        <h3 class="calculation-title">Estimated Weibull Parameters (β, η, γ)</h3>
                         <div style="margin-bottom:0.75rem;"><label
                                 style="display:inline-flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:400;margin:0;"><input
                                     type="checkbox" id="applyBiasCorrection" checked> Apply small-sample bias correction
@@ -1266,15 +1313,16 @@
                             style="display:none;margin-top:0.5rem;font-size:0.85rem;"></div>
 
                         <div id="mixtureWarning" class="warning-message" style="display:none;"><i
-                                class="fas fa-exclamation-triangle"></i> <span id="mixtureWarningText"></span></div>
+                                class="fas fa-exclamation-triangle" aria-hidden="true"></i> <span
+                                id="mixtureWarningText"></span></div>
 
-                        <div class="calculation-title" style="margin-top:1rem;">Failure Mode</div>
+                        <h3 class="calculation-title" style="margin-top:1rem;">Failure Mode</h3>
                         <div id="failureModeIndicator" style="display:none;"></div>
                         <div id="failureModeDescription" style="font-size:0.85rem;color:#555;margin-top:0.4rem;"></div>
                         <div id="failureModeRecommendation" class="info-message"
                             style="display:none;font-size:0.82rem;margin-top:0.4rem;"></div>
 
-                        <div class="calculation-title" style="margin-top:1rem;">B-Life Percentiles</div>
+                        <h3 class="calculation-title" style="margin-top:1rem;">B-Life Percentiles</h3>
                         <div class="percentiles-container">
                             <div class="percentile-card">
                                 <div class="percentile-label">B10</div>
@@ -1302,9 +1350,8 @@
                         </div>
                     </div>
 
-                    <!-- GoF Section -->
                     <div class="calculation-block">
-                        <div class="calculation-title">Goodness-of-Fit</div>
+                        <h3 class="calculation-title">Goodness‑of‑Fit & Model Adequacy</h3>
                         <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
                             <tr>
                                 <td style="color:#6c757d;padding:3px;">R² (prob plot)</td>
@@ -1344,9 +1391,8 @@
                         <p id="inputWarningMessage" class="warning-message" style="display:none;"></p>
                     </div>
 
-                    <!-- Confidence Intervals -->
                     <div class="calculation-block">
-                        <div class="calculation-title" id="ciHeading">Confidence Intervals (95% LR)</div>
+                        <h3 class="calculation-title" id="ciHeading">Confidence Intervals (95% Profile Likelihood)</h3>
 
                         <div class="ci-box">
                             <div class="ci-box-title">Profile Likelihood (Wilks)</div>
@@ -1393,42 +1439,42 @@
                             For critical decisions, consider alternative methods. </div>
 
                         <div id="ciWarning" class="warning-message" style="display:none;"><i
-                                class="fas fa-exclamation-triangle"></i> Low failure count or heavy censoring: CIs may
+                                class="fas fa-exclamation-triangle" aria-hidden="true"></i> Low failure count or heavy
+                            censoring: CIs may
                             be wide or unreliable.</div>
 
-                        <!-- LR Test 2P vs 3P -->
                         <div class="lrtest-box" id="lrTestSection" style="display:none;">
                             <strong>LR Test 2P vs 3P</strong> (Self &amp; Liang 1987 boundary correction)<br>
                             <span id="lrTestResult"></span>
                         </div>
                     </div>
 
-                    <button id="addBtn" disabled style="width:100%;margin-bottom:1rem;"><i
-                            class="fas fa-clipboard-list"></i> Save to history</button>
+                    <button id="addBtn" disabled style="width:100%;margin-bottom:1rem;"><i class="fas fa-clipboard-list"
+                            aria-hidden="true"></i> Save to history</button>
                 </div>
 
-                <!-- RIGHT COLUMN -->
                 <div class="right-column">
                     <div id="weibullChartContainer">
                         <div class="canvas-wrapper"><canvas id="weibullChartCanvas"></canvas></div>
                     </div>
                     <div class="calculation-block" style="margin-top:1.5rem;">
-                        <div class="calculation-title">Distribution Functions</div>
+                        <h3 class="calculation-title">Weibull Distribution Functions (PDF, CDF, Hazard, Reliability)
+                        </h3>
                         <div class="distribution-grid">
                             <div class="chart-container">
-                                <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">PDF f(t)</h3>
+                                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">PDF f(t)</h4>
                                 <div class="chart-wrapper"><canvas id="pdfChart"></canvas></div>
                             </div>
                             <div class="chart-container">
-                                <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">CDF F(t)</h3>
+                                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">CDF F(t)</h4>
                                 <div class="chart-wrapper"><canvas id="cdfChart"></canvas></div>
                             </div>
                             <div class="chart-container">
-                                <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Hazard h(t)</h3>
+                                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">Hazard h(t)</h4>
                                 <div class="chart-wrapper"><canvas id="hazardChart"></canvas></div>
                             </div>
                             <div class="chart-container">
-                                <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Reliability R(t)</h3>
+                                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">Reliability R(t)</h4>
                                 <div class="chart-wrapper"><canvas id="reliabilityChart"></canvas></div>
                             </div>
                         </div>
@@ -1436,20 +1482,18 @@
                 </div>
             </div>
 
-            <!-- Descriptive stats -->
             <div class="descriptive-stats-full-width">
-                <div class="calculation-title">Descriptive Statistics (Failure Times)</div>
+                <h3 class="calculation-title">Descriptive Statistics of Failure Data</h3>
                 <div class="statistics-grid" id="descriptiveStats"></div>
             </div>
 
-            <!-- History -->
             <div class="calculation-block">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div class="calculation-title" style="margin-bottom:0;">Analysis History <span id="historyCount"
-                            style="font-size:0.85rem;font-weight:400;color:#6c757d;">0 saved</span></div>
+                    <h3 class="calculation-title" style="margin-bottom:0;">Analysis History <span id="historyCount"
+                            style="font-size:0.85rem;font-weight:400;color:#6c757d;">0 saved</span></h3>
                     <button id="clearHistoryBtn" disabled
                         style="background:var(--accent-color);padding:0.4rem 0.8rem;font-size:0.85rem;"><i
-                            class="fas fa-trash-alt"></i> Clear</button>
+                            class="fas fa-trash-alt" aria-hidden="true"></i> Clear</button>
                 </div>
                 <div id="aggregatedResultsContainer" style="margin-top:1rem;">
                     <p id="historyEmptyMsg" style="color:#aaa;font-style:italic;text-align:center;padding:1rem 0;">No
@@ -1458,10 +1502,12 @@
             </div>
         </div>
 
-        <!-- ==================== FORMULAS TAB ==================== -->
+        <!-- ================= FORMULAS TAB ================= -->
         <div id="tab-formulas" class="wizard-tab-content">
+            <h2 class="calculation-title"><i class="fas fa-square-root-alt"></i> Weibull Formulas & Parameter
+                Interpretation</h2>
             <div class="container">
-                <h2>Mathematical Formulas</h2>
+                <h3>Core Weibull Formulas</h3>
                 <div class="formula-grid">
                     <div class="formula-item">
                         <h4>PDF</h4>
@@ -2534,7 +2580,7 @@
                 document.getElementById('b10').textContent = b10.toFixed(1);
                 document.getElementById('b50').textContent = b50.toFixed(1);
                 document.getElementById('b90').textContent = b90.toFixed(1);
-                document.getElementById('ciHeading').textContent = `Confidence Intervals (${confLevel}% LR)`;
+                document.getElementById('ciHeading').textContent = `Confidence Intervals (${confLevel}% Profile Likelihood)`;
 
                 // Fallback warning
                 if (params.fallbackWarning) { const fw = document.getElementById('fallbackWarning'); fw.textContent = params.fallbackWarning; fw.style.display = 'block'; }
