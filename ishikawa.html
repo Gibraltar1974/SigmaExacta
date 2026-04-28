@@ -741,8 +741,8 @@
             position: relative;
             overflow: hidden;
             width: 100%;
-            height: var(--diagram-height, 85vh);
-            min-height: 400px;
+            height: calc(100vh - 220px);
+            min-height: 500px;
             display: flex;
             flex-direction: column;
         }
@@ -885,7 +885,7 @@
             }
 
             #ishikawaDiagramContainer {
-                height: 70vh;
+                height: calc(100vh - 180px);
                 min-height: 400px;
             }
 
@@ -961,7 +961,8 @@
                 <span class="std-badge">JointJS | AIAG</span>
             </h1>
             <p>Generate professional Ishikawa (cause and effect) diagrams for root cause analysis. Supports <strong>6M
-                    categories, sub-causes, revision history, share your results</strong>, and aligns with AIAG &amp; IATF
+                    categories, sub-causes, revision history, share your results</strong>, and aligns with AIAG &amp;
+                IATF
                 16949 quality standards.</p>
 
             <div class="main-action-buttons">
@@ -1689,20 +1690,6 @@
                 if (isPanning) { isPanning = false; paperEl.classList.remove('panning'); }
             });
 
-            // ---- ZOOM wheel ----
-            paperEl.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
-                const cur = jointPaper.scale();
-                const ns = Math.min(Math.max(cur.sx * factor, 0.1), 5);
-                const rect = paperEl.getBoundingClientRect();
-                const ox = e.clientX - rect.left;
-                const oy = e.clientY - rect.top;
-                const t = jointPaper.translate();
-                jointPaper.scale(ns, ns);
-                jointPaper.translate(ox - (ox - t.tx) * (ns / cur.sx), oy - (oy - t.ty) * (ns / cur.sx));
-            }, { passive: false });
-
             // ---- Zoom buttons ----
             document.getElementById('zoomInBtn')?.addEventListener('click', () => zoomToCenter(Math.min(jointPaper.scale().sx * 1.25, 5)));
             document.getElementById('zoomOutBtn')?.addEventListener('click', () => zoomToCenter(Math.max(jointPaper.scale().sx / 1.25, 0.1)));
@@ -1720,6 +1707,14 @@
                 }
             });
             ro.observe(paperEl);
+        }
+
+        function renderFishboneDiagramFromDOM() {
+            const problem = document.getElementById('problem')?.value?.trim();
+            if (problem && jointGraph && jointPaper) {
+                const categories = collectDataFromDOM();
+                renderFishboneDiagram(problem, categories);
+            }
         }
 
         function scheduleDiagramRender() {
@@ -1771,10 +1766,14 @@
             if (activeBtn) activeBtn.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Initialize JointJS when diagram tab is first opened
-            if (tabId === 'tab-diagram' && !jointGraph) {
-                setTimeout(initJointJS, 100);
-                setTimeout(scheduleDiagramRender, 300);
+            // Initialize JointJS when diagram tab is first opened, or re-render if already initialized
+            if (tabId === 'tab-diagram') {
+                if (!jointGraph) {
+                    setTimeout(initJointJS, 100);
+                    setTimeout(scheduleDiagramRender, 300);
+                } else {
+                    setTimeout(renderFishboneDiagramFromDOM, 100);
+                }
             }
         }
 
@@ -2004,11 +2003,11 @@
         // EXAMPLES
         // ============================================
         function loadExample(type) {
-            if (isReadOnly) {
-                if (!confirm('Document is read-only. Use Revise to enable editing first. Continue?')) return;
-            }
             const problemEl = document.getElementById('problem');
             if (problemEl.value.trim() && !confirm('Loading example will replace current data. Continue?')) return;
+            // Temporarily disable read-only so addCauseBlock works during load
+            const wasReadOnly = isReadOnly;
+            isReadOnly = false;
 
             const examples = {
                 manufacturing: {
@@ -2099,11 +2098,24 @@
                 causes.forEach(cause => addCauseBlock(cat.key, cause.text, cause.subCauses || []));
             });
 
-            scheduleDiagramRender();
-            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} example loaded!`);
-            switchWizardTab('tab-input');
-            switchSubTab('subtab-problem');
-            setTimeout(() => problemEl.focus(), 200);
+            // Always open diagram tab and set read-only after loading example
+            if (!jointGraph) {
+                switchWizardTab('tab-diagram');
+                setTimeout(() => {
+                    initJointJS();
+                    setTimeout(() => {
+                        renderFishboneDiagramFromDOM();
+                        setReadOnly(true);
+                    }, 150);
+                }, 100);
+            } else {
+                switchWizardTab('tab-diagram');
+                setTimeout(() => {
+                    renderFishboneDiagramFromDOM();
+                    setReadOnly(true);
+                }, 100);
+            }
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} example loaded (read-only).`);
         }
 
         // ============================================
@@ -2326,11 +2338,14 @@
                 const container = document.getElementById(`${cat.key}-causes`);
                 if (container) container.innerHTML = '';
             });
+            const revBody = document.getElementById('revHistoryBody');
+            if (revBody) revBody.innerHTML = '';
             if (jointGraph) {
                 jointGraph.resetCells();
                 jointPaper.scale(1, 1);
                 jointPaper.translate(0, 0);
             }
+            setReadOnly(false);
             clearStorage();
             scheduleDiagramRender();
             showNotification('All data has been reset.');
