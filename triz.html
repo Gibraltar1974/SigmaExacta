@@ -4,11 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRIZ Problem Solving Tool & 40 Principles | Sigma Exacta</title>
+    <title>TRIZ Tool: Contradiction Matrix, 40 Inventive Principles &amp; Su-Field Analysis | Sigma Exacta</title>
     <meta name="description"
-        content="Free online TRIZ tool to solve complex problems with a structured methodology. Identify contradictions, use the 40 inventive principles, and apply Su-Field analysis for innovation.">
+        content="Free online TRIZ tool by Sigma Exacta. Solve engineering contradictions using the 40 Inventive Principles, Classic &amp; 2003 Contradiction Matrix (39 and 48 parameters), Su-Field Analysis with 76 Standard Solutions, Ideal Final Result (IFR), 9 Windows, Function Analysis, and LDST. Export results to Excel.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title"
+        content="TRIZ Tool: Contradiction Matrix, 40 Inventive Principles &amp; Su-Field Analysis | Sigma Exacta">
+    <meta property="og:description"
+        content="Free structured TRIZ problem-solving tool. Resolve technical and physical contradictions using the 40 Inventive Principles, Classic and 2003 Contradiction Matrix, Su-Field Analysis, and more. Export to Excel.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sigmaexacta.com/triz">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Free Online TRIZ Tool | Sigma Exacta">
+    <meta name="twitter:description"
+        content="Solve engineering contradictions with TRIZ: 40 Inventive Principles, Contradiction Matrix, Su-Field Analysis, IFR, 9 Windows, Function Analysis. Export to Excel.">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TRIZ Problem-Solving Tool",
+      "url": "https://sigmaexacta.com/triz",
+      "description": "Free online TRIZ tool for systematic innovation and inventive problem solving. Covers the 40 Inventive Principles, Classic and 2003 Contradiction Matrix, Su-Field Analysis with 76 Standard Solutions, Ideal Final Result, 9 Windows, Function Analysis, and Laws of Development of Technical Systems (LDST).",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Organization", "name": "Sigma Exacta", "url": "https://sigmaexacta.com" },
+      "keywords": "TRIZ, contradiction matrix, 40 inventive principles, Su-Field analysis, 76 standard solutions, IFR, LDST, inventive problem solving, Altshuller, technical contradiction, physical contradiction"
+    }
+    </script>
     <meta name="keywords"
-        content="Open Source, Free Software,TRIZ, Theory of Inventive Problem Solving, contradiction matrix, 40 inventive principles, Genrich Altshuller, Su-Field analysis, problem solving, innovation tool, technical contradiction, physical contradiction, contradiction matrix, 76 standard solutions">
+        content="TRIZ, Theory of Inventive Problem Solving, contradiction matrix, 40 inventive principles, Genrich Altshuller, Su-Field analysis, 76 standard solutions, LDST, IFR, 9 windows, function analysis, physical contradiction, technical contradiction, inventive problem solving, innovation engineering, open source, free tool, Sigma Exacta">
     <link rel="canonical" href="https://sigmaexacta.com/triz" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -259,6 +284,28 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
         .main-action-buttons .btn-example {
             background-color: #2ecc71;
             color: white;
@@ -266,6 +313,28 @@
 
         .main-action-buttons .btn-example:hover {
             background-color: #27ad60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-revise {
+            background-color: #6c5ce7;
+            color: white;
+        }
+
+        .main-action-buttons .btn-revise:hover {
+            background-color: #5849c2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-export-main {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .main-action-buttons .btn-export-main:hover {
+            background-color: #1a252f;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
@@ -279,6 +348,134 @@
             background-color: #c0392b;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- READ-ONLY BANNER --- */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 900px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
+        }
+
+        /* --- REVISE MODAL --- */
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-modal-box h3 i {
+            color: #6c5ce7;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-field input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise:hover {
+            background: #f5f5f5;
+        }
+
+        .revise-modal-footer .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-confirm-revise:hover {
+            background: #5849c2;
         }
 
         .content-block {
@@ -2003,19 +2200,64 @@
 
     <main class="main-content-wrapper">
         <header class="header">
-            <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Free Online Inventive Problem
-                Solving (TRIZ) Tool</h1>
-            <p class="header-subtitle">A data-driven method for systematic innovation and invention.</p>
+            <h1><span class="triz-h1-icon-style"><i class="fas fa-brain"></i></span> Complete Inventive Problem Solving
+                TRIZ Tool
+            </h1>
+            <p class="header-subtitle">Resolve engineering contradictions with the <strong>40 Inventive
+                    Principles</strong>, <strong>Contradiction Matrix</strong>, <strong>Su-Field Analysis</strong>, IFR,
+                9 Windows, Function Analysis, and LDST — export and share your results easily.</p>
 
             <div class="main-action-buttons">
-                <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-play-circle"></i> Load Next Example
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
+                <button id="globalLoadExampleBtn" class="btn-example">
+                    <i class="fas fa-play-circle"></i> Load Example
+                </button>
+                <button id="globalReviseBtn" class="btn-revise">
+                    <i class="fas fa-edit"></i> Revise
+                </button>
+                <button id="globalExportBtn" class="btn-export-main">
+                    <i class="fas fa-file-excel"></i> Export
                 </button>
             </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — loaded for viewing only. Click
+                <strong>Revise</strong> to enable editing.
+            </div>
+            <input type="file" id="loadTrizInput" accept=".xlsx,.xls" style="display:none;">
         </header>
+
+        <!-- REVISE MODAL -->
+        <div class="revise-modal" id="reviseModal">
+            <div class="revise-modal-box">
+                <h3><i class="fas fa-edit"></i> Register Revision</h3>
+                <div class="revise-field">
+                    <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                    <input type="date" id="reviseDate">
+                </div>
+                <div class="revise-field">
+                    <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                    <input type="text" id="reviseDesc" placeholder="e.g. Updated contradiction matrix selection">
+                </div>
+                <div class="revise-field">
+                    <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                    <input type="text" id="reviseBy" placeholder="Name / Department">
+                </div>
+                <div class="revise-field">
+                    <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+                    <input type="text" id="reviseApproved" placeholder="Name / Title">
+                </div>
+                <div class="revise-modal-footer">
+                    <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                    <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm
+                        &amp; Edit</button>
+                </div>
+            </div>
+        </div>
 
         <nav class="tabs-nav">
             <button class="tab-btn active" onclick="switchMainTab('tab-start')">
@@ -2032,7 +2274,7 @@
         <div id="tab-start" class="tab-content active">
             <!-- Contenido de la pestaña Start & Info (sin cambios) -->
             <div class="content-block">
-                <h2><i class="fas fa-question-circle"></i> What is TRIZ?</h2>
+                <h2><i class="fas fa-question-circle"></i> What is TRIZ? — Theory of Inventive Problem Solving</h2>
                 <div class="instructions-box">
                     <ul>
                         <li><strong>TRIZ</strong> (Теория решения изобретательских задач), or "Theory of Inventive
@@ -2061,7 +2303,8 @@
             </div>
 
             <div class="content-block">
-                <h2><i class="fas fa-history"></i> History & Origin</h2>
+                <h2><i class="fas fa-history"></i> History &amp; Origin of TRIZ — Altshuller and the Patent Analysis
+                    Method</h2>
                 <div class="instructions-box">
                     <ul>
                         <li>TRIZ was developed by <strong>Genrich Altshuller</strong> beginning in 1946 while working as
@@ -2095,7 +2338,8 @@
             </div>
 
             <div class="content-block">
-                <h2><i class="fas fa-toolbox"></i> TRIZ Methodology & Tools</h2>
+                <h2><i class="fas fa-toolbox"></i> TRIZ Methodology: 40 Principles, Contradiction Matrix &amp; Su-Field
+                    Analysis</h2>
                 <div class="instructions-box">
                     <ul>
                         <li>The TRIZ methodology provides a structured approach to problem solving that guides
@@ -2169,7 +2413,7 @@
             </div>
 
             <div class="content-block">
-                <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
+                <h2><i class="fas fa-tools"></i> How to Use This TRIZ Tool — Step-by-Step Guide</h2>
                 <div class="instructions-box">
                     <ul>
                         <li><strong>Load Example:</strong> Click "Load Example" above to populate all tools with
@@ -2237,7 +2481,7 @@
 
         <div id="tab-tools" class="tab-content">
             <div class="content-block">
-                <h2><i class="fas fa-tools"></i> TRIZ Problem-Solving Tools</h2>
+                <h2><i class="fas fa-tools"></i> TRIZ Problem-Solving Tools Overview</h2>
                 <p>Navigate through the 8-step TRIZ methodology using the tabs below:</p>
 
                 <!-- Sub-tabs para cada herramienta -->
@@ -2271,7 +2515,7 @@
                 <!-- Sub-tab 1: Define Problem -->
                 <div id="sub-tab-define" class="sub-tab-content active">
                     <div class="solver-step">
-                        <h3><i class="fas fa-tasks"></i> 1. Define the Problem</h3>
+                        <h3><i class="fas fa-tasks"></i> Step 1: Define the Problem Statement</h3>
                         <div class="form-group">
                             <label for="problem-system">System/Object to improve?</label>
                             <input type="text" id="problem-system" placeholder="e.g., A coffee mug">
@@ -2296,7 +2540,8 @@
                 <!-- Sub-tab 2: LDST Analysis -->
                 <div id="sub-tab-ldst" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-project-diagram"></i> 2. Laws of Development of Technical Systems (LDST)
+                        <h3><i class="fas fa-project-diagram"></i> Step 2: Laws of Development of Technical Systems
+                            (LDST)
                         </h3>
                         <p>Select the life cycle stage of your system to get the most relevant development laws
                             according to
@@ -2417,7 +2662,7 @@
                 <!-- Sub-tab 3: Formulate IFR -->
                 <div id="sub-tab-ifr" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-rocket"></i> 3. Formulate Ideal Final Result (IFR)</h3>
+                        <h3><i class="fas fa-rocket"></i> Step 3: Formulate the Ideal Final Result (IFR)</h3>
                         <div class="form-group">
                             <label for="ifr-formulation">The system <strong>itself</strong> performs the
                                 function without the drawback:</label>
@@ -2438,7 +2683,7 @@
                 <!-- Sub-tab 4: 9 Windows -->
                 <div id="sub-tab-nine-windows" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-window-restore"></i> 4. 9 Windows Analysis</h3>
+                        <h3><i class="fas fa-window-restore"></i> Step 4: 9 Windows (System Operator) Analysis</h3>
                         <p>Analyze the system in three time dimensions (past, present, future) and three system levels
                             (sub-system, system, super-system).</p>
 
@@ -2542,7 +2787,7 @@
                 <!-- Sub-tab 5: Function Analysis -->
                 <div id="sub-tab-fee" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-project-diagram"></i> 5. Function Analysis</h3>
+                        <h3><i class="fas fa-project-diagram"></i> Step 5: Function Analysis (Functional Modeling)</h3>
                         <p>Analyze the system through 5 systematic steps: Define main function, identify components,
                             analyze interactions, create function table, and visualize the model.</p>
 
@@ -2714,7 +2959,8 @@
                 <!-- Sub-tab 6: Technical Contradiction -->
                 <div id="sub-tab-technical" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-exchange-alt"></i> 6. Technical Contradiction</h3>
+                        <h3><i class="fas fa-exchange-alt"></i> Step 6: Resolve Technical Contradictions — Contradiction
+                            Matrix</h3>
                         <p>Improving one feature makes another worse. Use the contradiction matrix to find inventive
                             principles.</p>
 
@@ -2791,7 +3037,8 @@
                 <!-- Sub-tab 7: Physical Contradiction (NUEVO ALGORITMO) -->
                 <div id="sub-tab-physical" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-exchange-alt"></i> 7. Physical Contradiction</h3>
+                        <h3><i class="fas fa-exchange-alt"></i> Step 7: Resolve Physical Contradictions — Separation
+                            Principles</h3>
                         <p>One feature needs opposite properties. Use the intersection test algorithm to determine the
                             best resolution strategy.</p>
 
@@ -2892,7 +3139,7 @@
                 <!-- Sub-tab 8: Su-Field Analysis -->
                 <div id="sub-tab-sufield" class="sub-tab-content">
                     <div class="solver-step">
-                        <h3><i class="fas fa-atom"></i> 8. Su-Field Analysis</h3>
+                        <h3><i class="fas fa-atom"></i> Step 8: Su-Field Analysis &amp; 76 Standard Solutions</h3>
                         <p>Model your problem as interactions between substances (S1, S2) and fields (F). Each system
                             can
                             have
@@ -2940,7 +3187,7 @@
 
         <div id="tab-solve" class="tab-content">
             <div class="solver-step" style="text-align: center; padding: 30px;">
-                <h2 style="color: var(--secondary-color);">Ready to Generate Solution?</h2>
+                <h2 style="color: var(--secondary-color);">Ready to Generate Your TRIZ Solution Report?</h2>
                 <p>This will gather all data from Define, LDST, IFR, 9 Windows, Function Analysis, Technical
                     Contradiction, Physical Contradiction, and
                     Su-Field
@@ -3142,8 +3389,34 @@
                 });
 
             // Asignar eventos a los botones globales
-            document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExampleAndGo);
-            document.getElementById('globalResetBtn').addEventListener('click', resetTool);
+            document.getElementById('globalLoadExampleBtn').addEventListener('click', function () {
+                loadExampleAndGo();
+                setReadOnly(true);
+            });
+            document.getElementById('globalNewBtn').addEventListener('click', function () {
+                if (confirm('Reset all fields and start a new TRIZ analysis?')) {
+                    resetTool();
+                    setReadOnly(false);
+                    showNotification('New analysis started.');
+                }
+            });
+            document.getElementById('globalLoadBtn').addEventListener('click', function () {
+                document.getElementById('loadTrizInput').click();
+            });
+            document.getElementById('loadTrizInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                loadTrizFromExcel(file, true);
+                e.target.value = '';
+            });
+            document.getElementById('globalReviseBtn').addEventListener('click', function () {
+                if (!isReadOnly) {
+                    alert('The document is already editable.');
+                    return;
+                }
+                openReviseModal();
+            });
+            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
 
             // Inicializar Mermaid para Function Analysis
             if (typeof mermaid !== 'undefined') {
@@ -3239,6 +3512,28 @@
             }, 100);
 
             currentMatrixVersion = 'classic';
+
+            // Check that external JS files loaded correctly
+            const missingFiles = [];
+            if (typeof trizContradictionMatrix === 'undefined') missingFiles.push('trizcontradiction.js');
+            if (typeof trizContradictionMatrix2003 === 'undefined') missingFiles.push('trizcontradiction2003.js');
+            if (typeof trizStandardSolutions === 'undefined') missingFiles.push('76principlestriz.js');
+            if (typeof updateSuFieldDiagram === 'undefined') missingFiles.push('sufield-diagrams.js');
+            if (typeof lifecycleToLdstMapping === 'undefined') missingFiles.push('ldst.js');
+            if (typeof examples === 'undefined') missingFiles.push('trizconstants.js');
+            if (typeof physicalContradictionPrinciples === 'undefined') missingFiles.push('physicalcontradictionprinciples2000.js');
+
+            if (missingFiles.length > 0) {
+                const banner = document.createElement('div');
+                banner.id = 'js-missing-banner';
+                banner.style.cssText = 'background:#fff3cd;border:1px solid #ffc107;border-left:4px solid #e74c3c;border-radius:6px;padding:1rem 1.25rem;margin:1rem auto;max-width:900px;font-family:Nunito,sans-serif;font-size:0.9rem;color:#333;';
+                banner.innerHTML = '<strong style="color:#c0392b;">⚠ Missing JS files — the tool cannot work correctly.</strong><br>'
+                    + 'The following files were not found. Make sure they are in the <strong>same folder</strong> as <code>triz.html</code>:<br>'
+                    + '<code style="display:block;margin-top:6px;color:#c0392b;">' + missingFiles.join('&nbsp;&nbsp;|&nbsp;&nbsp;') + '</code>'
+                    + '<br><small>If you are opening the file directly (file://), use a local server instead: <code>python3 -m http.server</code> then open <code>http://localhost:8000/triz.html</code></small>';
+                const header = document.querySelector('.header');
+                if (header) header.insertAdjacentElement('afterend', banner);
+            }
 
             populateDropdowns();
             createContradictionMatrix();
@@ -3482,6 +3777,10 @@
         }
 
         function getCurrentMatrix() {
+            if (typeof trizContradictionMatrix === 'undefined' || typeof trizContradictionMatrix2003 === 'undefined') {
+                console.error('TRIZ matrix data not loaded. Ensure trizcontradiction.js and trizcontradiction2003.js are in the same folder as triz.html.');
+                return { features: [], matrix: {} }; // safe empty fallback
+            }
             return currentMatrixVersion === 'classic' ? trizContradictionMatrix : trizContradictionMatrix2003;
         }
 
@@ -4868,10 +5167,7 @@
                         break;
                     }
                 }
-                if (!hasValidSystem && systemElements.length > 0) {
-                    alert('Please complete at least one Su-Field system (Object, Tool, and Field must be filled).');
-                    return;
-                }
+                // Su-Field is optional — report generates with whatever data is available
 
                 problemData = {};
                 problemData.system = document.getElementById('problem-system').value || "Not specified";
@@ -5955,6 +6251,158 @@
                     }
                 });
             });
+        }
+
+        /* =========================================================
+           READ-ONLY MODE
+        ========================================================= */
+        let isReadOnly = false;
+        const TRIZ_LS_KEY = 'triz_tool_state_v1';
+
+        function setReadOnly(val) {
+            isReadOnly = val;
+            const banner = document.getElementById('readonlyBanner');
+            if (val) {
+                banner.classList.add('show');
+                document.querySelectorAll('#tab-tools input, #tab-tools textarea, #tab-tools select').forEach(el => { el.disabled = true; });
+                document.querySelectorAll('#tab-solve input, #tab-solve textarea, #tab-solve select').forEach(el => { el.disabled = true; });
+                document.querySelectorAll('.btn-success, .btn-warning').forEach(btn => { btn.disabled = true; });
+            } else {
+                banner.classList.remove('show');
+                document.querySelectorAll('#tab-tools input, #tab-tools textarea, #tab-tools select').forEach(el => { el.disabled = false; });
+                document.querySelectorAll('#tab-solve input, #tab-solve textarea, #tab-solve select').forEach(el => { el.disabled = false; });
+                document.querySelectorAll('.btn-success, .btn-warning').forEach(btn => { btn.disabled = false; });
+            }
+        }
+
+        /* =========================================================
+           REVISE MODAL
+        ========================================================= */
+        function openReviseModal() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDate').value = today;
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseApproved').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            const approved = document.getElementById('reviseApproved').value.trim();
+            if (!date || !desc || !by || !approved) {
+                alert('Please fill in all revision fields.');
+                return;
+            }
+            setReadOnly(false);
+            closeReviseModal();
+            switchMainTab('tab-tools');
+            showNotification('Revision registered. Document is now editable.');
+        }
+
+        /* =========================================================
+           SAVE / LOAD FROM LOCALSTORAGE
+        ========================================================= */
+        function saveTrizToStorage() {
+            try {
+                const fields = {};
+                document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+                    if (el.id) fields[el.id] = el.value;
+                });
+                document.querySelectorAll('select').forEach(el => {
+                    if (el.id) fields[el.id] = el.value;
+                });
+                document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+                    if (el.name) fields['radio_' + el.name] = el.value;
+                });
+                localStorage.setItem(TRIZ_LS_KEY, JSON.stringify({ fields, savedAt: new Date().toISOString() }));
+            } catch (e) { console.warn('TRIZ save failed:', e); }
+        }
+
+        function loadTrizFromStorage() {
+            try {
+                const raw = localStorage.getItem(TRIZ_LS_KEY);
+                if (!raw) return false;
+                const state = JSON.parse(raw);
+                if (state.fields) {
+                    Object.keys(state.fields).forEach(key => {
+                        if (key.startsWith('radio_')) {
+                            const name = key.replace('radio_', '');
+                            const radio = document.querySelector('input[name="' + name + '"][value="' + state.fields[key] + '"]');
+                            if (radio) radio.checked = true;
+                        } else {
+                            const el = document.getElementById(key);
+                            if (el && el.tagName !== 'BUTTON') el.value = state.fields[key];
+                        }
+                    });
+                }
+                return true;
+            } catch (e) { console.warn('TRIZ load failed:', e); return false; }
+        }
+
+        /* =========================================================
+           LOAD FROM EXCEL (generated by this tool's Export)
+        ========================================================= */
+        function loadTrizFromExcel(file, readOnly) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+                    // Reset tool first
+                    resetTool();
+
+                    // Try to populate key fields from rows
+                    const fieldMap = {
+                        'Problem Statement': 'problem-statement',
+                        'Desired Result (IFR)': 'ifr-input',
+                        'Life Cycle Stage': 'lifecycle-stage',
+                    };
+
+                    rows.forEach(row => {
+                        const label = String(row[0] || '').trim();
+                        const value = String(row[1] || '').trim();
+                        if (fieldMap[label]) {
+                            const el = document.getElementById(fieldMap[label]);
+                            if (el) el.value = value;
+                        }
+                    });
+
+                    setReadOnly(readOnly);
+                    switchMainTab('tab-tools');
+                    showNotification(readOnly ? 'File loaded in read-only mode.' : 'File loaded successfully.');
+                } catch (err) {
+                    console.error('Load error:', err);
+                    alert('Error reading the file. Make sure it was exported by this tool.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================= */
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position:fixed;top:20px;right:20px;background-color:#27ae60;color:white;padding:15px 20px;border-radius:5px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:10000;animation:trizSlideIn .3s ease;max-width:320px;font-weight:600;font-family:Nunito,sans-serif';
+            const style = document.createElement('style');
+            style.textContent = '@keyframes trizSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes trizFadeOut{from{opacity:1}to{opacity:0}}';
+            document.head.appendChild(style);
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'trizFadeOut 0.5s ease';
+                setTimeout(() => { if (notification.parentNode) document.body.removeChild(notification); }, 500);
+            }, 3000);
         }
     </script>
 </body>

@@ -11,8 +11,10 @@
     <meta name="keywords"
         content="Open source, Free software, Kano Model, Kano Analysis, Kano graph, customer satisfaction, product development, feature prioritization, user experience, free tool, chart.js">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,7 +56,6 @@
             line-height: 1.6;
         }
 
-        /* --- MODIFICACIONES PARA ANCHO RESPONSIVE --- */
         .main-content-wrapper {
             margin: 0 auto;
             padding: 1.25rem;
@@ -129,23 +130,67 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .main-action-buttons .btn-example {
+        .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-example {
             background-color: var(--performance-color);
             color: white;
         }
 
-        .main-action-buttons .btn-example:hover {
+        .btn-example:hover {
             background-color: #27ad60;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-reset {
+        .btn-revise {
+            background-color: #6c5ce7;
+            color: white;
+        }
+
+        .btn-revise:hover {
+            background-color: #5849c2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-export-main {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-export-main:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-reset {
             background-color: var(--danger-color);
             color: white;
         }
 
-        .main-action-buttons .btn-reset:hover {
+        .btn-reset:hover {
             background-color: #a5281c;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
@@ -735,6 +780,132 @@
             background-color: #7f8c8d;
         }
 
+        /* --- READ-ONLY BANNER & MODAL --- */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 800px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
+        }
+
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-modal-box h3 i {
+            color: #6c5ce7;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-field input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise:hover {
+            background: #f5f5f5;
+        }
+
+        .revise-modal-footer .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-confirm-revise:hover {
+            background: #5849c2;
+        }
+
         footer {
             padding: 2rem 1.25rem;
             max-width: 1400px;
@@ -786,6 +957,37 @@
         </nav>
     </noscript>
 
+    <!-- Revise Modal -->
+    <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+            <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+            <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">
+                Complete the revision details below. The analysis will be unlocked for editing.
+            </p>
+            <div class="revise-field">
+                <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                <input type="date" id="reviseDate">
+            </div>
+            <div class="revise-field">
+                <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseDesc" placeholder="e.g. Revised based on new survey data">
+            </div>
+            <div class="revise-field">
+                <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseBy" placeholder="Name / Department">
+            </div>
+            <div class="revise-field">
+                <label for="reviseApproved">Approved By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseApproved" placeholder="Name / Title">
+            </div>
+            <div class="revise-modal-footer">
+                <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &
+                    Enable Editing</button>
+            </div>
+        </div>
+    </div>
+
     <main class="main-content-wrapper">
         <header class="main-header">
             <h1>
@@ -798,13 +1000,27 @@
 
             <!-- BOTONES PRINCIPALES -->
             <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
+                </button>
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
                 <button id="globalLoadExampleBtn" class="btn-example">
                     <i class="fas fa-play-circle"></i> Load Example
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset All
+                <button id="globalReviseBtn" class="btn-revise">
+                    <i class="fas fa-edit"></i> Revise
+                </button>
+                <button id="globalExportBtn" class="btn-export-main">
+                    <i class="fas fa-file-excel"></i> Export
                 </button>
             </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — loaded for viewing. Click <strong>Revise</strong> to enable
+                editing.
+            </div>
+            <input type="file" id="loadKanoInput" accept=".xlsx,.xls" style="display:none;">
         </header>
 
         <!-- CONTENEDOR DE TABS -->
@@ -828,22 +1044,18 @@
                     <div class="content-block">
                         <h2><i class="fas fa-question-circle"></i> What is the Kano Model?</h2>
                         <p>The <strong>Kano Model</strong> is a framework for product development and customer
-                            satisfaction. It
-                            classifies product attributes into five categories based on how customers perceive them.
-                            This helps
-                            teams distinguish between basic necessities and delightful extras, making it easier to
-                            prioritize
-                            features that will have the most positive impact.</p>
+                            satisfaction. It classifies product attributes into five categories based on how customers
+                            perceive them. This helps teams distinguish between basic necessities and delightful extras,
+                            making it easier to prioritize features that will have the most positive impact.</p>
                         <ul>
                             <li><strong>Must-Be (Basic)</strong>: Expected features. Their absence causes
-                                dissatisfaction, but their
-                                presence is taken for granted (e.g., brakes on a car).</li>
+                                dissatisfaction, but their presence is taken for granted (e.g., brakes on a car).</li>
                             <li><strong>Performance</strong>: The more of these, the better. Satisfaction is
-                                proportional to their
-                                level of execution (e.g., battery life).</li>
+                                proportional
+                                to their level of execution (e.g., battery life).</li>
                             <li><strong>Attractive (Delighters)</strong>: Unexpected features. Their presence delights
-                                customers,
-                                but their absence does not cause dissatisfaction (e.g., a surprise upgrade).</li>
+                                customers, but their absence does not cause dissatisfaction (e.g., a surprise upgrade).
+                            </li>
                             <li><strong>Indifferent</strong>: Features customers don't care about.</li>
                             <li><strong>Reverse</strong>: Features that cause dissatisfaction when present.</li>
                         </ul>
@@ -852,23 +1064,20 @@
                     <div class="content-block">
                         <h2><i class="fas fa-history"></i> Origin of the Model</h2>
                         <p>The model was developed in the 1980s by <strong>Dr. Noriaki Kano</strong>, a professor of
-                            quality
-                            management at the Tokyo University of Science. While researching what drives customer
-                            satisfaction and
-                            loyalty, he challenged the traditional belief that improving every feature would
-                            proportionally increase
-                            satisfaction.</p>
+                            quality management at the Tokyo University of Science. While researching what drives
+                            customer
+                            satisfaction and loyalty, he challenged the traditional belief that improving every feature
+                            would proportionally increase satisfaction.</p>
                         <p>His findings revealed a non-linear relationship between product functionality and customer
-                            emotional
-                            response, leading to the creation of the five distinct categories. The Kano Model has since
-                            become a
-                            vital tool in user experience (UX), marketing, and product strategy.</p>
+                            emotional response, leading to the creation of the five distinct categories. The Kano Model
+                            has since become a vital tool in user experience (UX), marketing, and product strategy.</p>
                     </div>
 
                     <div class="content-block">
                         <h2><i class="fas fa-calculator"></i> Customer Satisfaction Index (CS)</h2>
                         <p>The <strong>Customer Satisfaction Index (CS)</strong> is a quantitative measure that helps
-                            you understand the impact of features on customer satisfaction and dissatisfaction.</p>
+                            you
+                            understand the impact of features on customer satisfaction and dissatisfaction.</p>
                         <ul>
                             <li><strong>CS+ (Satisfaction Index)</strong>: Measures how much satisfaction a feature will
                                 generate if implemented.</li>
@@ -920,8 +1129,8 @@
                             </select>
 
                             <div style="text-align: center;">
-                                <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Add to
-                                    Analysis</button>
+                                <button type="submit" class="btn-primary" id="addFeatureBtn"><i class="fas fa-plus"></i>
+                                    Add to Analysis</button>
                             </div>
                         </form>
                     </div>
@@ -1020,7 +1229,7 @@
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE EXPORTACIÓN -->
+                    <!-- BOTÓN DE EXPORTACIÓN (mantenido también dentro de Results) -->
                     <div class="export-section">
                         <h3><i class="fas fa-file-export"></i> Export Complete Analysis</h3>
                         <p>Download a comprehensive report of your Kano analysis including the visualization data, CS
@@ -1045,28 +1254,21 @@
         <div class="disclaimer-note">
             <p><strong>Disclaimer:</strong> The Kano Model is a theory developed by Noriaki Kano. This tool is an
                 independent implementation provided for educational and informational purposes only. It is not
-                affiliated with, sponsored by, or endorsed by Noriaki Kano or his affiliated institutions. The use of
-                this tool is at your own risk, and all decisions made based on its output are the sole responsibility of
-                the user. Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.
-            </p>
+                affiliated
+                with, sponsored by, or endorsed by Noriaki Kano or his affiliated institutions. The use of this tool is
+                at your own risk, and all decisions made based on its output are the sole responsibility of the user.
+                Sigma Exacta and its creators are not liable for any damages or losses resulting from its use.</p>
         </div>
     </footer>
 
     <script>
         // Función para cambiar entre tabs
         function switchWizardTab(tabId) {
-            // Quitar clase active de todos los botones y contenidos
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.wizard-tab-content').forEach(content => content.classList.remove('active'));
-
-            // Activar el contenido seleccionado
             document.getElementById(tabId).classList.add('active');
-
-            // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchWizardTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
-
-            // Si estamos en la pestaña de Results y el gráfico existe, actualizarlo
             if (tabId === 'tab-results' && window.kanoApp && window.kanoApp.kanoChart) {
                 setTimeout(() => {
                     if (window.kanoApp.kanoChart) {
@@ -1075,36 +1277,89 @@
                     }
                 }, 100);
             }
-
-            // Scroll al top suavemente
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Cargar el header dinámicamente
+        // Funciones globales para botones de eliminación (necesarias por onclick inline)
+        function removeFeature(featureName) {
+            window.kanoApp.removeFeature(featureName);
+        }
+
+        function removeCategory(categoryName) {
+            window.kanoApp.removeCategory(categoryName);
+        }
+
+        function openReviseModal() {
+            document.getElementById('reviseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseApproved').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            const approved = document.getElementById('reviseApproved').value.trim();
+            if (!date || !desc || !by || !approved) {
+                alert('Please fill in all revision fields.');
+                return;
+            }
+            // Aquí podríamos almacenar la revisión si se quisiera (por ahora solo desbloqueamos)
+            window.kanoApp.setReadOnly(false);
+            closeReviseModal();
+            showNotification('Revision registered. Document is now editable.');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px;
+                background-color: var(--performance-color); color: white;
+                padding: 15px 20px; border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000;
+                animation: slideIn 0.3s ease; max-width: 320px; font-weight: 600;
+            `;
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+            `;
+            document.head.appendChild(style);
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease';
+                setTimeout(() => { if (notification.parentNode) document.body.removeChild(notification); }, 500);
+            }, 3000);
+        }
+
+        // Carga del header dinámico
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                // Inicializar el menú después de cargar el header
                 initNavigationMenu();
             })
             .catch(error => console.error('Error loading header:', error));
 
-        // Función para inicializar el menú de navegación
         function initNavigationMenu() {
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
             const toolsDropdownToggle = document.getElementById('tools-dropdown-toggle');
             const toolsDropdownMenu = document.getElementById('tools-dropdown-menu');
             const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
-
             if (navToggle && navMenu) {
                 navToggle.addEventListener('click', () => {
                     navMenu.classList.toggle('show-menu');
                     const icon = navToggle.querySelector('i');
                     icon.classList.toggle('fa-bars');
                     icon.classList.toggle('fa-times');
-
                     if (!navMenu.classList.contains('show-menu') && toolsDropdownContainer) {
                         toolsDropdownMenu.classList.remove('show-submenu');
                         toolsDropdownContainer.classList.remove('active');
@@ -1122,21 +1377,12 @@
             }
         }
 
-        // Functions to remove features/categories declared globally
-        function removeFeature(featureName) {
-            window.kanoApp.removeFeature(featureName);
-        }
-
-        function removeCategory(categoryName) {
-            window.kanoApp.removeCategory(categoryName);
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            // App logic is now encapsulated in an object on the window
             window.kanoApp = {
                 init: function () {
                     this.cacheDOM();
                     this.initChartLogo();
+                    this.isReadOnly = false;
                     this.bindEvents();
                     this.updateUI();
                 },
@@ -1145,10 +1391,16 @@
                     this.featureInput = document.getElementById('featureInput');
                     this.functionalSelect = document.getElementById('functionalSelect');
                     this.dysfunctionalSelect = document.getElementById('dysfunctionalSelect');
+                    this.addFeatureBtn = document.getElementById('addFeatureBtn');
+                    this.globalNewBtn = document.getElementById('globalNewBtn');
+                    this.globalLoadBtn = document.getElementById('globalLoadBtn');
                     this.globalLoadExampleBtn = document.getElementById('globalLoadExampleBtn');
-                    this.globalResetBtn = document.getElementById('globalResetBtn');
+                    this.globalReviseBtn = document.getElementById('globalReviseBtn');
+                    this.globalExportBtn = document.getElementById('globalExportBtn');
+                    this.loadKanoInput = document.getElementById('loadKanoInput');
                     this.calculateBtn = document.getElementById('calculateBtn');
                     this.exportBtn = document.getElementById('exportBtn');
+                    this.readonlyBanner = document.getElementById('readonlyBanner');
                     this.ctx = document.getElementById('kanoChart').getContext('2d');
                     this.summaryTableBody = document.getElementById('summaryTableBody');
                     this.resultsTableBody = document.getElementById('resultsTableBody');
@@ -1158,29 +1410,45 @@
                 // State
                 kanoChart: null,
                 analyzedFeatures: [],
+                isReadOnly: false,
                 logoImage: new Image(),
                 logoLoaded: false,
 
                 // Constants
                 kanoTable: [
-                    ['Q', 'A', 'A', 'A', 'P'], ['R', 'I', 'I', 'I', 'M'], ['R', 'I', 'I', 'I', 'M'],
-                    ['R', 'I', 'I', 'I', 'M'], ['R', 'R', 'R', 'R', 'Q']
+                    ['Q', 'A', 'A', 'A', 'P'],
+                    ['R', 'I', 'I', 'I', 'M'],
+                    ['R', 'I', 'I', 'I', 'M'],
+                    ['R', 'I', 'I', 'I', 'M'],
+                    ['R', 'R', 'R', 'R', 'Q']
                 ],
-                categoryOrder: ['Attractive', 'Performance', 'Must-Be', 'Indifferent', 'Reverse', 'Questionable'],
+                categoryOrder: ['Attractive', 'Performance', 'Must-Be', 'Indifferent', 'Reverse',
+                    'Questionable'],
                 categoryMap: {
-                    'P': 'Performance', 'A': 'Attractive', 'M': 'Must-Be',
-                    'I': 'Indifferent', 'R': 'Reverse', 'Q': 'Questionable'
+                    'P': 'Performance',
+                    'A': 'Attractive',
+                    'M': 'Must-Be',
+                    'I': 'Indifferent',
+                    'R': 'Reverse',
+                    'Q': 'Questionable'
                 },
                 colorMap: {
-                    'Attractive': '#3498db', 'Performance': '#2ecc71', 'Must-Be': '#f1c40f',
-                    'Indifferent': '#95a5a6', 'Reverse': '#9b59b6', 'Questionable': '#e74c3c'
+                    'Attractive': '#3498db',
+                    'Performance': '#2ecc71',
+                    'Must-Be': '#f1c40f',
+                    'Indifferent': '#95a5a6',
+                    'Reverse': '#9b59b6',
+                    'Questionable': '#e74c3c'
                 },
                 iconMap: {
-                    'Attractive': 'fas fa-gem', 'Performance': 'fas fa-chart-line', 'Must-Be': 'fas fa-check-square',
-                    'Indifferent': 'fas fa-meh', 'Reverse': 'fas fa-undo', 'Questionable': 'fas fa-question-circle'
+                    'Attractive': 'fas fa-gem',
+                    'Performance': 'fas fa-chart-line',
+                    'Must-Be': 'fas fa-check-square',
+                    'Indifferent': 'fas fa-meh',
+                    'Reverse': 'fas fa-undo',
+                    'Questionable': 'fas fa-question-circle'
                 },
 
-                // Methods
                 initChartLogo: function () {
                     this.logoImage.src = 'sigma-exacta-icon.jpg';
                     this.logoImage.onload = () => {
@@ -1188,112 +1456,40 @@
                         if (this.kanoChart) this.kanoChart.draw();
                     };
                 },
-                bindEvents: function () {
-                    this.featureForm.addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        const description = this.featureInput.value.trim();
-                        if (description) {
-                            this.addFeatureToList(description, parseInt(this.functionalSelect.value, 10), parseInt(this.dysfunctionalSelect.value, 10));
-                            this.featureInput.value = '';
-                            this.featureInput.focus();
-                        }
-                    });
-
-                    // Botones globales
-                    this.globalLoadExampleBtn.addEventListener('click', () => this.loadExample());
-                    this.globalResetBtn.addEventListener('click', () => this.resetAnalysis());
-
-                    // Botón para calcular y ver resultados
-                    this.calculateBtn.addEventListener('click', () => {
-                        if (this.analyzedFeatures.length === 0) {
-                            alert("Please add at least one feature to calculate results.");
-                        } else {
-                            switchWizardTab('tab-results');
-                        }
-                    });
-
-                    this.exportBtn.addEventListener('click', () => this.exportAnalysis());
-                },
-                addFeatureToList: function (description, funcAnswer, dysfuncAnswer) {
-                    const categoryCode = this.kanoTable[funcAnswer][dysfuncAnswer];
-                    const categoryName = this.categoryMap[categoryCode];
-                    this.analyzedFeatures.push({ name: description, category: categoryName });
-                    this.updateUI();
-
-                    // Mostrar notificación de éxito
-                    this.showNotification(`"${description}" added as ${categoryName}`);
-                },
-                showNotification: function (message) {
-                    // Crear elemento de notificación
-                    const notification = document.createElement('div');
-                    notification.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background-color: var(--performance-color);
-                        color: white;
-                        padding: 15px 20px;
-                        border-radius: 5px;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                        z-index: 1000;
-                        animation: slideIn 0.3s ease;
-                        max-width: 300px;
-                        font-weight: 600;
-                    `;
-
-                    // Animación CSS
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        @keyframes slideIn {
-                            from { transform: translateX(100%); opacity: 0; }
-                            to { transform: translateX(0); opacity: 1; }
-                        }
-                        @keyframes fadeOut {
-                            from { opacity: 1; }
-                            to { opacity: 0; }
-                        }
-                    `;
-                    document.head.appendChild(style);
-
-                    notification.textContent = message;
-                    document.body.appendChild(notification);
-
-                    // Remover después de 3 segundos
-                    setTimeout(() => {
-                        notification.style.animation = 'fadeOut 0.5s ease';
-                        setTimeout(() => {
-                            document.body.removeChild(notification);
-                        }, 500);
-                    }, 3000);
-                },
-                removeFeature: function (featureName) {
-                    this.analyzedFeatures = this.analyzedFeatures.filter(f => f.name !== featureName);
-                    this.updateUI();
-                    this.showNotification(`"${featureName}" removed from analysis`);
-                },
-                removeCategory: function (categoryName) {
-                    this.analyzedFeatures = this.analyzedFeatures.filter(f => f.category !== categoryName);
-                    this.updateUI();
-                    this.showNotification(`All "${categoryName}" features removed`);
-                },
-                resetAnalysis: function () {
-                    if (this.analyzedFeatures.length > 0) {
-                        if (confirm("Are you sure you want to reset all analysis? This will remove all features.")) {
-                            this.analyzedFeatures = [];
-                            this.updateUI();
-                            this.featureInput.focus();
-                            this.showNotification("Analysis reset successfully");
-                        }
+                setReadOnly: function (val) {
+                    this.isReadOnly = val;
+                    if (val) {
+                        this.readonlyBanner.classList.add('show');
+                        // Deshabilitar formulario de agregar feature
+                        this.featureInput.disabled = true;
+                        this.functionalSelect.disabled = true;
+                        this.dysfunctionalSelect.disabled = true;
+                        this.addFeatureBtn.disabled = true;
+                        // También deshabilitar botones de eliminar en la tabla (se manejan en updateUI)
+                    } else {
+                        this.readonlyBanner.classList.remove('show');
+                        this.featureInput.disabled = false;
+                        this.functionalSelect.disabled = false;
+                        this.dysfunctionalSelect.disabled = false;
+                        this.addFeatureBtn.disabled = false;
                     }
+                    // Reconstruir la UI para reflejar el estado de los botones de eliminar
+                    this.updateUI();
                 },
-                // MODIFICADO: Función loadExample mejorada con carga dinámica y scroll
+                newAnalysis: function () {
+                    if (this.analyzedFeatures.length > 0) {
+                        if (!confirm("Start a new analysis? All current data will be lost.")) return;
+                    }
+                    this.analyzedFeatures = [];
+                    this.setReadOnly(false);
+                    this.updateUI();
+                    this.featureInput.focus();
+                    showNotification("New analysis started.");
+                },
                 loadExample: function () {
                     if (this.analyzedFeatures.length > 0) {
-                        if (!confirm("Loading example data will replace your current analysis. Continue?")) {
-                            return;
-                        }
+                        if (!confirm("Loading example data will replace your current analysis. Continue?")) return;
                     }
-
                     this.analyzedFeatures = [];
                     const exampleData = [
                         { name: 'Fast Check-in', func: 0, dysfunc: 4 },
@@ -1307,87 +1503,156 @@
                         { name: 'Confusing Instructions', func: 4, dysfunc: 2 },
                         { name: 'Useless Feature (Liked/Liked)', func: 0, dysfunc: 0 }
                     ];
-
-                    // Cambiar a la pestaña Input & Edit
                     switchWizardTab('tab-input-edit');
-
-                    // Cargar datos dinámicamente con un pequeño retraso entre cada uno
-                    const loadExampleStepByStep = async () => {
+                    const loadStepByStep = async () => {
                         for (let i = 0; i < exampleData.length; i++) {
                             const f = exampleData[i];
                             this.addFeatureToList(f.name, f.func, f.dysfunc);
-
-                            // Pequeño retraso para efecto visual
                             await new Promise(resolve => setTimeout(resolve, 150));
                         }
-
-                        // Después de cargar todos los datos, hacer scroll a la tabla
                         setTimeout(() => {
-                            const tableContainer = document.querySelector('#tab-input-edit .summary-table-container');
-                            if (tableContainer) {
-                                tableContainer.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'start'
-                                });
-                            }
-                            this.showNotification("Example data loaded successfully!");
+                            const tableContainer = document.querySelector(
+                                '#tab-input-edit .summary-table-container');
+                            if (tableContainer) tableContainer.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                            this.setReadOnly(true); // después de cargar ejemplo, modo solo lectura
+                            showNotification("Example data loaded successfully!");
                         }, 300);
                     };
-
-                    loadExampleStepByStep();
+                    loadStepByStep();
                 },
-                // Calcular CS Index
-                calculateCSIndex: function (featuresByCategory) {
-                    // Contar categorías relevantes para CS
-                    const counts = {
-                        'Attractive': featuresByCategory['Attractive'] ? featuresByCategory['Attractive'].length : 0,
-                        'Performance': featuresByCategory['Performance'] ? featuresByCategory['Performance'].length : 0,
-                        'Must-Be': featuresByCategory['Must-Be'] ? featuresByCategory['Must-Be'].length : 0,
-                        'Indifferent': featuresByCategory['Indifferent'] ? featuresByCategory['Indifferent'].length : 0
+                loadFromExcel: function (file) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        try {
+                            const data = new Uint8Array(evt.target.result);
+                            const wb = XLSX.read(data, { type: 'array' });
+                            const ws = wb.Sheets[wb.SheetNames[0]];
+                            const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                            const features = [];
+                            let inFeatures = false;
+                            for (let i = 0; i < rows.length; i++) {
+                                const row = rows[i];
+                                const cell0 = String(row[0] || '').trim();
+                                if (cell0 === '=== FEATURE CATEGORIZATION ===') {
+                                    inFeatures = true;
+                                    continue;
+                                }
+                                if (inFeatures && cell0 === '') break; // primera fila vacía después de features
+                                if (inFeatures && cell0 && row[1]) {
+                                    const name = cell0;
+                                    const category = String(row[1]).trim();
+                                    if (this.categoryOrder.includes(category)) {
+                                        features.push({ name, category });
+                                    }
+                                }
+                            }
+                            if (features.length === 0) {
+                                alert("No valid features found in the selected file.");
+                                return;
+                            }
+                            this.analyzedFeatures = features;
+                            this.setReadOnly(true);
+                            this.updateUI();
+                            switchWizardTab('tab-input-edit');
+                            showNotification("Analysis loaded from Excel (read-only).");
+                        } catch (err) {
+                            console.error(err);
+                            alert("Error reading the Excel file. Ensure it was exported by this tool.");
+                        }
                     };
+                    reader.readAsArrayBuffer(file);
+                },
+                bindEvents: function () {
+                    this.featureForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        if (this.isReadOnly) return;
+                        const description = this.featureInput.value.trim();
+                        if (description) {
+                            this.addFeatureToList(description, parseInt(this.functionalSelect.value,
+                                10), parseInt(this.dysfunctionalSelect.value, 10));
+                            this.featureInput.value = '';
+                            this.featureInput.focus();
+                        }
+                    });
 
-                    const total = counts['Attractive'] + counts['Performance'] + counts['Must-Be'] + counts['Indifferent'];
-
-                    let csPlus = 0;
-                    let csMinus = 0;
-
+                    this.globalNewBtn.addEventListener('click', () => this.newAnalysis());
+                    this.globalLoadBtn.addEventListener('click', () => this.loadKanoInput.click());
+                    this.globalLoadExampleBtn.addEventListener('click', () => this.loadExample());
+                    this.globalReviseBtn.addEventListener('click', () => {
+                        if (!this.isReadOnly) {
+                            alert("The document is already editable.");
+                            return;
+                        }
+                        openReviseModal();
+                    });
+                    this.globalExportBtn.addEventListener('click', () => this.exportAnalysis());
+                    this.loadKanoInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        this.loadFromExcel(file);
+                        e.target.value = '';
+                    });
+                    this.calculateBtn.addEventListener('click', () => {
+                        if (this.analyzedFeatures.length === 0) {
+                            alert("Please add at least one feature to calculate results.");
+                        } else {
+                            switchWizardTab('tab-results');
+                        }
+                    });
+                    this.exportBtn.addEventListener('click', () => this.exportAnalysis());
+                },
+                addFeatureToList: function (description, funcAnswer, dysfuncAnswer) {
+                    const categoryCode = this.kanoTable[funcAnswer][dysfuncAnswer];
+                    const categoryName = this.categoryMap[categoryCode];
+                    this.analyzedFeatures.push({ name: description, category: categoryName });
+                    this.updateUI();
+                    showNotification(`"${description}" added as ${categoryName}`);
+                },
+                removeFeature: function (featureName) {
+                    this.analyzedFeatures = this.analyzedFeatures.filter(f => f.name !== featureName);
+                    this.updateUI();
+                    showNotification(`"${featureName}" removed from analysis`);
+                },
+                removeCategory: function (categoryName) {
+                    this.analyzedFeatures = this.analyzedFeatures.filter(f => f.category !== categoryName);
+                    this.updateUI();
+                    showNotification(`All "${categoryName}" features removed`);
+                },
+                calculateCSIndex: function (featuresByCategory) {
+                    const counts = {
+                        'Attractive': featuresByCategory['Attractive'] ? featuresByCategory['Attractive']
+                            .length : 0,
+                        'Performance': featuresByCategory['Performance'] ? featuresByCategory['Performance']
+                            .length : 0,
+                        'Must-Be': featuresByCategory['Must-Be'] ? featuresByCategory['Must-Be'].length : 0,
+                        'Indifferent': featuresByCategory['Indifferent'] ? featuresByCategory['Indifferent']
+                            .length : 0
+                    };
+                    const total = counts['Attractive'] + counts['Performance'] + counts['Must-Be'] + counts[
+                        'Indifferent'];
+                    let csPlus = 0,
+                        csMinus = 0;
                     if (total > 0) {
-                        // CS+ = (A + O) / (A + O + M + I)
                         csPlus = (counts['Attractive'] + counts['Performance']) / total;
-
-                        // CS- = (O + M) / (A + O + M + I) × (-1)
                         csMinus = (counts['Performance'] + counts['Must-Be']) / total * (-1);
                     }
-
-                    // Formatear a 2 decimales
-                    return {
-                        csPlus: csPlus.toFixed(2),
-                        csMinus: csMinus.toFixed(2),
-                        counts: counts,
-                        total: total
-                    };
+                    return { csPlus: csPlus.toFixed(2), csMinus: csMinus.toFixed(2), counts, total };
                 },
-                // Actualizar display del CS Index
                 updateCSIndex: function (featuresByCategory) {
                     const csData = this.calculateCSIndex(featuresByCategory);
-
                     this.csPlusValue.textContent = csData.csPlus;
                     this.csMinusValue.textContent = csData.csMinus;
-
-                    // Ocultar/mostrar sección CS basado en si hay datos
                     const csContainer = document.getElementById('csIndexContainer');
-                    if (csData.total === 0) {
-                        csContainer.style.display = 'none';
-                    } else {
-                        csContainer.style.display = 'block';
-                    }
+                    csContainer.style.display = csData.total === 0 ? 'none' : 'block';
                 },
                 updateUI: function () {
                     const featuresByCategory = this.analyzedFeatures.reduce((acc, feature) => {
                         (acc[feature.category] = acc[feature.category] || []).push(feature);
                         return acc;
                     }, {});
-
                     this.drawChart(featuresByCategory);
                     this.updateSummaryTable(featuresByCategory);
                     this.updateResultsTable(featuresByCategory);
@@ -1398,106 +1663,87 @@
                     const jitterY = (Math.random() - 0.5) * 0.4;
                     let x, y;
                     switch (category) {
-                        case 'Attractive': x = 0.5 + jitterX; y = 0.7 + jitterY; break;
-                        case 'Performance': x = 0.7 + jitterX * 0.5; y = 0.7 + jitterY * 0.5; break;
-                        case 'Must-Be': x = -0.7 + jitterX; y = -0.7 + jitterY; break;
-                        case 'Indifferent': x = 0 + jitterX * 1.5; y = 0 + jitterY * 0.3; break;
-                        case 'Reverse': x = -0.7 + jitterX; y = 0.7 + jitterY; break;
-                        case 'Questionable': x = 0 + jitterX; y = -0.9 + jitterY * 0.2; break;
-                        default: x = 0; y = 0; break;
+                        case 'Attractive':
+                            x = 0.5 + jitterX;
+                            y = 0.7 + jitterY;
+                            break;
+                        case 'Performance':
+                            x = 0.7 + jitterX * 0.5;
+                            y = 0.7 + jitterY * 0.5;
+                            break;
+                        case 'Must-Be':
+                            x = -0.7 + jitterX;
+                            y = -0.7 + jitterY;
+                            break;
+                        case 'Indifferent':
+                            x = 0 + jitterX * 1.5;
+                            y = 0 + jitterY * 0.3;
+                            break;
+                        case 'Reverse':
+                            x = -0.7 + jitterX;
+                            y = 0.7 + jitterY;
+                            break;
+                        case 'Questionable':
+                            x = 0 + jitterX;
+                            y = -0.9 + jitterY * 0.2;
+                            break;
+                        default:
+                            x = 0;
+                            y = 0;
+                            break;
                     }
                     return { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) };
                 },
-                // CORRECCIÓN DE CURVAS TEÓRICAS DEL MODELO KANO CON OFFSET
                 drawChart: function (featuresByCategory) {
                     if (this.kanoChart) this.kanoChart.destroy();
-
-                    // Generar puntos para las curvas teóricas CON OFFSET
                     const datasets = [
-                        // Curva Atractiva (Attractive) - Azul - CON OFFSET
                         {
-                            type: 'line',
-                            data: Array.from({ length: 50 }, (_, i) => {
-                                const x = -1 + (2 / 49) * i;
-                                // Función cuadrática con offset: y = 0.5*(x+0.8)^2 + 0.1
-                                // Evita intersección con diagonales y ejes centrales
-                                return { x: x, y: 0.5 * Math.pow(x + 0.8, 2) + 0.1 };
+                            type: 'line', data: Array.from({ length: 50 }, (_, i) => {
+                                const x = -1 + (2 /
+                                    49) * i; return { x, y: 0.5 * Math.pow(x + 0.8, 2) + 0.1 };
                             }),
-                            borderColor: 'rgba(52, 152, 219, 0.5)',
-                            borderWidth: 3,
-                            pointRadius: 0,
+                            borderColor: 'rgba(52, 152, 219, 0.5)', borderWidth: 3, pointRadius: 0,
                             tension: 0.4
                         },
-                        // Línea Performance (One-dimensional) - Verde
                         {
-                            type: 'line',
-                            data: Array.from({ length: 50 }, (_, i) => {
-                                const x = -1 + (2 / 49) * i;
-                                return { x: x, y: x };
-                            }),
-                            borderColor: 'rgba(46, 204, 113, 0.5)',
-                            borderWidth: 3,
-                            pointRadius: 0
+                            type: 'line', data: Array.from({ length: 50 }, (_, i) => {
+                                const x = -1 + (2 /
+                                    49) * i; return { x, y: x };
+                            }), borderColor: 'rgba(46, 204, 113, 0.5)',
+                            borderWidth: 3, pointRadius: 0
                         },
-                        // Curva Must-Be (Basic) - Amarilla - CON OFFSET
                         {
-                            type: 'line',
-                            data: Array.from({ length: 50 }, (_, i) => {
-                                const x = -1 + (2 / 49) * i;
-                                // Función cuadrática con offset: y = -0.5*(1.2-x)^2 - 0.1
-                                // Evita intersección con diagonales y ejes centrales
-                                return { x: x, y: -0.5 * Math.pow(1.2 - x, 2) - 0.1 };
+                            type: 'line', data: Array.from({ length: 50 }, (_, i) => {
+                                const x = -1 + (2 /
+                                    49) * i; return { x, y: -0.5 * Math.pow(1.2 - x, 2) - 0.1 };
                             }),
-                            borderColor: 'rgba(241, 196, 15, 0.5)',
-                            borderWidth: 3,
-                            pointRadius: 0,
+                            borderColor: 'rgba(241, 196, 15, 0.5)', borderWidth: 3, pointRadius: 0,
                             tension: 0.4
                         },
-                        // Línea Reverse (Inversa) - Púrpura
                         {
-                            type: 'line',
-                            data: Array.from({ length: 50 }, (_, i) => {
-                                const x = -1 + (2 / 49) * i;
-                                return { x: x, y: -x };
-                            }),
-                            borderColor: 'rgba(155, 89, 182, 0.5)',
-                            borderWidth: 3,
-                            pointRadius: 0
+                            type: 'line', data: Array.from({ length: 50 }, (_, i) => {
+                                const x = -1 + (2 /
+                                    49) * i; return { x, y: -x };
+                            }), borderColor: 'rgba(155, 89, 182, 0.5)',
+                            borderWidth: 3, pointRadius: 0
                         },
-                        // EJE Y (x=0) - Negro grueso (2px) - MODIFICADO
                         {
-                            type: 'line',
-                            data: [
-                                { x: 0, y: -1.1 },
-                                { x: 0, y: 1.1 }
-                            ],
-                            borderColor: 'black',
-                            borderWidth: 2,  // Cambiado de 10 a 2
-                            pointRadius: 0,
-                            tension: 0
+                            type: 'line', data: [{ x: 0, y: -1.1 }, { x: 0, y: 1.1 }], borderColor: 'black',
+                            borderWidth: 2, pointRadius: 0, tension: 0
                         },
-                        // EJE X (y=0) - Negro grueso (2px) - MODIFICADO
                         {
-                            type: 'line',
-                            data: [
-                                { x: -1.1, y: 0 },
-                                { x: 1.1, y: 0 }
-                            ],
-                            borderColor: 'black',
-                            borderWidth: 2,  // Cambiado de 10 a 2
-                            pointRadius: 0,
-                            tension: 0
+                            type: 'line', data: [{ x: -1.1, y: 0 }, { x: 1.1, y: 0 }], borderColor: 'black',
+                            borderWidth: 2, pointRadius: 0, tension: 0
                         }
                     ];
-
-                    // Agregar puntos de características
                     for (const category in featuresByCategory) {
                         if (featuresByCategory.hasOwnProperty(category)) {
                             datasets.push({
                                 type: 'scatter',
                                 label: category,
                                 data: featuresByCategory[category].map(feature => ({
-                                    ...this.generatePointsForCategory(category),
+                                    ...this
+                                        .generatePointsForCategory(category),
                                     featureName: feature.name
                                 })),
                                 backgroundColor: this.colorMap[category] || '#000',
@@ -1506,7 +1752,6 @@
                             });
                         }
                     }
-
                     const logoPlugin = {
                         id: 'customLogo',
                         afterDraw: (chart) => {
@@ -1515,7 +1760,6 @@
                                 const logoSize = 60;
                                 const x = chart.chartArea.left + 15;
                                 const y = chart.chartArea.top + 15;
-
                                 ctx.save();
                                 ctx.fillStyle = 'white';
                                 ctx.fillRect(x, y, logoSize, logoSize);
@@ -1525,7 +1769,6 @@
                             }
                         }
                     };
-
                     this.kanoChart = new Chart(this.ctx, {
                         data: { datasets },
                         plugins: [logoPlugin],
@@ -1539,33 +1782,25 @@
                                     min: -1.1,
                                     max: 1.1,
                                     title: {
-                                        display: true,
-                                        text: '← Not Fulfilled · Fulfilled →',
+                                        display: true, text: '← Not Fulfilled · Fulfilled →',
                                         font: { size: 14, weight: 'bold', color: 'black' }
                                     },
                                     grid: {
-                                        color: 'rgba(0, 0, 0, 0.05)',
-                                        drawBorder: false,
-                                        drawOnChartArea: true,
+                                        color: 'rgba(0, 0, 0, 0.05)', drawBorder: false,
+                                        drawOnChartArea: true
                                     },
                                     ticks: {
-                                        display: true,
-                                        color: 'black',
-                                        font: {
+                                        display: true, color: 'black', font: {
                                             size: 12,
                                             weight: 'bold'
+                                        }, callback: function (value) {
+                                            if (
+                                                value === -1) return "Totally Not Fulfilled"; if (
+                                                value === -0.5) return "-0.5"; if (value === 0)
+                                                return "Neutral"; if (value === 0.5) return "0.5"; if (
+                                                value === 1) return "Totally Fulfilled"; return "";
                                         },
-                                        // Valores específicos para el eje X
-                                        callback: function (value) {
-                                            if (value === -1) return "Totally Not Fulfilled";
-                                            if (value === -0.5) return "-0.5";
-                                            if (value === 0) return "Neutral";
-                                            if (value === 0.5) return "0.5";
-                                            if (value === 1) return "Totally Fulfilled";
-                                            return "";
-                                        },
-                                        stepSize: 0.5,
-                                        padding: 10
+                                        stepSize: 0.5, padding: 10
                                     }
                                 },
                                 y: {
@@ -1574,50 +1809,43 @@
                                     max: 1.1,
                                     title: {
                                         display: true,
-                                        text: '← Dissatisfaction · Satisfaction →',
-                                        font: { size: 14, weight: 'bold', color: 'black' }
+                                        text: '← Dissatisfaction · Satisfaction →', font: {
+                                            size: 14,
+                                            weight: 'bold', color: 'black'
+                                        }
                                     },
                                     grid: {
-                                        color: 'rgba(0, 0, 0, 0.05)',
-                                        drawBorder: false,
-                                        drawOnChartArea: true,
+                                        color: 'rgba(0, 0, 0, 0.05)', drawBorder: false,
+                                        drawOnChartArea: true
                                     },
                                     ticks: {
-                                        display: true,
-                                        color: 'black',
-                                        font: {
+                                        display: true, color: 'black', font: {
                                             size: 12,
                                             weight: 'bold'
+                                        }, callback: function (value) {
+                                            if (
+                                                value === -1) return "Totally Dissatisfied"; if (
+                                                value === -0.5) return "-0.5"; if (value === 0)
+                                                return "Neutral"; if (value === 0.5) return "0.5"; if (
+                                                value === 1) return "Totally Satisfied"; return "";
                                         },
-                                        // Valores específicos para el eje Y
-                                        callback: function (value) {
-                                            if (value === -1) return "Totally Dissatisfied";
-                                            if (value === -0.5) return "-0.5";
-                                            if (value === 0) return "Neutral";
-                                            if (value === 0.5) return "0.5";
-                                            if (value === 1) return "Totally Satisfied";
-                                            return "";
-                                        },
-                                        stepSize: 0.5,
-                                        padding: 10
+                                        stepSize: 0.5, padding: 10
                                     }
                                 }
                             },
                             plugins: {
                                 tooltip: {
                                     callbacks: {
-                                        label: (c) => c.dataset.type === 'scatter' ? ` ${c.raw.featureName}` : null,
-                                        title: (c) => c[0].dataset.type === 'scatter' ? c[0].dataset.label : null
+                                        label: (c) => c.dataset.type === 'scatter' ?
+                                            ` ${c.raw.featureName}` : null, title: (c) => c[0].dataset
+                                                .type === 'scatter' ? c[0].dataset.label : null
                                     }
                                 },
-                                legend: {
-                                    display: false  // LEGEND ELIMINADA
-                                }
+                                legend: { display: false }
                             }
                         }
                     });
                 },
-                // Actualizar tabla editable en Input & Edit tab
                 updateSummaryTable: function (featuresByCategory) {
                     this.summaryTableBody.innerHTML = '';
                     if (this.analyzedFeatures.length === 0) {
@@ -1625,41 +1853,35 @@
                         const cell = row.insertCell();
                         cell.colSpan = 2;
                         cell.className = 'no-features-message';
-                        cell.textContent = 'No features analyzed yet. Add a feature in the form above to get started.';
+                        cell.textContent =
+                            'No features analyzed yet. Add a feature in the form above to get started.';
                         return;
                     }
-
                     this.categoryOrder.forEach(category => {
                         const features = featuresByCategory[category];
                         if (features && features.length > 0) {
                             const row = this.summaryTableBody.insertRow();
                             const categoryCell = row.insertCell();
                             categoryCell.className = 'category-cell';
-
                             const escapedCategory = category.replace(/'/g, "\\'");
                             categoryCell.innerHTML = `
-                      <div class="category-header">
-                        <div>
-                          <i class="${this.iconMap[category]}" style="color: ${this.colorMap[category]}"></i>
-                          <span style="color: ${this.colorMap[category]}">${category}</span>
-                          <span style="font-size: 0.85rem; color: #777; margin-left: 8px;">(${features.length})</span>
-                        </div>
-                        <button class="remove-category-btn" onclick="removeCategory('${escapedCategory}')" title="Remove all in ${category}">
-                          <i class="fas fa-trash-alt"></i>
-                        </button>
-                      </div>
-                    `;
-
+                        <div class="category-header">
+                          <div>
+                            <i class="${this.iconMap[category]}" style="color: ${this.colorMap[category]}"></i>
+                            <span style="color: ${this.colorMap[category]}">${category}</span>
+                            <span style="font-size: 0.85rem; color: #777; margin-left: 8px;">(${features.length})</span>
+                          </div>
+                          ${!this.isReadOnly ? `<button class="remove-category-btn" onclick="removeCategory('${escapedCategory}')" title="Remove all in ${category}"><i class="fas fa-trash-alt"></i></button>` : ''}
+                        </div>`;
                             const featuresCell = row.insertCell();
                             featuresCell.className = 'features-cell';
                             featuresCell.innerHTML = features.map(f => {
                                 const escapedName = f.name.replace(/'/g, "\\'");
-                                return `<p><span>${f.name}</span> <button class="remove-btn" onclick="removeFeature('${escapedName}')" title="Remove feature"><i class="fas fa-trash-alt"></i></button></p>`;
+                                return `<p><span>${f.name}</span> ${!this.isReadOnly ? `<button class="remove-btn" onclick="removeFeature('${escapedName}')" title="Remove feature"><i class="fas fa-trash-alt"></i></button>` : ''}</p>`;
                             }).join('');
                         }
                     });
                 },
-                // Actualizar tabla de solo lectura en Results tab
                 updateResultsTable: function (featuresByCategory) {
                     this.resultsTableBody.innerHTML = '';
                     if (this.analyzedFeatures.length === 0) {
@@ -1667,32 +1889,28 @@
                         const cell = row.insertCell();
                         cell.colSpan = 2;
                         cell.className = 'no-features-message';
-                        cell.textContent = 'No features analyzed yet. Add a feature in the Input & Edit tab to get started.';
+                        cell.textContent =
+                            'No features analyzed yet. Add a feature in the Input & Edit tab to get started.';
                         return;
                     }
-
                     this.categoryOrder.forEach(category => {
                         const features = featuresByCategory[category];
                         if (features && features.length > 0) {
                             const row = this.resultsTableBody.insertRow();
                             const categoryCell = row.insertCell();
                             categoryCell.className = 'category-cell';
-
                             categoryCell.innerHTML = `
-                      <div class="category-header">
-                        <div>
-                          <i class="${this.iconMap[category]}" style="color: ${this.colorMap[category]}"></i>
-                          <span style="color: ${this.colorMap[category]}">${category}</span>
-                          <span style="font-size: 0.85rem; color: #777; margin-left: 8px;">(${features.length})</span>
-                        </div>
-                      </div>
-                    `;
-
+                        <div class="category-header">
+                          <div>
+                            <i class="${this.iconMap[category]}" style="color: ${this.colorMap[category]}"></i>
+                            <span style="color: ${this.colorMap[category]}">${category}</span>
+                            <span style="font-size: 0.85rem; color: #777; margin-left: 8px;">(${features.length})</span>
+                          </div>
+                        </div>`;
                             const featuresCell = row.insertCell();
                             featuresCell.className = 'features-cell';
-                            featuresCell.innerHTML = features.map(f => {
-                                return `<p class="readonly"><span>${f.name}</span></p>`;
-                            }).join('');
+                            featuresCell.innerHTML = features.map(f =>
+                                `<p class="readonly"><span>${f.name}</span></p>`).join('');
                         }
                     });
                 },
@@ -1701,42 +1919,26 @@
                         alert("⚠️ No features to export. Please analyze some features first.");
                         return;
                     }
-
-                    // Calcular CS index para incluirlo en el export
                     const featuresByCategory = this.analyzedFeatures.reduce((acc, feature) => {
                         (acc[feature.category] = acc[feature.category] || []).push(feature);
                         return acc;
                     }, {});
                     const csData = this.calculateCSIndex(featuresByCategory);
-
-                    // Crear datos para exportar
                     let featuresData = [];
-
-                    // Encabezado
                     featuresData.push({
                         'Feature': '=== KANO MODEL ANALYSIS ===',
                         'Kano Category': 'Sigma Exacta Tool'
                     });
                     featuresData.push({ 'Feature': '', 'Kano Category': '' });
-
-                    // Características categorizadas
                     featuresData.push({
                         'Feature': '=== FEATURE CATEGORIZATION ===',
                         'Kano Category': ''
                     });
-
-                    // Agregar cada característica
-                    this.analyzedFeatures.forEach(f => {
-                        featuresData.push({
-                            'Feature': f.name,
-                            'Kano Category': f.category
-                        });
-                    });
-
-                    // Espacio
+                    this.analyzedFeatures.forEach(f => featuresData.push({
+                        'Feature': f.name,
+                        'Kano Category': f.category
+                    }));
                     featuresData.push({ 'Feature': '', 'Kano Category': '' });
-
-                    // CS Index
                     featuresData.push({
                         'Feature': '=== CUSTOMER SATISFACTION INDEX ===',
                         'Kano Category': ''
@@ -1750,12 +1952,7 @@
                         'Kano Category': csData.csMinus
                     });
                     featuresData.push({ 'Feature': '', 'Kano Category': '' });
-
-                    // Conteo de categorías
-                    featuresData.push({
-                        'Feature': '=== CATEGORY COUNTS ===',
-                        'Kano Category': ''
-                    });
+                    featuresData.push({ 'Feature': '=== CATEGORY COUNTS ===', 'Kano Category': '' });
                     featuresData.push({
                         'Feature': 'Attractive (A)',
                         'Kano Category': csData.counts['Attractive']
@@ -1764,20 +1961,12 @@
                         'Feature': 'Performance (O)',
                         'Kano Category': csData.counts['Performance']
                     });
-                    featuresData.push({
-                        'Feature': 'Must-Be (M)',
-                        'Kano Category': csData.counts['Must-Be']
-                    });
+                    featuresData.push({ 'Feature': 'Must-Be (M)', 'Kano Category': csData.counts['Must-Be'] });
                     featuresData.push({
                         'Feature': 'Indifferent (I)',
                         'Kano Category': csData.counts['Indifferent']
                     });
-                    featuresData.push({
-                        'Feature': 'Total Features',
-                        'Kano Category': csData.total
-                    });
-
-                    // Información del análisis
+                    featuresData.push({ 'Feature': 'Total Features', 'Kano Category': csData.total });
                     featuresData.push({ 'Feature': '', 'Kano Category': '' });
                     featuresData.push({
                         'Feature': '=== ANALYSIS INFORMATION ===',
@@ -1795,20 +1984,12 @@
                         'Feature': 'Total Features Analyzed',
                         'Kano Category': this.analyzedFeatures.length
                     });
-
                     const ws = XLSX.utils.json_to_sheet(featuresData);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Kano Analysis');
-
-                    // Ajustar el ancho de las columnas
-                    ws['!cols'] = [
-                        { wch: 40 },  // Columna Feature
-                        { wch: 25 }   // Columna Kano Category
-                    ];
-
+                    ws['!cols'] = [{ wch: 40 }, { wch: 25 }];
                     XLSX.writeFile(wb, `Kano_Analysis_${new Date().toISOString().slice(0, 10)}.xlsx`);
-
-                    this.showNotification("Full analysis exported successfully!");
+                    showNotification("Full analysis exported successfully!");
                 }
             };
 
@@ -1818,7 +1999,6 @@
 
     <script src="dexie.min.js"></script>
     <script src="db-sigma.js"></script>
-
 </body>
 
 </html>
