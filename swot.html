@@ -5,13 +5,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://sigmaexacta.com/swot" />
-    <title>Free SWOT Analysis Matrix Tool | Sigma Exacta</title>
+    <title>SWOT Analysis Matrix Tool | Sigma Exacta</title>
     <meta name="description"
         content="Free SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis interactive tool with cross-analysis strategy generator (SO, ST, WO, WT). Export to Excel includes both matrix and strategic actions.">
     <meta name="keywords"
         content="Open Source, Free Software, SWOT analysis, SWOT matrix, SWOT tool, strategic planning, strengths, weaknesses, opportunities, threats, cross-analysis, TOWS matrix, strategy generator, free online swot generator, export to excel">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -275,6 +276,194 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
+        .main-action-buttons .btn-new {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .main-action-buttons .btn-new:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-load {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .main-action-buttons .btn-load:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-revise {
+            background-color: #6c5ce7;
+            color: white;
+        }
+
+        .main-action-buttons .btn-revise:hover {
+            background-color: #5849c2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-save:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Read-only mode banner */
+        .readonly-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 800px;
+            font-size: 0.9rem;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .readonly-banner.show {
+            display: block;
+        }
+
+        /* Revise Modal */
+        .revise-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .revise-modal.open {
+            display: flex;
+        }
+
+        .revise-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .revise-modal-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #6c5ce7;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .revise-modal-box h3 i {
+            color: #6c5ce7;
+        }
+
+        .revise-field {
+            margin-bottom: 1rem;
+        }
+
+        .revise-field label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .revise-field input {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .revise-field input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .revise-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise {
+            background: none;
+            border: 1px solid #ccc;
+            color: #555;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-cancel-revise:hover {
+            background: #f5f5f5;
+        }
+
+        .revise-modal-footer .btn-confirm-revise {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .revise-modal-footer .btn-confirm-revise:hover {
+            background: #5849c2;
+        }
+
+        /* Read-only: dim inputs */
+        body.readonly-mode .add-item-container input,
+        body.readonly-mode .add-item-container button {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        body.readonly-mode .btn-delete {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* Hide edit icon in read-only mode */
+        body.readonly-mode .swot-edit-icon {
+            display: none;
+        }
+
         .block,
         .content-block {
             border: 1px solid #ddd;
@@ -500,6 +689,20 @@
 
         .btn-delete:hover {
             background-color: #a5acaf;
+        }
+
+        /* Edit icon style */
+        .swot-edit-icon {
+            color: #3498db;
+            margin-left: auto;
+            padding: 0 0.3rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .swot-edit-icon:hover {
+            color: #2980b9;
         }
 
         .swot-grid {
@@ -903,22 +1106,64 @@
         </nav>
     </noscript>
 
+    <!-- Revise Modal -->
+    <div class="revise-modal" id="reviseModal">
+        <div class="revise-modal-box">
+            <h3><i class="fas fa-edit"></i> Register New Revision</h3>
+            <p style="color:#555;font-size:0.92rem;margin-top:-0.5rem;margin-bottom:1.25rem;">Complete the revision
+                details below. The document will be unlocked for editing.</p>
+            <div class="revise-field">
+                <label for="reviseDate">Rev. Date <span style="color:#e74c3c;">*</span></label>
+                <input type="date" id="reviseDate">
+            </div>
+            <div class="revise-field">
+                <label for="reviseDesc">Description of Change <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseDesc" placeholder="e.g. Rev B — Updated strategic priorities">
+            </div>
+            <div class="revise-field">
+                <label for="reviseBy">Changed By <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="reviseBy" placeholder="Name / Department">
+            </div>
+            <div class="revise-modal-footer">
+                <button class="btn-cancel-revise" onclick="closeReviseModal()">Cancel</button>
+                <button class="btn-confirm-revise" onclick="confirmRevise()"><i class="fas fa-check"></i> Confirm &amp;
+                    Enable Editing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for Load -->
+    <input type="file" id="loadSwotInput" accept=".json" style="display:none;">
+
     <main class="main-content-wrapper">
         <div class="content-container">
             <header class="header">
                 <h1><i class="fas fa-puzzle-piece"></i> Strengths, Weaknesses, Opportunities and Threats (SWOT) Analysis
-                    Matrix</h1>
+                    Matrix Generator</h1>
                 <p>Identify internal and external factors and generate actionable cross-analysis strategies (SO, ST, WO,
-                    WT). Export includes both matrix and strategic actions.</p>
+                    WT). Share your data from matrix and strategic actions.</p>
             </header>
 
             <div class="main-action-buttons">
+                <button id="globalNewBtn" class="btn-new">
+                    <i class="fas fa-file"></i> New
+                </button>
+                <button id="globalLoadBtn" class="btn-load">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
                 <button id="globalLoadExampleBtn" class="btn-example">
-                    <i class="fas fa-magic"></i> Load Example
+                    <i class="fas fa-play-circle"></i> Load Example
                 </button>
-                <button id="globalResetBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Reset Matrix
+                <button id="globalReviseBtn" class="btn-revise">
+                    <i class="fas fa-edit"></i> Revise
                 </button>
+                <button id="globalSaveBtn" class="btn-save">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+            <div class="readonly-banner" id="readonlyBanner">
+                <i class="fas fa-lock"></i> Read-only mode — Click <strong>Revise</strong> to register a revision and
+                unlock editing.
             </div>
 
             <div class="tabs-container">
@@ -981,10 +1226,12 @@
                                 <ul>
                                     <li><strong>Add items</strong> in the SWOT Matrix tab.</li>
                                     <li><strong>Load example</strong> to see a filled matrix.</li>
-                                    <li><strong>Generate Strategies</strong> in Results tab to create SO, ST, WO, WT
-                                        action plans (Maxi-Maxi, Maxi-Mini, Mini-Maxi, Mini-Mini).</li>
-                                    <li><strong>Export to Excel</strong> to download both your SWOT matrix and the
-                                        strategic actions.</li>
+                                    <li><strong>Results & Strategies</strong> update automatically while you edit the
+                                        matrix.</li>
+                                    <li><strong>Revise</strong> to unlock editing; use the blue pencil icon to rename
+                                        items.</li>
+                                    <li><strong>Save</strong> exports your data as JSON (Excel export previously
+                                        available in results tab has been removed).</li>
                                 </ul>
                             </div>
                         </div>
@@ -1049,23 +1296,16 @@
                     <div class="tab-content-wrapper">
                         <div class="content-block">
                             <h2><i class="fas fa-chart-bar"></i> SWOT Analysis Results & Cross-Strategies</h2>
-                            <p>View your SWOT items and generate powerful strategic actions: <strong>SO (Maxi-Maxi), ST
-                                    (Maxi-Mini), WO (Mini-Maxi), WT (Mini-Mini)</strong>.</p>
-                            <div class="result-actions">
-                                <button id="listResultsBtn" class="btn-success"><i class="fas fa-list"></i> List
-                                    Results</button>
-                                <button id="generateStrategiesBtn" class="btn-primary"><i class="fas fa-brain"></i>
-                                    Generate Cross-Analysis Strategies</button>
-                                <button id="exportBtnResults" class="btn-primary"><i class="fas fa-file-excel"></i>
-                                    Export to Excel</button>
-                            </div>
+                            <p>View your SWOT items and powerful strategic actions: <strong>SO (Maxi-Maxi), ST
+                                    (Maxi-Mini), WO (Mini-Maxi), WT (Mini-Mini)</strong>. These update automatically as
+                                you modify the matrix.</p>
                             <div id="resultsContainer" class="results-grid">
                                 <div class="no-results-message"
                                     style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;">
                                     <i class="fas fa-info-circle"
                                         style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                                     <h3>No Results Displayed</h3>
-                                    <p>Click "List Results" to show your current SWOT items.</p>
+                                    <p>Add items in the SWOT Matrix tab to see them here.</p>
                                 </div>
                             </div>
                             <div id="strategiesContainer" class="strategies-grid" style="margin-top: 2rem;"></div>
@@ -1107,111 +1347,374 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        fetch('header.html').then(res => res.text()).then(data => { document.getElementById('header-container').innerHTML = data; initNavigation(); }).catch(e => console.error('Header error:', e));
-        function initNavigation() { const toggle = document.getElementById('nav-toggle'); const menu = document.getElementById('nav-menu'); if (toggle && menu) toggle.addEventListener('click', () => { menu.classList.toggle('show-menu'); }); }
+        fetch('header.html').then(res => res.text()).then(data => {
+            document.getElementById('header-container')
+            .innerHTML = data;
+            initNavigation();
+        }).catch(e => console.error('Header error:', e));
 
-        function showToast(msg, type = 'success') { const toast = document.getElementById('toast-notification'); toast.textContent = msg; toast.className = 'show'; toast.classList.add(type); setTimeout(() => toast.classList.remove('show'), 3000); }
-
-        function getItemsFromList(categoryId) { return Array.from(document.querySelectorAll(`#${categoryId}List .swot-item > span`)).map(s => s.textContent.trim()).filter(t => t); }
-
-        function addEntry(category, point) { const container = document.getElementById(`${category}List`); if (!container || !point) return; const item = document.createElement('div'); item.className = `swot-item swot-item-${category}`; item.innerHTML = `<span>${point.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span><button class="btn-delete" title="Delete Item"><i class="fas fa-times"></i></button>`; container.appendChild(item); }
-
-        function resetAll(confirmAction = true) { const doit = () => { ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => { document.getElementById(`${cat}List`).innerHTML = ''; document.getElementById(`${cat}-input`).value = ''; }); const resultsContainer = document.getElementById('resultsContainer'); resultsContainer.innerHTML = `<div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;"><i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i><h3>No Results Displayed</h3><p>Click "List Results" to show your current SWOT items.</p></div>`; document.getElementById('strategiesContainer').innerHTML = ''; if (confirmAction) showToast('SWOT Matrix reset.', 'info'); }; if (confirmAction && confirm('Are you sure you want to reset the entire SWOT matrix?')) doit(); else if (!confirmAction) doit(); }
-
-        function displayResults() {
-            const cats = [{ id: 'strengths', name: 'Strengths', icon: 'fa-thumbs-up', cls: 'strengths' }, { id: 'weaknesses', name: 'Weaknesses', icon: 'fa-thumbs-down', cls: 'weaknesses' }, { id: 'opportunities', name: 'Opportunities', icon: 'fa-search-plus', cls: 'opportunities' }, { id: 'threats', name: 'Threats', icon: 'fa-bolt', cls: 'threats' }];
-            let html = ''; let hasData = false;
-            cats.forEach(c => { const items = getItemsFromList(c.id); if (items.length) { hasData = true; html += `<div class="result-category ${c.cls}"><h3><i class="fas ${c.icon}"></i> ${c.name} (${items.length})</h3><ul class="result-list">${items.map(it => `<li>${it.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</li>`).join('')}</ul></div>`; } });
-            const resultsContainer = document.getElementById('resultsContainer');
-            if (hasData) resultsContainer.innerHTML = html;
-            else resultsContainer.innerHTML = `<div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;"><i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i><h3>No Data Available</h3><p>No SWOT items found. Add items in the Matrix tab or load an example.</p></div>`;
+        function initNavigation() {
+            const toggle = document.getElementById('nav-toggle'); const menu = document
+                .getElementById('nav-menu'); if (toggle && menu) toggle.addEventListener('click', () => {
+                    menu
+                        .classList.toggle('show-menu');
+                });
         }
 
-        function generateCrossStrategies() {
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast-notification'); toast
+                .textContent = msg;
+            toast.className = 'show';
+            toast.classList.add(type);
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function getItemsFromList(categoryId) {
+            return Array.from(document.querySelectorAll(
+                `#${categoryId}List .swot-item > span`)).map(s => s.textContent.trim()).filter(t => t);
+        }
+
+        function addEntry(category, point) {
+            const container = document.getElementById(`${category}List`);
+            if (!container || !point) return;
+            const item = document.createElement('div');
+            item.className = `swot-item swot-item-${category}`;
+            item.innerHTML =
+                `<span>${point.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span><i class="fas fa-pen swot-edit-icon" title="Edit item"></i><button class="btn-delete" title="Delete Item"><i class="fas fa-times"></i></button>`;
+            container.appendChild(item);
+        }
+
+        function resetAll(confirmAction = true) {
+            const doit = () => {
+                ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => {
+                    document.getElementById(`${cat}List`).innerHTML = '';
+                    document.getElementById(`${cat}-input`).value = '';
+                });
+                updateResultsTab();
+                if (confirmAction) showToast('SWOT Matrix reset.', 'info');
+            };
+            if (confirmAction && confirm('Are you sure you want to reset the entire SWOT matrix?')) doit();
+            else if (!confirmAction) doit();
+        }
+
+        /* =========================================================
+           AUTOMATIC RESULTS UPDATE – mirrors displayResults & generateCrossStrategies
+        ========================================================= */
+        function updateResultsTab() {
             const strengths = getItemsFromList('strengths');
             const weaknesses = getItemsFromList('weaknesses');
             const opportunities = getItemsFromList('opportunities');
             const threats = getItemsFromList('threats');
-            const so = [], st = [], wo = [], wt = [];
-            strengths.forEach(s => { opportunities.forEach(o => { so.push(`Leverage "${s}" to capitalize on "${o}".`); }); });
-            strengths.forEach(s => { threats.forEach(t => { st.push(`Use "${s}" to mitigate or avoid "${t}".`); }); });
-            weaknesses.forEach(w => { opportunities.forEach(o => { wo.push(`Overcome "${w}" by exploiting "${o}".`); }); });
-            weaknesses.forEach(w => { threats.forEach(t => { wt.push(`Minimize "${w}" and defend against "${t}".`); }); });
+
+            // ----- Results grid -----
+            const cats = [
+                { id: 'strengths', name: 'Strengths', icon: 'fa-thumbs-up', cls: 'strengths' },
+                { id: 'weaknesses', name: 'Weaknesses', icon: 'fa-thumbs-down', cls: 'weaknesses' },
+                { id: 'opportunities', name: 'Opportunities', icon: 'fa-search-plus', cls: 'opportunities' },
+                { id: 'threats', name: 'Threats', icon: 'fa-bolt', cls: 'threats' }
+            ];
+            let htmlResults = '';
+            let hasData = false;
+            cats.forEach(c => {
+                const items = getItemsFromList(c.id);
+                if (items.length) {
+                    hasData = true;
+                    htmlResults +=
+                        `<div class="result-category ${c.cls}"><h3><i class="fas ${c.icon}"></i> ${c.name} (${items.length})</h3><ul class="result-list">${items.map(it => `<li>${it.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</li>`).join('')}</ul></div>`;
+                }
+            });
+            document.getElementById('resultsContainer').innerHTML = hasData ? htmlResults : `
+                <div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;">
+                    <i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <h3>No Data Available</h3>
+                    <p>Add items in the SWOT Matrix tab to see them here.</p>
+                </div>`;
+
+            // ----- Strategies grid -----
+            const so = [],
+                st = [],
+                wo = [],
+                wt = [];
+            strengths.forEach(s => {
+                opportunities.forEach(o => {
+                    so.push(
+                        `Leverage "${s}" to capitalize on "${o}".`);
+                });
+            });
+            strengths.forEach(s => {
+                threats.forEach(t => {
+                    st.push(
+                        `Use "${s}" to mitigate or avoid "${t}".`);
+                });
+            });
+            weaknesses.forEach(w => {
+                opportunities.forEach(o => {
+                    wo.push(
+                        `Overcome "${w}" by exploiting "${o}".`);
+                });
+            });
+            weaknesses.forEach(w => {
+                threats.forEach(t => {
+                    wt.push(
+                        `Minimize "${w}" and defend against "${t}".`);
+                });
+            });
+
             const strategiesHtml = `
-                <div class="strategy-card"><div class="strategy-header so"><i class="fas fa-rocket"></i> SO Strategies (Maxi-Maxi)<br><small>Use strengths to seize opportunities</small></div><div class="strategy-body">${so.length ? `<ul class="strategy-list">${so.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">No combinations yet. Add strengths & opportunities.</div>`}</div></div>
-                <div class="strategy-card"><div class="strategy-header st"><i class="fas fa-shield-alt"></i> ST Strategies (Maxi-Mini)<br><small>Use strengths to reduce threats</small></div><div class="strategy-body">${st.length ? `<ul class="strategy-list">${st.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add strengths & threats to generate ST strategies.</div>`}</div></div>
-                <div class="strategy-card"><div class="strategy-header wo"><i class="fas fa-chart-line"></i> WO Strategies (Mini-Maxi)<br><small>Overcome weaknesses by exploiting opportunities</small></div><div class="strategy-body">${wo.length ? `<ul class="strategy-list">${wo.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add weaknesses & opportunities to generate WO strategies.</div>`}</div></div>
-                <div class="strategy-card"><div class="strategy-header wt"><i class="fas fa-umbrella"></i> WT Strategies (Mini-Mini)<br><small>Minimize weaknesses & avoid threats</small></div><div class="strategy-body">${wt.length ? `<ul class="strategy-list">${wt.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add weaknesses & threats to generate WT strategies.</div>`}</div></div>
+                <div class="strategy-card"><div class="strategy-header so"><i class="fas fa-rocket"></i> SO Strategies (Maxi-Maxi)<br><small>Use strengths to seize opportunities</small></div><div class="strategy-body">${so.length ? `<ul class="strategy-list">${so.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">No combinations yet. Add strengths &amp; opportunities.</div>`}</div></div>
+                <div class="strategy-card"><div class="strategy-header st"><i class="fas fa-shield-alt"></i> ST Strategies (Maxi-Mini)<br><small>Use strengths to reduce threats</small></div><div class="strategy-body">${st.length ? `<ul class="strategy-list">${st.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add strengths &amp; threats to generate ST strategies.</div>`}</div></div>
+                <div class="strategy-card"><div class="strategy-header wo"><i class="fas fa-chart-line"></i> WO Strategies (Mini-Maxi)<br><small>Overcome weaknesses by exploiting opportunities</small></div><div class="strategy-body">${wo.length ? `<ul class="strategy-list">${wo.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add weaknesses &amp; opportunities to generate WO strategies.</div>`}</div></div>
+                <div class="strategy-card"><div class="strategy-header wt"><i class="fas fa-umbrella"></i> WT Strategies (Mini-Mini)<br><small>Minimize weaknesses &amp; avoid threats</small></div><div class="strategy-body">${wt.length ? `<ul class="strategy-list">${wt.map(s => `<li><i class="fas fa-check-circle"></i> ${s}</li>`).join('')}</ul>` : `<div class="badge-empty">Add weaknesses &amp; threats to generate WT strategies.</div>`}</div></div>
             `;
             document.getElementById('strategiesContainer').innerHTML = strategiesHtml;
-            showToast('Cross-analysis strategies generated (SO, ST, WO, WT).', 'success');
         }
 
-        // NEW EXPORT FUNCTION: exports both SWOT matrix and strategic actions in two sheets
-        function exportToExcel() {
-            const strengths = getItemsFromList('strengths');
-            const weaknesses = getItemsFromList('weaknesses');
-            const opportunities = getItemsFromList('opportunities');
-            const threats = getItemsFromList('threats');
-
-            if (strengths.length + weaknesses.length + opportunities.length + threats.length === 0) {
-                alert("No data to export. Please add items to the SWOT matrix first.");
+        /* =========================================================
+           EXPORT (JSON only – Excel export removed per request)
+        ========================================================= */
+        function saveToJson() {
+            const data = {
+                strengths: getItemsFromList('strengths'),
+                weaknesses: getItemsFromList('weaknesses'),
+                opportunities: getItemsFromList('opportunities'),
+                threats: getItemsFromList('threats'),
+                savedAt: new Date().toISOString()
+            };
+            if (data.strengths.length + data.weaknesses.length + data.opportunities.length + data.threats
+                .length === 0) {
+                alert('No data to save. Add items to the SWOT matrix first.');
                 return;
             }
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SWOT_Analysis_Sigma_Exacta.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('SWOT file saved.', 'success');
+        }
 
-            // 1) Build SWOT Matrix sheet
-            const maxLen = Math.max(strengths.length, weaknesses.length, opportunities.length, threats.length);
-            const matrixRows = [['Strengths', 'Weaknesses', 'Opportunities', 'Threats']];
-            for (let i = 0; i < maxLen; i++) {
-                matrixRows.push([strengths[i] || '', weaknesses[i] || '', opportunities[i] || '', threats[i] || '']);
-            }
-
-            // 2) Build Strategic Actions sheet based on current SWOT items (same logic as generateCrossStrategies)
-            const soActions = [], stActions = [], woActions = [], wtActions = [];
-            strengths.forEach(s => { opportunities.forEach(o => { soActions.push(`Leverage "${s}" to capitalize on "${o}".`); }); });
-            strengths.forEach(s => { threats.forEach(t => { stActions.push(`Use "${s}" to mitigate or avoid "${t}".`); }); });
-            weaknesses.forEach(w => { opportunities.forEach(o => { woActions.push(`Overcome "${w}" by exploiting "${o}".`); }); });
-            weaknesses.forEach(w => { threats.forEach(t => { wtActions.push(`Minimize "${w}" and defend against "${t}".`); }); });
-
-            // Prepare rows for strategies: two columns: Strategy Type, Action
-            const strategyRows = [['Strategy Type', 'Action']];
-            const addStrategies = (type, actions) => {
-                if (actions.length === 0) {
-                    strategyRows.push([type, 'No actions generated (missing required items)']);
-                } else {
-                    actions.forEach(action => { strategyRows.push([type, action]); });
+        /* =========================================================
+           LOAD JSON
+        ========================================================= */
+        function loadFromJson(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    resetAll(false);
+                    ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(cat => {
+                        if (Array.isArray(data[cat])) {
+                            data[cat].forEach(item => addEntry(cat, item));
+                        }
+                    });
+                    setReadOnly(true);
+                    updateResultsTab();
+                    switchWizardTab('tab-matrix');
+                    showToast('File loaded in read-only mode. Click Revise to edit.', 'info');
+                } catch (err) {
+                    alert('Error reading file. Make sure it was saved by this tool.');
                 }
             };
-            addStrategies('SO (Maxi-Maxi) - Use strengths to seize opportunities', soActions);
-            addStrategies('ST (Maxi-Mini) - Use strengths to reduce threats', stActions);
-            addStrategies('WO (Mini-Maxi) - Overcome weaknesses by exploiting opportunities', woActions);
-            addStrategies('WT (Mini-Mini) - Minimize weaknesses and avoid threats', wtActions);
+            reader.readAsText(file);
+        }
 
-            // Create workbook with two sheets
-            const wb = XLSX.utils.book_new();
-            const wsMatrix = XLSX.utils.aoa_to_sheet(matrixRows);
-            wsMatrix['!cols'] = [{ wch: 40 }, { wch: 40 }, { wch: 40 }, { wch: 40 }];
-            XLSX.utils.book_append_sheet(wb, wsMatrix, 'SWOT Matrix');
+        /* =========================================================
+           READ-ONLY MODE
+        ========================================================= */
+        let isReadOnly = false;
 
-            const wsStrategies = XLSX.utils.aoa_to_sheet(strategyRows);
-            wsStrategies['!cols'] = [{ wch: 30 }, { wch: 80 }];
-            XLSX.utils.book_append_sheet(wb, wsStrategies, 'Strategic Actions');
+        function setReadOnly(val) {
+            isReadOnly = val;
+            const banner = document.getElementById('readonlyBanner');
+            if (val) {
+                banner.classList.add('show');
+                document.body.classList.add('readonly-mode');
+            } else {
+                banner.classList.remove('show');
+                document.body.classList.remove('readonly-mode');
+            }
+        }
 
-            XLSX.writeFile(wb, 'SWOT_Analysis_with_Strategies_Sigma_Exacta.xlsx');
-            showToast('Exported to Excel: SWOT Matrix and Strategic Actions.', 'success');
+        /* =========================================================
+           REVISE MODAL
+        ========================================================= */
+        function openReviseModal() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reviseDate').value = today;
+            document.getElementById('reviseDesc').value = '';
+            document.getElementById('reviseBy').value = '';
+            document.getElementById('reviseModal').classList.add('open');
+        }
+
+        function closeReviseModal() {
+            document.getElementById('reviseModal').classList.remove('open');
+        }
+
+        function confirmRevise() {
+            const date = document.getElementById('reviseDate').value;
+            const desc = document.getElementById('reviseDesc').value.trim();
+            const by = document.getElementById('reviseBy').value.trim();
+            if (!date || !desc || !by) {
+                alert('Please fill in all revision fields.');
+                return;
+            }
+            setReadOnly(false);
+            closeReviseModal();
+            showToast('Revision registered. Document is now editable.', 'success');
+        }
+
+        /* =========================================================
+           INLINE EDITING OF SWOT ITEMS
+        ========================================================= */
+        function saveEdit(swotItem, input, editIcon, originalSpan) {
+            const newText = input.value.trim();
+            if (!newText) {
+                // Revert to original
+                swotItem.replaceChild(originalSpan, input);
+                editIcon.classList.remove('fa-check');
+                editIcon.classList.add('fa-pen');
+                editIcon.title = 'Edit item';
+                return;
+            }
+            const span = document.createElement('span');
+            span.textContent = newText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            swotItem.replaceChild(span, input);
+            editIcon.classList.remove('fa-check');
+            editIcon.classList.add('fa-pen');
+            editIcon.title = 'Edit item';
+            updateResultsTab();
+            showToast('Item updated.', 'info');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const swotGrid = document.getElementById('swotGrid');
-            const exampleData = [{ category: 'strengths', point: 'Experienced management team' }, { category: 'strengths', point: 'Strong brand reputation' }, { category: 'weaknesses', point: 'High level of debt' }, { category: 'weaknesses', point: 'Outdated IT infrastructure' }, { category: 'opportunities', point: 'Growing demand in emerging markets' }, { category: 'opportunities', point: 'Potential for strategic partnerships' }, { category: 'threats', point: 'New regulations increasing costs' }, { category: 'threats', point: 'Intense competition from new entrants' }];
-            const loadExample = () => { resetAll(false); exampleData.forEach(ex => addEntry(ex.category, ex.point)); showToast('Example data loaded. Go to Results & generate strategies!', 'success'); switchWizardTab('tab-matrix'); const resultsContainer = document.getElementById('resultsContainer'); resultsContainer.innerHTML = `<div class="no-results-message" style="text-align: center; padding: 3rem; color: #777; grid-column: 1 / -1;"><i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i><h3>No Results Displayed</h3><p>Click "List Results" to show your current SWOT items.</p></div>`; document.getElementById('strategiesContainer').innerHTML = ''; };
+            const exampleData = [
+                { category: 'strengths', point: 'Experienced management team' },
+                { category: 'strengths', point: 'Strong brand reputation' },
+                { category: 'weaknesses', point: 'High level of debt' },
+                { category: 'weaknesses', point: 'Outdated IT infrastructure' },
+                { category: 'opportunities', point: 'Growing demand in emerging markets' },
+                { category: 'opportunities', point: 'Potential for strategic partnerships' },
+                { category: 'threats', point: 'New regulations increasing costs' },
+                { category: 'threats', point: 'Intense competition from new entrants' }
+            ];
+
+            const loadExample = () => {
+                resetAll(false);
+                exampleData.forEach(ex => addEntry(ex.category, ex.point));
+                setReadOnly(true);
+                updateResultsTab();
+                showToast('Example loaded in read-only mode. Click Revise to edit.', 'success');
+                switchWizardTab('tab-matrix');
+            };
+
             document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
-            document.getElementById('globalResetBtn').addEventListener('click', () => resetAll(true));
-            document.getElementById('listResultsBtn').addEventListener('click', () => { displayResults(); showToast('Results listed.', 'info'); });
-            document.getElementById('generateStrategiesBtn').addEventListener('click', generateCrossStrategies);
-            document.getElementById('exportBtnResults').addEventListener('click', exportToExcel);
-            swotGrid.addEventListener('click', (e) => { if (e.target.closest('.btn-add-item')) { const btn = e.target.closest('.btn-add-item'); const cat = btn.dataset.category; const input = document.getElementById(`${cat}-input`); const val = input.value.trim(); if (val) { addEntry(cat, val); input.value = ''; input.focus(); showToast(`Added to ${cat}`, 'info'); } } else if (e.target.closest('.btn-delete')) { e.target.closest('.swot-item').remove(); showToast('Item deleted', 'info'); } });
-            swotGrid.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('input[type="text"]')) { e.preventDefault(); const cat = e.target.dataset.category; const val = e.target.value.trim(); if (val) { addEntry(cat, val); e.target.value = ''; showToast(`Added to ${cat}`, 'info'); } } });
+            document.getElementById('globalNewBtn').addEventListener('click', () => {
+                if (confirm('Reset all fields and start a new SWOT analysis?')) {
+                    resetAll(false);
+                    setReadOnly(false);
+                    showToast('New SWOT matrix started.', 'info');
+                    switchWizardTab('tab-matrix');
+                }
+            });
+            document.getElementById('globalLoadBtn').addEventListener('click', () => {
+                document.getElementById('loadSwotInput').click();
+            });
+            document.getElementById('loadSwotInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                loadFromJson(file);
+                e.target.value = '';
+            });
+            document.getElementById('globalReviseBtn').addEventListener('click', () => {
+                if (!isReadOnly) {
+                    alert('The document is already editable.');
+                    return;
+                }
+                openReviseModal();
+            });
+            document.getElementById('globalSaveBtn').addEventListener('click', saveToJson);
+
+            // Event delegation for the matrix grid
+            swotGrid.addEventListener('click', (e) => {
+                // Add button
+                if (e.target.closest('.btn-add-item')) {
+                    if (isReadOnly) { showToast('Read-only mode. Click Revise to edit.', 'info'); return; }
+                    const btn = e.target.closest('.btn-add-item');
+                    const cat = btn.dataset.category;
+                    const input = document.getElementById(`${cat}-input`);
+                    const val = input.value.trim();
+                    if (val) {
+                        addEntry(cat, val);
+                        input.value = '';
+                        input.focus();
+                        updateResultsTab();
+                        showToast(`Added to ${cat}`, 'info');
+                    }
+                }
+                // Delete button
+                else if (e.target.closest('.btn-delete')) {
+                    if (isReadOnly) { showToast('Read-only mode. Click Revise to edit.', 'info'); return; }
+                    e.target.closest('.swot-item').remove();
+                    updateResultsTab();
+                    showToast('Item deleted', 'info');
+                }
+                // Edit icon click
+                else if (e.target.closest('.swot-edit-icon')) {
+                    if (isReadOnly) { showToast('Read-only mode. Click Revise to edit.', 'info'); return; }
+                    const editIcon = e.target.closest('.swot-edit-icon');
+                    const swotItem = editIcon.closest('.swot-item');
+                    const span = swotItem.querySelector('span');
+                    if (!span) return; // already editing
+                    const currentText = span.textContent;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentText;
+                    input.style.width = '100%';
+                    input.className = 'swot-edit-input';
+                    swotItem.replaceChild(input, span);
+                    editIcon.classList.remove('fa-pen');
+                    editIcon.classList.add('fa-check');
+                    editIcon.title = 'Save changes';
+                    input.focus();
+
+                    input.addEventListener('blur', () => saveEdit(swotItem, input, editIcon,
+                        span));
+                    input.addEventListener('keydown', (ev) => {
+                        if (ev.key === 'Enter') {
+                            input.blur();
+                        }
+                        if (ev.key === 'Escape') {
+                            swotItem.replaceChild(span, input);
+                            editIcon.classList.remove('fa-check');
+                            editIcon.classList.add('fa-pen');
+                            editIcon.title = 'Edit item';
+                            ev.preventDefault();
+                        }
+                    });
+                }
+            });
+
+            // Enter key in input fields
+            swotGrid.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.matches('input[type="text"]:not(.swot-edit-input)')) {
+                    e.preventDefault();
+                    if (isReadOnly) { showToast('Read-only mode. Click Revise to edit.', 'info'); return; }
+                    const cat = e.target.dataset.category;
+                    const val = e.target.value.trim();
+                    if (val) {
+                        addEntry(cat, val);
+                        e.target.value = '';
+                        updateResultsTab();
+                        showToast(`Added to ${cat}`, 'info');
+                    }
+                }
+            });
+
+            // Initial automatic results update (empty)
+            updateResultsTab();
         });
     </script>
     <script src="dexie.min.js"></script>
