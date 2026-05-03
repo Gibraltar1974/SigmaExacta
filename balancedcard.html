@@ -14,6 +14,7 @@
     <link rel="icon" href="sigma-exacta-icon.jpg" type="image/jpeg">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -182,6 +183,17 @@
 
         .main-action-buttons .btn-export-main:hover {
             background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-export-pdf {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .main-action-buttons .btn-export-pdf:hover {
+            background-color: #c0392b;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
@@ -998,14 +1010,17 @@
                     <i class="fas fa-edit"></i> Revise
                 </button>
                 <button id="globalExportBtn" class="btn-export-main">
-                    <i class="fas fa-file-excel"></i> Export
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button id="globalExportPdfBtn" class="btn-export-pdf">
+                    <i class="fas fa-file-pdf"></i> Export
                 </button>
             </div>
             <div class="readonly-banner" id="readonlyBanner">
                 <i class="fas fa-lock"></i> Read-only mode — this file was loaded for viewing only. Click
                 <strong>Revise</strong> to enable editing.
             </div>
-            <input type="file" id="loadScorecardInput" accept=".xlsx,.xls" style="display:none;">
+            <input type="file" id="loadScorecardInput" accept=".json" style="display:none;">
         </header>
 
         <!-- REVISE MODAL (con IDs para eventos JS) -->
@@ -1057,59 +1072,137 @@
             <div id="tab-theory" class="wizard-tab-content active">
                 <div class="tab-content-wrapper">
                     <div class="block">
-                        <h2><i class="fas fa-question-circle"></i> What is a Strategic Performance Scorecard?</h2>
-                        <p>This tool is a <strong>Strategic Performance Scorecard</strong>, a management system that
-                            helps organizations track the performance of their strategic goals. Its design is inspired
-                            by
-                            performance management concepts that aim to go beyond purely financial metrics.</p>
-                        <p>The goal is to provide a holistic view of the business. To achieve this, the tool organizes
-                            indicators into four key, interrelated areas or perspectives:</p>
+                        <div class="block-title"><i class="fas fa-info-circle"></i> What is a Strategic Performance
+                            Scorecard?</div>
+                        <p>A <strong>Strategic Performance Scorecard</strong> is a management system that helps
+                            organizations translate their vision and strategy into a coherent set of measurable
+                            objectives and key performance indicators (KPIs). Rather than relying solely on financial
+                            results, it provides a <strong>balanced, holistic view</strong> of the business across four
+                            interrelated perspectives:</p>
                         <ul>
                             <li><i class="fas fa-dollar-sign fa-fw" style="color: var(--financial-bg);"></i>
                                 <strong>Financial:</strong> Measures the financial health and performance of the
-                                organization.
+                                organization (e.g., revenue growth, profitability, cost reduction).
                             </li>
                             <li><i class="fas fa-users fa-fw" style="color: var(--customer-bg);"></i>
-                                <strong>Customer:</strong> Evaluates customer satisfaction and perception of our
-                                products
-                                or services.
+                                <strong>Customer:</strong> Evaluates customer satisfaction, retention and perception of
+                                products or services.
                             </li>
-                            <li><i class="fas fa-cogs fa-fw" style="color: var(--internal-bg);"></i> <strong>Internal
-                                    Processes:</strong> Analyzes the efficiency and quality of key business processes.
+                            <li><i class="fas fa-cogs fa-fw" style="color: var(--internal-bg);"></i>
+                                <strong>Internal Processes:</strong> Analyzes the efficiency, quality and innovation of
+                                key business processes.
                             </li>
-                            <li><i class="fas fa-brain fa-fw" style="color: var(--learning-bg);"></i> <strong>Learning &
-                                    Growth:</strong> Focuses on the human capital, technology, and organizational
-                                culture needed for improvement.</li>
+                            <li><i class="fas fa-brain fa-fw" style="color: var(--learning-bg);"></i>
+                                <strong>Learning &amp; Growth:</strong> Focuses on the human capital, technology and
+                                organizational culture that enable continuous improvement.
+                            </li>
+                        </ul>
+                        <p>The four perspectives are causally linked: investing in <em>Learning &amp; Growth</em>
+                            improves <em>Internal Processes</em>, which in turn enhances the <em>Customer</em>
+                            experience, ultimately driving better <em>Financial</em> results.</p>
+                    </div>
+
+                    <div class="block">
+                        <div class="block-title"><i class="fas fa-history"></i> History and Purpose</div>
+                        <p>The <strong>Balanced Scorecard</strong> was developed in the early 1990s by <strong>Robert S.
+                                Kaplan</strong> (Harvard Business School) and <strong>David P. Norton</strong>. It arose
+                            from their research showing that purely financial metrics were insufficient for managing
+                            organizations in the modern, knowledge-driven economy.</p>
+                        <p>First published in the <em>Harvard Business Review</em> in 1992, the framework quickly became
+                            one of the most widely adopted management tools worldwide. Its core purpose is to help
+                            organizations:</p>
+                        <ul>
+                            <li>Clarify and communicate strategy across all levels of the organization.</li>
+                            <li>Align day-to-day activities with long-term strategic goals.</li>
+                            <li>Monitor progress through a concise set of meaningful KPIs.</li>
+                            <li>Foster a culture of accountability and continuous improvement.</li>
                         </ul>
                     </div>
 
                     <div class="block">
-                        <h2><i class="fas fa-history"></i> Brief History & Purpose</h2>
-                        <p>This concept, popularized as the <strong>Balanced Scorecard</strong>, was developed in the
-                            early 1990s by Robert S. Kaplan and David P. Norton. It arose from the idea that purely
-                            financial metrics were insufficient for managing a company in the information age.</p>
-                        <p>By providing a "balanced" view across the four perspectives, the framework helps
-                            organizations clarify their strategy and translate it into actionable objectives and
-                            measures, ensuring that day-to-day operations are aligned with long-term goals.</p>
+                        <div class="block-title"><i class="fas fa-mouse-pointer"></i> Toolbar — Button Reference</div>
+                        <p>The toolbar at the top of the page contains all the actions you need to manage your
+                            scorecard:</p>
+                        <ul style="list-style:none; padding-left:0;">
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#6c757d;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-file"></i> New</span>
+                                &nbsp; Resets all metrics, form fields and revision history, starting a blank scorecard.
+                            </li>
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#0d6efd;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-folder-open"></i> Load</span>
+                                &nbsp; Opens a previously saved <code>.json</code> file and restores the full scorecard
+                                — all metrics, initiatives and revision history — in <strong>read-only</strong> mode.
+                            </li>
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#27ae60;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-magic"></i> Load Example</span>
+                                &nbsp; Loads a pre-filled scorecard with sample metrics across all four perspectives so
+                                you can explore the tool and see how the results and PDF export look. Also opens in
+                                read-only mode.
+                            </li>
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#6c5ce7;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-edit"></i> Revise</span>
+                                &nbsp; Only available when a document is loaded (read-only mode). Opens a dialog to
+                                register a new revision — date, description, author and approver — and then unlocks all
+                                fields for editing. Every revision is saved to the revision history and appears in the
+                                Results tab and in the exported PDF.
+                            </li>
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#2c3e50;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-file-excel"></i> Save</span>
+                                &nbsp; Downloads the complete scorecard as a <code>.json</code> file, including all
+                                metrics, initiatives and the full revision history. Use this file to reload or share the
+                                scorecard later.
+                            </li>
+                            <li style="margin-bottom:0.75rem;">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:0.4rem;background:#c0392b;color:#fff;border-radius:5px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.9rem;"><i
+                                        class="fas fa-file-pdf"></i> Export PDF</span>
+                                &nbsp; Generates and downloads a fully formatted PDF report including: revision history,
+                                scorecard summary with progress bars, performance badges per perspective, all metrics
+                                and their strategic initiatives.
+                            </li>
+                        </ul>
                     </div>
 
                     <div class="block">
-                        <h2><i class="fas fa-tools"></i> How to Use This Tool</h2>
-                        <ul style="list-style-type: decimal;">
-                            <li><strong>Load an Example:</strong> If it's your first time, click the <i
-                                    class="fas fa-magic"></i> <strong>Load Example</strong> button to populate the form
-                                with sample data and see how it works.</li>
-                            <li><strong>Add a Metric:</strong> Use the dropdown menus to select a <i>Perspective</i>,
-                                <i>Objective</i>, and <i>Measure (KPI)</i>. If you can't find what you need, select
-                                "Other..." to type your own. Select the <i>KPI Type</i>, enter target and actual values,
-                                and describe the <i>Strategic Initiative</i>. Click <strong>Add to Scorecard</strong>.
-                            </li>
-                            <li><strong>Monitor Progress:</strong> Performance is calculated automatically and displayed
-                                with a percentage and a status badge (Good, Average, Poor).</li>
-                            <li><strong>Edit Metrics Directly:</strong> Click on any metric in the table to edit it
-                                directly.</li>
-                            <li><strong>View Results:</strong> Go to the <strong>Results</strong> tab to see a
-                                consolidated view that updates automatically, including the revision history.</li>
+                        <div class="block-title"><i class="fas fa-tools"></i> How to Use This Tool — Step by Step</div>
+                        <ul>
+                            <li><strong>Step 1 — Explore the Example:</strong> If it's your first time, click
+                                <strong>Load Example</strong> to populate the scorecard with sample data and see how the
+                                tool works across all four perspectives.</li>
+                            <li><strong>Step 2 — Add a Metric:</strong> Go to the <em>Scorecard Builder</em> tab. Select
+                                a <em>Perspective</em>, then an <em>Objective</em> and a <em>Measure (KPI)</em> from the
+                                cascading dropdowns. Choose <em>"Other..."</em> in any dropdown to enter a custom value.
+                                Set the <em>KPI Type</em> (More is Better / Less is Better), enter the <em>Target</em>
+                                and <em>Actual</em> values, and describe the <em>Strategic Initiative</em>. Click
+                                <strong>Add to Scorecard</strong>.</li>
+                            <li><strong>Step 3 — Monitor Performance:</strong> Each metric is automatically evaluated. A
+                                percentage achievement and a colour-coded status badge (<span
+                                    style="color:#27ae60;font-weight:700;">Good</span> / <span
+                                    style="color:#f1c40f;font-weight:700;">Average</span> / <span
+                                    style="color:#e74c3c;font-weight:700;">Poor</span>) are calculated and displayed
+                                instantly.</li>
+                            <li><strong>Step 4 — Edit Metrics Inline:</strong> Click directly on any cell in the
+                                scorecard table to edit the value in place. Changes are saved automatically.</li>
+                            <li><strong>Step 5 — Review Results:</strong> Switch to the <em>Results</em> tab to see a
+                                consolidated summary with overall progress per perspective and the full revision
+                                history.</li>
+                            <li><strong>Step 6 — Save your work:</strong> Click <strong>Save</strong> to download a
+                                <code>.json</code> file you can reload at any time.</li>
+                            <li><strong>Step 7 — Export the report:</strong> Click <strong>Export PDF</strong> to
+                                download a complete, print-ready PDF covering all metrics and the revision history.</li>
+                            <li><strong>Step 8 — Manage Revisions:</strong> Load a saved file, then click
+                                <strong>Revise</strong> to register changes and maintain a traceable audit trail inside
+                                both the JSON and the PDF.</li>
                         </ul>
                     </div>
 
@@ -1878,114 +1971,53 @@
                 return false;
             }
 
-            // ============ EXPORT / IMPORT EXCEL ============
-            function exportToExcel() {
-                const wb = XLSX.utils.book_new();
+            // ============ SAVE TO JSON / LOAD FROM JSON ============
+            function saveToJson() {
+                const allRows = [];
                 ['financial', 'customer', 'internal', 'learning'].forEach(p => {
                     const rows = document.querySelectorAll(`#${p}TableBody tr`);
-                    if (!rows.length) return;
-                    const headers = ['Objective', 'KPI', 'KPI Type', 'Target', 'Actual', 'Achievement %', 'Status', 'Initiative'];
-                    const data = [];
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
-                        data.push([
-                            cells[0].textContent,
-                            cells[1].textContent.replace('↓', '').replace('↑', '').trim(),
-                            row.dataset.kpiType === 'less' ? 'Less is Better' : 'More is Better',
-                            cells[2].textContent,
-                            cells[3].textContent,
-                            row.querySelector('td[data-achievement]')?.dataset.achievement || '0',
-                            cells[5].querySelector('.badge')?.textContent || '',
-                            cells[6].textContent
-                        ]);
+                        allRows.push({
+                            perspective: p,
+                            objective: cells[0].textContent.trim(),
+                            measure: cells[1].textContent.replace('↓', '').replace('↑', '').trim(),
+                            kpiType: row.dataset.kpiType || 'more',
+                            target: cells[2].textContent.trim(),
+                            actual: cells[3].textContent.trim(),
+                            initiative: cells[6].textContent.trim()
+                        });
                     });
-                    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
-                    XLSX.utils.book_append_sheet(wb, ws, getPerspectiveName(p).substring(0, 30));
                 });
-                const revisions = getRevisionHistory();
-                if (revisions.length > 0) {
-                    const revHeaders = ['Rev. Date', 'Description of Change', 'Changed By', 'Approved By'];
-                    const revData = revisions.map(r => [r.date, r.desc, r.by, r.approved]);
-                    const wsRev = XLSX.utils.aoa_to_sheet([revHeaders, ...revData]);
-                    XLSX.utils.book_append_sheet(wb, wsRev, 'Revision History');
-                }
-                if (wb.SheetNames.length) {
-                    XLSX.writeFile(wb, `Strategic_Scorecard_${new Date().toISOString().slice(0, 10)}.xlsx`);
-                    showToast('Scorecard exported successfully!', 'success');
-                } else alert('No data to export.');
+                if (allRows.length === 0) { alert('No data to save. Add metrics first.'); return; }
+                const data = {
+                    version: 1,
+                    savedAt: new Date().toISOString(),
+                    rows: allRows,
+                    revisions: getRevisionHistory()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Strategic_Scorecard_${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Scorecard saved as JSON!', 'success');
             }
 
-            function loadFromExcel(file, readOnlyMode = true) {
+            function loadFromJson(file) {
                 const reader = new FileReader();
-                reader.onload = function (evt) {
+                reader.onload = function (e) {
                     try {
-                        const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-                        const allRows = [];
-                        const sheetNames = wb.SheetNames;
-                        if (sheetNames.length === 0) { alert('No sheets found.'); return; }
-
-                        // Procesar hojas de métricas
-                        sheetNames.forEach(sheetName => {
-                            if (sheetName === 'Revision History') return;
-                            const ws = wb.Sheets[sheetName];
-                            const json = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-                            if (json.length < 2) return;
-                            const headers = json[0].map(h => String(h).trim());
-                            const objI = headers.indexOf('Objective'), kpiI = headers.indexOf('KPI');
-                            const typeI = headers.indexOf('KPI Type'), tgtI = headers.indexOf('Target');
-                            const actI = headers.indexOf('Actual'), iniI = headers.indexOf('Initiative');
-                            if (objI === -1 || kpiI === -1 || tgtI === -1 || actI === -1) return;
-                            let perspective = 'financial';
-                            const sn = sheetName.toLowerCase();
-                            if (sn.includes('customer')) perspective = 'customer';
-                            else if (sn.includes('internal')) perspective = 'internal';
-                            else if (sn.includes('learning')) perspective = 'learning';
-                            for (let i = 1; i < json.length; i++) {
-                                const row = json[i];
-                                allRows.push({
-                                    perspective,
-                                    objective: String(row[objI] || ''),
-                                    measure: String(row[kpiI] || ''),
-                                    kpiType: String(row[typeI] || '').toLowerCase().includes('less') ? 'less' : 'more',
-                                    target: String(row[tgtI] || ''),
-                                    actual: String(row[actI] || ''),
-                                    initiative: String(row[iniI] || '')
-                                });
-                            }
-                        });
-
-                        // Procesar hoja de revisiones si existe
-                        const revSheet = wb.Sheets['Revision History'];
-                        if (revSheet) {
-                            const revJson = XLSX.utils.sheet_to_json(revSheet, { header: 1, defval: '' });
-                            if (revJson.length > 1) {
-                                const revHeaders = revJson[0].map(h => String(h).trim());
-                                const dateIdx = revHeaders.indexOf('Rev. Date');
-                                const descIdx = revHeaders.indexOf('Description of Change');
-                                const byIdx = revHeaders.indexOf('Changed By');
-                                const approvedIdx = revHeaders.indexOf('Approved By');
-                                if (dateIdx !== -1 && descIdx !== -1 && byIdx !== -1 && approvedIdx !== -1) {
-                                    const revisions = [];
-                                    for (let i = 1; i < revJson.length; i++) {
-                                        const r = revJson[i];
-                                        revisions.push({
-                                            date: String(r[dateIdx] || ''),
-                                            desc: String(r[descIdx] || ''),
-                                            by: String(r[byIdx] || ''),
-                                            approved: String(r[approvedIdx] || '')
-                                        });
-                                    }
-                                    saveRevisionHistory(revisions);
-                                }
-                            }
-                        }
-
-                        if (allRows.length === 0) { alert('No valid data found.'); return; }
-
-                        // Limpiar y cargar métricas
+                        const data = JSON.parse(e.target.result);
+                        if (!data.rows || !Array.isArray(data.rows)) { alert('Invalid file format. Make sure it was saved by this tool.'); return; }
+                        // Clear tables
                         ['financial', 'customer', 'internal', 'learning'].forEach(p => document.getElementById(`${p}TableBody`).innerHTML = '');
-                        allRows.forEach(r => {
+                        // Load rows
+                        data.rows.forEach(r => {
                             const tbody = document.getElementById(`${r.perspective}TableBody`);
+                            if (!tbody) return;
                             const newRow = tbody.insertRow();
                             newRow.dataset.kpiType = r.kpiType;
                             const badge = getKpiTypeBadge(r.kpiType, r.measure);
@@ -2002,14 +2034,198 @@
                             `;
                             attachCellEditListeners(newRow);
                         });
+                        // Load revisions
+                        if (Array.isArray(data.revisions) && data.revisions.length > 0) {
+                            saveRevisionHistory(data.revisions);
+                        } else {
+                            localStorage.removeItem('sigma_bsc_revisions');
+                        }
                         updateSummaries();
                         updateMetricsCount();
-                        setReadOnly(readOnlyMode);
+                        setReadOnly(true);
                         switchWizardTab('tab-builder');
-                        showToast(readOnlyMode ? 'File loaded in read-only mode.' : 'File loaded successfully.', 'info');
-                    } catch (err) { alert('Error reading file.'); }
+                        showToast('File loaded in read-only mode. Click Revise to edit.', 'info');
+                    } catch (err) { alert('Error reading file. Make sure it was saved by this tool.'); }
                 };
-                reader.readAsArrayBuffer(file);
+                reader.readAsText(file);
+            }
+
+            // ============ EXPORT TO PDF ============
+            const BSC_ICON_B64 = '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';
+
+            async function exportToPDF() {
+                const perspectives = ['financial', 'customer', 'internal', 'learning'];
+                const perspectiveColors = { financial: [22, 160, 133], customer: [41, 128, 185], internal: [142, 68, 173], learning: [211, 84, 0] };
+                let hasData = false;
+                perspectives.forEach(p => { if (document.querySelectorAll(`#${p}TableBody tr`).length > 0) hasData = true; });
+                if (!hasData) { alert('No data to export. Add metrics first.'); return; }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                const pageW = doc.internal.pageSize.getWidth();
+                const pageH = doc.internal.pageSize.getHeight();
+                const margin = 12;
+                const contentW = pageW - margin * 2;
+                let cursorY = margin;
+
+                function checkPage(neededH) {
+                    if (cursorY + neededH > pageH - margin - 10) {
+                        doc.addPage();
+                        cursorY = margin;
+                    }
+                }
+
+                function addFooter() {
+                    const totalPages = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        doc.setPage(i);
+                        doc.setDrawColor(200, 200, 200);
+                        doc.setLineWidth(0.3);
+                        doc.line(margin, pageH - 12, pageW - margin, pageH - 12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text('Strategic Performance Scorecard — Sigma Exacta', margin, pageH - 7);
+                        doc.text(`Page ${i} / ${totalPages}`, pageW - margin, pageH - 7, { align: 'right' });
+                    }
+                }
+
+                // Title with icon
+                const iconSize = 18;
+                doc.addImage('data:image/jpeg;base64,' + BSC_ICON_B64, 'JPEG', margin, cursorY - 2, iconSize, iconSize);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(18);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Strategic Performance Scorecard', margin + iconSize + 5, cursorY + 6);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(127, 140, 141);
+                doc.text('Generated by Sigma Exacta  •  ' + new Date().toLocaleDateString(), margin + iconSize + 5, cursorY + 13);
+                cursorY += iconSize + 6;
+
+                // Revision History (at top, after title)
+                const revisionsTop = getRevisionHistory();
+                if (revisionsTop.length > 0) {
+                    checkPage(16);
+                    doc.setFillColor(44, 62, 80);
+                    doc.rect(margin, cursorY, contentW, 8, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('Revision History', margin + 3, cursorY + 5.5);
+                    cursorY += 10;
+                    const revColWTop = [30, contentW - 30 - 45 - 45, 45, 45];
+                    const revHeadersTop = ['Date', 'Description', 'Changed By', 'Approved By'];
+                    checkPage(8);
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, cursorY, contentW, 7, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8);
+                    doc.setTextColor(44, 62, 80);
+                    let xPosRH = margin + 1;
+                    revHeadersTop.forEach((h, i) => { doc.text(h, xPosRH, cursorY + 5); xPosRH += revColWTop[i]; });
+                    cursorY += 7;
+                    revisionsTop.forEach((rev, idx) => {
+                        const revCells = [rev.date || '', rev.desc || '', rev.by || '', rev.approved || ''];
+                        let maxLines = 1;
+                        revCells.forEach((txt, i) => { const ln = doc.splitTextToSize(txt, revColWTop[i] - 2).length; if (ln > maxLines) maxLines = ln; });
+                        const rowH = Math.max(7, maxLines * 4.5 + 2);
+                        checkPage(rowH);
+                        if (idx % 2 === 0) { doc.setFillColor(252, 252, 252); doc.rect(margin, cursorY, contentW, rowH, 'F'); }
+                        doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.2); doc.rect(margin, cursorY, contentW, rowH, 'S');
+                        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(60, 60, 60);
+                        xPosRH = margin + 1;
+                        revCells.forEach((txt, i) => { const lines = doc.splitTextToSize(txt, revColWTop[i] - 2); doc.text(lines, xPosRH, cursorY + 4.5); xPosRH += revColWTop[i]; });
+                        cursorY += rowH;
+                    });
+                    cursorY += 5;
+                }
+
+                // Perspectives
+                const perspNames = { financial: 'Financial Perspective', customer: 'Customer Perspective', internal: 'Internal Processes Perspective', learning: 'Learning & Growth Perspective' };
+                const colWidths = [38, 38, 18, 18, 16, 18, 60];
+                const colHeaders = ['Objective', 'KPI', 'Target', 'Actual', '%', 'Status', 'Initiative'];
+
+                perspectives.forEach(p => {
+                    const rows = document.querySelectorAll(`#${p}TableBody tr`);
+                    if (rows.length === 0) return;
+                    const color = perspectiveColors[p];
+
+                    checkPage(16);
+                    // Section header
+                    doc.setFillColor(...color);
+                    doc.rect(margin, cursorY, contentW, 8, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text(perspNames[p] + ' (' + rows.length + ' metrics)', margin + 3, cursorY + 5.5);
+                    cursorY += 10;
+
+                    // Table header
+                    checkPage(10);
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, cursorY, contentW, 7, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8);
+                    doc.setTextColor(44, 62, 80);
+                    let xPos = margin + 1;
+                    colHeaders.forEach((h, i) => { doc.text(h, xPos, cursorY + 5); xPos += colWidths[i]; });
+                    cursorY += 7;
+
+                    // Table rows
+                    rows.forEach((row, idx) => {
+                        const cells = row.querySelectorAll('td');
+                        const kpiType = row.dataset.kpiType === 'less' ? 'Less↓' : 'More↑';
+                        const objective = cells[0].textContent.trim();
+                        const measure = cells[1].textContent.replace('↓', '').replace('↑', '').trim();
+                        const target = cells[2].textContent.trim();
+                        const actual = cells[3].textContent.trim();
+                        const pct = cells[4].textContent.trim();
+                        const statusText = cells[5].querySelector('.badge')?.textContent || '';
+                        const initiative = cells[6].textContent.trim();
+
+                        const cellData = [objective, measure, target, actual, pct, statusText, initiative];
+                        // calc max lines needed
+                        let maxLines = 1;
+                        cellData.forEach((txt, i) => {
+                            const lines = doc.splitTextToSize(txt, colWidths[i] - 2).length;
+                            if (lines > maxLines) maxLines = lines;
+                        });
+                        const rowH = Math.max(7, maxLines * 4.5 + 2);
+                        checkPage(rowH);
+
+                        if (idx % 2 === 0) { doc.setFillColor(252, 252, 252); doc.rect(margin, cursorY, contentW, rowH, 'F'); }
+                        doc.setDrawColor(220, 220, 220);
+                        doc.setLineWidth(0.2);
+                        doc.rect(margin, cursorY, contentW, rowH, 'S');
+
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                        doc.setTextColor(60, 60, 60);
+                        xPos = margin + 1;
+                        cellData.forEach((txt, i) => {
+                            // status badge color
+                            if (i === 5) {
+                                if (txt === 'Good') doc.setTextColor(39, 174, 96);
+                                else if (txt === 'Average') doc.setTextColor(241, 196, 15);
+                                else doc.setTextColor(231, 76, 60);
+                                doc.setFont('helvetica', 'bold');
+                            } else {
+                                doc.setTextColor(60, 60, 60);
+                                doc.setFont('helvetica', 'normal');
+                            }
+                            const lines = doc.splitTextToSize(txt, colWidths[i] - 2);
+                            doc.text(lines, xPos, cursorY + 4.5);
+                            xPos += colWidths[i];
+                        });
+                        cursorY += rowH;
+                    });
+                    cursorY += 5;
+                });
+
+                addFooter();
+                doc.save(`Strategic_Scorecard_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+                showToast('PDF exported successfully!', 'success');
             }
 
             // ============ READ-ONLY & REVISE ============
@@ -2130,11 +2346,11 @@
             });
 
             document.getElementById('globalNewBtn').addEventListener('click', () => {
-                if (confirm('Start a fresh scorecard?')) { resetAll(false); setReadOnly(false); }
+                if (confirm('Start a fresh scorecard?')) { resetAll(false); setReadOnly(false); switchWizardTab('tab-builder'); }
             });
             document.getElementById('globalLoadBtn').addEventListener('click', () => document.getElementById('loadScorecardInput').click());
             document.getElementById('loadScorecardInput').addEventListener('change', function (e) {
-                if (e.target.files[0]) { loadFromExcel(e.target.files[0], true); e.target.value = ''; }
+                if (e.target.files[0]) { loadFromJson(e.target.files[0]); e.target.value = ''; }
             });
             document.getElementById('globalLoadExampleBtn').addEventListener('click', () => {
                 loadExample();
@@ -2144,7 +2360,8 @@
                 if (!isReadOnly) { alert('Already editable.'); return; }
                 openReviseModal();
             });
-            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
+            document.getElementById('globalExportBtn').addEventListener('click', saveToJson);
+            document.getElementById('globalExportPdfBtn').addEventListener('click', exportToPDF);
 
             // Inicializar
             updateObjectiveDropdown();
