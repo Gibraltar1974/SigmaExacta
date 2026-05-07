@@ -36,7 +36,8 @@
         content="TRIZ, Theory of Inventive Problem Solving, contradiction matrix, 40 inventive principles, Genrich Altshuller, Su-Field analysis, 76 standard solutions, LDST, IFR, 9 windows, function analysis, physical contradiction, technical contradiction, inventive problem solving, innovation engineering, open source, free tool, Sigma Exacta">
     <link rel="canonical" href="https://sigmaexacta.com/triz" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
@@ -328,13 +329,42 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .main-action-buttons .btn-export-main {
+        .sufield-field,
+        .sufield-type {
+            color: #2c3e50 !important;
+            font-weight: 600;
+        }
+
+        .sufield-field option,
+        .sufield-type option {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+
+        /* Empty/placeholder option keeps consistent color */
+        .sufield-field option[value=""],
+        .sufield-type option[value=""] {
+            color: #888;
+        }
+
+        .main-action-buttons .btn-save {
             background-color: #2c3e50;
             color: white;
         }
 
-        .main-action-buttons .btn-export-main:hover {
+        .main-action-buttons .btn-save:hover {
             background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-action-buttons .btn-export-pdf {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .main-action-buttons .btn-export-pdf:hover {
+            background-color: #a93226;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
@@ -2220,15 +2250,18 @@
                 <button id="globalReviseBtn" class="btn-revise">
                     <i class="fas fa-edit"></i> Revise
                 </button>
-                <button id="globalExportBtn" class="btn-export-main">
-                    <i class="fas fa-file-excel"></i> Export
+                <button id="globalSaveBtn" class="btn-save">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button id="globalPdfBtn" class="btn-export-pdf">
+                    <i class="fas fa-file-pdf"></i> Export PDF
                 </button>
             </div>
             <div class="readonly-banner" id="readonlyBanner">
                 <i class="fas fa-lock"></i> Read-only mode — loaded for viewing only. Click
                 <strong>Revise</strong> to enable editing.
             </div>
-            <input type="file" id="loadTrizInput" accept=".xlsx,.xls" style="display:none;">
+            <input type="file" id="loadTrizInput" accept=".json" style="display:none;">
         </header>
 
         <!-- REVISE MODAL -->
@@ -2267,209 +2300,352 @@
                 <i class="fas fa-tools"></i> TRIZ Tools
             </button>
             <button class="tab-btn" onclick="switchMainTab('tab-solve')">
-                <i class="fas fa-calculator"></i> Solve & Report
+                <i class="fas fa-file-alt"></i> Report
             </button>
         </nav>
 
         <div id="tab-start" class="tab-content active">
-            <!-- Contenido de la pestaña Start & Info (sin cambios) -->
+
+            <!-- ── WHAT IS TRIZ ── -->
             <div class="content-block">
-                <h2><i class="fas fa-question-circle"></i> What is TRIZ? — Theory of Inventive Problem Solving</h2>
-                <div class="instructions-box">
-                    <ul>
-                        <li><strong>TRIZ</strong> (Теория решения изобретательских задач), or "Theory of Inventive
-                            Problem Solving," is a systematic, data-driven methodology for innovation developed by
-                            <strong>Genrich Altshuller</strong> and his colleagues. Unlike traditional brainstorming
-                            approaches, TRIZ is based on analyzing patterns in millions of patents to identify universal
-                            principles of invention that transcend specific industries and technologies.
-                        </li>
-                        <li>The core premise of TRIZ is that most inventive problems contain inherent
-                            <strong>contradictions</strong> - situations where improving one parameter of a system
-                            inevitably worsens another. By systematically identifying and resolving these contradictions
-                            breakthrough solutions can be systematically discovered across all technical fields (using
-                            the <strong>Contradiction Matrix</strong>). For highly complex challenges, the
-                            <strong>ARIZ</strong> (Algorithm of Inventive Problem Solving) provides a detailed,
-                            step-by-step procedure for tackling the problem and resolving <strong>physical
-                                contradictions</strong> (where a single component requires two opposing properties
-                            simultaneously). Furthermore, the <strong>Su-Field Analysis</strong> (Substance-Field)
-                            serves as a graphical model to simplify a technical system into interacting components
-                            (Substances and Fields), allowing users to systematically apply Inventive Standards to fix
-                            or improve ineffective interactions. Finally, the <strong>LDST</strong> (Laws of Development
-                            of Technical Systems) is a thinking framework that ensures comprehensive problem resolution
-                            by analyzing the evolution of technical systems through fundamental laws of development.
-                        </li>
-                    </ul>
-                </div>
+                <h2><i class="fas fa-brain"></i> What is TRIZ? — Theory of Inventive Problem Solving</h2>
+                <p><strong>TRIZ</strong> (Теория решения изобретательских задач) is a systematic, data-driven
+                    methodology for innovation developed by <strong>Genrich Altshuller</strong> starting in 1946. Unlike
+                    traditional brainstorming, TRIZ is built on the analysis of over 200,000 patents, revealing
+                    universal patterns of invention that work across all technical fields and industries.</p>
+                <p>The core insight of TRIZ is that most inventive problems contain inherent
+                    <strong>contradictions</strong> — situations where improving one parameter of a system inevitably
+                    worsens another. TRIZ provides structured tools to systematically identify and resolve these
+                    contradictions, turning seemingly intractable problems into solvable engineering challenges. This
+                    tool covers the full classical TRIZ toolkit: <strong>LDST, IFR, 9 Windows, Function Analysis,
+                        Technical Contradiction (Contradiction Matrix + 40 Inventive Principles), Physical Contradiction
+                        (Separation Principles), and Su-Field Analysis (76 Standard Solutions)</strong>.</p>
             </div>
 
+            <!-- ── TOOL CONTROLS ── -->
             <div class="content-block">
-                <h2><i class="fas fa-history"></i> History &amp; Origin of TRIZ — Altshuller and the Patent Analysis
-                    Method</h2>
-                <div class="instructions-box">
-                    <ul>
-                        <li>TRIZ was developed by <strong>Genrich Altshuller</strong> beginning in 1946 while working as
-                            a patent examiner in the Soviet Navy. After analyzing thousands of patents across diverse
-                            technical fields, he discovered that inventive problems, regardless of their specific
-                            domain, were solved using a surprisingly small set of universal principles and patterns.
-                        </li>
-                        <li>Altshuller's revolutionary insight was that <strong>innovation follows predictable
-                                patterns</strong> rather than being random acts of genius. His team systematically
-                            analyzed over 200,000 patents to codify these patterns into the foundational TRIZ tools that
-                            form the basis of the methodology today.</li>
-                        <li><strong>Key Historical Contributions:</strong>
-                            <ul>
-                                <li><strong>Genrich Altshuller (1946-1985)</strong>: Developed the core TRIZ framework
-                                    including the 40 Principles, Contradiction Matrix, and the ARIZ algorithm for
-                                    complex problem solving</li>
-                                <li><strong>Boris Zlotin & Alla Zusman (1980s-1990s)</strong>: Advanced LDST (Laws of
-                                    Development of Technical Systems) and expanded TRIZ applications</li>
-                                <li><strong>Vladimir Petrov (1990s-2000s)</strong>: Expanded the 76 Standard Solutions
-                                    and refined the Su-Field methodology</li>
-                                <li><strong>Victor Fey & Eugene Rivin (1990s)</strong>: Adapted TRIZ for Western
-                                    audiences and industrial applications</li>
-                                <li><strong>Simon Litvin (2000s)</strong>: Developed modern physical contradiction
-                                    resolution methods and separation principles</li>
-                                <li><strong>Valeri Souchkov & Michael Orloff (2000s)</strong>: Refined function analysis
-                                    and Su-Field modeling techniques</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                <h2><i class="fas fa-sliders-h"></i> Tool Controls</h2>
+                <p style="margin-bottom:1.25rem; color:#4a5568;">All actions are available from the button bar above.
+                    Here is what each button does:</p>
 
-            <div class="content-block">
-                <h2><i class="fas fa-toolbox"></i> TRIZ Methodology: 40 Principles, Contradiction Matrix &amp; Su-Field
-                    Analysis</h2>
-                <div class="instructions-box">
-                    <ul>
-                        <li>The TRIZ methodology provides a structured approach to problem solving that guides
-                            innovators through a systematic process of analyzing problems, identifying contradictions,
-                            and applying proven solution patterns. The methodology integrates several powerful tools
-                            that work together to transform seemingly intractable problems into solvable challenges.
-                        </li>
-                        <li><strong>LDST - Laws of Development of Technical Systems</strong><br>LDST identifies
-                            fundamental laws that govern how technical systems evolve over time, helping innovators
-                            understand system dynamics and identify natural evolution paths based on Altshuller's
-                            original framework.</li>
-                        <li><strong>Ideal Final Result (IFR)</strong><br>The IFR is a powerful concept that defines the
-                            perfect solution where the system performs its function without any drawbacks, costs, or
-                            harmful effects. Formulating the IFR helps innovators break psychological inertia and focus
-                            on the essential function rather than being constrained by existing implementations.</li>
-                        <li><strong>Technical Contradictions</strong><br>Technical Contradictions occur when improving
-                            one parameter of a system causes another parameter to worsen. For example, making a car
-                            stronger typically makes it heavier. These contradictions are resolved using the
-                            <strong>Contradiction Matrix</strong> and <strong>40 Inventive Principles</strong>, which
-                            provide specific guidance on how to overcome the trade-off.
-                        </li>
-                        <li><strong>40 Inventive Principles</strong><br>The 40 Principles represent the most common
-                            patterns of invention found across all technical fields, from Segmentation and Asymmetry to
-                            Phase Transitions and Composite Materials. Each principle provides concrete strategies for
-                            transforming systems to resolve contradictions and achieve breakthrough improvements.</li>
-                        <li><strong>Contradiction Matrix</strong><br>The matrix systematically maps 39 improving
-                            parameters against 39 worsening parameters to suggest the most relevant principles for
-                            resolving specific technical contradictions. Modern versions (like the 2003 matrix) expand
-                            this to 48 parameters for greater precision and applicability to contemporary engineering
-                            challenges.</li>
-                        <li><strong>Physical Contradictions</strong><br>Physical Contradictions occur when a single
-                            parameter requires opposite states or properties. For example, a coffee cup needs to be hot
-                            to keep coffee warm but cool to hold comfortably. These are resolved using
-                            <strong>Separation Principles</strong> (Separation in Space, Time, Condition, and System
-                            Level) that allow the contradictory requirements to be satisfied simultaneously.
-                        </li>
-                        <li><strong>9 Windows (System Operator)</strong><br>The 9 Windows tool analyzes systems across
-                            three time dimensions (past, present, future) and three system levels (sub-system, system,
-                            super-system). This structured thinking framework helps identify opportunities for
-                            innovation, anticipate future developments, and understand system evolution patterns. By
-                            considering all nine perspectives, innovators can break psychological inertia and discover
-                            solutions that might be missed when focusing only on the present system state.</li>
-                        <li><strong>Function Analysis</strong><br>Function Analysis is a systematic method to map all
-                            interactions between components in a system. Each function is analyzed for its usefulness,
-                            harmfulness, or neutrality, and evaluated for performance (normal, insufficient, excessive).
-                            This creates a comprehensive model of the system that reveals problematic interactions,
-                            identifies opportunities for improvement, and provides a foundation for applying TRIZ
-                            solution tools effectively.</li>
-                        <li><strong>Su-Field Analysis</strong><br>Developed from Altshuller's work on substance-field
-                            modeling, Su-Field analysis represents any technical system as interactions between three
-                            fundamental elements:
-                            <ul>
-                                <li><strong>Substance 1 (S1)</strong>: The object being acted upon or transformed</li>
-                                <li><strong>Substance 2 (S2)</strong>: The tool performing the action or causing the
-                                    transformation</li>
-                                <li><strong>Field (F)</strong>: The energy or force causing the interaction between S1
-                                    and S2</li>
-                            </ul>
-                            The <strong>76 Standard Solutions</strong> provide specific transformations for improving or
-                            resolving problems in Su-Field systems, categorized into five classes from building complete
-                            systems to simplification strategies. This systematic approach ensures that even complex
-                            system interactions can be analyzed and improved methodically.
-                        </li>
-                        <li><strong>Knowledge Effects (Upcoming Feature)</strong><br>This advanced tool will leverage
-                            scientific and engineering effects databases to suggest physical, chemical, or biological
-                            phenomena that can be applied to solve specific problems. By connecting problems with known
-                            scientific effects, innovators can discover breakthrough solutions based on proven
-                            principles from physics, chemistry, biology, and other scientific disciplines.</li>
-                    </ul>
-                </div>
-            </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
 
-            <div class="content-block">
-                <h2><i class="fas fa-tools"></i> How to Use This TRIZ Tool — Step-by-Step Guide</h2>
-                <div class="instructions-box">
-                    <ul>
-                        <li><strong>Load Example:</strong> Click "Load Example" above to populate all tools with
-                            sample data.</li>
-                        <li><strong>Go to TRIZ Tools:</strong> Navigate to the "TRIZ Tools" tab to access all
-                            problem-solving tools.</li>
-                        <li><strong>Step 1 - Define Problem:</strong> Describe the system, its primary useful function,
-                            and main drawback in simple, clear terms.</li>
-                        <li><strong>Step 2 - LDST Analysis:</strong> Select a fundamental law of technical system
-                            development to get strategic guidance.</li>
-                        <li><strong>Step 3 - Formulate Ideal Final Result (IFR):</strong> Define the ideal solution
-                            where the system performs its function without the drawback, costs, or harmful effects.</li>
-                        <li><strong>Step 4 - 9 Windows Analysis:</strong> Analyze the system across three time
-                            dimensions (past, present, future) and three system levels (sub-system, system,
-                            super-system) to identify innovation opportunities.</li>
-                        <li><strong>Step 5 - Function Analysis:</strong> Map all interactions between system components
-                            to identify problematic functions and improvement opportunities.</li>
-                        <li><strong>Step 6 - Technical Contradiction:</strong> Identify when improving one feature makes
-                            another worse. Use the contradiction matrix to find inventive principles.</li>
-                        <li><strong>Step 7 - Physical Contradiction:</strong> Identify when one feature needs opposite
-                            properties. Use separation principles to resolve.</li>
-                        <li><strong>Step 8 - Su-Field Analysis:</strong> Model the problem as interactions between
-                            substances (S1, S2) and fields (F). Identify the problem type and get standard solutions.
-                        </li>
-                        <li><strong>Generate Solutions:</strong> Click "Solve Problem & Generate Report" on the final
-                            tab to receive inventive principles tailored to your contradictions.</li>
-                        <li><strong>Export:</strong> Once the report is generated, you can export it to Excel for your
-                            records and further analysis.</li>
-                    </ul>
-
-                    <div class="infographic-flow">
-                        <div class="flow-step"><i class="fas fa-tasks"></i><strong>1. Define
-                                Problem</strong><span>Analyze the system and its drawback</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>2. LDST
-                                Analysis</strong><span>Apply fundamental laws of technical systems</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. Formulate
-                                IFR</strong><span>Define the Ideal Final Result</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-window-restore"></i><strong>4. 9 Windows
-                            </strong><span>Analyze system across time and levels</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>5. Function
-                                Analysis</strong><span>Map all system interactions</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>6. Technical
-                                Contradiction</strong><span>Improving one feature worsens another</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>7. Physical
-                                Contradiction</strong><span>One feature needs opposite properties</span></div>
-                        <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                        <div class="flow-step"><i class="fas fa-atom"></i><strong>8. Su-Field
-                                Analysis</strong><span>Model system interactions and apply standard solutions</span>
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#6c757d; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">New</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Clears all fields and starts a
+                                fresh TRIZ analysis from scratch.</p>
                         </div>
                     </div>
+
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#0d6efd; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">Load</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Opens a previously saved
+                                <code>.json</code> file and fully restores all TRIZ tool data, including Function
+                                Analysis and Su-Field systems. The file is loaded in <em>read-only</em> mode.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#2ecc71; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">Load Example</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Populates all 8 TRIZ tools with
+                                a pre-built example (coffee mug heat problem). Cycles through multiple examples on
+                                successive clicks. Loaded in read-only mode.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#6c5ce7; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">Revise</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Available when a file is loaded
+                                in read-only mode. Opens a modal to register a revision (date, description, author,
+                                approver) before re-enabling editing.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#2c3e50; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-save"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">Save</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Downloads the complete analysis
+                                as a <code>.json</code> file — all fields, Function Analysis components &amp;
+                                interactions, Su-Field systems, and radio button states. Use this file to reload or
+                                share the analysis.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex; gap:0.85rem; align-items:flex-start; padding:1rem; background:#f8fafc; border-radius:8px; border:1px solid #e1e5e9;">
+                        <div
+                            style="min-width:38px; height:38px; border-radius:6px; background:#c0392b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; flex-shrink:0;">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <strong style="color:#2c3e50;">Export PDF</strong>
+                            <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Generates and downloads a
+                                multi-page PDF of the full <strong>Report</strong> tab — problem definition, IFR, LDST,
+                                9 Windows, Function Analysis, Technical &amp; Physical Contradictions, and Su-Field
+                                solutions.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div
+                    style="margin-top:1.25rem; padding:0.85rem 1rem; background:#fff3cd; border:1px solid #ffc107; border-left:4px solid #ffc107; border-radius:6px; font-size:0.9rem; color:#856404;">
+                    <i class="fas fa-lock" style="margin-right:0.4rem;"></i>
+                    <strong>Read-only mode:</strong> Files loaded via <em>Load</em> or <em>Load Example</em> open in
+                    read-only mode to protect the original data. Click <strong>Revise</strong> to register a change and
+                    re-enable editing. When you start fresh with <strong>New</strong>, editing is always enabled.
+                </div>
+            </div>
+
+            <!-- ── HOW TO USE / WORKFLOW ── -->
+            <div class="content-block">
+                <h2><i class="fas fa-route"></i> How to Use — Step-by-Step Workflow</h2>
+
+                <div
+                    style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem; margin-bottom:1.5rem;">
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0f7ff,#e3f2fd); border-radius:8px; border-left:4px solid #3498db;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-play-circle"
+                                style="color:#2ecc71; margin-right:0.4rem;"></i>Step 0 — Start</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Click <strong>New</strong> to
+                            begin a fresh analysis, <strong>Load Example</strong> to explore the tool with sample data,
+                            or <strong>Load</strong> to continue a previously saved session.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-tasks"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 1 — Define Problem</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">In <em>TRIZ Tools → 1. Define
+                                Problem</em>, describe the system, its primary useful function, and the main drawback in
+                            simple terms.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-project-diagram"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 2 — LDST Analysis</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Select the system's lifecycle
+                            stage (Birth, Growth, Maturity, Decline, Transition) to get the most relevant laws of
+                            technical systems development.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-rocket"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 3 — Ideal Final Result</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Formulate the IFR: "The system
+                            <em>itself</em> performs its function without the drawback, costs, or harmful effects." This
+                            breaks psychological inertia.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-window-restore"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 4 — 9 Windows</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Analyze the system across 3 time
+                            dimensions (past/present/future) and 3 system levels (sub-system/system/super-system) to
+                            discover innovation opportunities.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-project-diagram"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 5 — Function Analysis</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Add system and supersystem
+                            components, check interactions, fill in the function table (carrier → action → target,
+                            useful/harmful, performance level), and view the auto-generated diagram.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-exchange-alt"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 6 — Technical
+                            Contradiction</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Select the improving and worsening
+                            features from the Classic (39-param) or 2003 (48-param) Contradiction Matrix. The tool
+                            recommends specific Inventive Principles.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-exchange-alt"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 7 — Physical Contradiction</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Use the intersection-test
+                            algorithm: answer whether the opposing demands overlap in space/time, then follow the guided
+                            path to select a Separation Principle (Space, Time, Condition, or System Level).</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fff0,#e8f5e9); border-radius:8px; border-left:4px solid #27ae60;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-atom"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Step 8 — Su-Field Analysis</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Model the problem as a triangle of
+                            Substance 1 (object), Substance 2 (tool), and Field. Select the problem type to get
+                            recommended Standard Solutions from the 76 Su-Field Standards.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#fff8e1,#ffecb3); border-radius:8px; border-left:4px solid #f39c12;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-file-alt"
+                                style="color:#f39c12; margin-right:0.4rem;"></i>Report — Auto-generated</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Click the <strong>Report</strong>
+                            tab at any time — the full solution path report is generated <em>automatically</em> from all
+                            8 tools. No button to click. Scroll through sections for each analysis module.</p>
+                    </div>
+
+                    <div
+                        style="padding:0.85rem 1rem; background:linear-gradient(135deg,#f3e5f5,#e1bee7); border-radius:8px; border-left:4px solid #9b59b6;">
+                        <strong style="color:#2c3e50; font-size:0.95rem;"><i class="fas fa-save"
+                                style="color:#2c3e50; margin-right:0.4rem;"></i>Save &amp; Export</strong>
+                        <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Click <strong>Save</strong> to
+                            download a <code>.json</code> file you can reload at any time. Click <strong>Export
+                                PDF</strong> to download a print-ready PDF of the full report.</p>
+                    </div>
+
+                </div>
+
+                <!-- Infographic flow -->
+                <div class="infographic-flow" style="margin-top:1.5rem;">
+                    <div class="flow-step"><i class="fas fa-tasks"></i><strong>1. Define</strong><span>System &amp;
+                            drawback</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>2.
+                            LDST</strong><span>Development laws</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-rocket"></i><strong>3. IFR</strong><span>Ideal Final
+                            Result</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-window-restore"></i><strong>4. 9 Windows</strong><span>Time
+                            &amp; system levels</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-project-diagram"></i><strong>5. Function</strong><span>Map
+                            interactions</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>6.
+                            Technical</strong><span>Contradiction matrix</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-exchange-alt"></i><strong>7.
+                            Physical</strong><span>Separation principles</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"><i class="fas fa-atom"></i><strong>8. Su-Field</strong><span>Standard
+                            solutions</span></div>
+                    <div class="flow-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                    <div class="flow-step"
+                        style="border-color:#f39c12; background:linear-gradient(135deg,#fff8e1,#ffecb3);"><i
+                            class="fas fa-file-alt"
+                            style="color:#f39c12;"></i><strong>Report</strong><span>Auto-generated</span></div>
+                </div>
+            </div>
+
+            <!-- ── TRIZ METHODOLOGY REFERENCE ── -->
+            <div class="content-block">
+                <h2><i class="fas fa-toolbox"></i> TRIZ Methodology — Quick Reference</h2>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #3498db;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-project-diagram"
+                                style="color:#3498db; margin-right:0.4rem;"></i>LDST (8 Laws)</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">Fundamental laws governing how
+                            technical systems evolve — from System Completeness and Energy Conductivity to Ideality,
+                            Micro-transition, and S-Field Complexity. Selection is guided by the system's lifecycle
+                            stage.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #27ae60;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-rocket"
+                                style="color:#27ae60; margin-right:0.4rem;"></i>Ideal Final Result (IFR)</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">The perfect solution where the
+                            system delivers its function without drawbacks, costs, or harmful effects. Formulating the
+                            IFR breaks psychological inertia and focuses problem-solving on essential functions.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #9b59b6;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-window-restore"
+                                style="color:#9b59b6; margin-right:0.4rem;"></i>9 Windows (System Operator)</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">A 3×3 matrix of time
+                            (past/present/future) × system level (sub/system/super-system). Reveals hidden innovation
+                            opportunities and evolution patterns by forcing analysis of all nine perspectives
+                            simultaneously.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #e74c3c;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-project-diagram"
+                                style="color:#e74c3c; margin-right:0.4rem;"></i>Function Analysis</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">Systematically maps every
+                            interaction between components as a function (carrier → action → object). Each function is
+                            classified as useful/harmful and rated for performance (normal/insufficient/excessive).
+                            Visualized as a Mermaid diagram.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #f39c12;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-exchange-alt"
+                                style="color:#f39c12; margin-right:0.4rem;"></i>Technical Contradiction</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">When improving one engineering
+                            parameter worsens another. Resolved using the <strong>Contradiction Matrix</strong> (Classic
+                            39×39 or 2003 48×48) which recommends specific <strong>Inventive Principles</strong> from
+                            Altshuller's 40 Principles.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #1abc9c;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-exchange-alt"
+                                style="color:#1abc9c; margin-right:0.4rem;"></i>Physical Contradiction</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">When a single parameter must
+                            simultaneously have opposite properties. Resolved through <strong>Separation
+                                Principles</strong>: in Space, in Time, in Condition (relation), or in System Level —
+                            selected via an intersection-test algorithm.</p>
+                    </div>
+
+                    <div style="padding:1rem; background:#f8fafc; border-radius:8px; border-top:3px solid #2c3e50;">
+                        <strong style="color:#2c3e50;"><i class="fas fa-atom"
+                                style="color:#2c3e50; margin-right:0.4rem;"></i>Su-Field Analysis &amp; 76
+                            Standards</strong>
+                        <p style="font-size:0.88rem; color:#555; margin:0.4rem 0 0;">Models any technical system as a
+                            triangle of <strong>S1</strong> (object), <strong>S2</strong> (tool), and
+                            <strong>Field</strong> (energy type). Problem types (insufficient, harmful, missing,
+                            difficult, excessive, inefficient) map to specific standard solutions from the 76 Su-Field
+                            Standards across 5 classes.</p>
+                    </div>
+
+                </div>
+
+                <div
+                    style="margin-top:1.25rem; padding:0.85rem 1rem; background:#e8f4fc; border-left:4px solid #3498db; border-radius:6px; font-size:0.85rem; color:#1a3c5e;">
+                    <i class="fas fa-graduation-cap" style="margin-right:0.4rem;"></i>
+                    <strong>Source:</strong> Altshuller, G. S. (1984). <em>Creativity as an Exact Science</em>. Gordon
+                    and Breach. • Mann, D. &amp; Dewulf, S. (2003). <em>Matrix 2003: Updating the TRIZ Contradiction
+                        Matrix</em>. CREAX Press. • Litvin, S. (2000). <em>Principles for Solving Physical
+                        Contradictions</em>.
                 </div>
             </div>
 
@@ -3180,24 +3356,12 @@
                         class="fas fa-arrow-left"></i>
                     Previous:
                     Info</button>
-                <button class="btn-next-tab" onclick="switchMainTab('tab-solve')">Next: Solve & Report <i
+                <button class="btn-next-tab" onclick="switchMainTab('tab-solve')">Next: Report <i
                         class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <div id="tab-solve" class="tab-content">
-            <div class="solver-step" style="text-align: center; padding: 30px;">
-                <h2 style="color: var(--secondary-color);">Ready to Generate Your TRIZ Solution Report?</h2>
-                <p>This will gather all data from Define, LDST, IFR, 9 Windows, Function Analysis, Technical
-                    Contradiction, Physical Contradiction, and
-                    Su-Field
-                    analysis.</p>
-                <button id="solve-button" onclick="solveProblem()"
-                    style="max-width: 400px; margin: 0 auto; display: inline-block;">
-                    <i class="fas fa-calculator"></i> Solve Problem & Generate Report
-                </button>
-            </div>
-
             <div id="results-container" class="hidden"></div>
 
             <div class="tab-nav-buttons">
@@ -3244,6 +3408,8 @@
         }
 
         // ===== VARIABLES GLOBALES =====
+        const SIGMA_ICON_B64 = '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';
+
         let problemData = {};
         let exampleIndex = 0;
         let improvingFeatureIndex = null;
@@ -3292,6 +3458,11 @@
             // Activar botón correspondiente
             const activeBtn = document.querySelector(`button[onclick="switchMainTab('${tabId}')"]`);
             if (activeBtn) activeBtn.classList.add('active');
+
+            // Si estamos en la pestaña del reporte, generarlo automáticamente
+            if (tabId === 'tab-solve') {
+                setTimeout(() => { solveProblem(); }, 100);
+            }
 
             // Si estamos en la pestaña de herramientas, asegurar que se muestra la primera subtab
             if (tabId === 'tab-tools') {
@@ -3397,6 +3568,8 @@
                 if (confirm('Reset all fields and start a new TRIZ analysis?')) {
                     resetTool();
                     setReadOnly(false);
+                    switchMainTab('tab-tools');
+                    switchSubTab('sub-tab-define');
                     showNotification('New analysis started.');
                 }
             });
@@ -3406,7 +3579,7 @@
             document.getElementById('loadTrizInput').addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
-                loadTrizFromExcel(file, true);
+                loadFromJson(file);
                 e.target.value = '';
             });
             document.getElementById('globalReviseBtn').addEventListener('click', function () {
@@ -3416,7 +3589,8 @@
                 }
                 openReviseModal();
             });
-            document.getElementById('globalExportBtn').addEventListener('click', exportToExcel);
+            document.getElementById('globalSaveBtn').addEventListener('click', saveToJson);
+            document.getElementById('globalPdfBtn').addEventListener('click', exportToPDF);
 
             // Inicializar Mermaid para Function Analysis
             if (typeof mermaid !== 'undefined') {
@@ -3598,6 +3772,7 @@
             console.log("Resetting tool...");
 
             problemData = {};
+            revisionHistory = [];
 
             // Reset específico de radio buttons
             forceRadioButtonUpdate('classic');
@@ -3923,6 +4098,7 @@
 
         function loadExample() {
             clearResults();
+            revisionHistory = [];
             document.getElementById('problem-system').value = '';
             document.getElementById('problem-function').value = '';
             document.getElementById('problem-harm').value = '';
@@ -5316,7 +5492,46 @@
         function displayResults() {
             try {
                 const resultsDiv = document.getElementById('results-container');
-                let html = '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
+                let html = '';
+
+                // ── REVISION HISTORY (always shown) ──────────────────────────
+                html += `<div class="solver-step" style="border-left:4px solid #6c5ce7; background:#faf9ff; margin-bottom:1.25rem;">
+                    <h4 style="color:#6c5ce7; border-bottom-color:#6c5ce7;">
+                        <i class="fas fa-history"></i> Revision History
+                    </h4>`;
+
+                if (revisionHistory.length === 0) {
+                    html += `<p style="color:#888; font-style:italic; margin:0;">
+                        No revisions registered. Use the <strong>Revise</strong> button to log changes before editing a loaded document.
+                    </p>`;
+                } else {
+                    html += `<div style="overflow-x:auto;">
+                        <table class="trends-table" style="width:100%; font-size:0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th style="width:45px; text-align:center;">Rev.</th>
+                                    <th style="width:110px;">Date</th>
+                                    <th>Description of Change</th>
+                                    <th style="width:150px;">Changed By</th>
+                                    <th style="width:150px;">Approved By</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    revisionHistory.forEach((r, i) => {
+                        html += `<tr>
+                            <td style="text-align:center; font-weight:700;">${i + 1}</td>
+                            <td>${esc(r.date)}</td>
+                            <td>${esc(r.desc)}</td>
+                            <td>${esc(r.by)}</td>
+                            <td>${esc(r.approved)}</td>
+                        </tr>`;
+                    });
+                    html += `</tbody></table></div>`;
+                }
+                html += `</div>`;
+
+                // ── MAIN REPORT TITLE ─────────────────────────────────────────
+                html += '<h3><i class="fas fa-check-circle"></i> Solution Path Report</h3>';
 
                 // PROBLEM DEFINITION (New Section)
                 html += `<div class="solver-step">
@@ -5830,7 +6045,7 @@
                     html += `</div>`;
                 }
 
-                html += `<div class="results-actions"><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button></div>`;
+                html += `<div class="results-actions"></div>`;
 
                 resultsDiv.innerHTML = html;
                 resultsDiv.classList.remove('hidden');
@@ -5990,150 +6205,380 @@
             }
         }
 
-        function exportToExcel() {
-            if (Object.keys(problemData).length === 0) {
-                alert("No data to export. Please solve a problem first.");
+        /* =========================================================
+           SAVE TO JSON
+        ========================================================= */
+        function saveToJson() {
+            const state = collectStateForJson();
+            if (!state) {
+                alert('No data to save. Fill in at least one field first.');
+                return;
+            }
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'TRIZ_Analysis_Sigma_Exacta_' + new Date().toISOString().slice(0, 10) + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('TRIZ file saved as JSON.');
+        }
+
+        function collectStateForJson() {
+            const fields = {};
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+                if (el.id) fields[el.id] = el.value;
+            });
+            document.querySelectorAll('select').forEach(el => {
+                if (el.id) fields[el.id] = el.value;
+            });
+            document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+                if (el.name) fields['radio_' + el.name] = el.value;
+            });
+
+            // Function Analysis
+            const functionRows = [];
+            document.querySelectorAll('#function-table-body tr').forEach(row => {
+                functionRows.push({
+                    carrier: row.querySelector('.function-carrier')?.value || '',
+                    action: row.querySelector('.function-action')?.value || '',
+                    target: row.querySelector('.function-target')?.value || '',
+                    category: row.querySelector('.function-category')?.value || 'U',
+                    performance: row.querySelector('.function-performance')?.value || 'N',
+                    comment: row.querySelector('.function-comment')?.value || ''
+                });
+            });
+
+            // Su-Field systems
+            const sufieldSystems = [];
+            document.querySelectorAll('.sufield-system').forEach(el => {
+                sufieldSystems.push({
+                    object: el.querySelector('.sufield-object')?.value || '',
+                    tool: el.querySelector('.sufield-tool')?.value || '',
+                    field: el.querySelector('.sufield-field')?.value || '',
+                    type: el.querySelector('.sufield-type')?.value || 'insufficient'
+                });
+            });
+
+            return {
+                fields,
+                functionAnalysis: {
+                    mainFunction: functionAnalysisData.mainFunction,
+                    targetComponent: functionAnalysisData.targetComponent,
+                    systemComponents: functionAnalysisData.systemComponents,
+                    supersystemComponents: functionAnalysisData.supersystemComponents,
+                    interactions: functionAnalysisData.interactions,
+                    functionRows
+                },
+                sufieldSystems,
+                revisionHistory,
+                savedAt: new Date().toISOString()
+            };
+        }
+
+        /* =========================================================
+           LOAD FROM JSON
+        ========================================================= */
+        function loadFromJson(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const state = JSON.parse(e.target.result);
+                    resetTool();
+
+                    // Restore simple fields
+                    if (state.fields) {
+                        Object.keys(state.fields).forEach(key => {
+                            if (key.startsWith('radio_')) {
+                                const name = key.replace('radio_', '');
+                                const radio = document.querySelector('input[name="' + name + '"][value="' + state.fields[key] + '"]');
+                                if (radio) radio.checked = true;
+                            } else {
+                                const el = document.getElementById(key);
+                                if (el && el.tagName !== 'BUTTON') el.value = state.fields[key];
+                            }
+                        });
+                    }
+
+                    // Restore Function Analysis
+                    if (state.functionAnalysis) {
+                        const fa = state.functionAnalysis;
+                        document.getElementById('main-function').value = fa.mainFunction || '';
+                        document.getElementById('target-component').value = fa.targetComponent || '';
+                        functionAnalysisData.mainFunction = fa.mainFunction || '';
+                        functionAnalysisData.targetComponent = fa.targetComponent || '';
+                        functionAnalysisData.systemComponents = fa.systemComponents || [];
+                        functionAnalysisData.supersystemComponents = fa.supersystemComponents || [];
+                        functionAnalysisData.interactions = fa.interactions || {};
+                        updateComponentLists();
+                        updateFunctionAnalysis();
+                        if (fa.functionRows && fa.functionRows.length > 0) {
+                            setTimeout(() => {
+                                fa.functionRows.forEach(row => {
+                                    addFunctionRow();
+                                    const rows = document.querySelectorAll('#function-table-body tr');
+                                    const last = rows[rows.length - 1];
+                                    if (last) {
+                                        last.querySelector('.function-carrier').value = row.carrier || '';
+                                        last.querySelector('.function-action').value = row.action || '';
+                                        last.querySelector('.function-target').value = row.target || '';
+                                        last.querySelector('.function-category').value = row.category || 'U';
+                                        last.querySelector('.function-performance').value = row.performance || 'N';
+                                        last.querySelector('.function-comment').value = row.comment || '';
+                                    }
+                                });
+                                updateFunctionDiagram();
+                            }, 150);
+                        }
+                    }
+
+                    // Restore Su-Field systems
+                    if (state.sufieldSystems && state.sufieldSystems.length > 0) {
+                        document.getElementById('sufield-systems-container').innerHTML = '';
+                        globalSuFieldCounter = 0;
+                        state.sufieldSystems.forEach((sys, idx) => {
+                            addSuFieldSystem();
+                            setTimeout(() => {
+                                const el = document.getElementById('sufield-systems-container').children[idx];
+                                if (el) {
+                                    el.querySelector('.sufield-object').value = sys.object || '';
+                                    el.querySelector('.sufield-tool').value = sys.tool || '';
+                                    el.querySelector('.sufield-field').value = sys.field || '';
+                                    el.querySelector('.sufield-type').value = sys.type || 'insufficient';
+                                    updateSuFieldDiagram(el);
+                                }
+                            }, 60 * (idx + 1));
+                        });
+                    }
+
+                    // Trigger LDST update
+                    setTimeout(() => { updateLDSTRecommendations(); populateDropdowns(); createContradictionMatrix(); }, 200);
+
+                    // Restore revision history
+                    if (Array.isArray(state.revisionHistory)) {
+                        revisionHistory = state.revisionHistory;
+                    }
+
+                    setReadOnly(true);
+                    switchMainTab('tab-tools');
+                    switchSubTab('sub-tab-define');
+                    showNotification('File loaded in read-only mode. Click Revise to edit.');
+                } catch (err) {
+                    console.error('Load error:', err);
+                    alert('Error reading the file. Make sure it was saved by this tool.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        /* =========================================================
+           EXPORT TO PDF — two-level renderer, no cut-off
+           Strategy:
+             1. Each top-level section (solver-step) is rendered.
+             2. If a section fits on the current or a fresh page → place it whole.
+             3. If it is taller than one page → render its block children one
+                by one (same logic, one level deeper).
+             4. Last resort: pixel-slice keeping footer space intact.
+        ========================================================= */
+        async function exportToPDF() {
+            const resultsEl = document.getElementById('results-container');
+            if (resultsEl.classList.contains('hidden')) {
+                solveProblem();
+                await new Promise(r => setTimeout(r, 700));
+            }
+            if (resultsEl.classList.contains('hidden')) {
+                alert('No report to export. Fill in the TRIZ tools first and switch to the Report tab.');
                 return;
             }
 
-            const wb = XLSX.utils.book_new();
-            const ws_data = [];
+            showNotification('Generating PDF… this may take a few seconds.');
 
-            ws_data.push(["TRIZ Problem Solving Report"]);
-            ws_data.push(["Company: Sigma Exacta"]);
-            ws_data.push([`Date: ${new Date().toLocaleDateString()}`]);
-            ws_data.push([`Matrix Version: ${currentMatrixVersion === 'classic' ? 'Classic (39 parameters)' : '2003 (48 parameters)'}`]);
-            ws_data.push([]);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageW = doc.internal.pageSize.getWidth();   // 210 mm
+                const pageH = doc.internal.pageSize.getHeight();  // 297 mm
+                const margin = 14;
+                const contentW = pageW - margin * 2;                 // 182 mm
+                const FOOTER_H = 16;   // mm reserved at bottom for footer
+                const LOGO_SZ = 18;   // mm
 
-            // LDST
-            ws_data.push(["Laws of Development of Technical Systems (LDST)"]);
-            ws_data.push(["Life Cycle Stage", document.getElementById('lifecycle-stage').options[document.getElementById('lifecycle-stage').selectedIndex].text]);
-            ws_data.push(["Recommended Laws"]);
-            if (problemData.ldst && problemData.ldst.recommendedLaws) {
-                problemData.ldst.recommendedLaws.forEach(law => {
-                    ws_data.push(["", law.name]);
-                    ws_data.push(["", "Related Principles", law.principles.join(', ')]);
-                });
-            }
-            ws_data.push([]);
+                let cursorY = margin + LOGO_SZ + 6;   // starts below page-1 header (~36 mm)
 
-            ws_data.push(["Problem Definition"]);
-            ws_data.push(["System/Object", problemData.system]);
-            ws_data.push(["Primary Function", problemData.function]);
-            ws_data.push(["Main Drawback", problemData.harm]);
-            ws_data.push([]);
-            ws_data.push(["Ideal Final Result (IFR)"]);
-            ws_data.push([problemData.ifr]);
-            ws_data.push([]);
+                // ── CONSTANTS ──────────────────────────────────────────────────
+                const stopY = () => pageH - FOOTER_H;  // max Y before footer
+                const freshSpace = () => stopY() - margin; // usable H on a blank page
 
-            // 9 Windows
-            ws_data.push(["9 Windows Analysis"]);
-            ws_data.push(["Super-System Past", problemData.nineWindows.superPast]);
-            ws_data.push(["Super-System Present", problemData.nineWindows.superPresent]);
-            ws_data.push(["Super-System Future", problemData.nineWindows.superFuture]);
-            ws_data.push(["System Past", problemData.nineWindows.systemPast]);
-            ws_data.push(["System Present", problemData.nineWindows.systemPresent]);
-            ws_data.push(["System Future", problemData.nineWindows.systemFuture]);
-            ws_data.push(["Sub-System Past", problemData.nineWindows.subPast]);
-            ws_data.push(["Sub-System Present", problemData.nineWindows.subPresent]);
-            ws_data.push(["Sub-System Future", problemData.nineWindows.subFuture]);
-            ws_data.push([]);
+                // ── HELPERS ────────────────────────────────────────────────────
+                function newPage() {
+                    doc.addPage();
+                    cursorY = margin;
+                }
 
-            // Function Analysis
-            if (problemData.functionAnalysis) {
-                ws_data.push(["Function Analysis"]);
-                ws_data.push(["Main Function", problemData.functionAnalysis.mainFunction]);
-                ws_data.push(["Target Component", problemData.functionAnalysis.targetComponent]);
-                ws_data.push([]);
-
-                ws_data.push(["System Components"]);
-                problemData.functionAnalysis.systemComponents.forEach(component => {
-                    ws_data.push(["", component]);
-                });
-                ws_data.push([]);
-
-                ws_data.push(["Supersystem Components"]);
-                problemData.functionAnalysis.supersystemComponents.forEach(component => {
-                    ws_data.push(["", component]);
-                });
-                ws_data.push([]);
-
-                ws_data.push(["Functions"]);
-                ws_data.push(["Component", "Action", "Target", "Category", "Performance", "Comment"]);
-                problemData.functionAnalysis.functions.forEach(func => {
-                    ws_data.push([func.carrier, func.action, func.target, func.category === 'useful' ? 'Useful' : 'Harmful',
-                    func.performance === 'normal' ? 'Normal' : (func.performance === 'insufficient' ? 'Insufficient' : 'Excessive'),
-                    func.comment || '']);
-                });
-                ws_data.push([]);
-            }
-
-            // Technical Contradiction
-            if (problemData.technicalContradiction) {
-                ws_data.push(["Technical Contradiction"]);
-                ws_data.push(["Type", "Technical Contradiction"]);
-                ws_data.push(["Improving Feature", problemData.technicalContradiction.improvingFeature]);
-                ws_data.push(["Worsening Feature", problemData.technicalContradiction.worseningFeature]);
-
-                if (problemData.technicalContradiction.recommendedPrinciples && problemData.technicalContradiction.recommendedPrinciples.length > 0) {
-                    ws_data.push(["Recommended Inventive Principles (from Technical Contradiction)"]);
-                    ws_data.push(["Principle ID", "Name", "Description"]);
-                    problemData.technicalContradiction.recommendedPrinciples.forEach(p => {
-                        ws_data.push([`Principle ${p.id}`, p.name, p.desc]);
+                // Capture one DOM element at full content width
+                async function capture(el) {
+                    return html2canvas(el, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        width: resultsEl.offsetWidth,
                     });
                 }
-                ws_data.push([]);
-            }
 
-            // Physical Contradiction (NUEVO ALGORITMO)
-            if (problemData.physicalContradiction) {
-                ws_data.push(["Physical Contradiction"]);
-                ws_data.push(["Type", "Physical Contradiction"]);
-                ws_data.push(["Conflicting Parameter", problemData.physicalContradiction.conflictingParameter]);
-                ws_data.push(["Intersection Test", problemData.physicalContradiction.intersectionTest]);
-                ws_data.push(["Time/Space Separation", problemData.physicalContradiction.timeSeparation]);
-                ws_data.push(["Separation Type", problemData.physicalContradiction.separationType]);
-                ws_data.push(["Recommended Strategy", problemData.physicalContradiction.strategy]);
-                ws_data.push(["Categories", problemData.physicalContradiction.categories.join(', ')]);
-
-                if (problemData.physicalContradiction.recommendedPrinciples && problemData.physicalContradiction.recommendedPrinciples.length > 0) {
-                    ws_data.push(["Recommended Inventive Principles (from Physical Contradiction)"]);
-                    ws_data.push(["Principle ID", "Name", "Description", "Category"]);
-                    problemData.physicalContradiction.recommendedPrinciples.forEach(p => {
-                        ws_data.push([`Principle ${p.id}`, p.name, p.desc, p.category || '']);
-                    });
+                // Height in mm for a canvas captured at contentW
+                function canvasHmm(c) {
+                    return c.height / (c.width / contentW);
                 }
-                ws_data.push([]);
-            }
 
-            // Su-Field Analysis
-            ws_data.push(["Su-Field Analysis"]);
-
-            if (problemData.sufield && problemData.sufield.systems && problemData.sufield.systems.length > 0) {
-                problemData.sufield.systems.forEach((system, index) => {
-                    ws_data.push([]);
-                    ws_data.push([`System ${index + 1}`]);
-                    ws_data.push(["Object (S1)", system.object]);
-                    ws_data.push(["Tool (S2)", system.tool]);
-                    ws_data.push(["Field (F)", system.field]);
-                    ws_data.push(["Problem Type", system.type]);
-                    ws_data.push(["Suggestion", system.suggestion.replace(/<[^>]*>?/gm, '')]);
-
-                    if (system.standardSolutions && system.standardSolutions.length > 0) {
-                        ws_data.push(["Recommended Standard Solutions"]);
-                        ws_data.push(["Solution ID", "Title", "Description"]);
-                        system.standardSolutions.forEach(solution => {
-                            ws_data.push([solution.id, solution.title, solution.description]);
-                        });
+                // Pixel-slice a canvas across pages, always leaving footer space
+                async function sliceCanvas(srcCanvas) {
+                    const pxPerMm = srcCanvas.width / contentW;
+                    let srcY = 0, remaining = srcCanvas.height;
+                    while (remaining > 0) {
+                        const avail = stopY() - cursorY;
+                        if (avail < 4) { newPage(); continue; }
+                        const fitPx = Math.floor(avail * pxPerMm);
+                        const slicePx = Math.min(fitPx, remaining);
+                        const sliceHmm = slicePx / pxPerMm;
+                        const sc = document.createElement('canvas');
+                        sc.width = srcCanvas.width; sc.height = slicePx;
+                        const ctx = sc.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, sc.width, slicePx);
+                        ctx.drawImage(srcCanvas, 0, srcY, srcCanvas.width, slicePx,
+                            0, 0, srcCanvas.width, slicePx);
+                        doc.addImage(sc.toDataURL('image/png'), 'PNG',
+                            margin, cursorY, contentW, sliceHmm);
+                        cursorY += sliceHmm;
+                        srcY += slicePx;
+                        remaining -= slicePx;
+                        if (remaining > 0) newPage();
                     }
-                });
-            }
+                }
 
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            ws['!cols'] = [{ wch: 25 }, { wch: 60 }, { wch: 80 }];
-            XLSX.utils.book_append_sheet(wb, ws, "TRIZ Report");
-            const dateStr = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(wb, `TRIZ_Report_Sigma_Exacta_${dateStr}.xlsx`);
+                // Place one DOM element intelligently.
+                //  • Fits current page                      → place here.
+                //  • Fits a fresh page                      → new page, place.
+                //  • Bigger than one page                   → render block-children
+                //                                             recursively (depth ≤ 3).
+                //  • No splittable children / depth limit   → pixel-slice.
+                //
+                // ORPHAN CONTROL: a non-last child that fits on the current page
+                // is moved to the next page when the remaining space after it is
+                // less than MIN_AFTER mm — this prevents a section title from being
+                // stranded alone at the bottom while its content goes to page N+1.
+                const MIN_AFTER = 55; // mm: minimum space required after a non-last child
+
+                async function placeEl(el, gapBefore, depth) {
+                    depth = (depth === undefined) ? 0 : depth;
+                    if (!el || el.offsetHeight < 2) return;
+                    if (gapBefore) cursorY += gapBefore;
+
+                    const c = await capture(el);
+                    const hmm = canvasHmm(c);
+
+                    // ── fits on current page ──
+                    if (hmm <= stopY() - cursorY) {
+                        await sliceCanvas(c);
+                        return;
+                    }
+                    // ── fits on a blank page ──
+                    if (hmm <= freshSpace()) {
+                        newPage();
+                        await sliceCanvas(c);
+                        return;
+                    }
+
+                    // ── too tall: split into children ──
+                    const kids = Array.from(el.children).filter(k => k.offsetHeight > 4);
+                    if (kids.length > 1 && depth < 3) {
+                        for (let i = 0; i < kids.length; i++) {
+                            if (i > 0) cursorY += 3;          // inter-child gap
+
+                            // Capture child to know its height before deciding placement
+                            const kc = await capture(kids[i]);
+                            const khmm = canvasHmm(kc);
+                            const avail = stopY() - cursorY;
+                            const isNotLast = i < kids.length - 1;
+
+                            if (khmm <= avail) {
+                                // Child fits on current page.
+                                // Orphan check: if it's not the last sibling and the
+                                // remaining space after it is less than MIN_AFTER,
+                                // push it (and the title it represents) to the next page.
+                                if (isNotLast && (avail - khmm) < MIN_AFTER) {
+                                    newPage();
+                                }
+                                await sliceCanvas(kc);
+
+                            } else if (khmm <= freshSpace()) {
+                                // Doesn't fit here, fits on a fresh page
+                                newPage();
+                                await sliceCanvas(kc);
+
+                            } else {
+                                // Still larger than one full page → recurse deeper
+                                // (cursorY already accounts for the gap added above)
+                                await placeEl(kids[i], 0, depth + 1);
+                            }
+                        }
+                    } else {
+                        // Can't split further → pixel-slice as last resort
+                        await sliceCanvas(c);
+                    }
+                }
+
+                // ── PAGE-1 HEADER ──────────────────────────────────────────────
+                doc.addImage('data:image/png;base64,' + SIGMA_ICON_B64,
+                    'PNG', margin, margin - 2, LOGO_SZ, LOGO_SZ);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(44, 62, 80);
+                doc.text('TRIZ Analysis Report', margin + LOGO_SZ + 5, margin + 5);
+
+                // Subtitle — clipped to available width so it never reaches the edge
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(127, 140, 141);
+                const sysVal = document.getElementById('problem-system').value || 'Not specified';
+                const sysRaw = 'System: ' + sysVal + '  •  Sigma Exacta  •  ' + new Date().toLocaleDateString();
+                const maxSubW = contentW - LOGO_SZ - 8;   // mm available for subtitle
+                const subLines = doc.splitTextToSize(sysRaw, maxSubW);
+                doc.text(subLines[0], margin + LOGO_SZ + 5, margin + 11);
+
+                doc.setDrawColor(44, 62, 80);
+                doc.setLineWidth(0.5);
+                doc.line(margin, margin + LOGO_SZ + 2, pageW - margin, margin + LOGO_SZ + 2);
+
+                // ── SECTIONS ───────────────────────────────────────────────────
+                const sections = Array.from(resultsEl.children).filter(el => el.offsetHeight > 0);
+                for (let s = 0; s < sections.length; s++) {
+                    await placeEl(sections[s], s === 0 ? 0 : 4);
+                }
+
+                // ── FOOTERS (all pages, after page count is final) ─────────────
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.3);
+                    doc.line(margin, pageH - 12, pageW - margin, pageH - 12);
+                    doc.addImage('data:image/png;base64,' + SIGMA_ICON_B64,
+                        'PNG', margin, pageH - 11, 6, 6);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7.5);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Sigma Exacta — TRIZ Analysis Report', margin + 8, pageH - 7);
+                    doc.text('Page ' + i + ' / ' + totalPages, pageW - margin, pageH - 7, { align: 'right' });
+                }
+
+                doc.save('TRIZ_Report_Sigma_Exacta_' + new Date().toISOString().slice(0, 10) + '.pdf');
+                showNotification('PDF exported successfully.');
+            } catch (err) {
+                console.error('PDF export error:', err);
+                alert('Error generating PDF. Please try again.');
+            }
         }
 
         function getStrategyDescription(strategy) {
@@ -6257,6 +6702,7 @@
            READ-ONLY MODE
         ========================================================= */
         let isReadOnly = false;
+        let revisionHistory = [];   // [{date, desc, by, approved}]
         const TRIZ_LS_KEY = 'triz_tool_state_v1';
 
         function setReadOnly(val) {
@@ -6300,6 +6746,7 @@
                 alert('Please fill in all revision fields.');
                 return;
             }
+            revisionHistory.push({ date, desc, by, approved });
             setReadOnly(false);
             closeReviseModal();
             switchMainTab('tab-tools');
@@ -6344,48 +6791,6 @@
                 }
                 return true;
             } catch (e) { console.warn('TRIZ load failed:', e); return false; }
-        }
-
-        /* =========================================================
-           LOAD FROM EXCEL (generated by this tool's Export)
-        ========================================================= */
-        function loadTrizFromExcel(file, readOnly) {
-            const reader = new FileReader();
-            reader.onload = function (evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const wb = XLSX.read(data, { type: 'array' });
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-
-                    // Reset tool first
-                    resetTool();
-
-                    // Try to populate key fields from rows
-                    const fieldMap = {
-                        'Problem Statement': 'problem-statement',
-                        'Desired Result (IFR)': 'ifr-input',
-                        'Life Cycle Stage': 'lifecycle-stage',
-                    };
-
-                    rows.forEach(row => {
-                        const label = String(row[0] || '').trim();
-                        const value = String(row[1] || '').trim();
-                        if (fieldMap[label]) {
-                            const el = document.getElementById(fieldMap[label]);
-                            if (el) el.value = value;
-                        }
-                    });
-
-                    setReadOnly(readOnly);
-                    switchMainTab('tab-tools');
-                    showNotification(readOnly ? 'File loaded in read-only mode.' : 'File loaded successfully.');
-                } catch (err) {
-                    console.error('Load error:', err);
-                    alert('Error reading the file. Make sure it was exported by this tool.');
-                }
-            };
-            reader.readAsArrayBuffer(file);
         }
 
         /* =========================================================
