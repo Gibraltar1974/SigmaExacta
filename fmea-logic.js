@@ -695,22 +695,18 @@ function setStructureLocked(val) {
 }
 
 function updateStructureLockUI() {
+  // Top-level readonly banner (same pattern as swot.html)
+  const banner = document.getElementById('readonlyBanner');
+  if (banner) {
+    if (structureLocked) banner.classList.add('show');
+    else banner.classList.remove('show');
+  }
+
+  // Grey out structure tab forms/buttons
   const wrapper = document.querySelector('#tab-structure .tab-content-wrapper');
   if (!wrapper) return;
-  if (structureLocked) {
-    wrapper.classList.add('structure-locked');
-    if (!document.getElementById('structureLockBanner')) {
-      const banner = document.createElement('div');
-      banner.id = 'structureLockBanner';
-      banner.className = 'structure-lock-banner';
-      banner.innerHTML = '<i class="fas fa-lock"></i> Structure is <strong>locked</strong>. Click <strong>Revise</strong> to enable editing.';
-      wrapper.prepend(banner);
-    }
-  } else {
-    wrapper.classList.remove('structure-locked');
-    const banner = document.getElementById('structureLockBanner');
-    if (banner) banner.remove();
-  }
+  if (structureLocked) wrapper.classList.add('structure-locked');
+  else wrapper.classList.remove('structure-locked');
 }
 
 // ===== PENCIL FIELD WRAPPER =====

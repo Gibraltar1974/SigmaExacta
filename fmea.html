@@ -105,8 +105,8 @@
       gap: 1rem;
       margin: 1.5rem auto 2rem auto;
       flex-wrap: wrap;
-      max-width: 800px;
-      width: 100%;
+      max-width: 1000px;
+      padding: 0 1.25rem;
     }
 
     .main-action-buttons button {
@@ -121,8 +121,6 @@
       align-items: center;
       gap: 0.5rem;
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-      min-height: 48px;
-      /* alineación uniforme */
     }
 
     .main-action-buttons .btn-new {
@@ -1096,24 +1094,24 @@
       background: #5849c2;
     }
 
-    /* ===== STRUCTURE LOCK ===== */
-    .structure-lock-banner {
-      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-      border: 1px solid #f0c040;
-      border-left: 4px solid #e67e22;
+    /* ===== READONLY BANNER (swot style) ===== */
+    .readonly-banner {
+      display: none;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-left: 4px solid #ffc107;
       border-radius: 6px;
       padding: 0.75rem 1rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.92rem;
-      color: #7a5c00;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      margin: -1rem auto 1rem auto;
+      max-width: 900px;
+      font-size: 0.9rem;
+      color: #856404;
+      font-weight: 600;
+      text-align: center;
     }
 
-    .structure-lock-banner i {
-      font-size: 1.1rem;
-      color: #e67e22;
+    .readonly-banner.show {
+      display: block;
     }
 
     .tab-content-wrapper.structure-locked .form-group input,
@@ -1287,6 +1285,12 @@
           <i class="fas fa-file-pdf"></i> Export PDF
         </button>
       </div>
+
+      <div class="readonly-banner" id="readonlyBanner">
+        <i class="fas fa-lock"></i> Structure is <strong>locked</strong> — Click <strong>Revise</strong> to register a
+        revision and unlock editing.
+      </div>
+
     </header>
 
     <!-- NUEVO MODAL DE REVISIÓN (tipo swot) -->
@@ -1946,6 +1950,13 @@
 
     // Export PDF (actualizado)
     async function exportPDF() {
+      // Ensure vis.js network has rendered to canvas (force a fit pass)
+      if (typeof network !== 'undefined' && network) {
+        try { network.fit({ animation: false }); } catch (e) { }
+      }
+      // Small delay so canvas pixels are flushed
+      await new Promise(r => setTimeout(r, 120));
+
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('l', 'mm', 'a4'); // landscape
       const pageW = doc.internal.pageSize.getWidth();
@@ -2064,7 +2075,47 @@
         return `• ${f.label}: ${f.name} (${f.type}) — Contacts: ${contNames}${f.requirement ? ' — Req: ' + f.requirement : ''}`;
       });
 
-      // FMEA Table
+      // ---- Network Diagram ----
+      const netCanvas = document.querySelector('#networkCanvas canvas');
+      if (netCanvas && netCanvas.width > 0 && netCanvas.height > 0 && components.length > 0) {
+        // Composite onto white background (vis.js canvas is transparent)
+        const tmp = document.createElement('canvas');
+        tmp.width = netCanvas.width;
+        tmp.height = netCanvas.height;
+        const ctx2 = tmp.getContext('2d');
+        ctx2.fillStyle = '#ffffff';
+        ctx2.fillRect(0, 0, tmp.width, tmp.height);
+        ctx2.drawImage(netCanvas, 0, 0);
+        const netImgData = tmp.toDataURL('image/png');
+
+        const maxH = 90; // mm max height in landscape
+        const aspect = tmp.width / tmp.height;
+        let imgH = Math.min(maxH, contentW / aspect);
+        let imgW = imgH * aspect;
+        if (imgW > contentW) { imgW = contentW; imgH = imgW / aspect; }
+
+        checkPage(imgH + 16);
+
+        // Section header
+        doc.setFillColor(44, 62, 80);
+        doc.rect(margin, cursorY, contentW, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(255, 255, 255);
+        doc.text('System Structure Diagram', margin + 3, cursorY + 5);
+        cursorY += 9;
+
+        const imgX = margin + (contentW - imgW) / 2;
+        doc.addImage(netImgData, 'PNG', imgX, cursorY, imgW, imgH);
+
+        // Thin border around the image
+        doc.setDrawColor(180, 190, 200);
+        doc.setLineWidth(0.3);
+        doc.rect(imgX, cursorY, imgW, imgH);
+        cursorY += imgH + 8;
+      }
+
+      // ---- FMEA Table ----
       const lastTable = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child .fmea-table');
       if (lastTable) {
         cursorY += 4;
