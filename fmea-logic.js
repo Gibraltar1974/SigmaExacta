@@ -6,7 +6,8 @@ let contacts = [];
 let functions = [];
 let network = null;
 let analysisCounter = 0;
-let revisions = []; // { date, reviewer, analysisNumber }
+let revisions = []; // { date, description, reviewer, analysisNumber }
+let structureLocked = false;
 
 let contactCounter = 0;
 let primaryFunctionCounter = 0;
@@ -33,7 +34,7 @@ function initComponents() {
   document.getElementById('addComponentBtn').addEventListener('click', addComponent);
   document.getElementById('addContactBtn').addEventListener('click', addContact);
   document.getElementById('addFunctionBtn').addEventListener('click', addFunction);
-  document.getElementById('generateFMEABtn').addEventListener('click', promptRevisionAndRegenerate);
+  // ELIMINADO: document.getElementById('generateFMEABtn').addEventListener('click', promptRevisionAndRegenerate);
   document.getElementById('exportChartBtn').addEventListener('click', exportChart);
   document.getElementById('clearComponentsBtn').addEventListener('click', resetAll);
   document.getElementById('clearContactsBtn').addEventListener('click', () => { contacts = []; functions = []; contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0; updateAll(); });
@@ -48,111 +49,13 @@ function initComponents() {
 
   document.getElementById('globalLoadExampleBtn').addEventListener('click', loadExample);
 
-  document.getElementById('globalReviseBtn').addEventListener('click', () => {
-    // "Edit Input Data": bloquea la tabla (si existe) y va a Planning
-    const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
-    if (lastAnalysis) {
-      const table = lastAnalysis.querySelector('.fmea-table');
-      if (table && !table.classList.contains('locked')) {
-        table.classList.add('locked');
-      }
-    }
-    switchTab('tab-planning');
-  });
-
-  // LOAD MODAL
-  document.getElementById('globalLoadBtn').addEventListener('click', () => {
-    document.getElementById('loadFileLabel').textContent = 'No file selected';
-    document.getElementById('modalFileInput').value = '';
-    document.getElementById('loadModal').classList.add('show');
-  });
-  document.getElementById('loadCancelBtn').addEventListener('click', () => {
-    document.getElementById('loadModal').classList.remove('show');
-  });
-  document.getElementById('loadModal').addEventListener('click', function (e) {
-    if (e.target === this) this.classList.remove('show');
-  });
-  document.getElementById('modalFileInput').addEventListener('change', function () {
-    document.getElementById('loadFileLabel').textContent = this.files[0] ? this.files[0].name : 'No file selected';
-  });
-  document.getElementById('loadConfirmBtn').addEventListener('click', () => {
-    const file = document.getElementById('modalFileInput').files[0];
-    if (!file) { alert('Please select an Excel file first.'); return; }
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        loadFromExcel(workbook);
-        document.getElementById('loadModal').classList.remove('show');
-        showNotification('FMEA loaded successfully from Excel! (Read-only mode)');
-      } catch (err) {
-        console.error('Error loading Excel file:', err);
-        alert('Error loading file: ' + err.message);
-      }
-    };
-    reader.onerror = () => alert('Error reading the file. Please try again.');
-    reader.readAsArrayBuffer(file);
-  });
-
-  // EXPORT MODAL
-  document.getElementById('globalExportBtn').addEventListener('click', () => {
-    if (!document.querySelector('#fmeaResultsContainer .analysis-instance')) {
-      alert('Please generate at least one FMEA analysis before exporting.');
-      return;
-    }
-    document.getElementById('exportModal').classList.add('show');
-  });
-  document.getElementById('exportCancelBtn').addEventListener('click', () => {
-    document.getElementById('exportModal').classList.remove('show');
-  });
-  document.getElementById('exportModal').addEventListener('click', function (e) {
-    if (e.target === this) this.classList.remove('show');
-  });
-  document.getElementById('exportConfirmBtn').addEventListener('click', () => {
-    document.getElementById('exportModal').classList.remove('show');
-    exportFullFMEA();
-  });
-
-  // REVISION MODAL – ahora regenera la tabla con los datos actuales
-  document.getElementById('revisionCancelBtn').addEventListener('click', () => {
-    document.getElementById('revisionModal').classList.remove('show');
-  });
-  document.getElementById('revisionModal').addEventListener('click', function (e) {
-    if (e.target === this) this.classList.remove('show');
-  });
-  document.getElementById('revisionConfirmBtn').addEventListener('click', () => {
-    const date = document.getElementById('revisionDate').value;
-    const reviewer = document.getElementById('revisionReviewer').value.trim();
-    if (!date || !reviewer) {
-      alert('Please enter both date and reviewer name.');
-      return;
-    }
-    document.getElementById('revisionModal').classList.remove('show');
-    // Guardar los modos de fallo actuales en el array functions antes de regenerar
-    saveCurrentFailureModesToFunctions();
-    // Registrar revisión
-    revisions.push({ date, reviewer, analysisNumber: analysisCounter + 1 });
-    // Generar tabla nueva (editable) con los datos de entrada y los modos de fallo preservados
-    generateFMEA({ locked: false });
-    document.getElementById('revisionDate').value = '';
-    document.getElementById('revisionReviewer').value = '';
-    switchTab('tab-results');
-  });
+  // ELIMINADO: el listener original de globalReviseBtn, ahora se asigna en fmea.html
 
   document.getElementById('exportHeatmapExcelBtn')?.addEventListener('click', exportHeatmapToExcel);
   document.getElementById('exportHeatmapImageBtn')?.addEventListener('click', exportHeatmapToImage);
   document.getElementById('showCriteriaBtn')?.addEventListener('click', showCriteriaModal);
 
   updateAll();
-}
-
-function promptRevisionAndRegenerate() {
-  if (functions.length === 0) {
-    alert('Please define at least one function first.');
-    return;
-  }
-  document.getElementById('revisionModal').classList.add('show');
 }
 
 // Extrae los datos de la última tabla FMEA y los guarda en el array functions (failureModes de cada función)
@@ -289,6 +192,8 @@ function loadExample() {
   document.getElementById('fmeaScope').value = 'Intent: Analyze powertrain risks for high-volume production. Timing: Q3 2025. Tasks: DFMEA and PFMEA. Tools: Sigma Exacta. Assumptions: Ambient temp 0-40°C.';
   document.getElementById('fmeaPreviousRef').value = 'FMEA-PREV-2024-089';
 
+  structureLocked = true;
+  updateStructureLockUI();
   updateAll();
   setTimeout(() => {
     generateFMEA({ locked: true });
@@ -302,6 +207,8 @@ function resetAll() {
   contactCounter = 0; primaryFunctionCounter = 0; secondaryFunctionCounter = 0;
   analysisCounter = 0;
   revisions = [];
+  structureLocked = false;
+  updateStructureLockUI();
   fmeaResultsContainer.innerHTML = '<div class="calculation-title">FMEA Results (AIAG-VDA Compliant)</div>';
   document.getElementById('heatmapContainer').innerHTML = '<p>No FMEA data available. Generate an analysis first.</p>';
   if (network) { network.destroy(); network = null; }
@@ -375,11 +282,9 @@ function addFunction() {
 
 /* ====================== EDITABLES ====================== */
 function startEditComponent(itemDiv, comp) {
-  // Replace name display with input
   const displaySpan = itemDiv.querySelector('.name-display');
   const input = itemDiv.querySelector('.edit-name-input');
   const editBtn = itemDiv.querySelector('.edit-btn');
-  const deleteBtn = itemDiv.querySelector('.delete-btn');
   if (!displaySpan || !input) return;
 
   displaySpan.style.display = 'none';
@@ -395,9 +300,8 @@ function startEditComponent(itemDiv, comp) {
     const newName = input.value.trim();
     if (newName) {
       comp.name = newName;
-      updateAll(); // re-render list
+      updateAll();
     } else {
-      // revert
       input.value = comp.name;
       cancelEdit();
     }
@@ -417,10 +321,8 @@ function startEditComponent(itemDiv, comp) {
     startEditComponent(itemDiv, comp);
   }
 
-  // On blur save (if not cancelled)
   input.addEventListener('blur', () => {
     setTimeout(() => {
-      // If still in edit mode, save
       if (input.style.display !== 'none') {
         const newName = input.value.trim();
         if (newName && newName !== comp.name) {
@@ -433,7 +335,6 @@ function startEditComponent(itemDiv, comp) {
     }, 100);
   });
 
-  // Enter key saves
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -447,7 +348,6 @@ function startEditContact(itemDiv, cont) {
   const input = itemDiv.querySelector('.edit-name-input');
   const typeSelect = itemDiv.querySelector('.edit-type-select');
   const editBtn = itemDiv.querySelector('.edit-btn');
-  const deleteBtn = itemDiv.querySelector('.delete-btn');
 
   displaySpan.style.display = 'none';
   input.style.display = 'inline-block';
@@ -516,7 +416,6 @@ function startEditFunction(itemDiv, func) {
   const typeSelect = itemDiv.querySelector('.edit-func-type');
   const unwantedCheck = itemDiv.querySelector('.edit-func-unwanted');
   const editBtn = itemDiv.querySelector('.edit-btn');
-  const deleteBtn = itemDiv.querySelector('.delete-btn');
 
   displaySpan.style.display = 'none';
   editArea.style.display = 'block';
@@ -537,7 +436,6 @@ function startEditFunction(itemDiv, func) {
       func.requirement = newReq;
       func.type = newType;
       func.isUnwanted = newUnwanted;
-      // Update label if type changed? keep original label
       updateAll();
     } else {
       cancelEdit();
@@ -790,8 +688,108 @@ function createActionInput(container, actionObj = null) {
 
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
 
+// ===== STRUCTURE LOCK =====
+function setStructureLocked(val) {
+  structureLocked = val;
+  updateStructureLockUI();
+}
+
+function updateStructureLockUI() {
+  const wrapper = document.querySelector('#tab-structure .tab-content-wrapper');
+  if (!wrapper) return;
+  if (structureLocked) {
+    wrapper.classList.add('structure-locked');
+    if (!document.getElementById('structureLockBanner')) {
+      const banner = document.createElement('div');
+      banner.id = 'structureLockBanner';
+      banner.className = 'structure-lock-banner';
+      banner.innerHTML = '<i class="fas fa-lock"></i> Structure is <strong>locked</strong>. Click <strong>Revise</strong> to enable editing.';
+      wrapper.prepend(banner);
+    }
+  } else {
+    wrapper.classList.remove('structure-locked');
+    const banner = document.getElementById('structureLockBanner');
+    if (banner) banner.remove();
+  }
+}
+
+// ===== PENCIL FIELD WRAPPER =====
+function wrapWithPencil(el) {
+  if (!el || !el.parentNode) return;
+  const isTextarea = el.tagName === 'TEXTAREA';
+  const isSelect = el.tagName === 'SELECT';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'pencil-field';
+
+  let displayValue = '';
+  if (isTextarea) displayValue = el.value || '';
+  else if (isSelect) displayValue = el.options[el.selectedIndex]?.text || '';
+
+  const display = document.createElement('span');
+  display.className = 'pf-display';
+  display.textContent = displayValue || (isTextarea ? '—' : displayValue);
+  if (!displayValue) display.style.color = '#bbb';
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'pf-edit-btn';
+  editBtn.type = 'button';
+  editBtn.title = 'Edit field';
+  editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'pf-confirm-btn';
+  confirmBtn.type = 'button';
+  confirmBtn.title = 'Confirm';
+  confirmBtn.innerHTML = '<i class="fas fa-check"></i>';
+  confirmBtn.style.display = 'none';
+
+  el.style.display = 'none';
+  el.parentNode.insertBefore(wrapper, el);
+  wrapper.appendChild(display);
+  wrapper.appendChild(editBtn);
+  wrapper.appendChild(el);
+  wrapper.appendChild(confirmBtn);
+
+  let isEditing = false;
+
+  const openEdit = () => {
+    if (isEditing) return;
+    isEditing = true;
+    display.style.display = 'none';
+    editBtn.style.display = 'none';
+    el.style.display = '';
+    confirmBtn.style.display = '';
+    el.focus();
+    if (isTextarea) autoGrowTextarea(el);
+  };
+
+  const closeEdit = () => {
+    if (!isEditing) return;
+    isEditing = false;
+    if (isTextarea) {
+      const v = el.value || '';
+      display.textContent = v || '—';
+      display.style.color = v ? '' : '#bbb';
+    } else if (isSelect) {
+      display.textContent = el.options[el.selectedIndex]?.text || '';
+      display.style.color = '';
+    }
+    display.style.display = '';
+    editBtn.style.display = '';
+    el.style.display = 'none';
+    confirmBtn.style.display = 'none';
+  };
+
+  editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEdit(); });
+  confirmBtn.addEventListener('mousedown', (e) => { e.preventDefault(); });
+  confirmBtn.addEventListener('click', (e) => { e.stopPropagation(); closeEdit(); });
+  if (isTextarea) el.addEventListener('input', () => autoGrowTextarea(el));
+  if (isSelect) el.addEventListener('change', () => setTimeout(closeEdit, 80));
+}
+
 function generateFMEA(options = {}) {
-  const { locked = false, revisionInfo = null } = options;
+  const { locked = false, pencilMode = false } = options;
   analysisCounter++;
   const now = new Date();
   const timestamp = `${now.toLocaleDateString('en-US')}, ${now.toLocaleTimeString('en-US', { hour12: true })}`;
@@ -815,7 +813,7 @@ function generateFMEA(options = {}) {
     const revHistoryDiv = document.createElement('div');
     revHistoryDiv.className = 'revision-history';
     revHistoryDiv.innerHTML = `<strong>📋 Revision History</strong><ul>` +
-      revisions.map(r => `<li>Rev. by ${escapeHtml(r.reviewer)} on ${r.date} (Analysis #${r.analysisNumber})</li>`).join('') +
+      revisions.map(r => `<li>Rev. by ${escapeHtml(r.reviewer)} on ${r.date}${r.description ? ' — ' + escapeHtml(r.description) : ''} (Analysis #${r.analysisNumber})</li>`).join('') +
       `</ul>`;
     analysisInstance.appendChild(revHistoryDiv);
   }
@@ -948,19 +946,21 @@ function generateFMEA(options = {}) {
       refreshHeatmap();
     });
     fmeaTableBody.appendChild(row);
+    // Apply pencil mode after row is in DOM and all values are set
+    if (pencilMode) {
+      row.querySelectorAll('textarea').forEach(ta => wrapWithPencil(ta));
+      row.querySelectorAll('.focus-element-select, .severity-select, .occurrence-select, .detection-select, .severity2-select, .occurrence2-select, .detection2-select').forEach(sel => wrapWithPencil(sel));
+    }
     updateRPN();
     return row;
   };
 
-  // Generar filas a partir del array functions, usando failureModes pre-cargados
   functions.forEach(func => {
     if (func.failureModes && func.failureModes.length > 0) {
       func.failureModes.forEach(fm => addRow(func, fm));
     } else {
-      // Al menos una fila vacía por función
       addRow(func, null);
     }
-    // Botón para añadir más modos de fallo a esta función
     const addRowBtnRow = fmeaTableBody.insertRow();
     const addRowBtnCell = addRowBtnRow.insertCell();
     addRowBtnCell.colSpan = 23;
@@ -1013,18 +1013,21 @@ function generateFMEA(options = {}) {
   filterM.addEventListener('click', () => { filterActive = 'M'; filterRows(); });
   filterL.addEventListener('click', () => { filterActive = 'L'; filterRows(); });
 
-  const exportButton = document.createElement('button');
-  exportButton.className = 'export-fmea-btn';
-  exportButton.innerHTML = `<i class="fas fa-file-excel"></i> Export Analysis #${analysisCounter} to Excel`;
-  exportButton.addEventListener('click', () => exportTableToExcel(fmeaTable, `FMEA_${fmeaType}_Analysis_${analysisCounter}_Sigma_Exacta.xlsx`, {
-    docNumber, revision, projectName, fmeaDate, fmeaTeam, fmeaType, fmeaCustomer, engResponsible, plant, scope, previousRef, revisions
-  }));
-  analysisInstance.appendChild(exportButton);
+  // *** ELIMINADO: botón "Export Analysis #... to Excel" ***
 
   fmeaResultsContainer.appendChild(analysisInstance);
   fmeaResultsContainer.style.display = 'block';
   setTimeout(() => analysisInstance.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   refreshHeatmap();
+}
+
+function exportChart() {
+  const canvas = document.querySelector('#networkCanvas canvas');
+  if (canvas && network) {
+    const dataURL = canvas.toDataURL('image/jpeg', 1.0);
+    const link = document.createElement('a'); link.href = dataURL; link.download = 'fmea_structure_chart.jpg';
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  } else alert('The chart is not available to be exported.');
 }
 
 function loadFromExcel(workbook) {
@@ -1174,8 +1177,8 @@ function exportFullFMEA() {
   }
 
   if (revisions.length > 0) {
-    const revData = [['Date', 'Reviewer', 'Analysis Number']];
-    revisions.forEach(r => revData.push([r.date, r.reviewer, r.analysisNumber]));
+    const revData = [['Date', 'Reviewer', 'Description', 'Analysis Number']];
+    revisions.forEach(r => revData.push([r.date, r.reviewer, r.description || '', r.analysisNumber]));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(revData), 'Revision_History');
   }
 
@@ -1412,13 +1415,4 @@ function exportHeatmapToImage() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-function exportChart() {
-  const canvas = document.querySelector('#networkCanvas canvas');
-  if (canvas && network) {
-    const dataURL = canvas.toDataURL('image/jpeg', 1.0);
-    const link = document.createElement('a'); link.href = dataURL; link.download = 'fmea_structure_chart.jpg';
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-  } else alert('The chart is not available to be exported.');
 }
