@@ -1533,7 +1533,8 @@
             <p>The FMEA methodology was first developed by the <strong>U.S. military</strong> in the late 1940s
               (MIL-P-1629) and later adopted by NASA and the automotive industry. Today it is governed by the
               <strong>AIAG &amp; VDA FMEA Handbook</strong>, which replaced the older RPN-only approach with the
-              <strong>Action Priority (AP)</strong> classification.</p>
+              <strong>Action Priority (AP)</strong> classification.
+            </p>
             <ul style="margin-top:0.75rem;">
               <li style="margin-bottom:0.5rem;"><strong>Severity (S 1–10):</strong> How serious is the effect on the
                 customer or system?</li>
@@ -1608,10 +1609,12 @@
                 function.</li>
               <li style="margin-bottom:0.6rem;line-height:1.6;"><strong>Step 5 — Visualize:</strong> Switch to the
                 <em>Visualize</em> tab to review the auto-generated component-contact-function network diagram. Drag
-                nodes to rearrange.</li>
+                nodes to rearrange.
+              </li>
               <li style="margin-bottom:0.6rem;line-height:1.6;"><strong>Step 6 — Generate FMEA:</strong> Click
                 <strong>Revise</strong> in the toolbar, fill in the revision details and confirm. The FMEA table is
-                generated with one row per function.</li>
+                generated with one row per function.
+              </li>
               <li style="margin-bottom:0.6rem;line-height:1.6;"><strong>Step 7 — Analyze:</strong> In the <em>FMEA
                   Results</em> tab, click the <i class="fas fa-pencil-alt" style="color:#3498db;"></i> pencil on each
                 cell to describe failure modes, effects, causes, controls and assign S / O / D ratings. AP and RPN
@@ -1620,10 +1623,12 @@
                 actions and re-evaluate with revised scores (S2, O2, D2) to compare before/after risk levels.</li>
               <li style="margin-bottom:0.6rem;line-height:1.6;"><strong>Step 9 — Save &amp; Export:</strong> Click
                 <strong>Save</strong> to keep a <code>.json</code> snapshot. Click <strong>Export PDF</strong> for a
-                print-ready landscape report with colour-coded AP columns.</li>
+                print-ready landscape report with colour-coded AP columns.
+              </li>
               <li style="line-height:1.6;"><strong>Step 10 — Revisions:</strong> Load a saved file at any time and click
                 <strong>Revise</strong> to add a new revision, keeping a full traceable history in both the JSON and the
-                PDF.</li>
+                PDF.
+              </li>
             </ul>
           </div>
 
@@ -2200,16 +2205,39 @@
       const team = document.getElementById('fmeaTeam')?.value || 'N/A';
       const customer = document.getElementById('fmeaCustomer')?.value || 'N/A';
 
-      checkPage(14);
-      doc.setFillColor(236, 240, 241);
-      doc.roundedRect(margin, cursorY, contentW, 13, 2, 2, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(44, 62, 80);
-      doc.text(`Project: ${projectName}`, margin + 3, cursorY + 5);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Type: ${fmeaType}   |   Doc #: ${docNumber}   |   Rev: ${revision}   |   Team: ${team}   |   Customer: ${customer}`, margin + 3, cursorY + 10);
-      cursorY += 17;
+      // Project metadata – autoTable guarantees perfectly uniform cell spacing
+      doc.autoTable({
+        startY: cursorY,
+        margin: { left: margin, right: margin },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
+          valign: 'middle',
+          textColor: [44, 62, 80],
+          lineColor: [200, 210, 220],
+          lineWidth: 0.25
+        },
+        headStyles: {
+          fillColor: [44, 62, 80],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 7.5,
+          halign: 'center'
+        },
+        bodyStyles: { fontStyle: 'normal', textColor: [50, 50, 60] },
+        theme: 'grid',
+        head: [['Project', 'FMEA Type', 'Doc #', 'Rev', 'Team', 'Customer']],
+        body: [[projectName, fmeaType, docNumber, revision, team, customer]],
+        columnStyles: {
+          0: { cellWidth: contentW * 0.26, fontStyle: 'bold', textColor: [44, 62, 80] },
+          1: { cellWidth: contentW * 0.11, halign: 'center' },
+          2: { cellWidth: contentW * 0.17 },
+          3: { cellWidth: contentW * 0.08, halign: 'center' },
+          4: { cellWidth: contentW * 0.19 },
+          5: { cellWidth: 'auto' }
+        }
+      });
+      cursorY = doc.lastAutoTable.finalY + 6;
 
       // Revision History
       if (revisions && revisions.length > 0) {
@@ -2221,19 +2249,23 @@
         doc.setTextColor(255, 255, 255);
         doc.text('Revision History', margin + 3, cursorY + 5);
         cursorY += 9;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(60, 60, 60);
-        revisions.forEach((r, i) => {
-          const descText = r.description ? ` — ${r.description}` : '';
-          const line = `Rev. #${r.analysisNumber}  |  ${r.date}  |  ${r.reviewer}${descText}`;
-          checkPage(6);
-          doc.setFillColor(i % 2 === 0 ? 248 : 255, i % 2 === 0 ? 249 : 255, i % 2 === 0 ? 250 : 255);
-          doc.rect(margin, cursorY - 4, contentW, 6, 'F');
-          doc.text(line, margin + 3, cursorY);
-          cursorY += 6;
+        doc.autoTable({
+          startY: cursorY,
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 8, cellPadding: { top: 2, bottom: 2, left: 3, right: 3 }, valign: 'middle', textColor: [50, 50, 60], lineColor: [210, 215, 220], lineWidth: 0.2 },
+          headStyles: { fillColor: [100, 116, 139], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5, halign: 'center' },
+          alternateRowStyles: { fillColor: [248, 249, 252] },
+          theme: 'grid',
+          head: [['Rev #', 'Date', 'Reviewer', 'Description']],
+          body: revisions.map(r => [r.analysisNumber, r.date, r.reviewer, r.description || '']),
+          columnStyles: {
+            0: { cellWidth: contentW * 0.08, halign: 'center' },
+            1: { cellWidth: contentW * 0.14, halign: 'center' },
+            2: { cellWidth: contentW * 0.18 },
+            3: { cellWidth: 'auto' }
+          }
         });
-        cursorY += 4;
+        cursorY = doc.lastAutoTable.finalY + 6;
       }
 
       // System Structure section
@@ -2252,19 +2284,23 @@
         if (items.length === 0) return;
         checkPage(8);
         doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
         doc.setTextColor(44, 62, 80);
         doc.text(title, margin, cursorY);
-        cursorY += 5;
+        cursorY += 5.5;
         doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
         doc.setTextColor(60, 60, 60);
         items.forEach(item => {
           const line = mapFn(item);
-          const lines = doc.splitTextToSize(line, contentW - 8);
-          checkPage(lines.length * 4.5 + 2);
-          doc.text(lines, margin + 4, cursorY);
-          cursorY += lines.length * 4.5;
+          const lines = doc.splitTextToSize(line, contentW - 10);
+          checkPage(lines.length * 5 + 2);
+          lines.forEach(l => {
+            doc.text(l, margin + 4, cursorY);
+            cursorY += 5;
+          });
         });
-        cursorY += 3;
+        cursorY += 4;
       }
       writeList('Components:', components, c => `• ${c.name} (${c.level})${c.external ? ' [External]' : ''}${c.parentId ? ' → parent: ' + (components.find(x => x.id === c.parentId)?.name || '?') : ''}`);
       writeList('Contacts:', contacts, c => {
@@ -2277,44 +2313,92 @@
         return `• ${f.label}: ${f.name} (${f.type}) — Contacts: ${contNames}${f.requirement ? ' — Req: ' + f.requirement : ''}`;
       });
 
-      // ---- Network Diagram ----
-      const netCanvas = document.querySelector('#networkCanvas canvas');
-      if (netCanvas && netCanvas.width > 0 && netCanvas.height > 0 && components.length > 0) {
-        // Composite onto white background (vis.js canvas is transparent)
-        const tmp = document.createElement('canvas');
-        tmp.width = netCanvas.width;
-        tmp.height = netCanvas.height;
-        const ctx2 = tmp.getContext('2d');
-        ctx2.fillStyle = '#ffffff';
-        ctx2.fillRect(0, 0, tmp.width, tmp.height);
-        ctx2.drawImage(netCanvas, 0, 0);
-        const netImgData = tmp.toDataURL('image/png');
+      // ---- Network Diagram – always on its own page (page 2) ----
+      if (components.length > 0) {
+        // The Visualize tab may be hidden (display:none) so the vis.js canvas has 0 dimensions.
+        // Temporarily make it visible offscreen so the browser can render it.
+        const visTab = document.getElementById('tab-visualize');
+        const netContainer = document.getElementById('networkCanvas');
+        const prevDisplay = visTab.style.display;
+        const prevVisibility = visTab.style.visibility;
+        const prevPosition = visTab.style.position;
+        const prevLeft = visTab.style.left;
+        const prevContW = netContainer.style.width;
+        const prevContH = netContainer.style.height;
 
-        const maxH = 90; // mm max height in landscape
-        const aspect = tmp.width / tmp.height;
-        let imgH = Math.min(maxH, contentW / aspect);
-        let imgW = imgH * aspect;
-        if (imgW > contentW) { imgW = contentW; imgH = imgW / aspect; }
+        visTab.style.display = 'block';
+        visTab.style.visibility = 'hidden';
+        visTab.style.position = 'absolute';
+        visTab.style.left = '-99999px';
 
-        checkPage(imgH + 16);
+        // Force explicit canvas size and redraw
+        const captureW = 1400, captureH = 750;
+        netContainer.style.width = captureW + 'px';
+        netContainer.style.height = captureH + 'px';
 
-        // Section header
-        doc.setFillColor(44, 62, 80);
-        doc.rect(margin, cursorY, contentW, 7, 'F');
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.setTextColor(255, 255, 255);
-        doc.text('System Structure Diagram', margin + 3, cursorY + 5);
-        cursorY += 9;
+        if (typeof network !== 'undefined' && network) {
+          try {
+            network.setSize(captureW + 'px', captureH + 'px');
+            network.redraw();
+            network.fit({ animation: false });
+          } catch (e) { }
+        }
 
-        const imgX = margin + (contentW - imgW) / 2;
-        doc.addImage(netImgData, 'PNG', imgX, cursorY, imgW, imgH);
+        // Wait for paint
+        await new Promise(r => setTimeout(r, 400));
 
-        // Thin border around the image
-        doc.setDrawColor(180, 190, 200);
-        doc.setLineWidth(0.3);
-        doc.rect(imgX, cursorY, imgW, imgH);
-        cursorY += imgH + 8;
+        const netCanvas = document.querySelector('#networkCanvas canvas');
+        let netImgData = null;
+        if (netCanvas && netCanvas.width > 0 && netCanvas.height > 0) {
+          const tmp = document.createElement('canvas');
+          tmp.width = netCanvas.width;
+          tmp.height = netCanvas.height;
+          const ctx2 = tmp.getContext('2d');
+          ctx2.fillStyle = '#ffffff';
+          ctx2.fillRect(0, 0, tmp.width, tmp.height);
+          ctx2.drawImage(netCanvas, 0, 0);
+          netImgData = tmp.toDataURL('image/png');
+        }
+
+        // Restore tab and container
+        visTab.style.display = prevDisplay;
+        visTab.style.visibility = prevVisibility;
+        visTab.style.position = prevPosition;
+        visTab.style.left = prevLeft;
+        netContainer.style.width = prevContW;
+        netContainer.style.height = prevContH;
+        if (typeof network !== 'undefined' && network) {
+          try { network.setSize('100%', '100%'); network.redraw(); network.fit({ animation: false }); } catch (e) { }
+        }
+
+        if (netImgData) {
+          // Force a new page for the diagram
+          doc.addPage();
+          cursorY = margin;
+
+          // Section header
+          doc.setFillColor(44, 62, 80);
+          doc.rect(margin, cursorY, contentW, 7, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(255, 255, 255);
+          doc.text('System Structure Diagram', margin + 3, cursorY + 5);
+          cursorY += 11;
+
+          // Scale image to fill available space
+          const availH = pageH - cursorY - margin - 12;
+          const aspect = captureW / captureH;
+          let imgH = Math.min(availH, contentW / aspect);
+          let imgW = imgH * aspect;
+          if (imgW > contentW) { imgW = contentW; imgH = imgW / aspect; }
+
+          const imgX = margin + (contentW - imgW) / 2;
+          doc.addImage(netImgData, 'PNG', imgX, cursorY, imgW, imgH);
+          doc.setDrawColor(180, 190, 200);
+          doc.setLineWidth(0.3);
+          doc.rect(imgX, cursorY, imgW, imgH);
+          cursorY += imgH + 8;
+        }
       }
 
       // ---- FMEA Table ----
@@ -2394,6 +2478,109 @@
           });
         }
       }
+
+      // ---- Risk Heatmap – always on its own last page ----
+      (function addHeatmapPage() {
+        const heatData = Array(10).fill(null).map(() => Array(10).fill(0));
+        const lastAnalysis = document.querySelector('#fmeaResultsContainer .analysis-instance:last-child');
+        if (!lastAnalysis) return;
+        lastAnalysis.querySelectorAll('.fmea-table tbody tr.fmea-data-row').forEach(row => {
+          const sSelect = row.querySelector('.severity-select');
+          const oSelect = row.querySelector('.occurrence-select');
+          if (sSelect && oSelect) {
+            const s = parseInt(sSelect.value);
+            const o = parseInt(oSelect.value);
+            if (!isNaN(s) && !isNaN(o) && s >= 1 && s <= 10 && o >= 1 && o <= 10) heatData[s - 1][o - 1]++;
+          }
+        });
+
+        // Build heatmap canvas (same logic as exportHeatmapToImage)
+        const cellSize = 52, labelSize = 36, yTitleW = 28, padH = 24, titleH = 36, legendH = 52;
+        const cols = 10, rows2 = 10;
+        const CW = yTitleW + labelSize + cols * cellSize + padH;
+        const CH = titleH + labelSize + rows2 * cellSize + padH + legendH;
+        const hc = document.createElement('canvas');
+        hc.width = CW; hc.height = CH;
+        const hctx = hc.getContext('2d');
+        hctx.fillStyle = '#ffffff';
+        hctx.fillRect(0, 0, CW, CH);
+        hctx.fillStyle = '#2c3e50';
+        hctx.font = 'bold 15px Arial, sans-serif';
+        hctx.textAlign = 'center';
+        hctx.fillText('Occurrence', CW / 2, 22);
+        hctx.save();
+        hctx.translate(14, CH / 2 - legendH / 2);
+        hctx.rotate(-Math.PI / 2);
+        hctx.fillText('Severity', 0, 0);
+        hctx.restore();
+        const originX2 = yTitleW + labelSize, originY2 = titleH + labelSize;
+        hctx.font = 'bold 11px Arial, sans-serif';
+        hctx.fillStyle = '#2c3e50';
+        hctx.textAlign = 'center';
+        for (let j = 0; j < 10; j++) hctx.fillText(j + 1, originX2 + j * cellSize + cellSize / 2, originY2 - 8);
+        hctx.textAlign = 'right';
+        for (let i = 0; i < 10; i++) hctx.fillText(10 - i, originX2 - 6, originY2 + i * cellSize + cellSize / 2 + 4);
+        for (let i = 0; i < 10; i++) {
+          const sev = 10 - i;
+          for (let j = 0; j < 10; j++) {
+            const count = heatData[sev - 1][j];
+            let color = '#eeeeee';
+            if (count > 0) { if (count <= 2) color = '#f1c40f'; else if (count <= 5) color = '#e67e22'; else color = '#e74c3c'; }
+            hctx.fillStyle = color;
+            hctx.fillRect(originX2 + j * cellSize, originY2 + i * cellSize, cellSize - 2, cellSize - 2);
+            if (count > 0) {
+              hctx.fillStyle = '#333333';
+              hctx.font = 'bold 13px Arial, sans-serif';
+              hctx.textAlign = 'center';
+              hctx.fillText(count, originX2 + j * cellSize + cellSize / 2 - 1, originY2 + i * cellSize + cellSize / 2 + 5);
+            }
+          }
+        }
+        const legendY2 = originY2 + rows2 * cellSize + 14;
+        const legendItems2 = [{ color: '#eeeeee', label: '0' }, { color: '#f1c40f', label: '1-2' }, { color: '#e67e22', label: '3-5' }, { color: '#e74c3c', label: '>5' }];
+        let lx2 = yTitleW + labelSize;
+        hctx.font = '12px Arial, sans-serif';
+        legendItems2.forEach(item => {
+          hctx.fillStyle = item.color; hctx.fillRect(lx2, legendY2, 14, 14);
+          hctx.fillStyle = '#555555'; hctx.textAlign = 'left';
+          hctx.fillText(item.label, lx2 + 18, legendY2 + 11);
+          lx2 += 90;
+        });
+
+        const hmImgData = hc.toDataURL('image/png');
+
+        // Add dedicated page
+        doc.addPage();
+        cursorY = margin;
+
+        // Section header
+        doc.setFillColor(44, 62, 80);
+        doc.rect(margin, cursorY, contentW, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(255, 255, 255);
+        doc.text('Risk Map (Severity × Occurrence)', margin + 3, cursorY + 5);
+        cursorY += 11;
+
+        // Scale to fit page
+        const hmAspect = CW / CH;
+        const availHm = pageH - cursorY - margin - 10;
+        let hmH = Math.min(availHm, contentW / hmAspect);
+        let hmW = hmH * hmAspect;
+        if (hmW > contentW) { hmW = contentW; hmH = hmW / hmAspect; }
+        const hmX = margin + (contentW - hmW) / 2;
+        doc.addImage(hmImgData, 'PNG', hmX, cursorY, hmW, hmH);
+        doc.setDrawColor(180, 190, 200);
+        doc.setLineWidth(0.3);
+        doc.rect(hmX, cursorY, hmW, hmH);
+        cursorY += hmH + 4;
+
+        // Legend caption
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Each cell shows the number of failure modes for that (Severity, Occurrence) pair.  ⬤ 0  ⬤ 1–2  ⬤ 3–5  ⬤ >5', margin, cursorY + 4);
+      })();
 
       // Page footers
       const totalPages = doc.internal.getNumberOfPages();
