@@ -2268,50 +2268,106 @@
         cursorY = doc.lastAutoTable.finalY + 6;
       }
 
-      // System Structure section
-      checkPage(10);
-      doc.setFillColor(44, 62, 80);
-      doc.rect(margin, cursorY, contentW, 7, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(255, 255, 255);
-      doc.text('System Structure', margin + 3, cursorY + 5);
-      cursorY += 11;
+      // System Structure section – render with html2canvas for perfect character spacing.
+      // Build and MEASURE the content FIRST, then draw header + content together so
+      // checkPage never splits the title from its body onto separate pages.
+      if (components.length > 0 || contacts.length > 0 || functions.length > 0) {
+        const sysDiv = document.createElement('div');
+        sysDiv.style.cssText = [
+          'position:absolute', 'left:-99999px', 'top:0',
+          'width:1100px', 'padding:14px 18px',
+          'background:#ffffff',
+          'font-family:Nunito,Segoe UI,Arial,sans-serif',
+          'font-size:13px', 'line-height:1.7',
+          'color:#3c3c3c', 'box-sizing:border-box'
+        ].join(';');
 
-      doc.setFontSize(8);
-      doc.setTextColor(60, 60, 60);
-      function writeList(title, items, mapFn) {
-        if (items.length === 0) return;
-        checkPage(8);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8.5);
-        doc.setTextColor(44, 62, 80);
-        doc.text(title, margin, cursorY);
-        cursorY += 5.5;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(60, 60, 60);
-        items.forEach(item => {
-          const line = mapFn(item);
-          const lines = doc.splitTextToSize(line, contentW - 10);
-          checkPage(lines.length * 5 + 2);
-          lines.forEach(l => {
-            doc.text(l, margin + 4, cursorY);
-            cursorY += 5;
+        function sysSection(title, items, mapFn) {
+          if (!items.length) return '';
+          let h = `<div style="font-weight:800;color:#2c3e50;font-size:13.5px;margin:8px 0 4px 0;border-bottom:1px solid #d5dde6;padding-bottom:3px;">${title}</div>`;
+          items.forEach(item => {
+            h += `<div style="padding:1.5px 0 1.5px 14px;word-break:break-word;">${mapFn(item)}</div>`;
           });
-        });
-        cursorY += 4;
+          return h;
+        }
+
+        sysDiv.innerHTML =
+          sysSection('Components', components, c => {
+            const pName = c.parentId ? (components.find(x => x.id === c.parentId)?.name || '?') : null;
+            return `• <b>${c.name}</b> <span style="color:#666;">(${c.level}${c.external ? ', External' : ''}${pName ? ', parent: ' + pName : ''})</span>`;
+          }) +
+          sysSection('Contacts', contacts, c => {
+            const from = components.find(x => x.id === c.from);
+            const to = components.find(x => x.id === c.to);
+            return `• <b>${c.name}</b> <span style="color:#666;">(${c.interactionType}): ${from?.name || '?'} → ${to?.name || '?'}</span>`;
+          }) +
+          sysSection('Functions', functions, f => {
+            const cNames = f.contacts.map(id => contacts.find(x => x.id === id)?.name || '?').join(', ');
+            return `• <b>${f.label}:</b> ${f.name} <span style="color:#666;">(${f.type}) — Contacts: ${cNames}${f.requirement ? ' — Req: ' + f.requirement : ''}</span>`;
+          });
+
+        document.body.appendChild(sysDiv);
+
+        try {
+          const sysCanvas = await html2canvas(sysDiv, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true,
+            logging: false
+          });
+          const sysImgData = sysCanvas.toDataURL('image/png');
+          const sysW = contentW;
+          const sysH = sysW * (sysCanvas.height / sysCanvas.width);
+          const headerH = 9;
+
+          // One checkPage for header + content together — never split
+          checkPage(headerH + sysH + 6);
+
+          // Draw section header
+          doc.setFillColor(44, 62, 80);
+          doc.rect(margin, cursorY, contentW, 7, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(255, 255, 255);
+          doc.text('System Structure', margin + 3, cursorY + 5);
+          cursorY += headerH;
+
+          // Draw content image immediately below
+          doc.addImage(sysImgData, 'PNG', margin, cursorY, sysW, sysH);
+          cursorY += sysH + 6;
+
+        } catch (e) {
+          // Fallback: draw header then plain text lines
+          checkPage(10);
+          doc.setFillColor(44, 62, 80);
+          doc.rect(margin, cursorY, contentW, 7, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(255, 255, 255);
+          doc.text('System Structure', margin + 3, cursorY + 5);
+          cursorY += 11;
+          const allItems = [
+            ...components.map(c => `• ${c.name} (${c.level})`),
+            ...contacts.map(c => {
+              const from = components.find(x => x.id === c.from);
+              const to = components.find(x => x.id === c.to);
+              return `• ${c.name}: ${from?.name || '?'} → ${to?.name || '?'}`;
+            }),
+            ...functions.map(f => `• ${f.label}: ${f.name} (${f.type})`)
+          ];
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(60, 60, 60);
+          allItems.forEach(line => {
+            checkPage(6);
+            doc.text(line, margin + 4, cursorY);
+            cursorY += 5.5;
+          });
+          cursorY += 4;
+        } finally {
+          document.body.removeChild(sysDiv);
+        }
       }
-      writeList('Components:', components, c => `• ${c.name} (${c.level})${c.external ? ' [External]' : ''}${c.parentId ? ' → parent: ' + (components.find(x => x.id === c.parentId)?.name || '?') : ''}`);
-      writeList('Contacts:', contacts, c => {
-        const from = components.find(x => x.id === c.from);
-        const to = components.find(x => x.id === c.to);
-        return `• ${c.name} (${c.interactionType}): ${from?.name || '?'} → ${to?.name || '?'}`;
-      });
-      writeList('Functions:', functions, f => {
-        const contNames = f.contacts.map(id => contacts.find(x => x.id === id)?.name || '?').join(', ');
-        return `• ${f.label}: ${f.name} (${f.type}) — Contacts: ${contNames}${f.requirement ? ' — Req: ' + f.requirement : ''}`;
-      });
 
       // ---- Network Diagram – always on its own page (page 2) ----
       if (components.length > 0) {
