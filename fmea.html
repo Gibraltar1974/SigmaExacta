@@ -2618,9 +2618,9 @@
         doc.text('Risk Map (Severity × Occurrence)', margin + 3, cursorY + 5);
         cursorY += 11;
 
-        // Scale to fit page
+        // Scale to fit page – reserve 22 mm at bottom for legend (2 rows) + footer (10 mm)
         const hmAspect = CW / CH;
-        const availHm = pageH - cursorY - margin - 10;
+        const availHm = pageH - cursorY - 22 - 10;
         let hmH = Math.min(availHm, contentW / hmAspect);
         let hmW = hmH * hmAspect;
         if (hmW > contentW) { hmW = contentW; hmH = hmW / hmAspect; }
@@ -2631,11 +2631,33 @@
         doc.rect(hmX, cursorY, hmW, hmH);
         cursorY += hmH + 4;
 
-        // Legend caption
+        // Legend caption – draw colored squares + ASCII labels (no Unicode, Helvetica safe)
+        cursorY += 2;
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(7.5);
-        doc.setTextColor(100, 100, 100);
-        doc.text('Each cell shows the number of failure modes for that (Severity, Occurrence) pair.  ⬤ 0  ⬤ 1–2  ⬤ 3–5  ⬤ >5', margin, cursorY + 4);
+        doc.setTextColor(90, 90, 90);
+        doc.text('Each cell shows the number of failure modes for that (Severity, Occurrence) pair.', margin, cursorY + 4);
+        cursorY += 7;
+
+        const legendSwatches = [
+          { color: [238, 238, 238], label: '0' },
+          { color: [241, 196, 15], label: '1-2' },
+          { color: [230, 126, 34], label: '3-5' },
+          { color: [231, 76, 60], label: '>5' }
+        ];
+        const sqSz = 3.5;
+        let lx = margin;
+        doc.setLineWidth(0.15);
+        legendSwatches.forEach(sw => {
+          doc.setFillColor(...sw.color);
+          doc.setDrawColor(160, 160, 160);
+          doc.rect(lx, cursorY, sqSz, sqSz, 'FD');
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(60, 60, 60);
+          doc.text(sw.label, lx + sqSz + 1.5, cursorY + sqSz - 0.5);
+          lx += sqSz + 1.5 + doc.getTextWidth(sw.label) + 5;
+        });
       })();
 
       // Page footers
