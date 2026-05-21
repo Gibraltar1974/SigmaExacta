@@ -2550,11 +2550,11 @@
           }
         });
 
-        // Build heatmap canvas (same logic as exportHeatmapToImage)
-        const cellSize = 52, labelSize = 36, yTitleW = 28, padH = 24, titleH = 36, legendH = 52;
+        // Build heatmap canvas (same logic as exportHeatmapToImage, legend drawn separately below)
+        const cellSize = 52, labelSize = 36, yTitleW = 28, padH = 24, titleH = 36;
         const cols = 10, rows2 = 10;
         const CW = yTitleW + labelSize + cols * cellSize + padH;
-        const CH = titleH + labelSize + rows2 * cellSize + padH + legendH;
+        const CH = titleH + labelSize + rows2 * cellSize + padH;
         const hc = document.createElement('canvas');
         hc.width = CW; hc.height = CH;
         const hctx = hc.getContext('2d');
@@ -2565,7 +2565,7 @@
         hctx.textAlign = 'center';
         hctx.fillText('Occurrence', CW / 2, 22);
         hctx.save();
-        hctx.translate(14, CH / 2 - legendH / 2);
+        hctx.translate(14, CH / 2);
         hctx.rotate(-Math.PI / 2);
         hctx.fillText('Severity', 0, 0);
         hctx.restore();
@@ -2592,16 +2592,6 @@
             }
           }
         }
-        const legendY2 = originY2 + rows2 * cellSize + 14;
-        const legendItems2 = [{ color: '#eeeeee', label: '0' }, { color: '#f1c40f', label: '1-2' }, { color: '#e67e22', label: '3-5' }, { color: '#e74c3c', label: '>5' }];
-        let lx2 = yTitleW + labelSize;
-        hctx.font = '12px Arial, sans-serif';
-        legendItems2.forEach(item => {
-          hctx.fillStyle = item.color; hctx.fillRect(lx2, legendY2, 14, 14);
-          hctx.fillStyle = '#555555'; hctx.textAlign = 'left';
-          hctx.fillText(item.label, lx2 + 18, legendY2 + 11);
-          lx2 += 90;
-        });
 
         const hmImgData = hc.toDataURL('image/png');
 

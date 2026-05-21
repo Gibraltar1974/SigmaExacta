@@ -1288,7 +1288,12 @@ function refreshHeatmap() {
       </div>
     </div>
     <div class="heatmap-legend">
-      <span>⬤ 0 &nbsp; ⬤ 1-2 &nbsp; ⬤ 3-5 &nbsp; ⬤ >5</span><br>
+      <span style="display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#eeeeee;border:1px solid #ccc;"></span> 0</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#f1c40f;"></span> 1-2</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#e67e22;"></span> 3-5</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#e74c3c;"></span> &gt;5</span>
+      </span><br>
       <small>Each cell shows the number of failure modes for that (Severity, Occurrence) pair.</small>
     </div>
   `;
