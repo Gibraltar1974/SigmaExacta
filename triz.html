@@ -2332,7 +2332,8 @@
                     contradictions, turning seemingly intractable problems into solvable engineering challenges. This
                     tool covers the full classical TRIZ toolkit: <strong>LDST, IFR, 9 Windows, Function Analysis,
                         Technical Contradiction (Contradiction Matrix + 40 Inventive Principles), Physical Contradiction
-                        (Separation Principles), and Su-Field Analysis (76 Standard Solutions)</strong>.</p>
+                        (Separation Principles), and Su-Field Analysis (76 Standard Solutions)</strong>.
+                </p>
             </div>
 
             <!-- ── TOOL CONTROLS ── -->
@@ -2366,7 +2367,8 @@
                             <strong style="color:#2c3e50;">Load</strong>
                             <p style="margin:0.2rem 0 0; font-size:0.9rem; color:#555;">Opens a previously saved
                                 <code>.json</code> file and fully restores all TRIZ tool data, including Function
-                                Analysis and Su-Field systems. The file is loaded in <em>read-only</em> mode.</p>
+                                Analysis and Su-Field systems. The file is loaded in <em>read-only</em> mode.
+                            </p>
                         </div>
                     </div>
 
@@ -2479,7 +2481,8 @@
                                 style="color:#27ae60; margin-right:0.4rem;"></i>Step 3 — Ideal Final Result</strong>
                         <p style="margin:0.35rem 0 0; font-size:0.85rem; color:#444;">Formulate the IFR: "The system
                             <em>itself</em> performs its function without the drawback, costs, or harmful effects." This
-                            breaks psychological inertia.</p>
+                            breaks psychological inertia.
+                        </p>
                     </div>
 
                     <div
@@ -2647,7 +2650,8 @@
                             triangle of <strong>S1</strong> (object), <strong>S2</strong> (tool), and
                             <strong>Field</strong> (energy type). Problem types (insufficient, harmful, missing,
                             difficult, excessive, inefficient) map to specific standard solutions from the 76 Su-Field
-                            Standards across 5 classes.</p>
+                            Standards across 5 classes.
+                        </p>
                     </div>
 
                 </div>
@@ -6395,11 +6399,38 @@
         ========================================================= */
         async function exportToPDF() {
             const resultsEl = document.getElementById('results-container');
+
+            // ── Make sure the Report tab (tab-solve) is visible so offsetHeight is correct ──
+            const solveTab = document.getElementById('tab-solve');
+            const wasActive = solveTab.classList.contains('active');
+            const previousActiveTab = wasActive ? null :
+                document.querySelector('.tab-content.active');
+            const previousActiveBtn = wasActive ? null :
+                document.querySelector('.tab-btn.active');
+
+            if (!wasActive) {
+                // Temporarily switch to the Report tab without animation noise
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                solveTab.classList.add('active');
+                const reportBtn = document.querySelector("button[onclick=\"switchMainTab('tab-solve')\"]");
+                if (reportBtn) reportBtn.classList.add('active');
+                // One frame for layout recalculation
+                await new Promise(r => requestAnimationFrame(r));
+            }
+
             if (resultsEl.classList.contains('hidden')) {
                 solveProblem();
                 await new Promise(r => setTimeout(r, 700));
             }
             if (resultsEl.classList.contains('hidden')) {
+                // Restore tab before alerting
+                if (!wasActive && previousActiveTab) {
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    previousActiveTab.classList.add('active');
+                    if (previousActiveBtn) previousActiveBtn.classList.add('active');
+                }
                 alert('No report to export. Fill in the TRIZ tools first and switch to the Report tab.');
                 return;
             }
@@ -6591,6 +6622,14 @@
             } catch (err) {
                 console.error('PDF export error:', err);
                 alert('Error generating PDF. Please try again.');
+            } finally {
+                // ── Restore the tab the user was on before export ──
+                if (!wasActive && previousActiveTab) {
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    previousActiveTab.classList.add('active');
+                    if (previousActiveBtn) previousActiveBtn.classList.add('active');
+                }
             }
         }
 
